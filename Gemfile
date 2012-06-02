@@ -5,8 +5,7 @@ gem 'rails', '3.2.5'
 # Bundle edge Rails instead:
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
 
-gem 'sqlite3'
-
+gem 'mysql2'
 
 # Gems used only for assets and not required
 # in production environments by default.
@@ -21,6 +20,17 @@ group :assets do
 end
 
 gem 'jquery-rails'
+gem 'devise', '2.1.0'
+gem 'haml-rails'
+gem 'will_paginate', "~> 3.0"
+gem 'geokit-rails3' # port of rails2 plugin: https://github.com/jlecour/geokit-rails3
+
+group :test, :development do
+  # Pretty printed test output
+  gem 'turn', '0.8.2', :require => false
+  gem 'rspec-rails'
+  #gem 'jasmine-rails' # also need to do: brew install qt
+end
 
 # To use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.0.0'
