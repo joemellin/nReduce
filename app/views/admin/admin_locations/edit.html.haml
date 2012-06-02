@@ -1,0 +1,19 @@
+- body_attrs :class => "apply"
+
+- content_for :subtitle do
+  Edit Location
+
+.container
+  .logo
+  %h2 Edit Location
+
+  .row
+    .span12
+      = semantic_form_for @location, :url => "/admin/locations/#{@location.id}/edit", :method => :post, :html => {:class => "form-horizontal"} do |f|
+
+        = render "admin/admin_locations/fields", :f => f
+
+        .form-actions
+          = f.submit "Save", :class => "btn btn-primary btn-large"
+          .right-actions
+            = link_to "Delete", "/admin/locations/#{@location.id}", :method => :delete, :confirm => "Are you sure you want to delete this location?", :class => "btn"

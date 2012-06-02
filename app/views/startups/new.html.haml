@@ -1,0 +1,115 @@
+- body_attrs :class => "apply"
+
+- content_for :subtitle do
+  Register your startup
+
+.container
+  .logo
+  %h2 Register your Startup for Summer 2012 Batch
+
+  .row.intro-text
+    .span7
+      :markdown
+
+        Thanks for your interest in nReduce. To join our batch for **Summer 2012**, there's just a few details we'll need about your team.
+
+        All startups can participate in nReduce. A few of these questions are just here to clarify your team and commitment to building a startup. Please answer honestly. You'll only need to post this once per team.
+
+        nReduce starts **June 5th, 2012** and goes until the end of August. Looking forward to having you!
+
+
+  .row
+    .span12
+      = semantic_form_for @startup, :html => {:class => "form-horizontal"} do |f|
+
+        .control-group{error_css(@startup, :name)}
+          = f.label :name, "Startup Name:"
+          .controls
+            = f.text_field :name, :class => "span4"
+            = f.semantic_errors :name
+
+        .control-group{error_css(@startup, :team_members_twitter)}
+          = f.label :team_members_twitter, "Team Members:"
+          .controls
+            = f.text_area :team_members_twitter, :rows => "5", :class => "span4 with-placeholder", "placeholder" => "e.g. @twitter1, @twitter2, @twitter3"
+            = f.semantic_errors :team_members_twitter
+            %p.help-block
+              Enter in the <strong>twitter</strong> handles (comma or line separated) of the founders in your team.<br>
+              Using twitter auth, this will give them access to your nReduce team page.
+
+        %hr
+        .control-group{error_css(@startup, :location_name)}
+          = f.label :location_name, "Where is your<br>team located?".html_safe
+          .controls
+            = f.select :location_name, Settings.location_options
+            = f.semantic_errors :location_name
+            .row
+              .span7
+                %p.help-block
+                  We're looking to put together in-person dinners in the major startup hubs. If you are close enough to one of these hubs, choose it from this list. If your location is not on the list, choose "other" and enter it below.
+
+        .control-group{error_css(@startup, :location_other)}
+          = f.label :location_other, "if other: ".html_safe
+          .controls
+            = f.text_field :location_other
+
+        %hr
+        .control-group.yes-no{error_css(@startup, :agree1)}
+          .row
+            .span9
+              %p= Settings.q1
+
+          = f.select :agree1, Settings.yes_no_options, :prompt => ""
+          = agree_error_msg(@startup, :agree1)
+
+        %hr
+        .control-group.yes-no{error_css(@startup, :agree2)}
+          .row
+            .span9
+              %p= Settings.q2
+          = f.select :agree2, Settings.yes_no_options, :prompt => ""
+          = agree_error_msg(@startup, :agree2)
+
+        %hr
+        .control-group.yes-no{error_css(@startup, :agree3)}
+          .row
+            .span9
+              %p= Settings.q3
+
+          = f.select :agree3, Settings.yes_no_options, :prompt => ""
+          = agree_error_msg(@startup, :agree3)
+
+        / this question is stupid, we already know the answer
+        / %hr
+        / .control-group.yes-no{error_css(@startup, :agree4)}
+        /   %p
+        /     Do you have more than one founder on your team?
+        /   = f.select :agree4, Settings.yes_no_options, :prompt => ""
+        /   = agree_error_msg(@startup, :agree4)
+
+        %hr
+        .control-group.yes-no{error_css(@startup, :agree5)}
+          %p= Settings.q5
+
+          = f.select :agree5, Settings.yes_no_options, :prompt => ""
+          = agree_error_msg(@startup, :agree5)
+
+        %hr
+        .control-group.yes-no{error_css(@startup, :agree6)}
+          .row
+            .span9
+              %p= Settings.q6
+              = f.select :agree6, Settings.agree_options, :prompt => ""
+              = agree_error_msg(@startup, :agree6)
+
+        %hr
+        .control-group.yes-no{error_css(@startup, :agree7)}
+          .row
+            .span9
+              %p= Settings.q7
+          = f.select :agree7, Settings.agree_options, :prompt => ""
+          = agree_error_msg(@startup, :agree7)
+
+
+        .form-actions
+          = f.submit "Submit", :class => "btn btn-primary btn-large"

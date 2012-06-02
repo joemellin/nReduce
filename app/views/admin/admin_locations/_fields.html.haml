@@ -1,0 +1,31 @@
+.control-group{error_css(@location, :name)}
+  = f.label :name, "Location Name:"
+  .controls
+    = f.text_field :name, :class => "span4"
+    = f.semantic_errors :name
+
+.control-group{error_css(@location, :order)}
+  = f.label :order, "Sort Order:"
+  .controls
+    = f.text_field :order, :class => "span1"
+    = f.semantic_errors :order
+
+.control-group{error_css(@location, :venue_name)}
+  = f.label :venue_name, "Where to Meet:"
+  .controls
+    = f.text_field :venue_name, :class => "span4"
+    = f.semantic_errors :venue_name
+
+.control-group{error_css(@location, :venue_url)}
+  = f.label :venue_url, "URL:"
+  .controls
+    = f.text_field :venue_url, :class => "span4"
+    = f.semantic_errors :venue_url
+
+
+.control-group{error_css(@location, :venue_description)}
+  = f.label :venue_description, "About:"
+  .controls
+    = f.text_area :venue_description, :class => "span4"
+    = f.semantic_errors :venue_description
+

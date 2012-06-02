@@ -1,0 +1,19 @@
+site_url: "http://s12.nreduce.com"
+email_host: "s12.nreduce.com"
+
+apis:
+  twitter:
+    consumer_key: "Rn8g642gGKo8hv6fn1xYQ"
+    consumer_secret: "tnRZYSjmGZKUBMzinDe8YKZMcsUFq0zUAT8J4UT8"
+    oauth_token: "568897631-pIJPlDWPUXB5dvTXv40wXCJrXsQCXFjrXTkAyMzc"
+    oauth_token_secret: "K5eL5zLqfJENKvNyGdEJjlcArkDgsqUCtXxgXNS8U"
+
+#
+mailchimp:
+  enabled: true
+  api_key: "7a3bbe7dd7c6cdfed2c7539c6c634c47-us5"
+  everyone_list_id: "91928a6996"
+  startup_list_id: "59cd07cfa3"
+  mentor_list_id: "fbf2bec566"
+  investor_list_id: "6dc0fcba2b"
+

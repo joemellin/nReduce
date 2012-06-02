@@ -24,6 +24,9 @@ gem 'devise', '2.1.0'
 gem 'haml-rails'
 gem 'will_paginate', "~> 3.0"
 gem 'geokit-rails3' # port of rails2 plugin: https://github.com/jlecour/geokit-rails3
+gem "airbrake"
+gem "hominid"
+gem "rails_config", "= 0.2.5"
 
 group :test, :development do
   # Pretty printed test output

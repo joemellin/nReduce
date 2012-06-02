@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>nReduce Admin</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le styles -->
+    <%= stylesheet_link_tag "vendor/bootstrap" %>
+    <%= stylesheet_link_tag "vendor/bootstrap-responsive" %>
+    <%= stylesheet_link_tag "/bootstrap-docs/css/docs" %>
+    <%= stylesheet_link_tag "/bootstrap-docs/js/google-code-prettify/prettify.css" %>
+    <%= stylesheet_link_tag "pages/admin" %>
+
+    <%= js_settings %>
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/bootstrap-docs/ico/favicon.ico">
+    <link rel="apple-touch-icon" href="/bootstrap-docs/ico/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/bootstrap-docs/ico/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/bootstrap-docs/ico/apple-touch-icon-114x114.png">
+  </head>
+
+  <body class="admin" data-spy="scroll" data-target=".subnav" data-offset="50">
+
+    <%= render "admin/admin_nav" %>
+
+    <div class="container">
+      <%= yield %>
+
+
+    </div><!-- /container -->
+
+    <script type="text/javascript" src="http://platform.twitter.com/widgets.js"></script>
+
+    <%= javascript_include_tag(:application) %>
+    <%#= javascript_include_tag "vendor/jquery-1.7.1" %>
+    <%#= javascript_include_tag "vendor/bootstrap" %>
+    <%= javascript_include_tag "vendor/jquery.tablesorter.js" %>
+    <script src="/bootstrap-docs/js/application.js"></script>
+
+    <%= content_for(:js) %>
+  </body>
+</html>

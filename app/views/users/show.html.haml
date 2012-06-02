@@ -1,0 +1,36 @@
+- body_attrs :class => "landing"
+
+-# - content_for :subtitle do
+-#   Coming Soon!
+
+= link_to "nReduce", "http://nreduce.com", :class => "logo"
+
+%p
+  Starts June 5th, 2012. You ready?
+
+
+%p
+  %br
+  Logged in as
+  %strong
+    <a href="http://twitter.com/#{current_auth.twitter}">@#{current_auth.twitter}</a>
+
+- if current_startup
+  %p
+    %br
+    - if current_auth.rsvped?
+      You're RSVPed for <strong>#{current_auth.location.name}</strong>. (<a href="/rsvp/edit">edit</a>)
+    - else
+      Please <strong><a href="/rsvp/edit">RSVP now!</a></strong> for a weekly dinner.
+
+%p
+  %br
+  - if current_startup
+    = link_to "My Startup", "/startup", :class => "btn btn-large btn-primary"
+  - else
+    = link_to "Register Startup", "/startups/new", :class => "btn btn-large"
+  - if current_auth.partner?
+    = link_to "Admin Tools", "/admin", :class => "btn btn-large"
+  = link_to "Log out", "/logout", :class => "btn btn-large"
+
+

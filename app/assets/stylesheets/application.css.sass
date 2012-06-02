@@ -1,0 +1,23 @@
+//= require "common"
+//= require_tree "./pages"
+
+//= require_self
+
+//= depend_on "mixins"
+
+@import "mixins"
+
+body
+  position: relative
+  background-color: #EAEAEA
+  font-family: Open Sans, sans-serif
+  p, textarea
+    font-family: Open Sans, sans-serif
+
+.logo
+  width: 250px
+  height: 94px
+  background: url("/images/nreduce_logo.png") no-repeat
+  margin: auto
+  display: block
+  +hide-text
