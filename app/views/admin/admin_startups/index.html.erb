@@ -1,0 +1,78 @@
+<div class="row">
+  <div class="span8">
+    <h1>Startups (<%= @startups.count %>)</h1>
+  </div>
+  <div class="filter span4">
+    <%= select_tag "view", options_for_select([["Show All", ""]]+Settings.location_filters, params[:view]), :id => "view" %>
+  </div>
+</div>
+
+<br>
+
+<table id="startupTable" class="table table-striped table-bordered table-condensed">
+  <thead>
+    <tr>
+      <th class="yellow">Date (PST)</th>
+      <th class="yellow">Startup Name</th>
+      <th class="blue">Location</th>
+      <th class="span2">Members</th>
+
+      <!-- AGREEMENT COLUMNS -->
+      <th title="<%= Settings.q1 %>">1</th>
+      <th title="<%= Settings.q2 %>">2</th>
+      <th title="<%= Settings.q3 %>">3</th>
+      <th title="<%= Settings.q4 %>">4</th>
+      <th title="<%= Settings.q5 %>">5</th>
+      <th title="<%= Settings.q6 %>">6</th>
+      <th title="<%= Settings.q7 %>">7</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @startups.each do |startup| %>
+      <tr>
+        <td data-val="<%= startup.created_at.to_i %>">
+          <%= raw startup.created_at.in_time_zone("Pacific Time (US & Canada)").strftime("%m/%d/%Y&nbsp;%l:%M%p") %>
+        </td>
+        <td><%= startup.name %></td>
+
+        <td>
+          <%= startup.location_name %><%= " (#{startup.location_other})" if startup.location_other.present? %>
+        </td>
+
+        <td><%= link_to startup.team_members.count, "/admin/startups/#{startup.id}" %></td>
+
+        <td title="<%= Settings.q1 %>"><%= startup.agree1 ? "Y" : "N" %></td>
+        <td title="<%= Settings.q2 %>"><%= startup.agree2 ? "Y" : "N" %></td>
+        <td title="<%= Settings.q3 %>"><%= startup.agree3 ? "Y" : "N" %></td>
+        <td title="<%= Settings.q4 %>"><%= startup.agree4 ? "Y" : "N" %></td>
+        <td title="<%= Settings.q5 %>"><%= startup.agree5 ? "Y" : "N" %></td>
+        <td title="<%= Settings.q6 %>"><%= startup.agree6 ? "Y" : "N" %></td>
+        <td title="<%= Settings.q7 %>"><%= startup.agree7 ? "Y" : "N" %></td>
+
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<% content_for :js do %>
+  <script type="text/javascript" charset="utf-8">
+    jQuery(document).ready(function($) {
+      $("#startupTable").tablesorter({
+        textExtraction: function(node) {
+          var val = $(node).data("val");
+          if(val) {
+            return val;
+          }
+          else {
+            return $(node).text();
+          }
+        }
+      });
+
+      $("#view").on("change", function(e) {
+        var view = $(this);
+        window.location = "/admin/startups?view="+view.val();
+      });
+    });
+  </script>
+<% end -%>

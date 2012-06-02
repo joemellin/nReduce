@@ -1,0 +1,23 @@
+- body_attrs :class => "apply"
+
+- content_for :subtitle do
+  Your Startup
+
+.container
+  = link_to "nReduce", "/", :class => "logo"
+  .row
+    .span8
+      %h2 Your Startup: #{@startup.name}
+    .span4
+      .actions
+        = link_to "Edit Startup", "/startup/edit", :class => "btn"
+
+  %hr
+
+  .row
+    .span8
+      %h3 Team Members
+      %ul
+        - @startup.team_members.each do |team_member|
+          %li= team_member
+

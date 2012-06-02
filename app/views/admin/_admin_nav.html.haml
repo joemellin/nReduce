@@ -1,0 +1,34 @@
+-# Navbar
+.navbar.navbar-fixed-top
+  .navbar-inner
+    .container
+      %a.btn.btn-navbar{"data-target" => ".nav-collapse", "data-toggle" => "collapse"}
+        %span.icon-bar
+        %span.icon-bar
+        %span.icon-bar
+      %a.brand{:href => "/"} nReduce
+      .nav-collapse
+        %ul.nav
+          %li{add_class("active", :if => params[:controller].include?("admin_startups"))}
+            %a{:href => "/admin/startups"} Startups
+          %li{add_class("active", :if => params[:controller].include?("admin_signups"))}
+            %a{:href => "/admin/signups"} Signups
+          %li{add_class("active", :if => params[:controller].include?("admin_locations"))}
+            %a{:href => "/admin/locations"} Locations
+          %li{add_class("active", :if => params[:controller].include?("admin_authentications"))}
+            %a{:href => "/admin/authentications"} Authentication
+          / %li{add_class("active", :if => current == "scaffolding")}
+          /   %a{:href => "/ui/scaffolding.html"} Scaffolding
+          / %li{add_class("active", :if => current == "base-css")}
+          /   %a{:href => "/ui/base-css.html"} Base CSS
+          / %li{add_class("active", :if => current == "components")}
+          /   %a{:href => "/ui/components.html"} Components
+          / %li{add_class("active", :if => current == "javascript")}
+          /   %a{:href => "/ui/javascript.html"} Javascript plugins
+          / %li{add_class("active", :if => current == "less")}
+          /   %a{:href => "/ui/less.html"} Using LESS
+          / %li.divider-vertical
+          / %li{add_class("active", :if => current == "download")}
+          /   %a{:href => "/ui/download.html"} Customize
+          / %li{add_class("active", :if => current == "examples")}
+          /   %a{:href => "/ui/examples.html"} Examples

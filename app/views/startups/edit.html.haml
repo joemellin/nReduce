@@ -1,0 +1,47 @@
+- body_attrs :class => "apply"
+
+- content_for :subtitle do
+  Edit your startup
+
+.container
+  = link_to "nReduce", "/", :class => "logo"
+  %h2 Edit your Startup
+
+  .row
+    .span12
+      = semantic_form_for @startup, :url => "/startup", :method => :post, :html => {:class => "form-horizontal"} do |f|
+
+        .control-group{error_css(@startup, :name)}
+          = f.label :name, "Startup Name:"
+          .controls
+            = f.text_field :name, :class => "span4"
+            = f.semantic_errors :name
+
+        .control-group{error_css(@startup, :team_members_twitter)}
+          = f.label :team_members_twitter, "Team Members:"
+          .controls
+            = f.text_area :team_members_twitter, :rows => "5", :class => "span4 with-placeholder", "placeholder" => "e.g. @twitter1, @twitter2, @twitter3"
+            = f.semantic_errors :team_members_twitter
+            %p.help-block
+              Enter in the <strong>twitter</strong> handles (comma or line separated) of the founders in your team.<br>
+              Using twitter auth, this will give them access to your nReduce team page.
+
+        %hr
+        .control-group{error_css(@startup, :location_name)}
+          = f.label :location_name, "Where is your<br>team located?".html_safe
+          .controls
+            = f.select :location_name, Settings.location_options
+            = f.semantic_errors :location_name
+            .row
+              .span7
+                %p.help-block
+                  We're looking to put together in-person dinners in the major startup hubs. If you are close enough to one of these hubs, choose it from this list. If your location is not on the list, choose "other" and enter it below.
+
+        .control-group{error_css(@startup, :location_other)}
+          = f.label :location_other, "if other: ".html_safe
+          .controls
+            = f.text_field :location_other
+
+        .form-actions
+
+          = f.submit "Save", :class => "btn btn-primary btn-large"

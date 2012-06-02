@@ -1,0 +1,18 @@
+- body_attrs :class => "landing"
+
+-# - content_for :subtitle do
+-#   Coming Soon!
+
+= link_to "nReduce", "http://nreduce.com", :class => "logo"
+
+%p
+  Please log in to nReduce to continue.
+
+%p
+  %br
+  = link_to "Sign in with Twitter", "/auth/twitter", :class => "btn btn-primary btn-large"
+
+
+%p.login-note
+  %br
+  nReduce uses Twitter logins for ease of use (and implementation). So there's no need to remember yet another username/password. We'll never post anything to your timeline without permission.

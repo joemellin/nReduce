@@ -1,0 +1,16 @@
+#thanks
+  .container
+    = link_to "nReduce", "/", :class => "logo"
+    %h2 Thanks!
+    .row
+      .span7
+        %p
+          We'll contact you soon!
+
+    %a{:href => "https://twitter.com/nReduce", :class => "twitter-follow-button", "data-size"=> "large", "data-show-count" => "false", :style => "vertical-align: -40%" }Follow @nReduce
+    %a{:href => "https://twitter.com/share", :class => "twitter-share-button", "data-url" => "http://nReduce.com", "data-size"=> "large", "data-text" => "An alliance of creators who stay accountable and support one another", "data-via"=>"nReduce",  "data-related" => "ashbhoopathy, railsjedi, richlengsavath",  "data-hashtags" => "nReduce"} Tweet
+
+:erb
+  <!-- Twitter follow button -->
+  <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+

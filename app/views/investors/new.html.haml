@@ -1,0 +1,71 @@
+- body_attrs :class => "apply"
+
+- content_for :subtitle do
+  Apply as an Investor
+
+.container
+  .logo
+  %h2 Interested in nReduce Demo Day?
+
+  .row.intro-text
+    .span7
+      %p
+        Interested in getting first access to see the best of the nReduce batch? Register here and you won't miss out.
+
+      %p
+        %strong ** Your personal details (phone, email, twitter) will never be given to anyone<br>without your express permission.
+
+
+  .row
+    .span12
+      = semantic_form_for @investor, :html => {:class => "form-horizontal"} do |f|
+
+        .control-group{error_css(@investor, :name)}
+          = f.label :name, "Name:"
+          .controls
+            = f.text_field :name, :class => "span4"
+            = f.semantic_errors :name
+
+        .control-group{error_css(@investor, :email)}
+          = f.label :email, "Email:"
+          .controls
+            = f.text_field :email, :class => "span4"
+            = f.semantic_errors :email
+
+        .control-group{error_css(@investor, :twitter)}
+          = f.label :twitter, "Twitter:"
+          .controls
+            = f.text_field :twitter, :class => "span4"
+            = f.semantic_errors :twitter
+
+        .control-group{error_css(@investor, :linkedin_url)}
+          = f.label :linkedin_url, "LinkedIn URL:<br>(optional)".html_safe
+          .controls
+            = f.text_field :linkedin_url, :class => "span5"
+            = f.semantic_errors :linkedin_url
+
+        .control-group{error_css(@investor, :angellist_url)}
+          = f.label :angellist_url, "AngelList URL:<br>(optional)".html_safe
+          .controls
+            = f.text_field :angellist_url, :class => "span5"
+            = f.semantic_errors :angellist_url
+
+        %hr
+        .control-group.yes-no{error_css(@investor, :agree1)}
+          .row
+            .span9
+              %p Are you an accedited investor?
+
+          = f.select :agree1, Settings.yes_no_options, :prompt => ""
+          = agree_error_msg(@investor, :agree1)
+
+        .control-group.yes-no{error_css(@investor, :agree1)}
+          .row
+            .span9
+              %p Have you made an Angel investment in the past 6 months?
+
+          = f.select :agree2, Settings.yes_no_options, :prompt => ""
+          = agree_error_msg(@investor, :agree2)
+
+        .form-actions
+          = f.submit "Submit", :class => "btn btn-primary btn-large"

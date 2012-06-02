@@ -1,0 +1,34 @@
+@import "bourbon"
+
+// setup fonts
+$helvetica-light: 'HelveticaNeue-Light', 'Helvetica Neue Light', 'Helvetica Neue', Arial, Helvetica, sans-serif
+$helvetica-neue: Helvetica Neue, Helvetica, Arial, sans-serif
+
+@mixin sprite-replace($group-name, $image-name, $offset: 0)
+  +hide-text
+  +sprite($group-name, $image-name, $offset)
+
+@mixin image-replace($image-path, $scale: 1.0)
+  +hide-text
+  background: url($image-path) no-repeat
+  // width: image-size(image-path)[0] * scale
+  // height: image-size(image-path)[1] * scale
+  // if scale != 1.0
+  //   background-size: image-size(image-path)[0] * scale image-size(image-path)[1] * scale
+
+@mixin helvetica-neue-light
+  font-family: 'HelveticaNeue-Light'
+  font-weight: 300
+
+@mixin helvetica-neue
+  font-family: Helvetica Neue, Helvetica, Arial, sans-serif
+
+@mixin helvetica-neue-normal
+  +helvetica-neue
+  font-weight: normal
+
+@mixin signika($weight: normal, $style: normal, $size: 16px)
+  font-family: Signika, Helvetica Neue, Helvetica, Arial, sans-serif
+  font-weight: $weight
+  font-style: $style
+  font-size: $size
