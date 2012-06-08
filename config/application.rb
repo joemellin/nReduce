@@ -71,3 +71,5 @@ module Nreduce
     config.assets.version = '1.0'
   end
 end
+
+ActsAsTaggableOn.force_parameterize = true

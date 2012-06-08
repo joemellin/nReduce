@@ -1,0 +1,148 @@
+email_host: "localhost:3000"
+
+default_time_zone: "Pacific Time (US & Canada)"
+default_from_email: "contact@nreduce.com"
+
+client:
+  test: "test"
+
+location_options:
+  - "San Francisco (downtown)"
+  - "South Bay (Palo Alto, Mountain View, etc)"
+  - "New York City"
+  - "Seattle"
+  - "Houston"
+  - "London"
+  - "Los Angeles"
+  - "Amsterdam"
+  - "Paris"
+  - "Berlin"
+  - "San Diego"
+  - "Austin"
+  - "San Diego"
+  - "Washington DC"
+  - "Other..."
+
+startup_options:
+  growth_model_options:
+    - "Not Sure Yet :)"
+    - "Viral"
+    - "SEO"
+    - "Advertising"
+    - "Partnerships"
+    - "SMB Sales"
+    - "Enterprise Sales"
+  stage_options:
+    - "Idea"
+    - "Prototype"
+    - "Private Alpha/Beta"
+    - "Launched"
+    - "Generating Revenue/Scaling"
+  company_goal_options:
+    - "Fun Project - Chatroulette"
+    - "Life Style Business - 4 Hour Workweek"
+    - "Steady Revenue - 37Signals"
+    - "Improve Society - Kiva"
+    - "Big Exit - Facebook"
+  industry_options:
+    - "Advertising"
+    - "Analytics"
+    - "Big Data"
+    - "BioTech"
+    - "Clean Tech"
+    - "Consumer Web"
+    - "Crowdsourcing"
+    - "Digital Media"
+    - "E-Commerce"
+    - "Education"
+    - "Energy"
+    - "Enterprise Software"
+    - "Entertainment"
+    - "Facebook Applications"
+    - "Fashion"
+    - "Financial Services"
+    - "Food and Beverages"
+    - "Health and Wellness"
+    - "Journalism"
+    - "K-12 Education"
+    - "Kids"
+    - "Knowledge Management"
+    - "Legal"
+    - "Location Based Services"
+    - "Manufacturing"
+    - "Marketplaces"
+    - "Mobile"
+    - "Mobile Commerce"
+    - "Mobile Games"
+    - "Mobile Applications"
+    - "Online Travel"
+    - "Personal Health"
+    - "Physical Goods"
+    - "Professional Services"
+    - "Real Estate"
+    - "Recruiting"
+    - "SaaS"
+    - "Search"
+    - "Security"
+    - "Small Medium Businesses"
+    - "Social Commerce"
+    - "Social Games"
+    - "Social Media"
+    - "Transportation"
+    - "University Students"
+    - "Ventures for Good"
+    - "Video"
+
+
+yes_no_options:
+  -
+    - "Yes"
+    - true
+  -
+    - "No"
+    - false
+
+
+agree_options:
+  -
+    - "Agree"
+    - true
+  -
+    - "Disagree"
+    - false
+
+q1: "Are you free on Tuesday evenings (in your timezone) to meet with other entrepreneurs (either in person or virtually)?"
+q2: "Does someone on your team know how to code?"
+q3: "Do you feel that with your current team can make ship product updates and/or make meaningful customer traction every week?"
+q4: "Do you have more than one founder on your team?"
+q5: "Are you and all your cofounders willing to commit fulltime to your startup this summer?"
+q6: "nReduce is about bringing elite startups together, not about forming startups. nReduce can not help recruit or add team members. Teams that can't make progress with their current team will not be able to finish the program. nReduce can not provide recruiting services for our startups."
+q7: "nReduce startups only have to share what they feel comfortable sharing about their startups. You'll never be forced to tell other startups specific proprietary information or trade secret information about your company. However, sharing your general weekly progress, and what you've shipped (even without specifics) is required."
+
+
+
+twitter:
+  consumer_key: "mkjNMEzcfmMCafueNVBGQ"
+  consumer_secret: "KBtQ80iGRY5ivG6RVDOv2p8uoYAdLIRTTL5KKHnLLRY"
+  oauth_token: "568897631-gQfh7J3ivGftKyxU5h18tsyi7c3vYmCrcwdI8c"
+  oauth_token_secret: "fcO0nSIRf6hp1r1CchN21fd1cNfGfktPc6Vcwn8VpY"
+
+
+mailchimp:
+  enabled: false
+  everyone_list_id: ""
+  investor_list_id: ""
+  startup_list_id: ""
+  mentor_list_id: ""
+
+
+hipchat:
+  token: "19456f5350542b41a8651552e5ea16"
+
+paperclip_config:
+  path: "/:hash.extension"
+  url: "/:hash:.extension"
+  hash_secret: "6S0Z6CwVt7w1zPYpomycLFL9rTffnzGBDtCBhqcXJIrdmHWUwCQHdbKq4f5AMjt"
+  styles:
+    medium: '250x250>'
+    thumb: '120x120#'
