@@ -20,9 +20,9 @@ class DeviseCreateUsers < ActiveRecord::Migration
       t.string   :last_sign_in_ip
 
       ## Confirmable
-      t.string   :confirmation_token
-      t.datetime :confirmed_at
-      t.datetime :confirmation_sent_at
+      #t.string   :confirmation_token
+      #t.datetime :confirmed_at
+      #t.datetime :confirmation_sent_at
       # t.string   :unconfirmed_email # Only if using reconfirmable
 
       ## Lockable
@@ -33,10 +33,10 @@ class DeviseCreateUsers < ActiveRecord::Migration
       ## Token authenticatable
       # t.string :authentication_token
 
-      t.string :name, :token, :linkedin_url, :angellist_url, :twitter
-      
-      t.boolean :spectator, :startup, :mentor, :investor, :startup_intro_email_sent, :rsvp_email_sent, :mailchimped, :default => false
-
+      t.string :name, :token, :linkedin_url, :angellist_url, :facebook_url, :twitter, :external_pic_url, :location
+      t.float :lat, :lng
+      t.boolean :admin, :startup, :mentor, :investor, :mailchimped, :default => false
+      t.has_attached_file :pic
       t.timestamps
     end
 
