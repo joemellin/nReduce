@@ -1,0 +1,17 @@
+%div{:align => 'center'}
+  %h1 Welcome to nReduce! --> Watch Video :)
+  %br
+  %br
+  :plain
+    <iframe width="640" height="425" src="http://www.youtube.com/embed/q_Ep3OfDcaY?rel=0" frameborder="0" allowfullscreen></iframe>
+  %br
+  %br
+  %h3
+    %a{:href => 'tel:4152598215'} +1-415-259-8215
+    \-
+    = mail_to 'joe@nReduce.com'
+  %br
+  %br
+  %center
+    .buttons
+      = button_to 'Continue', onboard_next_startup_path, :class => 'btn btn-primary btn-large'

@@ -1,0 +1,22 @@
+.onboard {
+  .buttons, .buttons input, .buttons a {
+    font-size: 30px; 
+    line-height: 36px;
+    font-weight: bold;
+  }
+  .form-actions {
+    border: 0px;
+    background-color: transparent;
+  }
+  .inline-block {
+    display: inline-block;
+  }
+}
+
+body.apply > .container .onboard .control-group {
+  padding: 8px;
+}
+
+body.apply > .container .onboard hr {
+  margin-bottom: 15px;
+}

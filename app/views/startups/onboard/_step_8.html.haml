@@ -1,0 +1,48 @@
+:plain
+  <h1>Great, I am stoked!  What now?</h1>
+  <br>
+  <br>
+  <h1> 
+  1) Submit a 60 sec team intro video.
+  </h1>
+  <br>
+  <h3>
+  <ul>
+  <li>Introduce yourself and your team </li>
+  <br>
+  <li>Say why you are doing nReduce.</li>
+  </h3>
+  <br>
+  <h1> 
+  You have till 4pm PST on June 5 : Go!
+  </h1>
+
+  <br>
+  <br>
+
+= semantic_form_for @startup, :url => onboard_next_startup_path, :method => :post, :html => {:class => "form-horizontal"} do |f|
+  %fieldset
+    .control-group{error_css(@startup, :intro_video_url)}
+      = f.label :intro_video_url, "Youtube URL", :class => 'control-label'
+      .controls
+        = f.text_field :intro_video_url, :class => 'span5 with-placeholder', :placeholder => 'http://www.youtube.com/watch?v=dQw4w9WgXcQ'
+        = f.semantic_errors :intro_video_url
+    .form-actions.buttons
+      = f.submit 'Submit Video', :class => 'btn btn-primary btn-large'
+
+:plain
+  <br>
+  <h3>nReduce Team Video:</h3>
+  <br />
+  <iframe allowfullscreen="" frameborder="0" height="315" src="http://www.youtube.com/embed/MaQkjbMAThg" width="420"></iframe>
+  <br />
+  <br />
+  <h3>Video FAQ:</h3>
+  <br />
+  <b>What if not all the team members are in the same place?</b> That is okay, just have one person make a video and introduce the other team members on their behalf.
+  <br />
+  <br />
+  <b>Can it be crazy / creative?</b> Hells yeah!
+  <br />
+  <br />
+  <b>Who will see it?</b> The videos will only be seen by other nReduce teams. They will not be public.  You will be forming small teams of startups and the videos are intended to help you get to know who you will be going through this intense process with.  You can keep it to your first name if you like and do not have to talk about what you are working on.  

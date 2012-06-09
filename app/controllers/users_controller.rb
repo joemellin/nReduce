@@ -1,6 +1,5 @@
 class UsersController < ApplicationController
-
-  before_filter :login_required, :only => [:edit_rsvp, :update_rsvp, :show]
+  before_filter :login_required, :only => [:edit_rsvp, :update_rsvp, :show, :edit, :update]
 
   def rsvp_redirect
     token_user = lookup_user_by_token(params[:user_token])
@@ -73,7 +72,20 @@ class UsersController < ApplicationController
   end
 
   def show
-    @auth = current_auth
+    @user = current_user
+  end
+
+  def edit
+    @user = current_user
+  end
+
+  def update
+    @user = current_user
+    if @user.update_attributes(params[:user])
+      render :action => :show
+    else
+      render :action => :edit
+    end
   end
 
   protected

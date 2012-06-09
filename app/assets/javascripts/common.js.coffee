@@ -18,9 +18,6 @@
 #= require "./vendor/underscore.utils.js"
 #= require "./vendor/bootstrap"
 #= require "./vendor/jquery.isotope.min.js"
-#= require "handlebars"
-#= require_tree "./hbs_support"
-#= require_tree "./common"
 
 window.isSpeechCapable = ->
   elem = document.createElement('input')

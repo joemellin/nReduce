@@ -47,4 +47,15 @@ module ApplicationHelper
     end
   end
 
+  def link_to_twitter(handle, opts = {})
+    link_to(handle, "https://twitter.com/#!/#{handle.sub('@', '')}", opts)
+  end
+
+  def is_controller_action?(controller_name, action_name)
+    controller.controller_name == controller_name and controller.action_name == action_name
+  end
+
+  def registration_open?
+    false
+  end
 end

@@ -8,8 +8,10 @@ class Meeting < ActiveRecord::Base
   validates_presence_of :name
   validates_uniqueness_of :name, :on => :create, :message => "must be unique"
 
+  before_save :geocode_location
+
   def self.select_options
-    Meeting.map{|m| [m.name, m.id }
+    Meeting.all.map{|m| [m.name, m.id] }
   end
 
       # Returns an array with days of week and integer, ex: ['Monday', 1]
@@ -26,5 +28,17 @@ class Meeting < ActiveRecord::Base
     t = Time.now.in_time_zone(Nreduce::Application.config.time_zone)
     t = t.beginning_of_week.change(:hour => hours, :min => mins) + (self.day_of_week - 1).days
     t = t.in_time_zone(Time.zone)
+  end
+
+  protected
+
+  def geocode_location
+    return true if self.venue_address.blank? or (!self.venue_address_changed? and !self.lat.blank?)
+    begin
+      res = Meeting.geocode(self.venue_address)
+      self.lat, self.lng = res.lat, res.lng
+    rescue
+      self.errors.add(:venue_address, "could not be geocoded")
+    end
   end
 end

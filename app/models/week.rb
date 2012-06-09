@@ -1,13 +1,11 @@
 class Week
-
-  scope :for_time, ->(t){ where(:start_date.lt => t, :end_date.gt => t) }
-
-    # Generates a series of 12 weeks for a specific batch
-  def self.generate_starting_on(date, batch, num = 12, time = '16:00')
-    return 'Weeks already exist for this batch' if batch.weeks.count > 0
-    t = Time.parse("#{date.to_s} #{time}")
-    1.upto(12).each do |i|
-      Week.create(:name => i, :start_date => t, :end_date => (t + 1.week - 1.second), :batch => batch)
-      t += 1.week
-    end
+  # Returns the ID used for a week with this timestamp
+  # YYYYW (w being the week of the year)
+  def self.id_for_time(timestamp)
+    "#{timestamp.year}#{timestamp.strftime('%W')}".to_i
   end
+
+  def self.name_for_id(week_id)
+    week_id.to_s.substr(4,week_id.to_s.size)
+  end
+end

@@ -17,9 +17,6 @@ group :assets do
   # gem 'therubyracer', :platforms => :ruby
 
   gem 'uglifier', '>= 1.0.3'
-
-  gem 'handlebars_assets'
-  gem "bourbon"
 end
 
 gem 'jquery-rails'
@@ -35,6 +32,10 @@ gem "omniauth-twitter"
 gem "rails_config", "= 0.2.5"
 gem 'acts-as-taggable-on', '~> 2.3.1'
 gem "paperclip", "~> 3.0"
+gem 'aws-s3'
+gem 'aws-sdk'
+gem 'formtastic'
+gem 'will_paginate', "~> 3.0"
 
 group :test, :development do
   # Pretty printed test output

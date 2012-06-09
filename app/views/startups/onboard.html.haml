@@ -1,0 +1,11 @@
+- body_attrs :class => "apply"
+
+- content_for :subtitle do
+  nReduce Summer 2012 Welcome
+
+.container{:style => @complete ? '' : 'width: 620px'}
+  = render 'layouts/nav', :hide_main_links => !@complete
+  .row
+    %div{:class => @complete ? 'span12' : 'span8'}
+      .onboard
+        = render :partial => "startups/onboard/step_#{@step}"

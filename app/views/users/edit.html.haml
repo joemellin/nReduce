@@ -1,0 +1,14 @@
+- body_attrs :class => "apply"
+
+- content_for :subtitle do
+  Edit Account
+
+.container
+  = render 'layouts/nav'
+  %h2 Edit Account (#{@user.name})
+
+  .row
+    .span12
+      = semantic_form_for @user, :html => {:class => "form-horizontal"} do |f|
+
+        = render 'users/fields', :f => f

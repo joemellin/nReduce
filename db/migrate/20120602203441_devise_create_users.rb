@@ -37,6 +37,7 @@ class DeviseCreateUsers < ActiveRecord::Migration
       t.float :lat, :lng
       t.boolean :admin, :startup, :mentor, :investor, :mailchimped, :default => false
       t.has_attached_file :pic
+      t.references :startup
       t.timestamps
     end
 
