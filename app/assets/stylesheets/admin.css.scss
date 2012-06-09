@@ -1,0 +1,43 @@
+body.admin{
+  h1{
+    .back.btn{
+      vertical-align: 5px;
+      margin-right: 5px;
+    }
+  }
+
+  .navbar-fixed-top .brand {
+    float: left;
+    margin-left: -5px;
+  }
+
+  ul.nav{ float: right }
+
+  .filter{
+    padding-top: 8px;
+    text-align: right;
+  }
+
+  table thead{
+    th, td { white-space: nowrap; }
+      
+    tr {
+      .header {
+        padding-right: 20px;
+        background-image: url(/images/tablesorter/bg.gif);
+        background-repeat: no-repeat;
+        background-position: center right;
+        cursor: pointer;
+      }
+
+      .headerSortUp{
+        background-image: url(/images/tablesorter/asc.gif);
+      }
+      .headerSortDown{
+        background-image: url(/images/tablesorter/desc.gif);
+      }
+    }
+  }
+
+  .right-actions{ float: right; }
+}

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120608223319) do
+ActiveRecord::Schema.define(:version => 20120609042723) do
 
   create_table "authentications", :force => true do |t|
     t.string   "provider"
@@ -35,6 +35,7 @@ ActiveRecord::Schema.define(:version => 20120608223319) do
     t.datetime "completed_at"
     t.integer  "startup_id"
     t.integer  "user_id"
+    t.integer  "week_id"
     t.datetime "created_at",      :null => false
     t.datetime "updated_at",      :null => false
   end
@@ -75,7 +76,6 @@ ActiveRecord::Schema.define(:version => 20120608223319) do
 
   create_table "startups", :force => true do |t|
     t.string   "name"
-    t.string   "team_members"
     t.string   "location_name"
     t.string   "product_url"
     t.string   "one_liner"
@@ -90,17 +90,18 @@ ActiveRecord::Schema.define(:version => 20120608223319) do
     t.integer  "onboarding_step",   :default => 1
     t.boolean  "active",            :default => true
     t.boolean  "public",            :default => true
+    t.datetime "launched_at"
     t.string   "logo_file_name"
     t.string   "logo_content_type"
     t.integer  "logo_file_size"
     t.datetime "logo_updated_at"
-    t.integer  "user_id"
-    t.integer  "venue_id"
+    t.integer  "main_contact_id"
+    t.integer  "meeting_id"
     t.datetime "created_at",                          :null => false
     t.datetime "updated_at",                          :null => false
   end
 
-  add_index "startups", ["active"], :name => "index_startups_on_active"
+  add_index "startups", ["public"], :name => "index_startups_on_public"
 
   create_table "taggings", :force => true do |t|
     t.integer  "tag_id"
@@ -149,8 +150,10 @@ ActiveRecord::Schema.define(:version => 20120608223319) do
     t.string   "pic_content_type"
     t.integer  "pic_file_size"
     t.datetime "pic_updated_at"
+    t.integer  "startup_id"
     t.datetime "created_at",                                :null => false
     t.datetime "updated_at",                                :null => false
+    t.string   "phone"
   end
 
   add_index "users", ["email"], :name => "index_users_on_email", :unique => true

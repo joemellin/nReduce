@@ -1,8 +1,8 @@
 class User < ActiveRecord::Base
-  belongs_to :location
-  has_one :startup
+  acts_as_mappable
+  belongs_to :startup
   has_many :authentications
-  has_one :attending_meeting, :class_name => 'Meeting', :through => :startup
+  has_one :meeting, :class_name => 'Meeting', :through => :startup
   has_many :organized_meetings, :class_name => 'Meeting', :foreign_key => 'organizer_id'
   has_many :sent_messages, :foreign_key => 'sender_id'
   has_many :received_messages, :foreign_key => 'recipient_id'
@@ -14,7 +14,11 @@ class User < ActiveRecord::Base
          :recoverable, :rememberable, :trackable, :validatable #, :confirmable #, :omniauthable
 
   # Setup accessible (or protected) attributes for your model
-  attr_accessible :email, :password, :password_confirmation, :remember_me, :name, :skill_list, :startup, :mentor, :investor, :location
+  attr_accessible :email, :password, :password_confirmation, :remember_me, :name, :skill_list, :startup, :mentor, :investor, :location, :phone
+
+  validates_presence_of :location
+
+  before_save :geocode_location
 
   acts_as_taggable_on :skills
 
@@ -24,10 +28,10 @@ class User < ActiveRecord::Base
     return false unless Settings.mailchimp.enabled
 
     h = Hominid::API.new(Settings.mailchimp.api_key)
-    h.list_subscribe(Settings.mailchimp.everyone_list_id, email, {}, "html", false)
+    h.list_subscribe(Settings.apis.mailchimp.everyone_list_id, email, {}, "html", false)
 
-    h.list_subscribe(Settings.mailchimp.startup_list_id, email, {}, "html", false) if startup?
-    h.list_subscribe(Settings.mailchimp.mentor_list_id, email, {}, "html", false) if mentor?
+    h.list_subscribe(Settings.apis.mailchimp.startup_list_id, email, {}, "html", false) if startup?
+    h.list_subscribe(Settings.apis.mailchimp.mentor_list_id, email, {}, "html", false) if mentor?
 
     self.mailchimped = true
     self.save!
@@ -49,19 +53,31 @@ class User < ActiveRecord::Base
     end
     prms
   end
-  
+
   def apply_omniauth(omniauth)
-    begin
-      self.name = omniauth['user_info']['name'] if name.blank? && !omniauth['user_info']['name'].blank?
-      if self.email.blank?
-        self.email = omniauth['extra']['user_hash']['email'] if omniauth['extra'] && omniauth['extra']['user_hash'] && !omniauth['extra']['user_hash']['email'].blank?
-        self.email = omniauth['user_info']['email'] unless omniauth['user_info']['email'].blank?
+    #begin
+      # TWITTER
+      if omniauth['provider'] == 'twitter'
+        logger.info omniauth['info'].inspect
+        self.name = omniauth['info']['name'] if name.blank? and !omniauth['info']['name'].blank?
+        self.external_pic_url = omniauth['info']['image'] unless omniauth['info']['image'].blank?
+        self.location = omniauth['info']['location'] if !omniauth['info']['location'].blank?
+        self.twitter = omniauth['info']['nickname']
+      # FACEBOOK
+      elsif omniauth['provider'] == 'facebook'
+        self.name = omniauth['user_info']['name'] if name.blank? and !omniauth['user_info']['name'].blank?
+        if self.email.blank?
+          self.email = omniauth['extra']['user_hash']['email'] if omniauth['extra'] && omniauth['extra']['user_hash'] && !omniauth['extra']['user_hash']['email'].blank?
+          self.email = omniauth['user_info']['email'] unless omniauth['user_info']['email'].blank?
+        end
+        self.email = 'null@null.com' if self.email.blank?
+        if omniauth['extra']['user_hash']['location'] and !omniauth['extra']['user_hash']['location']['name'].blank?
+          self.location = omniauth['extra']['user_hash']['location']['name']
+        end
       end
-      self.email = 'null@null.com' if self.email.blank?
-      self.location = omniauth['extra']['user_hash']['location']['name']
-    rescue
+    #rescue
       logger.warn "ERROR applying omniauth with data: #{omniauth}"
-    end
+    #end
     authentications.build(User.auth_params_from_omniauth(omniauth))
   end
 
@@ -77,5 +93,17 @@ class User < ActiveRecord::Base
    # Parameter: provider_name (string)
   def authenticated_for?(provider_name)
     authentications.where(:provider => provider_name).count > 0
+  end
+
+  protected
+
+  def geocode_location
+    return true if self.location.blank? or (!self.location_changed? and !self.lat.blank?)
+    begin
+      res = User.geocode(self.location)
+      self.lat, self.lng = res.lat, res.lng
+    rescue
+      self.errors.add(:location, "could not be geocoded")
+    end
   end
 end

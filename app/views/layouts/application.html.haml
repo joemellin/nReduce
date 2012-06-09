@@ -7,7 +7,7 @@
       = "➝ #{content_for(:subtitle)}" if content_for?(:subtitle)
 
     -# add some fonts
-    :erb
+    :plain
       <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400,300,700,600' rel='stylesheet' type='text/css'>
 
     -#
@@ -20,14 +20,7 @@
 
   %body{body_attrs}
 
-    .bg-lines
-    .grid-lines.container
-      .row
-        - 12.times do
-          .span1= nbsp
-      = clear
-
     = render "layouts/flash_messages"
-
-    = yield
+    .container
+      = yield
     = content_for :modals

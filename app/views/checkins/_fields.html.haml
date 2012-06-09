@@ -1,0 +1,52 @@
+= f.hidden_field :week_id
+
+- if @checkin.completed?
+  %strong Your check-in was completed on #{@checkin.completed_at.to_s(:short)}.
+- elsif @checkin.submitted?
+  %h3 Your 'before' check-in was submitted at #{@checkin.submitted_at.to_s(:short)}.
+  %br
+
+  .control-group{error_css(@checkin, :end_video_url)}
+    = f.label :end_video_url, "'After' Video URL", :class => 'control-label'
+    .controls
+      = f.text_field :end_video_url, :class => "span4"
+      %span.help-inline Unlisted Youtube URL
+      = f.semantic_errors :end_video_url
+
+  .control-group{error_css(@checkin, :end_comments)}
+    = f.label :end_comments, "What did you learn? / What feedback would you like?", :class => 'control-label'
+    .controls
+      = f.text_area :end_comments, :size => '120x4', :class => 'span4'
+      = f.semantic_errors :end_comments
+
+  .form-actions
+    = f.submit "Submit 'After' Check-in", :class => "btn"
+
+- else
+
+  .control-group{error_css(@checkin, :start_focus)}
+    = f.label :start_focus, "This week's focus", :class => 'control-label'
+    .controls
+      = f.text_field :start_focus, :class => "span4"
+      = f.semantic_errors :start_focus
+
+  .control-group{error_css(@checkin, :start_why)}
+    = f.label :start_why, "Why?", :class => 'control-label'
+    .controls
+      = f.text_area :start_why, :size => '120x4', :class => 'span4'
+      = f.semantic_errors :start_why
+
+  .control-group{error_css(@checkin, :start_video_url)}
+    = f.label :start_video_url, "'Before' Video URL", :class => 'control-label'
+
+    .controls
+      = f.text_field :start_video_url, :class => "span4"
+      %span.help-inline Unlisted Youtube URL
+      = f.semantic_errors :start_video_url
+
+  .form-actions
+    = f.submit "Submit 'Before' Check-in", :class => "btn"
+
+  -# end of week questions
+  -# field :completed, :type => Boolean, :default => false
+  -# field :end_comments, :type => String

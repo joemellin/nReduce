@@ -24,27 +24,28 @@ location_options:
   - "Other..."
 
 startup_options:
-  growth_model_options:
-    - "Not Sure Yet :)"
-    - "Viral"
-    - "SEO"
-    - "Advertising"
-    - "Partnerships"
-    - "SMB Sales"
-    - "Enterprise Sales"
-  stage_options:
-    - "Idea"
-    - "Prototype"
-    - "Private Alpha/Beta"
-    - "Launched"
-    - "Generating Revenue/Scaling"
-  company_goal_options:
-    - "Fun Project - Chatroulette"
-    - "Life Style Business - 4 Hour Workweek"
-    - "Steady Revenue - 37Signals"
-    - "Improve Society - Kiva"
-    - "Big Exit - Facebook"
-  industry_options:
+  growth_model:
+    -
+      "Not Sure Yet :)": 1
+      "Viral": 2
+      "SEO": 3
+      "Advertising": 4
+      "Partnerships": 5
+      "SMB Sales": 6
+      "Enterprise Sales": 7
+  stage:
+    '1': "Idea"
+    '2': "Prototype"
+    '3': "Private Alpha/Beta"
+    '4': "Launched"
+    '5': "Generating Revenue/Scaling"
+  company_goal:
+    '1': "Fun Project - Chatroulette"
+    '2': "Life Style Business - 4 Hour Workweek"
+    '3': "Steady Revenue - 37Signals"
+    '4': "Improve Society - Kiva"
+    '5': "Big Exit - Facebook"
+  industry:
     - "Advertising"
     - "Analytics"
     - "Big Data"
@@ -120,24 +121,25 @@ q6: "nReduce is about bringing elite startups together, not about forming startu
 q7: "nReduce startups only have to share what they feel comfortable sharing about their startups. You'll never be forced to tell other startups specific proprietary information or trade secret information about your company. However, sharing your general weekly progress, and what you've shipped (even without specifics) is required."
 
 
+apis:
+  twitter:
+    consumer_key: "mkjNMEzcfmMCafueNVBGQ"
+    consumer_secret: "KBtQ80iGRY5ivG6RVDOv2p8uoYAdLIRTTL5KKHnLLRY"
+    oauth_token: "568897631-gQfh7J3ivGftKyxU5h18tsyi7c3vYmCrcwdI8c"
+    oauth_token_secret: "fcO0nSIRf6hp1r1CchN21fd1cNfGfktPc6Vcwn8VpY"
 
-twitter:
-  consumer_key: "mkjNMEzcfmMCafueNVBGQ"
-  consumer_secret: "KBtQ80iGRY5ivG6RVDOv2p8uoYAdLIRTTL5KKHnLLRY"
-  oauth_token: "568897631-gQfh7J3ivGftKyxU5h18tsyi7c3vYmCrcwdI8c"
-  oauth_token_secret: "fcO0nSIRf6hp1r1CchN21fd1cNfGfktPc6Vcwn8VpY"
+  mailchimp:
+    enabled: false
+    everyone_list_id: ""
+    investor_list_id: ""
+    startup_list_id: ""
+    mentor_list_id: ""
 
+  hipchat:
+    token: "19456f5350542b41a8651552e5ea16"
 
-mailchimp:
-  enabled: false
-  everyone_list_id: ""
-  investor_list_id: ""
-  startup_list_id: ""
-  mentor_list_id: ""
-
-
-hipchat:
-  token: "19456f5350542b41a8651552e5ea16"
+  google:
+    key: "AIzaSyB_nTXn-pHI6KBTiKLthpk2o8CwBJsdcnQ"
 
 paperclip_config:
   path: "/:hash.extension"
@@ -146,3 +148,9 @@ paperclip_config:
   styles:
     medium: '250x250>'
     thumb: '120x120#'
+
+aws:
+  s3:
+    access_key_id: ''
+    secret_access_key: ''
+    bucket: ''

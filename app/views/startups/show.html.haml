@@ -4,7 +4,7 @@
   Your Startup
 
 .container
-  = link_to "nReduce", "/", :class => "logo"
+  = render 'layouts/nav'
   .row
     .span8
       %h2 Your Startup: #{@startup.name}
@@ -19,5 +19,5 @@
       %h3 Team Members
       %ul
         - @startup.team_members.each do |team_member|
-          %li= team_member
+          %li= team_member.name
 

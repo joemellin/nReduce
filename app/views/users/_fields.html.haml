@@ -1,0 +1,20 @@
+.control-group{error_css(@user, :email)}
+  = f.label :email, "Your Email", :class => 'control-label'
+  .controls
+    = f.text_field :email, :class => "span4"
+    = f.semantic_errors :email
+
+.control-group{error_css(@user, :phone)}
+  = f.label :phone, "Phone Number", :class => 'control-label'
+  .controls
+    = f.text_field :phone, :class => "span2"
+    = f.semantic_errors :phone
+
+.control-group{error_css(@user, :location)}
+  = f.label :location, "Your Location", :class => 'control-label'
+  .controls
+    = f.text_field :location, :class => 'span2'
+    = f.semantic_errors :location
+
+.form-actions
+  = f.submit "Save", :class => "btn btn-primary btn-large"

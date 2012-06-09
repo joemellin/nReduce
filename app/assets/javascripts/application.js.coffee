@@ -1,5 +1,3 @@
-#= require "common"
-
 $ = jQuery
 $(document).on
   ready: ->

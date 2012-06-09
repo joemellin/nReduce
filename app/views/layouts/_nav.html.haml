@@ -1,0 +1,25 @@
+- hide_main_links ||= false
+.nav
+  .right
+    %ul.nav.nav-pills
+      - unless hide_main_links
+        %li{:class => is_controller_action?('startups', 'onboard') ? 'active' : ''}= link_to "Dashboard", "/startup/onboard"
+        %li{:class => is_controller_action?('users', 'chat') ? 'active' : ''}= link_to "Chat", users_chat_path
+        %li{:class => is_controller_action?('startups', 'edit') ? 'active' : ''}= link_to "My Startup", edit_startup_path
+        %li{:class => is_controller_action?('users', 'edit') ? 'active' : ''}= link_to "Account", edit_user_path(current_user)
+        - if current_user.admin?
+          %li= link_to "Admin Tools", "/admin"
+        %li= link_to "Log out", "/logout", :class => 'btn'
+    - unless current_user.blank? or current_user.meeting.blank?
+      %div{:style => 'text-align: right'}
+        My meeting:
+        &nbsp;
+        = link_to current_user.meeting.location_name, users_edit_path
+        %br
+        Tue at #{current_user.meeting.start_time}
+        - unless current_user.meeting.url.blank?
+          |&nbsp;
+          = link_to 'Map',  current_user.meeting.url, :target => '_blank'
+      .clear
+  .left= link_to "nReduce", "/", :class => "logo"
+  .clear

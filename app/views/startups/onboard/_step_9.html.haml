@@ -1,0 +1,89 @@
+.row
+  .span8
+    %h1 It Has Begun!
+    %br
+    %br
+    %h3 Now what?
+    %br
+    - checkin = @startup.current_checkin
+    - if checkin and checkin.completed?
+      %h2 1) You completed your checkin this week!
+      %p 
+        Your team's focus this week is: 
+        
+      %p Wait until Tuesday at 4pm PST to start next week's check-in.
+    - elsif checkin and checkin.submitted?
+      %h2 1) You checked in this week!
+      %p 
+        Your team's focus this week is:
+        %strong= checkin.start_focus
+        \. #{@checkin_total} teams have also started working.
+      %p
+        This week's 'after' check-in is available starting on Monday at 4pm PST
+        = link_to 'Complete Check-in', '#', :class => 'btn disabled'
+    - else
+      %h2 1) Post your 1st "Before" video by Wednesday at 12pm PST (GMT -8).
+      = link_to 'Do Check-in', new_checkin_path
+    %br
+    %h2 2) Show up to your weekly meeting.
+    (They are awesome!)
+    - if current_user.organized_meetings.count > 0
+      %p
+        %br
+        You're an organizer for:
+        - current_user.organized_meetings.each do |m| 
+          <strong>#{m.location_name}</strong>
+          = link_to "Edit Location", "/admin/meetings/#{m.id}/edit", :class => "btn"
+    %br
+    %br
+    - if !@startup.meeting.blank?
+      %h4
+        %ul
+          %li
+            Meeting: #{@startup.meeting.location_name}
+            = link_to 'change', startup_edit_path
+          %li Local Start Time: Tuesdays at #{@startup.meeting.start_time}
+          %li Location: #{@startup.meeting.venue_name}
+          - unless @startup.meeting.map_url.blank?
+            %li= link_to 'View on Map', @startup.meeting.map_url
+          - if @startup.meeting.organizer_twitters.blank?
+            %li Organizer: not yet picked
+          - else
+            - organizers = @startup.meeting.organizer_auths
+            %li
+              Organizer#{organizers.size == 1 ? '' : 's'}:
+              %br
+              - organizers.each do |a|
+                = link_to_twitter(a.twitter, :target => '_blank')
+                - unless a.phone_number.blank?
+                  \-
+                  = a.phone_number
+                %br
+    %br
+    %h2 3) #{link_to('Chat online', users_chat_path)} with everyone!
+  .span4
+    %h3 nReduce Schedule
+    %p
+      %strong Tuesdays at 4pm PST - Wed 4pm PST
+      %br
+      Post this week's 'before' check-in. Set your team focus.
+    %p Tuesdays - in person weekly meeting.
+    %p
+      %strong Mondays at 4pm PST - Tue 4pm PST
+      %br
+      Post this week's 'after' check-in. How did your team do? Check in with your startup groups as well.
+- if !@startups_with_videos.blank?
+  .row
+    .span12
+      %br
+      %h2 4) See your fellow nReducers:
+      %h4 #{@startups_with_videos.size} intro videos:
+      -# Note: these vid resolutions are custom - 380x286
+      - @startups_with_videos.each do |s|
+        - vid_url = Youtube.embed_url(s.youtube_intro_url) unless s.blank?
+        - next if vid_url.blank?
+        .left{:style => 'margin: 10px'}
+          %div= s.name
+          %iframe{:width => '380', :height => '286', :src => vid_url, :frameborder => 0, :allowfullscreen => true}
+      .clear
+      = paginate @startups_with_videos
