@@ -12,10 +12,20 @@ class StartupsController < ApplicationController
     if @startup.save
       current_user.update_attribute('startup', @startup)
       flash[:notice] = "Startup information has been saved. Thanks!"
-      redirect_to "//startup"
+      redirect_to "/startup"
     else
       render :new
     end
+  end
+
+  def discover
+    @startups = Startup.public.order(:name).includes(:meeting)
+  end
+
+  def show
+    @startup = Startup.find(params[:id]) unless params[:id].blank?
+    @startup ||= current_user.startup if @startup.blank? and user_signed_in?
+    redirect_unless_user_can_view_startup(@startup)
   end
 
   before_filter :startup_required, :only => [:show, :edit, :update, :onboard, :onboard_next]
@@ -23,9 +33,6 @@ class StartupsController < ApplicationController
   def dashboard
     @step = @startup.onboarding_step
     render :action => :onboard
-  end
-
-  def show
   end
 
   def edit
@@ -76,6 +83,17 @@ class StartupsController < ApplicationController
   end
 
   protected
+
+  def redirect_unless_user_can_view_startup(startup)
+    if user_signed_in?
+      return true if current_user.admin? or current_user.startup_id == startup.id
+    elsif startup.public?
+      return true
+    end
+    flash[:alert] = "Sorry but you don't have permissions to view that startup"
+    redirect_to discover_startup_path
+    return false
+  end
 
   def redirect_if_user_has_startup
     # Make sure they don't create another startup

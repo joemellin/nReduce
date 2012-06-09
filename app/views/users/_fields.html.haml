@@ -10,6 +10,12 @@
     = f.text_field :phone, :class => "span2"
     = f.semantic_errors :phone
 
+.control-group{error_css(@user, :skill_list)}
+  = f.label :skill_list, "Your Skills", :class => 'control-label'
+  .controls
+    = f.text_field :skill_list, :class => "span2"
+    = f.semantic_errors :skill_list
+
 .control-group{error_css(@user, :location)}
   = f.label :location, "Your Location", :class => 'control-label'
   .controls

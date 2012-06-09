@@ -3,7 +3,7 @@
   .controls
     = f.email_field :email
     = f.semantic_errors :email
-- unless resource.password_required?
+- if resource.password_required?
   .control-group{error_css(resource, :password)}
     = f.label :password, :class => 'control-label'
     .controls
@@ -24,6 +24,6 @@
 .control-group{error_css(resource, :location)}
   = f.label :location, 'Your Location', :class => 'control-label'
   .controls
-    = f.text_field :location
+    = f.text_field :location, :placeholder => 'ex: San Francisco, CA'
     = f.semantic_errors :location
 .form-actions= f.submit "Sign up", :class => 'btn btn-primary'

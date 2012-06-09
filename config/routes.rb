@@ -2,6 +2,10 @@ Nreduce::Application.routes.draw do
   devise_for :users, :controllers => {:registrations => 'registrations'}
   resources :authentications
   resource :startup do
+    collection do
+      get 'discover'
+      post 'discover'
+    end
     member do
       get 'onboard'
       post 'onboard_next'
