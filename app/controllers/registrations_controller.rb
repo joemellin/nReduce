@@ -1,4 +1,9 @@
 class RegistrationsController < Devise::RegistrationsController
+  def new
+    super
+    logger.info @user.inspect
+  end
+
   def create
     super
     session[:omniauth] = nil unless @user.new_record?

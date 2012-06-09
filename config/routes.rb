@@ -1,5 +1,6 @@
 Nreduce::Application.routes.draw do
   devise_for :users, :controllers => {:registrations => 'registrations'}
+  resources :authentications
   resource :startup do
     member do
       get 'onboard'
@@ -15,10 +16,11 @@ Nreduce::Application.routes.draw do
   match '/auth/failure' => 'authentications#failure'
 
   # Easy routes for auth/account stuff
-  get '/login' => "auth#login"
-  get '/logout' => "authentications#destroy"
-  delete '/auth' => "authentications#destroy"
-  get "/signup" => "registrations#new"
+  as :user do
+    get '/signin' => "devise/sessions#new"
+    get '/logout' => "devise/sessions#destroy"
+    get "/signup" => "registrations#new"
+  end
 
   get "/contact_joe" => "pages#contact_joe"
   

@@ -101,6 +101,8 @@ GEM
     omniauth (1.1.0)
       hashie (~> 1.2)
       rack
+    omniauth-linkedin (0.0.6)
+      omniauth-oauth (~> 1.0.0)
     omniauth-oauth (1.0.1)
       oauth
       omniauth (~> 1.0)
@@ -198,6 +200,7 @@ DEPENDENCIES
   jquery-rails
   mysql2
   omniauth (>= 1.0)
+  omniauth-linkedin
   omniauth-twitter
   paperclip (~> 3.0)
   rails (= 3.2.5)
