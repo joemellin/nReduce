@@ -2,7 +2,8 @@
   .span12
     %h2 Sign in
     = form_for(resource, :as => resource_name, :url => session_path(resource_name), :html => { :clas => 'form-horizontal' }) do |f|
-      = link_to "Sign in with Twitter", "/auth/twitter", :class => "btn btn-primary btn-large"
+      = link_to image_tag('twitter_32.png'), "/auth/twitter"
+      = link_to image_tag('linkedin_32.png'), "/auth/linkedin"
       .control-group
         = f.label :email, :class => 'control-label'
         .controls= f.email_field :email
@@ -11,7 +12,8 @@
         .controls= f.password_field :password
       - if devise_mapping.rememberable?
         .control-group
-          = f.check_box :remember_me
-          .controls= f.label :remember_me, :class => 'control-label'
-      .form-actions= f.submit "Sign in"
+          .left= f.check_box :remember_me
+          .left{:style => 'margin-left: 4px'}= f.label :remember_me, :class => 'control-label'
+          .clear
+      = f.submit "Sign in", :class => 'btn btn-large btn-primary'
     = render :partial => "devise/shared/links"

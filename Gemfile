@@ -29,6 +29,7 @@ gem "hominid"
 gem "rails_config", "= 0.2.5"
 gem "omniauth", ">= 1.0"
 gem "omniauth-twitter"
+gem "omniauth-linkedin"
 gem "rails_config", "= 0.2.5"
 gem 'acts-as-taggable-on', '~> 2.3.1'
 gem "paperclip", "~> 3.0"

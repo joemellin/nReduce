@@ -55,7 +55,7 @@ class User < ActiveRecord::Base
   end
 
   def apply_omniauth(omniauth)
-    #begin
+    begin
       # TWITTER
       if omniauth['provider'] == 'twitter'
         logger.info omniauth['info'].inspect
@@ -63,6 +63,10 @@ class User < ActiveRecord::Base
         self.external_pic_url = omniauth['info']['image'] unless omniauth['info']['image'].blank?
         self.location = omniauth['info']['location'] if !omniauth['info']['location'].blank?
         self.twitter = omniauth['info']['nickname']
+      elsif omniauth['provider'] == 'linkedin'
+        self.name = omniauth['info']['name'] if name.blank? and !omniauth['info']['name'].blank?
+        self.external_pic_url = omniauth['info']['image'] unless omniauth['info']['image'].blank?
+        self.linkedin_url = omniauth['info']['urls']['public_profile'] unless omniauth['info']['urls'].blank? or omniauth['info']['urls']['public_profile'].blank?
       # FACEBOOK
       elsif omniauth['provider'] == 'facebook'
         self.name = omniauth['user_info']['name'] if name.blank? and !omniauth['user_info']['name'].blank?
@@ -75,14 +79,14 @@ class User < ActiveRecord::Base
           self.location = omniauth['extra']['user_hash']['location']['name']
         end
       end
-    #rescue
+    rescue
       logger.warn "ERROR applying omniauth with data: #{omniauth}"
-    #end
+    end
     authentications.build(User.auth_params_from_omniauth(omniauth))
   end
 
   def password_required?
-    (authentications.empty? || !password.blank?) && super
+    (authentications.empty? || !password.blank?) #&& super
   end
   
   def uses_password_authentication?
@@ -93,6 +97,64 @@ class User < ActiveRecord::Base
    # Parameter: provider_name (string)
   def authenticated_for?(provider_name)
     authentications.where(:provider => provider_name).count > 0
+  end
+
+  def internal_email
+    "#{twitter || self.id}@users.nreduce.com"
+  end
+
+  def hipchat_name
+    n = !self.name.blank? ? self.name : self.twitter.sub('@', '')
+    s = self.matching_startup
+    if !s.blank?
+      n += " | #{s.name}"
+    else
+      # Name needs to have first and last name or else hipchat considers it invalid
+      n += ' S12' if(n.split(/\s+/).size < 2)
+    end
+    n
+  end
+
+  def hipchat?
+    hipchat_username.present?
+  end
+
+  def generate_hipchat!
+    return if hipchat?
+
+    pass = NReduce::Util.friendly_token.to_s[0..8]
+    prms = {:auth_token => Settings.hipchat.token,
+            :email => internal_email,
+            :name => hipchat_name, 
+            :title => 'nReducer', 
+            :is_group_admin => 0,
+            :password => pass, 
+            :timezone => 'UTC'}
+
+    # Have to post manually to API because for some reason gem doesn't pass auth token properly
+    uri = URI.parse("https://api.hipchat.com/v1/users/create")
+    http = Net::HTTP.new(uri.host, uri.port)
+    http.use_ssl = true
+    http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+    request = Net::HTTP::Post.new(uri.request_uri)
+    request.set_form_data(prms)
+    response = http.request(request)
+    if response.code == '200'
+      self.hipchat_username = internal_email
+      self.hipchat_password = pass
+      self.save!
+    else
+      false
+    end
+    # hipchat = HipChat::API.new(Settings.hipchat.token)
+    # pass = NReduce::Util.friendly_token.to_s[0..8]
+    # if hipchat.users_create(internal_email, name, 'nReducer', 0, pass)
+    #   self.hipchat_username = internal_email
+    #   self.hipchat_password = pass
+    #   self.save!
+    # else
+    #   false
+    # end
   end
 
   protected

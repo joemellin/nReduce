@@ -141,6 +141,10 @@ apis:
   google:
     key: "AIzaSyB_nTXn-pHI6KBTiKLthpk2o8CwBJsdcnQ"
 
+  linkedin:
+    key: 'dlvvu7wj3crq'
+    secret_key: 'FEoK8dhge3JbczQe'
+
 paperclip_config:
   path: "/:hash.extension"
   url: "/:hash:.extension"
