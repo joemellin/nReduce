@@ -29,8 +29,17 @@
     = f.semantic_errors :website_url
     %span.help-inline.help-danger Optional
 
+.control-group
+  = f.label :logo, 'Logo', :class => 'control-label'
+  .controls
+    = f.file_field :logo
+    - if @startup.logo.exists?
+      %br
+      Current Image:
+      = image_tag @startup.logo.url(:thumb)
+
 .control-group{error_css(@startup, :main_contact_id)}
-  = f.label :main_contact_id, "Main Contact", :class => 'control-label'
+  = f.label :main_contact_id, "Main Contact - this should be checkbox next to team members", :class => 'control-label'
   .controls
     = f.text_field :main_contact_id
     = f.semantic_errors :main_contact_id

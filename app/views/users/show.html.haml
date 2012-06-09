@@ -1,4 +1,4 @@
-- body_attrs :class => "landing"
+- body_attrs :class => "apply"
 
 -# - content_for :subtitle do
 -#   Coming Soon!
@@ -19,6 +19,5 @@
     = link_to "Register Startup", new_startup_path, :class => "btn btn-large"
   - if @user.admin?
     = link_to "Admin Tools", "/admin", :class => "btn btn-large"
-  = link_to "Log out", logout_path, :class => "btn btn-large"
 
 
