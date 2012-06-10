@@ -1,3 +1,59 @@
 // Place all the styles related to the Comments controller here.
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
+
+$grey: #d6d6d6;
+$ltgrey: #f1f2f6;
+$dkgrey: #333;
+$ltblue: #eef6fb;
+$blue: #2d71cb;
+
+a {
+  img {
+    border: 0;
+  }
+}
+
+.comment {
+  background-color: $ltgrey;
+  border-top: 1px solid $grey;
+  padding: 4px 10px 4px 10px;
+  font-size: .9em;
+  a.controls {
+    font-size: 1.2em;
+    display: none;
+    color: #999;
+    text-decoration: none;
+    font-weight: bold;
+  }
+  a.controls:hover {
+    color: #333;
+  }
+  .name {
+    padding-top: 1px;
+    color: $blue;
+    font-weight: bold;
+  }
+  .time {
+    font-size: .9em;
+    color: #999;
+    margin-top: -3px;
+  }
+  .content {
+    p { width: 480px; }
+    textarea { width: 520px; }
+  }
+}
+
+.new_comment, .edit_comment {
+  margin-bottom: 0px;
+  .content{
+    padding: 12px 0 12px 0;
+  }
+}
+
+.comments {
+  .title {
+    font-weight: bold;
+  }
+}

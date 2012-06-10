@@ -4,7 +4,7 @@
     - if is_owner
       = link_to 'Edit', edit_comment_path(comment), :remote => true, :class => 'controls btn'
       &nbsp;
-      = link_to 'x', comment, :method => :delete, :remote => true, :class => 'controls', :confirm => "Are you sure you want to delete it?"
+      = link_to '<i class="icon-white icon-remove"></i>'.html_safe, comment, :method => :delete, :remote => true, :class => 'btn btn-small btn-danger controls', :confirm => "Are you sure you want to delete it?"
   .left{:style => 'width: 105px; padding-right: 10px;', :align => 'right'}
     .name= "#{is_owner ? 'You' : truncate(comment.user.name, :length => 20)}"
     .time= "#{time_ago_in_words(comment.created_at)} ago"
