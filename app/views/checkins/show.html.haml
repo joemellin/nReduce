@@ -1,0 +1,54 @@
+- body_attrs :class => "apply"
+
+- content_for :subtitle do
+  Check-in For #{Week.name_for_id(@checkin.week_id)}
+
+.container
+  = render 'layouts/nav'
+
+  -# Show team nav if this is someone else's check-ins
+  - unless @owner
+    %hr
+    .row
+      .span4
+        = link_to '<i class="icon icon-chevron-left"></i> Previous Team'.html_safe, '#', :class => 'btn btn-large'
+      .span4{:align => 'center'}
+        .left
+          %h2 Team #{@checkin.startup.name}
+        - 1.upto(@checkin.startup.team_size).each do |img|
+          .left [ img ] &nbsp;
+        .clear
+        %h4
+          #{Week.name_for_id(@checkin.week_id)} Focus: #{h(@checkin.start_focus)}
+          %span.label.label-success Accomplished!
+      .span4{:align => 'right'}
+        = link_to 'Next Team <i class="icon icon-chevron-right"></i>'.html_safe, '#', :class => 'btn btn-large'
+    %hr
+    %br
+
+  .row
+    .span6{:style => 'text-align: center'}
+      %div
+        %strong BEFORE
+      %iframe{:width => '500', :height => '315', :src => Youtube.embed_url(@checkin.start_video_url), :frameborder => 0, :allowfullscreen => true}
+    .span6{:style => 'text-align: center'}
+      %div
+        %strong AFTER
+      %iframe{:width => '500', :height => '315', :src => Youtube.embed_url(@checkin.start_video_url), :frameborder => 0, :allowfullscreen => true}
+  .row
+    .span12{:align => 'center'}
+      = link_to '<i class="icon-thumbs-up icon"></i> Awesome'.html_safe, '#', :class => 'btn'
+  .row
+    .span12
+      .left Question:
+      .left
+        %h3= h(@checkin.end_comments)
+      .clear
+
+  .row
+    .span12
+      #comments
+        = render :partial => 'comments/form', :object => @new_comment
+        
+        - @comments.each do |c|
+          = render :partial => 'comments/comment', :object => c

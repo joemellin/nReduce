@@ -76,14 +76,6 @@
   .row
     .span12
       %br
-      %h2 4) See your fellow nReducers:
-      %h4 #{@startups_with_videos.size} intro videos:
-      -# Note: these vid resolutions are custom - 380x286
-      - @startups_with_videos.each do |s|
-        - vid_url = Youtube.embed_url(s.youtube_intro_url) unless s.blank?
-        - next if vid_url.blank?
-        .left{:style => 'margin: 10px'}
-          %div= s.name
-          %iframe{:width => '380', :height => '286', :src => vid_url, :frameborder => 0, :allowfullscreen => true}
-      .clear
-      = paginate @startups_with_videos
+      %h2
+        4) 
+        = link_to 'Check out your fellow nReducers', search_startups_path

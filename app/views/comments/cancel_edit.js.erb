@@ -1,0 +1,4 @@
+/* Replace comment form with regular version */
+$('#edit_comment_<%= @comment.id %>').replaceWith("<%= escape_javascript(render(@comment)) %>");
+
+addCommentControlsListeners();

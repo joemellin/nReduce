@@ -1,0 +1,6 @@
+/* Replace comment with updated version */
+$('#edit_comment_<%= @comment.id %>').replaceWith("<%= escape_javascript(render(@comment)) %>");
+
+addCommentControlsListeners();
+
+<% flash.discard %>

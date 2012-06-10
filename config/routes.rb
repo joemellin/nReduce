@@ -2,17 +2,29 @@ Nreduce::Application.routes.draw do
   devise_for :users, :controllers => {:registrations => 'registrations'}
 
   resources :authentications, :users, :checkins
+
+  resources :comments do
+    get 'cancel_edit', :on => :member
+  end
   
-  resources :relationships, :only => [:create] do
+  resources :relationships, :only => [:create, :index] do
     post 'approve'
     post 'reject'
   end
 
-  resource :startup do
+    # Searching other startups, seeing checkins - plural resource
+  resources :startups, :only => [:show] do
     collection do
-      get 'discover'
-      post 'discover'
+      get 'search'
+      post 'search'
     end
+    resources :checkins do
+      get 'latest' => "checkins#show", :checkin_id => 'latest', :on => :collection
+    end
+  end
+
+    # Your startup - singular resource
+  resource :startup do
     member do
       get 'onboard'
       post 'onboard_next'
