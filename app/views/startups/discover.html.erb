@@ -1,13 +1,15 @@
-<div class="row">
-  <div class="span8">
-    <h1>Startups (<%= @startups.count %>)</h1>
-  </div>
-  <div class="filter span4">
-    <%= select_tag "view", options_for_select([["Show All", ""]]+Meeting.select_options, params[:view]), :id => "view" %>
-  </div>
-</div>
+- body_attrs :class => "apply"
 
-<br>
+- content_for :subtitle do
+  Your Startup
+
+.container
+  = render 'layouts/nav'
+  .row
+    .span8
+      %h2 Startups (#{@startups.count})
+    .span4
+      = select_tag "view", options_for_select([["Show All", ""]]+Meeting.select_options, params[:view]), :id => "view"
 
 <table id="startupTable" class="table table-striped table-bordered table-condensed">
   <thead>

@@ -1,6 +1,13 @@
 Nreduce::Application.routes.draw do
   devise_for :users, :controllers => {:registrations => 'registrations'}
-  resources :authentications
+
+  resources :authentications, :users, :checkins
+  
+  resources :relationships, :only => [:create] do
+    post 'approve'
+    post 'reject'
+  end
+
   resource :startup do
     collection do
       get 'discover'
@@ -12,7 +19,7 @@ Nreduce::Application.routes.draw do
       get 'dashboard'
     end
   end
-  resources :users, :checkins
+  
   get "/users/chat" => "users#chat"
 
   # for omniauth authentications with other providers

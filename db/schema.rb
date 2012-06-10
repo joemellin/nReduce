@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120609172325) do
+ActiveRecord::Schema.define(:version => 20120610024805) do
 
   create_table "authentications", :force => true do |t|
     t.string   "provider"
@@ -73,6 +73,18 @@ ActiveRecord::Schema.define(:version => 20120609172325) do
   end
 
   add_index "messages", ["recipient_id", "folder", "read_at"], :name => "messages_comp_index"
+
+  create_table "relationships", :force => true do |t|
+    t.integer  "startup_id"
+    t.integer  "connected_with_id"
+    t.integer  "status"
+    t.datetime "approved_at"
+    t.datetime "rejected_at"
+    t.datetime "created_at",        :null => false
+    t.datetime "updated_at",        :null => false
+  end
+
+  add_index "relationships", ["startup_id", "connected_with_id", "status"], :name => "relationship_index", :unique => true
 
   create_table "startups", :force => true do |t|
     t.string   "name"

@@ -41,7 +41,10 @@ gem 'will_paginate', "~> 3.0"
 group :test, :development do
   # Pretty printed test output
   gem 'turn', '0.8.2', :require => false
+  gem 'rspec'
   gem 'rspec-rails'
+  gem 'factory_girl_rails'
+  gem 'database_cleaner'
   #gem 'jasmine-rails' # also need to do: brew install qt
 end
 
