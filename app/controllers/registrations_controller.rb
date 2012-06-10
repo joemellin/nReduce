@@ -1,7 +1,7 @@
 class RegistrationsController < Devise::RegistrationsController
   def new
     super
-    logger.info @user.inspect
+    @user.geocode_from_ip(request.remote_ip) if @user.location.blank?
   end
 
   def create
