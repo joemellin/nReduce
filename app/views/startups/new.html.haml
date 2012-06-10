@@ -9,7 +9,7 @@
 
   .row
     .span12
-      = semantic_form_for @startup, :url => startup_path, :html => {:class => "form-horizontal"} do |f|
+      = semantic_form_for @startup, :url => '/startup/', :html => {:class => "form-horizontal"} do |f|
 
         = render "startups/fields", :f => f
 

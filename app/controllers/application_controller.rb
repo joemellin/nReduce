@@ -23,7 +23,7 @@ class ApplicationController < ActionController::Base
     @current_startup = current_user.startup if current_user and !current_user.startup.blank?
     if @current_startup.blank?
       redirect_to new_startup_path
-      return
+      return false
     end
     true
   end

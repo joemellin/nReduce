@@ -53,6 +53,14 @@ class Startup < ActiveRecord::Base
     r and r.approved?
   end
 
+    # Returns true if these two starts are connected, or if the provided startup requested to be connected to this startup
+  def connected_or_pending_to?(startup)
+    # check reverse direction because we need to see if pending request is coming from other startup
+    r = Relationship.between(startup, self)
+    return true if r and (r.pending? or r.approved?)
+    false
+  end
+
      # Hack - doesn't check the batch, just finds the week for this time
   def checked_in_this_week?
     checkin = current_checkin
