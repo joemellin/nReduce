@@ -3,6 +3,7 @@ class Startup < ActiveRecord::Base
   has_many :checkins
   belongs_to :main_contact, :class_name => 'User'
   belongs_to :meeting
+  has_many :relationships
 
   attr_accessible :name, :team_size, :website_url, :main_contact_id, :phone, :growth_model, :stage, :company_goal, :meeting_id, :one_liner, :active, :launched_at, :industry_list, :technology_list, :ideology_list, :industry
 
@@ -30,6 +31,19 @@ class Startup < ActiveRecord::Base
   scope :public, where(:public => true)
   scope :launched, where('launched_at IS NOT NULL')
   scope :with_intro_video, where('intro_video_url IS NOT NULL')
+
+  def connected_to
+    Relationship.all_for(self)
+  end
+
+  def pending_connections
+    Relationship.all_pending_for(self)
+  end
+
+  def connected_to?(startup)
+    r = Relationship.between(self, startup)
+    r and r.approved?
+  end
 
      # Hack - doesn't check the batch, just finds the week for this time
   def checked_in_this_week?
