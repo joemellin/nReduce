@@ -35,8 +35,8 @@
         %strong AFTER
       %iframe{:width => '500', :height => '315', :src => Youtube.embed_url(@checkin.start_video_url), :frameborder => 0, :allowfullscreen => true}
   .row
-    .span5
-      %p{:style => 'margin-bottom: 0', :align => 'right'}
+    .span5{:align => 'right'}
+      %p{:style => 'margin-bottom: 0'}
         %small Why?
       %h3= h(@checkin.start_why)
     .span2{:align => 'center', :style => 'padding-top: 8px'}
@@ -46,7 +46,7 @@
         %small Question:
       %h3= h(@checkin.end_comments)
   
-  .row
+  .row{:style => 'margin-top: 15px'}
     .span12
       #comments
         = render :partial => 'comments/form', :object => @new_comment
