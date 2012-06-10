@@ -8,8 +8,10 @@ Nreduce::Application.routes.draw do
   end
   
   resources :relationships, :only => [:create, :index] do
-    post 'approve'
-    post 'reject'
+    member do
+      post 'approve'
+      post 'reject'
+    end
   end
 
     # Searching other startups, seeing checkins - plural resource
