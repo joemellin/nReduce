@@ -1,0 +1,51 @@
+- body_attrs :class => "apply"
+
+- content_for :subtitle do
+  Your Alliance / Group Class
+
+.container
+  = render 'layouts/nav'
+  %hr
+  .row
+    .span4
+      %h2
+        %small Your Alliance / Group / Class
+    .span4
+      %p Check out each team's progress this week and give them feedback
+    .span4
+      %p Start by Wednesday at 4pm PST: #{link_to('Get Back to Work', '#', :class => 'btn')}
+  %hr
+  %br
+  .row
+    .span12
+      - @startups.each do |s|
+        .span3.left{:align => 'center'}
+          = link_to image_tag('nreducetile.png'), latest_startup_checkins_path(s)
+          %h3= link_to s.name, latest_startup_checkins_path(s)
+          = link_to 'View Progress', latest_startup_checkins_path(s), :class => 'btn btn-success'
+          %p
+            %small 5 Awesomes - 6 Comments
+      .span3.left{:align => 'center'}
+        = link_to image_tag('nreducetilewait.png'), '#'
+        %a{:href => '#', :class => 'btn'} <i class="icon-heart icon"></i> Encourage
+      .span3.left{:align => 'center'}
+        = link_to image_tag('addteam.png'), search_startups_path
+        %h3= link_to 'Add Team', search_startups_path
+      .clear
+
+  - if @pending_relationships.size > 0
+    .row{:style => 'margin-top: 20px'}
+      .span12
+        %hr
+        %h3
+          %small #{pluralize(@pending_relationships.size, 'team')} #{@pending_relationships.size == 1 ? 'is' : 'are'} interested in joining your group:
+        %hr
+        %br
+        - @pending_relationships.each do |r|
+          .span3.left{:align => 'center'}
+            = image_tag('nreducetilerequest1.png')
+            %br
+            %h3= link_to r.startup.name, r.startup
+            = link_to '<i class="icon-ok icon-white"></i> Accept'.html_safe, relationship_approve_path(r), :class => 'btn btn-success', :method => :post
+            = link_to '<i class="icon-remove icon-white"></i> Not Now'.html_safe, relationship_reject_path(r), :class => 'btn btn-danger', :method => :post
+        .clear

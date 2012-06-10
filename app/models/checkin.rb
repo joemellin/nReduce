@@ -1,16 +1,20 @@
 class Checkin < ActiveRecord::Base
   belongs_to :startup
   belongs_to :user # the user logged in who created check-in
+  has_many :comments
 
   attr_accessible :start_focus, :start_why, :start_video_url, :end_video_url, :end_comments, :week_id, :startup_id
 
   after_validation :check_submitted_completed_times
 
+  validates_presence_of :week_id
   validates_presence_of :startup_id
   validates_presence_of :start_focus, :message => "can't be blank"
   validates_presence_of :start_video_url, :message => "can't be blank"
   validates_presence_of :end_video_url, :message => "can't be blank", :if =>  Proc.new {|checkin| checkin.completed? }
   validate :check_video_urls_are_valid
+
+  scope :ordered, order('created_at DESC')
 
   def submitted?
     !submitted_at.blank?

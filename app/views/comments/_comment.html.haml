@@ -1,0 +1,12 @@
+- is_owner = user_signed_in? and comment.user_id.to_s == current_user.id.to_s
+= div_for comment do
+  .right{:style => 'padding-top: 8px;'}
+    - if is_owner
+      = link_to 'Edit', edit_comment_path(comment), :remote => true, :class => 'controls btn'
+      &nbsp;
+      = link_to 'x', comment, :method => :delete, :remote => true, :class => 'controls', :confirm => "Are you sure you want to delete it?"
+  .left{:style => 'width: 105px; padding-right: 10px;', :align => 'right'}
+    .name= "#{is_owner ? 'You' : truncate(comment.user.name, :length => 20)}"
+    .time= "#{time_ago_in_words(comment.created_at)} ago"
+  .left.content= simple_format(h(comment.content))
+  .clear

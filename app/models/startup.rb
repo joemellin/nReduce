@@ -28,18 +28,26 @@ class Startup < ActiveRecord::Base
 
   has_attached_file :logo, Settings.paperclip_config
 
-  scope :public, where(:public => true)
+  scope :is_public, where(:public => true)
   scope :launched, where('launched_at IS NOT NULL')
   scope :with_intro_video, where('intro_video_url IS NOT NULL')
 
+    # Startups this one is connected to (approved status)
   def connected_to
-    Relationship.all_for(self)
+    Relationship.all_connections_for(self)
   end
 
-  def pending_connections
-    Relationship.all_pending_for(self)
+    # Relationships this startup has requested with others
+  def requested_relationships
+    Relationship.all_requested_relationships_for(self)
   end
 
+    # relationships that other startups have requested with this startup
+  def pending_relationships
+    Relationship.all_pending_relationships_for(self)
+  end
+
+    # Returns true if these two startups are connected in an approved relationship
   def connected_to?(startup)
     r = Relationship.between(self, startup)
     r and r.approved?

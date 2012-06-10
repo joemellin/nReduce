@@ -8,7 +8,7 @@
     = render 'layouts/nav'
   - else
     = link_to "nReduce", "#", :class => "logo"
-  %h2 Check-in for Week #{@checkin.week_id}
+  %h2 Check-in for #{Week.name_for_id(@checkin.week_id)}
   .row
     .span7
       = semantic_form_for @checkin, :html => {:class => "form-horizontal"} do |f|

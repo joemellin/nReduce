@@ -1,0 +1,11 @@
+/* Replace comment with updated version */
+$('#comment_<%= @comment.id -%>').replaceWith("<%= escape_javascript(render(:partial => 'form', :object => @comment)) %>");
+
+/* Place focus on textarea */
+$('#edit_comment_<%= @comment.id -%> textarea').first().focus();
+
+$('#edit_comment_<%= @comment.id -%> textarea').autoResize({
+  extraSpace: 3
+});
+
+<% flash.discard %>

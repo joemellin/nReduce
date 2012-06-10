@@ -19,9 +19,9 @@ class ApplicationController < ActionController::Base
     return false
   end
 
-  def startup_required
-    @startup = current_user.startup if current_user and !current_user.startup.blank?
-    if @startup.blank?
+  def current_startup_required
+    @current_startup = current_user.startup if current_user and !current_user.startup.blank?
+    if @current_startup.blank?
       redirect_to new_startup_path
       return
     end

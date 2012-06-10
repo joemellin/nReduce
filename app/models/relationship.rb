@@ -23,16 +23,24 @@ class Relationship < ActiveRecord::Base
     Relationship.create(:startup_id => startup.id, :connected_with_id => connect_with_startup.id, :status => Relationship::PENDING)
   end
 
+    # Finds relationship between two startups
   def self.between(startup1, startup2)
     Relationship.where(:startup_id => startup1.id, :connected_with_id => startup2.id).first
   end
 
-  def self.all_for(startup)
-    Relationship.where(:startup_id => startup.id).approved.includes(:connected_with).map{|r| r.connected_with }
+    # Returns all startups that this startup is connected to (approved status)
+  def self.all_connections_for(startup)
+    startup.relationships.approved.includes(:connected_with).map{|r| r.connected_with }
   end
 
-  def self.all_pending_for(startup)
-    Relationship.where(:startup_id => startup.id).pending.includes(:connected_with).map{|r| r.connected_with }
+    # Returns all startups that this startup has initiated, but are still pending
+  def self.all_pending_relationships_for(startup)
+    Relationship.where(:connected_with_id => startup.id).pending.includes(:startup)
+  end
+
+    # Returns all pending relationships that other startups have initiated with this startup
+  def self.all_requested_relationships_for(startup)
+    startup.relationships.pending.includes(:connected_with)
   end
 
   # Approve the friendship and create a record in the opposite direction so friendship is easy to query

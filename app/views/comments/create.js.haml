@@ -1,0 +1,22 @@
+- if @comment.new_record?
+  /* Error - show message */
+  $("#itinerary_#{@comment.itinerary_id}_comments .messages").html('<div class="flash error">#{escape_javascript(flash.discard(:error))}</div>');
+- else
+  /* Show message */
+  /* $("#itinerary_<%= @comment.itinerary_id %>_comments .messages").html('<div class="flash notice"><%= escape_javascript(flash.discard(:notice)) %></div>'); */
+
+  /* Add the new comment to the bottom of the comments list */
+  $("#comments").append("#{escape_javascript(render(@comment))}");
+
+  /* Highlight the new comment */
+  $("#comment_#{@comment.id}").effect("highlight", {}, 3000);
+
+  /* Reset the comment form */
+  $("#comments #new_comment")[0].reset();
+  //$('#itinerary_<%= @comment.itinerary_id %>_cancel_link').click();
+
+  /* setTimeout(function(){ $("#itinerary_<%= @comment.itinerary_id %>_comments .messages").hide() }, 10000) */
+
+addCommentControlsListeners();
+
+- flash.discard

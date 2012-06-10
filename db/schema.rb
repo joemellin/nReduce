@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120610024805) do
+ActiveRecord::Schema.define(:version => 20120610171713) do
 
   create_table "authentications", :force => true do |t|
     t.string   "provider"
@@ -39,6 +39,28 @@ ActiveRecord::Schema.define(:version => 20120610024805) do
     t.datetime "created_at",      :null => false
     t.datetime "updated_at",      :null => false
   end
+
+  create_table "comments", :force => true do |t|
+    t.text     "content"
+    t.integer  "user_id"
+    t.integer  "checkin_id"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  add_index "comments", ["checkin_id"], :name => "index_comments_on_checkin_id"
+
+  create_table "connections", :force => true do |t|
+    t.integer  "startup_id"
+    t.integer  "connected_with_id"
+    t.integer  "user_id"
+    t.integer  "status"
+    t.datetime "accepted_at"
+    t.datetime "created_at",        :null => false
+    t.datetime "updated_at",        :null => false
+  end
+
+  add_index "connections", ["startup_id", "connected_with_id", "status"], :name => "connection_index"
 
   create_table "instruments", :force => true do |t|
     t.string   "data"
@@ -92,7 +114,7 @@ ActiveRecord::Schema.define(:version => 20120610024805) do
     t.string   "product_url"
     t.string   "one_liner"
     t.string   "phone"
-    t.string   "team_size"
+    t.integer  "team_size"
     t.string   "website_url"
     t.string   "industry"
     t.string   "stage"
