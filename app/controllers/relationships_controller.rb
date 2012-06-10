@@ -4,7 +4,7 @@ class RelationshipsController < ApplicationController
 
   def index
     @startups = @current_startup.connected_to
-    @pending_relationships = @current_startup.requested_relationships
+    @pending_relationships = @current_startup.pending_relationships
   end
 
   def create
@@ -15,7 +15,7 @@ class RelationshipsController < ApplicationController
     elsif @relationship.approved?
       flash[:notice] = "You are already connected to #{connect_with.name}."
     elsif @relationship.rejected?
-      flash[:error] = "Sorry but #{connect_with.name} has already denied your connection."
+      flash[:alert] = "Sorry, but #{connect_with.name} has ignored your connection request."
     end
     respond_to do |format|
       format.html { redirect_to search_startups_path }

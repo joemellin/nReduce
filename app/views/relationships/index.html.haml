@@ -45,7 +45,7 @@
         %br
         - @pending_relationships.each do |r|
           .span3.left{:align => 'center'}
-            = image_tag('nreducetilerequest1.png')
+            = link_to image_tag('nreducetilerequest1.png'), startup_path(r.startup_id)
             %br
             %h3= link_to r.startup.name, r.startup
             = link_to '<i class="icon-ok icon-white"></i> Accept'.html_safe, relationship_approve_path(r), :class => 'btn btn-success', :method => :post

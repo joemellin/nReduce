@@ -34,7 +34,7 @@ class AuthenticationsController < ApplicationController
   end
   
   def failure
-    flash[:error] = "Sorry but you could't be authenticated. Please try again:"
+    flash[:alert] = "Sorry but you could't be authenticated. Please try again:"
     #@ua = {:action => UserAction.id_for('oauth_failure'), :data => {:message => params[:message]}}
     redirect_to new_user_registration_url
   end

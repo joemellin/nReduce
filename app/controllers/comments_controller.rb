@@ -7,7 +7,7 @@ class CommentsController < ApplicationController
     if @comment.save
       flash[:notice] = 'The comment has been added'
     else
-      flash[:error] = 'The comment could not be added'
+      flash[:alert] = 'The comment could not be added'
     end
     respond_to do |format|
       format.html { redirect_to @comment.checkin }
@@ -37,7 +37,7 @@ class CommentsController < ApplicationController
     if @comment.update_attributes(params[:comment])
       flash[:notice] = 'The comment has been updated'
     else
-      flash[:error] = 'The comment has been updated'
+      flash[:alert] = 'The comment has been updated'
     end
     respond_to do |format|
       format.html { redirect_to @comment.checkin }
@@ -50,7 +50,7 @@ class CommentsController < ApplicationController
     if @comment.delete
       flash[:notice] = 'The commment has been deleted'
     else
-      flash[:error] = 'The comment could not be deleted'
+      flash[:alert] = 'The comment could not be deleted'
     end
     respond_to do |format|
       format.html { redirect_to @comment.checkin }

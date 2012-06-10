@@ -9,6 +9,7 @@ class StartupsController < ApplicationController
     elsif user_signed_in? and !current_user.startup.blank?
       @startup = current_user.startup
     end
+    @owner = true if user_signed_in? and (@startup.id == current_user.startup_id)
     redirect_unless_user_can_view_startup(@startup)
   end
 
@@ -130,8 +131,8 @@ class StartupsController < ApplicationController
     elsif user_signed_in?
       # Admin or this is the user's startup
       return true if current_user.admin? or current_user.startup_id == startup.id
-      # They are connected
-      return true if current_user.startup.connected_to?(startup)
+      # They are connected or the other startup has requested to be connected
+      return true if current_user.startup.connected_or_pending_to?(startup)
     end
     flash[:alert] = "Sorry but you don't have permissions to view that startup"
     redirect_to search_startups_path
@@ -140,7 +141,7 @@ class StartupsController < ApplicationController
 
   def redirect_if_user_has_startup
     # Make sure they don't create another startup
-    if !current_user.startup.blank?
+    if !current_user.startup_id.blank?
       flash.keep
       redirect_to "/startup"
       return

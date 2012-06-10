@@ -1,16 +1,19 @@
+- title = @owner ? "Your Startup: #{@startup.name}" : @startup.name
+
 - body_attrs :class => "apply"
 
 - content_for :subtitle do
-  Your Startup
+  = title
 
 .container
   = render 'layouts/nav'
   .row
     .span8
-      %h2 Your Startup: #{@startup.name}
+      %h2= title
     .span4
-      .actions
-        = link_to "Edit Startup", "/startup/edit", :class => "btn"
+      - if @owner
+        .actions
+          = link_to "Edit Startup", "/startup/edit", :class => "btn"
 
   %hr
 
