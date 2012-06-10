@@ -157,6 +157,19 @@ class User < ActiveRecord::Base
     # end
   end
 
+  def geocode_from_ip(ip_address)
+    begin
+      res = User.geocode(ip_address)
+      unless res.blank?
+        self.location = [res.city, res.state, res.country_code].delete_if{|i| i.blank? }.join(', ')
+        return true
+      end
+    rescue
+      # do nothing
+    end
+    false
+  end
+
   protected
 
   def geocode_location
