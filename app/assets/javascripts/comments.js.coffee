@@ -4,9 +4,9 @@
 
 $ ->
   addCommentControlsListeners()
-  $('.comment textarea').autoResize {
+  $('#comments form textarea').autoResize(
     extraSpace: 3
-  }
+  )
 
 window.addCommentControlsListeners = ->
   $('.comment').bind 'mouseenter', ->

@@ -34,7 +34,7 @@
         %h2 #{pluralize(@startups.size, 'startup')}:
 
     - @startups.each do |s|
-      .row
+      .row{:id => "startup_#{s.id}"}
         .span1
           %p &nbsp;
         .span3
@@ -59,8 +59,8 @@
             .span2
               %p Idea Stage: #{s.stage}
               %p Industry: #{s.industry_list}
-        .span3
-          = button_to 'Invite to Group', relationships_path(:startup_id => s.id), :class => 'btn btn-large btn-info'
+        .span3.relationship
+          = button_to 'Invite to Group', relationships_path(:startup_id => s.id), :class => 'btn btn-large btn-info', :remote => true
       %hr
       %br
 

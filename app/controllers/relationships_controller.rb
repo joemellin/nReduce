@@ -9,15 +9,18 @@ class RelationshipsController < ApplicationController
 
   def create
     connect_with = Startup.find(params[:startup_id])
-    relationship = Relationship.start_between(@current_startup, connect_with)
-    if relationship.pending?
+    @relationship = Relationship.start_between(@current_startup, connect_with)
+    if @relationship.pending?
       flash[:notice] = "Your connection has been requested with #{connect_with.name}."
-    elsif relationship.approved?
-      flash[:notice] = "You are connected to #{connect_with.name}."
-    elsif relationship.rejected?
+    elsif @relationship.approved?
+      flash[:notice] = "You are already connected to #{connect_with.name}."
+    elsif @relationship.rejected?
       flash[:error] = "Sorry but #{connect_with.name} has already denied your connection."
     end
-    redirect_to search_startups_path
+    respond_to do |format|
+      format.html { redirect_to search_startups_path }
+      format.js
+    end
   end
 
   def approve

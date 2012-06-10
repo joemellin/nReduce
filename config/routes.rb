@@ -71,5 +71,5 @@ Nreduce::Application.routes.draw do
     match "/admin/signups" => "admin_signups#index"
   end
 
-  root :to => 'users#show'
+  root :to => 'relationships#index'
 end

@@ -5,7 +5,7 @@
     .content
       .left
         = f.hidden_field :checkin_id
-        = f.text_area :content, :style => 'height: 30px; width: 250px;'
+        = f.text_area :content, :style => 'height: 20px;', :class => 'span3'
       .left{:style => 'padding-left: 5px;'}= f.submit (comment.new_record? ? 'Post' : 'Update'), :class => 'btn primary'
       .left{:style => 'padding-left: 5px;'}
         - if comment.new_record? and cancel_link
