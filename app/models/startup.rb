@@ -25,7 +25,7 @@ class Startup < ActiveRecord::Base
       :s3_protocol => 'https'
     })
   else
-    has_attached_file :logo, Settings.paperclip_config
+    has_attached_file :logo, Settings.paperclip_config.to_hash
   end
 
   scope :is_public, where(:public => true)
