@@ -121,7 +121,7 @@ class User < ActiveRecord::Base
 
   def generate_hipchat!
     return if hipchat?
-    pass = NReduce::Util.friendly_token.to_s[0..8]
+    pass = NreduceUtil.friendly_token.to_s[0..8]
     prms = {:auth_token => Settings.hipchat.token,
             :email => internal_email,
             :name => hipchat_name, 
@@ -146,7 +146,7 @@ class User < ActiveRecord::Base
       false
     end
     # hipchat = HipChat::API.new(Settings.hipchat.token)
-    # pass = NReduce::Util.friendly_token.to_s[0..8]
+    # pass = NreduceUtil.friendly_token.to_s[0..8]
     # if hipchat.users_create(internal_email, name, 'nReducer', 0, pass)
     #   self.hipchat_username = internal_email
     #   self.hipchat_password = pass
