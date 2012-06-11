@@ -17,7 +17,7 @@ Nreduce::Application.routes.draw do
   get "/contact_joe" => "pages#contact_joe"
 
   resources :users do
-    get 'chat', :on => :member
+    get 'chat', :on => :collection
   end
 
   resources :comments do

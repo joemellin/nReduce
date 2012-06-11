@@ -121,7 +121,6 @@ class User < ActiveRecord::Base
 
   def generate_hipchat!
     return if hipchat?
-
     pass = NReduce::Util.friendly_token.to_s[0..8]
     prms = {:auth_token => Settings.hipchat.token,
             :email => internal_email,
