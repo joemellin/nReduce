@@ -8,14 +8,14 @@
   = link_to "Download HipChat Desktop/Mobile App", "http://nreduce.hipchat.com", :target => "_blank"
 .left
   %strong Username:
-  = current_auth.hipchat_username
+  = @user.hipchat_username
   %br
   .left
     %strong Password:
     &nbsp;
   .left
     .pass.hide
-      = current_auth.hipchat_password
+      = @user.hipchat_password
       &nbsp;
       = link_to '(hide)', '#', :onclick => "$('.pass').toggle()"
     .pass
