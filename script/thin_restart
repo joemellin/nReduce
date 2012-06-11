@@ -1,9 +1,7 @@
-thin stop -p 8990 -e production -d -l log/thin.8990.log -P tmp/pids/thin.8990.pid
-thin stop -p 8991 -e production -d -l log/thin.8991.log -P tmp/pids/thin.8991.pid
-thin stop -p 8992 -e production -d -l log/thin.8992.log -P tmp/pids/thin.8992.pid
-thin stop -p 8993 -e production -d -l log/thin.8993.log -P tmp/pids/thin.8993.pid
+thin stop -p 8980 -e production -d -l log/thin.8980.log -P tmp/pids/thin.8980.pid
+thin stop -p 8981 -e production -d -l log/thin.8981.log -P tmp/pids/thin.8981.pid
+thin stop -p 8982 -e production -d -l log/thin.8982.log -P tmp/pids/thin.8982.pid
 
-thin start -p 8990 -e production -d -l log/thin.8990.log -P tmp/pids/thin.8990.pid
-thin start -p 8991 -e production -d -l log/thin.8991.log -P tmp/pids/thin.8991.pid
-thin start -p 8992 -e production -d -l log/thin.8992.log -P tmp/pids/thin.8992.pid
-thin start -p 8993 -e production -d -l log/thin.8993.log -P tmp/pids/thin.8993.pid
+thin start -p 8980 -e production -d -l log/thin.8980.log -P tmp/pids/thin.8980.pid
+thin start -p 8981 -e production -d -l log/thin.8981.log -P tmp/pids/thin.8981.pid
+thin start -p 8982 -e production -d -l log/thin.8982.log -P tmp/pids/thin.8982.pid
