@@ -17,3 +17,5 @@
 
 # Mac artifacts
 *.DS_Store
+
+public/assets/*
