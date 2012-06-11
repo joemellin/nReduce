@@ -1,7 +1,11 @@
+# Thin 1
 bundle exec thin stop -p 8980 -e production -d -l log/thin.8980.log -P tmp/pids/thin.8980.pid
-bundle exec thin stop -p 8981 -e production -d -l log/thin.8981.log -P tmp/pids/thin.8981.pid
-bundle exec thin stop -p 8982 -e production -d -l log/thin.8982.log -P tmp/pids/thin.8982.pid
-
 bundle exec thin start -p 8980 -e production -d -l log/thin.8980.log -P tmp/pids/thin.8980.pid
+
+# Thin 2
+bundle exec thin stop -p 8981 -e production -d -l log/thin.8981.log -P tmp/pids/thin.8981.pid
 bundle exec thin start -p 8981 -e production -d -l log/thin.8981.log -P tmp/pids/thin.8981.pid
+
+# Thin 3
+bundle exec thin stop -p 8982 -e production -d -l log/thin.8982.log -P tmp/pids/thin.8982.pid
 bundle exec thin start -p 8982 -e production -d -l log/thin.8982.log -P tmp/pids/thin.8982.pid
