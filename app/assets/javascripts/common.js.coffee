@@ -1,9 +1,11 @@
-$(document).on
-  ready: ->
-    # global styles go
-    $(".alert").alert()
+$ ->
+  # Toggle visibility of sign in / sign up forms
+  $('.sign_in_toggle').click ->
+    $(this).hide()
+    $('.sign_up_toggle, #sign_in').show()
+    $('#sign_up').hide()
 
-    if Settings.client.grid_debug
-      $("body").bind "keydown", "esc", ->
-        $("body").toggleClass("grid-debug")
-        return true
+  $('.sign_up_toggle').click ->
+    $(this).hide()
+    $('.sign_in_toggle, #sign_up').show()
+    $('#sign_in').hide()

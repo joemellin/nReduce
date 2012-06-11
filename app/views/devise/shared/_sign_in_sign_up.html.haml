@@ -1,0 +1,27 @@
+%p.center= link_to 'Join with your email', '#', :class => 'sign_up_toggle'
+%p.center= link_to 'Sign in with your email', '#', :class => 'sign_in_toggle'
+
+.row#sign_up.hide
+  .span3
+    %p &nbsp;
+  .span6.well
+    .center
+      %h2 Sign up
+    %br/
+    = semantic_form_for(resource, :as => resource_name, :url => registration_path(resource_name), :html => { :class => 'form-horizontal' }) do |f|
+      = render 'devise/registrations/fields', :f => f
+    %p.center= link_to "Forgot your password?", new_password_path(resource_name)
+  .span3
+    %p &nbsp;
+
+.row#sign_in.hide
+  .span3
+    %p &nbsp;
+  .span6.well
+    .center
+      %h2 Sign in
+    %br/
+    = form_for(resource, :as => resource_name, :url => session_path(resource_name), :html => { :class => 'form-horizontal' }) do |f|
+      = render 'devise/sessions/fields', :f => f
+  .span3
+    %p &nbsp;

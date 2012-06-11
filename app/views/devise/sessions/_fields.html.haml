@@ -1,0 +1,14 @@
+.control-group
+  = f.label :email, :class => 'control-label'
+  .controls= f.email_field :email
+.control-group
+  = f.label :password, :class => 'control-label'
+  .controls= f.password_field :password
+- if devise_mapping.rememberable?
+  .control-group
+    .controls
+      .left= f.check_box :remember_me
+      .left{:style => 'margin-left: 4px'}= f.label :remember_me
+      .clear
+.control-group
+  .controls= f.submit "Sign in", :class => 'btn btn-large btn-primary'

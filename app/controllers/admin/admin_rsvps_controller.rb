@@ -2,7 +2,7 @@ module Admin
   class AdminRsvpsController < ApplicationController
     layout "admin"
 
-    before_filter :partner_required
+    before_filter :admin_required
 
     def index
       @authentications = Authentication.all

@@ -2,10 +2,10 @@ module Admin
   class AdminStartupsController < ApplicationController
     layout "admin"
 
-    before_filter :partner_required
+    before_filter :admin_required
 
     def index
-      @startups = Startup.all.desc(:created_at)
+      @startups = Startup.order('created_at DESC')
       if params[:view].present?
         @startups = @startups.where(:location_name => /#{params[:view]}/i)
       end

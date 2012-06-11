@@ -1,36 +1,32 @@
-- body_attrs :class => "apply"
-
 - content_for :subtitle do
   Chat
 
-.container
-  = render 'layouts/nav'
-  %h2 nReduce Chat
+%h2 nReduce Chat
 
-  - if 1 == 1 #current_auth.hipchat?
-  .right
-    = link_to "Download HipChat Desktop/Mobile App", "http://nreduce.hipchat.com", :target => "_blank"
+- if 1 == 1 #current_auth.hipchat?
+.right
+  = link_to "Download HipChat Desktop/Mobile App", "http://nreduce.hipchat.com", :target => "_blank"
+.left
+  %strong Username:
+  = current_auth.hipchat_username
+  %br
   .left
-    %strong Username:
-    = current_auth.hipchat_username
-    %br
-    .left
-      %strong Password:
+    %strong Password:
+    &nbsp;
+  .left
+    .pass.hide
+      = current_auth.hipchat_password
       &nbsp;
-    .left
-      .pass.hide
-        = current_auth.hipchat_password
-        &nbsp;
-        = link_to '(hide)', '#', :onclick => "$('.pass').toggle()"
-      .pass
-        = link_to '(show password)', '#', :onclick => "$('.pass').toggle()"
-    .clear
+      = link_to '(hide)', '#', :onclick => "$('.pass').toggle()"
+    .pass
+      = link_to '(show password)', '#', :onclick => "$('.pass').toggle()"
   .clear
-  %br
-  %iframe{:src => "http://nreduce.hipchat.com/chat", :width => 920, :height => 625, :frameborder => 0, :style => 'border: 1px solid #ccc'}
-  %br
-  %br
-  %br
+.clear
+%br
+%iframe{:src => "http://nreduce.hipchat.com/chat", :width => 920, :height => 625, :frameborder => 0, :style => 'border: 1px solid #ccc'}
+%br
+%br
+%br
 
-  - else
-    %h3= link_to "Create free HipChat account", "/auth/hipchat", :method => :post
+- else
+  %h3= link_to "Create free HipChat account", "/auth/hipchat", :method => :post

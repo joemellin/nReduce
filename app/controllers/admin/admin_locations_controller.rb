@@ -1,39 +1,39 @@
 module Admin
-  class AdminLocationsController < ApplicationController
+  class AdminMeetingsController < ApplicationController
     layout "admin"
 
-    before_filter :partner_required
+    before_filter :admin_required
 
     def index
-      @locations = Location.ordered
+      @meetings = Meeting.ordered
     end
 
     def new
-      @location = Location.new(:order => Location.ordered.last.try(:order).to_i + 1)
+      @meeting = Meeting.new(:order => Meeting.ordered.last.try(:order).to_i + 1)
     end
 
     # quick edit action
     def create
-      @location = Location.new(params[:location])
+      @meeting = Meeting.new(params[:Meeting])
 
-      if @location.save
-        flash[:notice] = "Location created."
-        redirect_to "/admin/locations"
+      if @meeting.save
+        flash[:notice] = "Meeting created."
+        redirect_to "/admin/Meetings"
       else
         render :new
       end
     end
 
     def edit
-      @location = Location.by_id!(params[:id])
+      @meeting = Meeting.by_id!(params[:id])
     end
 
     def update
-      @location = Location.by_id!(params[:id])
+      @meeting = Meeting.by_id!(params[:id])
 
-      if @location.update_attributes(params[:location])
-        flash[:notice] = "Location has been updated"
-        redirect_to "/admin/locations"
+      if @meeting.update_attributes(params[:Meeting])
+        flash[:notice] = "Meeting has been updated"
+        redirect_to "/admin/meetings"
       else
         render :edit
       end
@@ -41,11 +41,11 @@ module Admin
     end
 
     def destroy
-      @location = Location.by_id!(params[:id])
-      @location.destroy
+      @meeting = Meeting.by_id!(params[:id])
+      @meeting.destroy
 
-      flash[:notice] = "Location deleted"
-      redirect_to "/admin/locations"
+      flash[:notice] = "Meeting deleted"
+      redirect_to "/admin/meetings"
     end
 
   end

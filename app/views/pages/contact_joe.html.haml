@@ -1,20 +1,16 @@
-- body_attrs :class => "apply"
-
 - content_for :subtitle do
   nReduce Welcome
 
-.container
-  = link_to "nReduce", "/", :class => "logo"
-  .row
-    .span7
-      %h1 Our Bad!
-      %br
-      %h2 Contact Joe and tell him where we lost you.
-      %br
-      %br
-      %center
-        %h1
-          = mail_to 'joe@nReduce.com'
-        %h1 
-          %a{:href => 'tel:4152598215'} +1.415.259.8215
-        %h1 skype: nReduce
+.row
+  .span7
+    %h1 Our Bad!
+    %br
+    %h2 Contact Joe and tell him where we lost you.
+    %br
+    %br
+    %center
+      %h1
+        = mail_to 'joe@nReduce.com'
+      %h1 
+        %a{:href => 'tel:4152598215'} +1.415.259.8215
+      %h1 skype: nReduce

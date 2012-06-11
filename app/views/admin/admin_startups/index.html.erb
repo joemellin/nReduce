@@ -3,7 +3,7 @@
     <h1>Startups (<%= @startups.count %>)</h1>
   </div>
   <div class="filter span4">
-    <%= select_tag "view", options_for_select([["Show All", ""]]+Settings.location_filters, params[:view]), :id => "view" %>
+    <%= select_tag "view", options_for_select([["Show All", ""]]+Meeting.select_options, params[:view]), :id => "view" %>
   </div>
 </div>
 
@@ -16,15 +16,6 @@
       <th class="yellow">Startup Name</th>
       <th class="blue">Location</th>
       <th class="span2">Members</th>
-
-      <!-- AGREEMENT COLUMNS -->
-      <th title="<%= Settings.q1 %>">1</th>
-      <th title="<%= Settings.q2 %>">2</th>
-      <th title="<%= Settings.q3 %>">3</th>
-      <th title="<%= Settings.q4 %>">4</th>
-      <th title="<%= Settings.q5 %>">5</th>
-      <th title="<%= Settings.q6 %>">6</th>
-      <th title="<%= Settings.q7 %>">7</th>
     </tr>
   </thead>
   <tbody>
@@ -36,18 +27,10 @@
         <td><%= startup.name %></td>
 
         <td>
-          <%= startup.location_name %><%= " (#{startup.location_other})" if startup.location_other.present? %>
+          <%= !startup.meeting_id.blank? ? startup.meeting.name : 'None' %>
         </td>
 
         <td><%= link_to startup.team_members.count, "/admin/startups/#{startup.id}" %></td>
-
-        <td title="<%= Settings.q1 %>"><%= startup.agree1 ? "Y" : "N" %></td>
-        <td title="<%= Settings.q2 %>"><%= startup.agree2 ? "Y" : "N" %></td>
-        <td title="<%= Settings.q3 %>"><%= startup.agree3 ? "Y" : "N" %></td>
-        <td title="<%= Settings.q4 %>"><%= startup.agree4 ? "Y" : "N" %></td>
-        <td title="<%= Settings.q5 %>"><%= startup.agree5 ? "Y" : "N" %></td>
-        <td title="<%= Settings.q6 %>"><%= startup.agree6 ? "Y" : "N" %></td>
-        <td title="<%= Settings.q7 %>"><%= startup.agree7 ? "Y" : "N" %></td>
 
       </tr>
     <% end %>

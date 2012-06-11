@@ -49,7 +49,7 @@ class StartupsController < ApplicationController
 
   def new
     redirect_if_user_has_startup
-    @startup = Startup.new
+    @startup = Startup.new(:website_url => 'http://')
   end
 
   def create

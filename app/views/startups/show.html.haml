@@ -1,26 +1,21 @@
 - title = @owner ? "Your Startup: #{@startup.name}" : @startup.name
 
-- body_attrs :class => "apply"
-
 - content_for :subtitle do
   = title
 
-.container
-  = render 'layouts/nav'
-  .row
-    .span8
-      %h2= title
-    .span4
-      - if @owner
-        .actions
-          = link_to "Edit Startup", "/startup/edit", :class => "btn"
+.row
+  .span8
+    %h2= title
+  .span4
+    - if @owner
+      .actions
+        = link_to "Edit Startup", "/startup/edit", :class => "btn"
 
-  %hr
-
-  .row
-    .span8
-      %h3 Team Members
-      %ul
-        - @startup.team_members.each do |team_member|
-          %li= team_member.name
+%hr
+.row
+  .span8
+    %h3 Team Members
+    %ul
+      - @startup.team_members.each do |team_member|
+        %li= team_member.name
 
