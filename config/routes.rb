@@ -2,7 +2,7 @@ Nreduce::Application.routes.draw do
   devise_for :users, :controllers => {:registrations => 'registrations'}
 
   resources :authentications, :checkins
-  
+
   # for omniauth authentications with other providers
   match '/auth/:provider/callback' => 'authentications#create'
   match '/auth/failure' => 'authentications#failure'
@@ -17,7 +17,7 @@ Nreduce::Application.routes.draw do
   get "/contact_joe" => "pages#contact_joe"
 
   resources :users do
-    get 'chat' :on => :member
+    get 'chat', :on => :member
   end
 
   resources :comments do
