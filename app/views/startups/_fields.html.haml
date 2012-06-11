@@ -52,11 +52,11 @@
     
 %hr
 
-.control-group{error_css(@startup, :industry)}
-  = f.label :industry, "Industry", :class => 'control-label'
+.control-group{error_css(@startup, :industry_list)}
+  = f.label :industry_list, "Market(s)", :class => 'control-label'
   .controls
-    = f.select :industry, Settings.startup_options.industry, :include_blank => true
-    = f.semantic_errors :industry
+    = f.text_field :industry_list, :class => 'span3'
+    = f.semantic_errors :industry_list
 
 .control-group{error_css(@startup, :growth_model)}
   = f.label :growth_model, "Growth Model", :class => 'control-label'
