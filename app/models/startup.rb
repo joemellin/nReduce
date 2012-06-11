@@ -17,16 +17,16 @@ class Startup < ActiveRecord::Base
   # Use S3 for production
   # http://blog.tristanmedia.com/2009/09/using-amazons-cloudfront-with-rails-and-paperclip/
   if Rails.env.production?
-    Settings.paperclip_config.merge!({
+    has_attached_file :logo, Settings.paperclip_config.to_hash.merge!({
       :storage => 's3',
-      :s3_credentials => Settings.aws.s3,
+      :s3_credentials => Settings.aws.s3.to_hash,
       :s3_headers => { 'Expires' => 1.year.from_now.httpdate },
       :default_url => "http://www.nreduce.com/assets/avatar_:style.png",
       :s3_protocol => 'https'
     })
+  else
+    has_attached_file :logo, Settings.paperclip_config
   end
-
-  has_attached_file :logo, Settings.paperclip_config
 
   scope :is_public, where(:public => true)
   scope :launched, where('launched_at IS NOT NULL')
