@@ -24,6 +24,20 @@ class ApplicationController < ActionController::Base
     if @current_startup.blank?
       redirect_to new_startup_path
       return false
+    else
+      # filters to see if they have checked in
+      c = @current_startup.current_checkin
+      if !c.blank?
+        if Checkin.in_after_time_window?
+          flash[:notice] = "Finish your check-in for this week."
+          redirect_to edit_checkin_path(c)
+          return false
+        end
+      elsif Checkin.in_before_time_window?
+        flash[:notice] = "Start your check-in for this week."
+        redirect_to new_checkin_path
+        return false
+      end
     end
     true
   end

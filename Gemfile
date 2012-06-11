@@ -45,6 +45,8 @@ group :test, :development do
   gem 'rspec-rails'
   gem 'factory_girl_rails'
   gem 'database_cleaner'
+  gem 'capistrano'
+  gem 'rvm-capistrano'
   #gem 'jasmine-rails' # also need to do: brew install qt
 end
 

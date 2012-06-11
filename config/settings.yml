@@ -145,6 +145,12 @@ apis:
     key: 'dlvvu7wj3crq'
     secret_key: 'FEoK8dhge3JbczQe'
 
+aws:
+  s3:
+    access_key_id: 'AKIAIBBRV3NRIKHCXYYQ'
+    secret_access_key: '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'
+    bucket: 'assets.nreduce.com'
+
 paperclip_config:
   path: "/:hash.extension"
   url: "/:hash:.extension"
@@ -152,9 +158,3 @@ paperclip_config:
   styles:
     medium: '250x250>'
     thumb: '120x120#'
-
-aws:
-  s3:
-    access_key_id: ''
-    secret_access_key: ''
-    bucket: ''

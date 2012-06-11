@@ -61,15 +61,9 @@ class Startup < ActiveRecord::Base
     false
   end
 
-     # Hack - doesn't check the batch, just finds the week for this time
-  def checked_in_this_week?
-    checkin = current_checkin
-    return !checkin.blank? ? checkin.submitted? : false
-  end
-
+   # Returns the checkin for this week (or if Sun/Mon, it checks for last week's checkin)
   def current_checkin
-    return checkins.where(:week_id => Week.id_for_time(Time.now)).first
-    return nil
+    checkins.current.first
   end
 
   def onboarding_step_increment!
