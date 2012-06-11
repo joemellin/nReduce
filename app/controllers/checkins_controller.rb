@@ -32,14 +32,16 @@ class CheckinsController < ApplicationController
 
   def new
     @startup = current_startup
-    week_id = Week.id_for_time(Time.now)
-    if !week_id
-      flash[:alert] = "Sorry you can't check in this week"
-      redirect_to startup_dashboard_path
+    if @startup.current_checkin and Checkin.in_after_time_window?
+      @checkin = @startup.current_checkin
+    elsif Checkin.in_before_time_window?
+      @checkin = Checkin.new
     else
-      @checkin = @startup.checkins.where(:week_id => week_id).first || Checkin.new(:week_id => week_id)
-      render :action => :edit
-    end
+      flash[:alert] = "Sorry you've missed the check-in times."
+      redirect_to root_path
+      return
+    else
+    render :action => :edit
   end
 
   def create
