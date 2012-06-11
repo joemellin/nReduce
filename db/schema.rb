@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120610171713) do
+ActiveRecord::Schema.define(:version => 20120611223934) do
 
   create_table "authentications", :force => true do |t|
     t.string   "provider"
@@ -110,8 +110,7 @@ ActiveRecord::Schema.define(:version => 20120610171713) do
 
   create_table "startups", :force => true do |t|
     t.string   "name"
-    t.string   "location_name"
-    t.string   "product_url"
+    t.string   "location"
     t.string   "one_liner"
     t.string   "phone"
     t.integer  "team_size"
@@ -176,7 +175,6 @@ ActiveRecord::Schema.define(:version => 20120610171713) do
     t.float    "lat"
     t.float    "lng"
     t.boolean  "admin",                  :default => false
-    t.boolean  "startup",                :default => false
     t.boolean  "mentor",                 :default => false
     t.boolean  "investor",               :default => false
     t.boolean  "mailchimped",            :default => false

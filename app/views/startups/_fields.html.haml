@@ -57,6 +57,7 @@
   .controls
     = f.text_field :industry_list, :class => 'span3'
     = f.semantic_errors :industry_list
+    %p.help-block Are you in 
 
 .control-group{error_css(@startup, :growth_model)}
   = f.label :growth_model, "Growth Model", :class => 'control-label'
@@ -82,7 +83,7 @@
   = f.label :meeting_id, "Where is your<br>team located?".html_safe, :class => 'control-label'
   .controls
     = f.select :meeting_id, Meeting.select_options, :include_blank => true
-    = f.semantic_errors :location_id
+    = f.semantic_errors :meeting_id
     .row
       .span5
         %p.help-block
