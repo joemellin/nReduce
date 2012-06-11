@@ -40,7 +40,7 @@ class CheckinsController < ApplicationController
       flash[:alert] = "Sorry you've missed the check-in times."
       redirect_to root_path
       return
-    else
+    end
     render :action => :edit
   end
 
