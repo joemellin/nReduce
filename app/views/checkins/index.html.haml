@@ -1,21 +1,17 @@
-- body_attrs :class => "apply"
-
 - content_for :subtitle do
   = 'Your Check-ins'
 
-.container
-  = render 'layouts/nav'
-  %h2 Your Check-ins
-  .row
-    .span12
-      - if @can_check_in
-        = link_to 'Check-In This Week', new_checkin_path, :class => 'btn btn-primary'
-      %ul
-      - @checkins.each do |checkin|
-        - today = Time.now.beginning_of_day
-        %li
-          - if checkin.completed?
-            %span.label.label-success Completed
-          - elsif checkin and checkin.submitted?
-            %span.label.label-inverse Before Completed
-          = link_to "Show Check-in", edit_checkin_path(checkin)
+%h2 Your Check-ins
+.row
+  .span12
+    - if @can_check_in
+      = link_to 'Check-In This Week', new_checkin_path, :class => 'btn btn-primary'
+    %ul
+    - @checkins.each do |checkin|
+      - today = Time.now.beginning_of_day
+      %li
+        - if checkin.completed?
+          %span.label.label-success Completed
+        - elsif checkin and checkin.submitted?
+          %span.label.label-inverse Before Completed
+        = link_to "Show Check-in", edit_checkin_path(checkin)

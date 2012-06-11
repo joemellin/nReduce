@@ -25,7 +25,7 @@
 .control-group{error_css(@startup, :website_url)}
   = f.label :website_url, "Website", :class => 'control-label'
   .controls
-    = f.text_field :website_url, :class => 'span3 with-placeholder', :placeholder => 'http://'
+    = f.text_field :website_url, :class => 'span3 with-placeholder'
     = f.semantic_errors :website_url
     %span.help-inline.help-danger Optional
 

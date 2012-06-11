@@ -26,4 +26,5 @@
   .controls
     = f.text_field :location, :placeholder => 'ex: San Francisco, CA'
     = f.semantic_errors :location
-.form-actions= f.submit "Sign up", :class => 'btn btn-primary'
+.control-group
+  .controls= f.submit "Sign up", :class => 'btn btn-large btn-primary'

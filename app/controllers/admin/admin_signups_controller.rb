@@ -2,10 +2,10 @@ module Admin
   class AdminSignupsController < ApplicationController
     layout "admin"
 
-    before_filter :partner_required
+    before_filter :admin_required
 
     def index
-      @signups = User.all
+      @signups = User
 
       if params[:view].blank? or params[:view] == "startups"
         @signups = @signups.where(:startup => true)

@@ -1,19 +1,19 @@
 .row
-  .span12
-    %h2 Sign in
-    = form_for(resource, :as => resource_name, :url => session_path(resource_name), :html => { :clas => 'form-horizontal' }) do |f|
-      = link_to image_tag('twitter_32.png'), "/auth/twitter"
-      = link_to image_tag('linkedin_32.png'), "/auth/linkedin"
-      .control-group
-        = f.label :email, :class => 'control-label'
-        .controls= f.email_field :email
-      .control-group
-        = f.label :password, :class => 'control-label'
-        .controls= f.password_field :password
-      - if devise_mapping.rememberable?
-        .control-group
-          .left= f.check_box :remember_me
-          .left{:style => 'margin-left: 4px'}= f.label :remember_me, :class => 'control-label'
-          .clear
-      = f.submit "Sign in", :class => 'btn btn-large btn-primary'
-    = render :partial => "devise/shared/links"
+  .span3
+    %p &nbsp;
+  .span6.well{:align => 'center', :style => 'padding: 40px 20px 40px 20px'}
+    %h1 nReduce
+    %br/
+    %p
+      %strong An alliance of creators built on accountability and community
+    %br/
+    %a.btn.btn-large{:href => '/auth/twitter'}
+      = image_tag('twitter_32.png')
+      Sign In With Twitter
+    %a.btn.btn-large{:href => '/auth/linkedin'}
+      = image_tag('linkedin_32.png')
+      Sign In With LinkedIn
+  .span3
+
+= render 'devise/shared/sign_in_sign_up'
+      

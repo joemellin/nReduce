@@ -1,18 +1,19 @@
-- hide_main_links ||= false
+- hide_nav ||= false
 .nav
   .right
     %ul.nav.nav-pills
-      - unless hide_main_links
-        %li{:class => is_controller_action?('relationships', 'index') ? 'active' : ''}= link_to "Dashboard", current_user.startup? ? "/startup/onboard" : '/'
-        %li{:class => is_controller_action?('users', 'chat') ? 'active' : ''}= link_to "Chat", users_chat_path
-        %li{:class => is_controller_action?('startups', 'search') ? 'active' : ''}= link_to "Browse Startups", search_startups_path
-        - if !current_user.startup_id.blank?
-          %li{:class => is_controller_action?('startups', 'edit') ? 'active' : ''}= link_to "My Startup", edit_startup_path
-        %li{:class => is_controller_action?('users', 'edit') ? 'active' : ''}= link_to "Account", edit_user_path(current_user)
-        - if current_user.admin?
-          %li= link_to "Admin Tools", "/admin"
-        %li= link_to "Log out", "/logout", :class => 'btn'
-    - unless current_user.blank? or current_user.meeting.blank?
+      - if user_signed_in?
+        - unless hide_nav
+          %li{:class => is_controller_action?('relationships', 'index') ? 'active' : ''}= link_to "Dashboard", current_user.startup? ? "/startup/onboard" : '/'
+          %li{:class => is_controller_action?('users', 'chat') ? 'active' : ''}= link_to "Chat", users_chat_path
+          %li{:class => is_controller_action?('startups', 'search') ? 'active' : ''}= link_to "Browse Startups", search_startups_path
+          - if !current_user.startup_id.blank?
+            %li{:class => is_controller_action?('startups', 'edit') ? 'active' : ''}= link_to "My Startup", edit_startup_path
+          %li{:class => is_controller_action?('users', 'edit') ? 'active' : ''}= link_to "Account", edit_user_path(current_user)
+          - if current_user.admin?
+            %li= link_to "Admin Tools", "/admin"
+          %li= link_to "Log out", logout_path, :class => 'btn'
+    - if user_signed_in? and !current_user.meeting.blank?
       %div{:style => 'text-align: right'}
         My meeting:
         &nbsp;
@@ -23,5 +24,6 @@
           |&nbsp;
           = link_to 'Map',  current_user.meeting.url, :target => '_blank'
       .clear
-  .left= link_to image_tag('nreduce_logo.png'), "/"
+  .left= link_to image_tag('nreduce_s.png'), "/"
   .clear
+  %hr

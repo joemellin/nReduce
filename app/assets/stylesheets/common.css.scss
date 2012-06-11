@@ -19,22 +19,23 @@ body{
 
 .clear{ clear: both; }
 
-
-.nav {
-  .right{
-    padding-top: 28px;
-  }
-}
+.center { text-align: center; }
 
 body.apply {
   > .container {
+
+    .nav {
+      hr {
+        margin: 8px 0 0 0;
+      }
+      .right{
+        padding-top: 3px;
+      }
+    }
+
     padding: 30px;
     background: #fff;
 
-    .logo {
-      margin-left: 0;
-      margin-bottom: 20px;
-    }
 
     h2 { margin-bottom: 10px; }
 
@@ -61,8 +62,8 @@ body.apply {
     hr { margin: 0; }
 
     .control-group {
-      padding-top: 10px;
-      padding-bottom: 10px;
+      padding-top: 5px;
+      padding-bottom: 5px;
 
       &.with-errors {
         background-color: #F2DEDE;
