@@ -105,7 +105,7 @@ class User < ActiveRecord::Base
 
   def hipchat_name
     n = !self.name.blank? ? self.name : self.twitter.sub('@', '')
-    s = self.matching_startup
+    s = self.startup
     if !s.blank?
       n += " | #{s.name}"
     else
@@ -122,7 +122,7 @@ class User < ActiveRecord::Base
   def generate_hipchat!
     return if hipchat?
     pass = NreduceUtil.friendly_token.to_s[0..8]
-    prms = {:auth_token => Settings.hipchat.token,
+    prms = {:auth_token => Settings.apis.hipchat.token,
             :email => internal_email,
             :name => hipchat_name, 
             :title => 'nReducer', 
@@ -145,7 +145,7 @@ class User < ActiveRecord::Base
     else
       false
     end
-    # hipchat = HipChat::API.new(Settings.hipchat.token)
+    # hipchat = HipChat::API.new(Settings.apis.hipchat.token)
     # pass = NreduceUtil.friendly_token.to_s[0..8]
     # if hipchat.users_create(internal_email, name, 'nReducer', 0, pass)
     #   self.hipchat_username = internal_email
