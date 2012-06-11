@@ -3,6 +3,6 @@ git pull
 git checkout server
 git merge master
 bundle install --deployment
-./script/thin_restart
 bundle exec rake assets:precompile RAILS_ENV=production
+./script/thin_restart
 tail -f log/production.log
