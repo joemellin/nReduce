@@ -1,7 +1,24 @@
 Nreduce::Application.routes.draw do
   devise_for :users, :controllers => {:registrations => 'registrations'}
 
-  resources :authentications, :users, :checkins
+  resources :authentications, :checkins
+  
+  # for omniauth authentications with other providers
+  match '/auth/:provider/callback' => 'authentications#create'
+  match '/auth/failure' => 'authentications#failure'
+
+  # Easy routes for auth/account stuff
+  as :user do
+    get '/sign_in' => "devise/sessions#new"
+    get '/sign_up' => "registrations#new"
+    get '/logout' => "devise/sessions#destroy"
+  end
+
+  get "/contact_joe" => "pages#contact_joe"
+
+  resources :users do
+    get 'chat' :on => :member
+  end
 
   resources :comments do
     get 'cancel_edit', :on => :member
@@ -33,21 +50,8 @@ Nreduce::Application.routes.draw do
       get 'dashboard'
     end
   end
+
   
-  get "/users/chat" => "users#chat"
-
-  # for omniauth authentications with other providers
-  match '/auth/:provider/callback' => 'authentications#create'
-  match '/auth/failure' => 'authentications#failure'
-
-  # Easy routes for auth/account stuff
-  as :user do
-    get '/sign_in' => "devise/sessions#new"
-    get '/sign_up' => "registrations#new"
-    get '/logout' => "devise/sessions#destroy"
-  end
-
-  get "/contact_joe" => "pages#contact_joe"
   
 
   match "/admin" => redirect("/admin/startups")
