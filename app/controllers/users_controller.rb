@@ -88,6 +88,13 @@ class UsersController < ApplicationController
     end
   end
 
+  before_filter :current_startup_required, :only => [:chat]
+
+  def chat
+    @user = current_user
+    @user.generate_hipchat! unless @user.hipchat?
+  end
+
   protected
 
   def lookup_user_by_token(token)
