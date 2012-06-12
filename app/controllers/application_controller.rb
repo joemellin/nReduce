@@ -23,7 +23,7 @@ class ApplicationController < ActionController::Base
     return false
   end
 
-  def current_startup_required
+  def current_startup_and_checkin_required
     @current_startup = current_user.startup if user_signed_in? and !current_user.startup.blank?
     if @current_startup.blank?
       redirect_to new_startup_path
@@ -43,6 +43,15 @@ class ApplicationController < ActionController::Base
         redirect_to new_checkin_path
         return false
       end
+    end
+    true
+  end
+
+  def current_startup_required
+    @current_startup = current_user.startup if user_signed_in? and !current_user.startup.blank?
+    if @current_startup.blank?
+      redirect_to new_startup_path
+      return false
     end
     true
   end
