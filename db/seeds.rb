@@ -65,7 +65,7 @@ unless data.blank?
     s.symbolize_keys!
     startup = Startup.new
     unless s[:main_contact_authentication_id].blank?
-      auth = auth_by_id[s[:main_contact_authentication_id]]
+      auth = auth_by_id[s[:main_contact_authentication_id].to_sym]
       startup.main_contact_id = auth[:user_id] if auth and auth[:user_id]
     end
     team_members_authentication_ids = s[:team_members_authentication_ids]
@@ -86,7 +86,7 @@ unless data.blank?
       startup.growth_model = Settings.startup_options.growth_model.to_hash.stringify_keys[s[:growth_model]]
     end
 
-    if startup.save!
+    if startup.save!(:validate => false)
       old_startup_ids[old_startup_id] = startup.id
 
       unless team_members_authentication_ids.blank?
