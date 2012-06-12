@@ -25,26 +25,25 @@ location_options:
 
 startup_options:
   growth_model:
-    -
-      "Not Sure Yet :)": 1
-      "Viral": 2
-      "SEO": 3
-      "Advertising": 4
-      "Partnerships": 5
-      "SMB Sales": 6
-      "Enterprise Sales": 7
+    "Not Sure Yet :)": 1
+    "Viral": 2
+    "SEO": 3
+    "Advertising": 4
+    "Partnerships": 5
+    "SMB Sales": 6
+    "Enterprise Sales": 7
   stage:
-    '1': "Idea"
-    '2': "Prototype"
-    '3': "Private Alpha/Beta"
-    '4': "Launched"
-    '5': "Generating Revenue/Scaling"
+    "Idea": 1
+    "Prototype": 2
+    "Private Alpha/Beta": 3
+    "Launched": 4
+    "Generating Revenue/Scaling": 5
   company_goal:
-    '1': "Fun Project - Chatroulette"
-    '2': "Life Style Business - 4 Hour Workweek"
-    '3': "Steady Revenue - 37Signals"
-    '4': "Improve Society - Kiva"
-    '5': "Big Exit - Facebook"
+    "Fun Project - Chatroulette": 1
+    "Life Style Business - 4 Hour Workweek": 2
+    "Steady Revenue - 37Signals": 3
+    "Improve Society - Kiva": 4
+    "Big Exit - Facebook": 5
   industry:
     - "Advertising"
     - "Analytics"
