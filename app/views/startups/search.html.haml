@@ -68,7 +68,8 @@
               %p Idea Stage: #{Startup.stages[s.stage.to_i]}
             %p Industry: #{s.industry_list}
       .span3.relationship
-        = button_to 'Invite to Group', relationships_path(:startup_id => s.id), :class => 'btn btn-large btn-info', :remote => true
+        - unless user_signed_in? and current_user.startup_id == s.id
+          = button_to 'Invite to Group', relationships_path(:startup_id => s.id), :class => 'btn btn-large btn-info', :remote => true
     %hr
     %br
 
