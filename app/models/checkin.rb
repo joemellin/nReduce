@@ -44,7 +44,7 @@ class Checkin < ActiveRecord::Base
     end
     time += 16.hours # set it at 4pm
     week_end = time + 7.days
-    "#{time.strfime('%b %-d')} to #{week_end.strfime('%b %-d')}"
+    "#{time.strftime('%b %-d')} to #{week_end.strftime('%b %-d')}"
   end
 
   def time_label
