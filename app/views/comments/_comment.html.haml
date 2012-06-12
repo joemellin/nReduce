@@ -1,11 +1,13 @@
-- is_owner = user_signed_in? and comment.user_id.to_s == current_user.id.to_s
+- is_owner = (user_signed_in? and (comment.user_id.to_s == current_user.id.to_s)) ? true : false
 = div_for comment do
   .right{:style => 'padding-top: 8px;'}
     - if is_owner
       = link_to 'Edit', edit_comment_path(comment), :remote => true, :class => 'controls btn'
       &nbsp;
       = link_to '<i class="icon-white icon-remove"></i>'.html_safe, comment, :method => :delete, :remote => true, :class => 'btn btn-small btn-danger controls', :confirm => "Are you sure you want to delete it?"
-  .left{:style => 'width: 105px; padding-right: 10px;', :align => 'right'}
+  .left{:style => 'width: 120px; padding-right: 10px;', :align => 'right'}
+    - if !comment.user.external_pic_url.blank?
+      %div= image_tag comment.user.external_pic_url, :style => 'width: 50px; height: 50px;'
     .name= "#{is_owner ? 'You' : truncate(comment.user.name, :length => 20)}"
     .time= "#{time_ago_in_words(comment.created_at)} ago"
   .left.content= simple_format(h(comment.content))
