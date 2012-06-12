@@ -41,7 +41,7 @@
         %ul
           %li
             Meeting: #{@startup.meeting.location_name}
-            = link_to 'change', startup_edit_path
+            = link_to 'change', edit_startup_path
           %li Local Start Time: Tuesdays at #{@startup.meeting.start_time}
           %li Location: #{@startup.meeting.venue_name}
           - unless @startup.meeting.map_url.blank?
