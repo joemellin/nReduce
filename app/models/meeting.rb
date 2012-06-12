@@ -11,7 +11,7 @@ class Meeting < ActiveRecord::Base
   before_save :geocode_location
 
   def self.select_options
-    Meeting.all.map{|m| [m.name, m.id] }
+    Meeting.all.map{|m| [m.location_name, m.id] }
   end
 
       # Returns an array with days of week and integer, ex: ['Monday', 1]
