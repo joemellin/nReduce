@@ -46,8 +46,8 @@
       %br
       - @pending_relationships.each do |r|
         .span3.left{:align => 'center'}
-          = link_to image_tag('nreducetilerequest1.png'), startup_path(r.startup_id)
-          %br
+          / = link_to image_tag('nreducetilerequest1.png'), startup_path(r.startup_id)
+          / %br
           %h3= link_to r.startup.name, r.startup
           = link_to '<i class="icon-ok icon-white"></i> Accept'.html_safe, approve_relationship_path(r), :class => 'btn btn-success', :method => :post
           = link_to '<i class="icon-remove icon-white"></i> Not Now'.html_safe, reject_relationship_path(r), :class => 'btn btn-danger', :method => :post
