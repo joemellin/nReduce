@@ -31,6 +31,7 @@ class ApplicationController < ActionController::Base
     else
       # filters to see if they have checked in
       c = @current_startup.current_checkin
+      return true if !c.blank? and c.completed?
       if !c.blank?
         if Checkin.in_after_time_window? and controller_name != 'checkins' and action_name != 'edit'
           flash[:notice] = "Finish your check-in for this week."

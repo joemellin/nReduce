@@ -4,11 +4,17 @@
     = f.text_field :name, :class => "span3"
     = f.semantic_errors :name
    
-.control-group{error_css(@startup, :name)}
-  -# f.label :team_members, "Founders", :class => 'control-label'
+/ .control-group{error_css(@startup, :name)}
+/   -# f.label :team_members, "Founders", :class => 'control-label'
+/   .controls
+/     %p.help-block
+/       Enter in email addresses of team members
+.control-group
+  = f.label :team_size, "Team Members", :class => 'control-label'
   .controls
-    %p.help-block
-      Enter in email addresses of team members
+    %ul
+    - @startup.team_members.order(:name).each do |u|
+      %li= u.name
 
 .control-group{error_css(@startup, :team_size)}
   = f.label :team_size, "# of Team Members", :class => 'control-label'
@@ -57,7 +63,7 @@
   .controls
     = f.text_field :industry_list, :class => 'span3'
     = f.semantic_errors :industry_list
-    %p.help-block Are you in 
+    -# %p.help-block Are you in 
 
 .control-group{error_css(@startup, :growth_model)}
   = f.label :growth_model, "Growth Model", :class => 'control-label'
