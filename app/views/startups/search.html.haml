@@ -50,7 +50,7 @@
         .row
           .span2
             %p Goal: #{s.company_goal}
-            %p Meeting: #{!s.meeting_id.blank? ? s.meeting.name : 'none'}
+            %p Meeting: #{!s.meeting_id.blank? ? s.meeting.location_name : 'none'}
             %p Team: ..[pics here]..
           .span2
             %p Idea Stage: #{s.stage}
