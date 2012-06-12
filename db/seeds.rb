@@ -29,14 +29,14 @@ unless data.blank?
       user.send("#{k}=".to_sym, v)
     end
 
-
-    unless auth_by_id[auth_id.to_sym].blank?
-      user.authentications.build(auth_by_id[auth_id.to_sym].delete_if{|k,v| [:email, :twitter, :id].include?(k) })
+    auth = auth_by_id[auth_id.to_sym]
+    unless auth.blank?
+      user.authentications.build(auth.delete_if{|k,v| [:email, :twitter, :id].include?(k) })
     end
 
     # Save the object
     if user.save!(:validate => false)
-      auth_by_id[:user_id] = user.id
+      auth_by_id[auth_id.to_sym][:user_id] = user.id unless auth.blank?
     else
       failed[:user].push(u)
     end
