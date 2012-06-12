@@ -124,6 +124,11 @@ class User < ActiveRecord::Base
     hipchat_username.present?
   end
 
+  def reset_hipchat_account!
+    self.hipchat_username = nil
+    self.generate_hipchat!
+  end
+
   def generate_hipchat!
     return if hipchat?
     pass = NreduceUtil.friendly_token.to_s[0..8]

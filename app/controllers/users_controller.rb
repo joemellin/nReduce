@@ -26,9 +26,19 @@ class UsersController < ApplicationController
     @user.generate_hipchat! unless @user.hipchat?
   end
 
+  def reset_hipchat_account
+    @user = current_user
+    if @user.reset_hipchat_account!
+      flash[:notice] = "Your HipChat account has been reset, please try logging in again."
+    else
+      flash[:error] = "Sorry but your HipChat account could not be reset. Please contact josh@nreduce.com"
+    end
+    redirect_to :action => :chat
+  end
+
   protected
 
-  def redirect_unless_user_can_view_user(user)
+  def redirect_unless_authorized_for_user(user)
     unless current_user.id == user.id or current_user.admin?
       redirect_to '/'
       return false
