@@ -9,10 +9,10 @@
     %p Check out each team's progress this week and give them feedback
   .span4
     %p
-      - if !@checkin.blank?
-        - if @checkin.completed?
-          = link_to 'Your Check-in', @checkin, :class => 'btn'
-        - elsif @checkin.submitted? and Checkin.in_after_time_window?
+      - if !@current_checkin.blank?
+        - if @current_checkin.completed?
+          = link_to 'Your Check-in This Week', @current_checkin, :class => 'btn btn-primary'
+        - elsif @current_checkin.submitted? and Checkin.in_after_time_window?
           Complete before Tuesday at 4pm PST:
           = link_to 'Finish Check-in', new_checkin_path, :class => 'btn btn-danger'
         - else

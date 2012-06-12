@@ -43,7 +43,7 @@ class Checkin < ActiveRecord::Base
       time = time.beginning_of_day + (time.days_to_week_start.days - 5.days)
     end
     time += 16.hours # set it at 4pm
-    week_end = time + 7.days
+    week_end = time + 6.days
     "#{time.strftime('%b %-d')} to #{week_end.strftime('%b %-d')}"
   end
 
