@@ -77,7 +77,7 @@ class StartupsController < ApplicationController
     end
   end
 
-  before_filter :current_startup_required, :only => [:show, :edit, :update, :onboard, :onboard_next]
+  before_filter :current_startup_and_checkin_required, :only => [:show, :edit, :update, :onboard, :onboard_next]
 
   def dashboard
     @startup = @current_startup

@@ -19,7 +19,7 @@ class UsersController < ApplicationController
     end
   end
 
-  before_filter :current_startup_required, :only => [:chat, :reset_hipchat_account]
+  before_filter :current_startup_and_checkin_required, :only => [:chat, :reset_hipchat_account]
 
   def chat
     @user = current_user
