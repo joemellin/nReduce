@@ -2,18 +2,21 @@
   Check-in For Week of #{@checkin.time_label}
 
 -# Show team nav if this is someone else's check-ins
-- unless @owner
+- unless 1 == 2# @owner
   %hr
   .row
     .span4
-      = link_to '<i class="icon icon-chevron-left"></i> Previous Team'.html_safe, '#', :class => 'btn btn-large'
+      = link_to '<i class="icon icon-chevron-left"></i> All Teams'.html_safe, relationships_path, :class => 'btn btn-large'
+      / = link_to '<i class="icon icon-chevron-left"></i> Previous Team'.html_safe, '#', :class => 'btn btn-large'
     .span4{:align => 'center'}
-      %h2 Team #{@checkin.startup.name}
-      -# 1.upto(@checkin.startup.team_size).each do |img|
-      -#  [ img ] &nbsp;
+      .inline-block
+        %h2 Team #{@checkin.startup.name}
+      - @checkin.startup.team_members.each do |tm|
+        - next if tm.external_pic_url.blank?
+        .inline-block{:style => 'margin-left: 4px'}= image_tag tm.external_pic_url
       .clear
     .span4{:align => 'right'}
-      = link_to 'Next Team <i class="icon icon-chevron-right"></i>'.html_safe, '#', :class => 'btn btn-large'
+      / = link_to 'Next Team <i class="icon icon-chevron-right"></i>'.html_safe, '#', :class => 'btn btn-large'
   %hr
   %br
 .row
