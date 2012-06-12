@@ -1,5 +1,5 @@
 - content_for :subtitle do
-  Check-in For #{Week.name_for_id(@checkin.week_id)}
+  Check-in For Week of #{@checkin.time_label}
 
 -# Show team nav if this is someone else's check-ins
 - unless @owner
@@ -19,7 +19,7 @@
 .row
   .span12{:align => 'center'}
     %h4
-      #{Week.name_for_id(@checkin.week_id)} Focus: #{h(@checkin.start_focus)}
+      Week of #{@checkin.time_label} Focus: #{h(@checkin.start_focus)}
 .row
   .span6{:style => 'text-align: center', :align => 'right'}
     %div
