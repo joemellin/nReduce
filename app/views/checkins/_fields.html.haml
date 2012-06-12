@@ -1,5 +1,11 @@
 - if @checkin.completed?
   %strong Your check-in was completed on #{@checkin.completed_at.to_s(:short)}.
+
+  %p
+    %strong Time to go give your group feedback!
+
+  %p
+    %i We will be displaying before/after videos here soon...
 - elsif @checkin.submitted?
   %h3 Your 'before' check-in was submitted at #{@checkin.submitted_at.to_s(:short)}.
   %br
