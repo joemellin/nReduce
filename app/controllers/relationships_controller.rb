@@ -5,6 +5,7 @@ class RelationshipsController < ApplicationController
   def index
     @startups = @current_startup.connected_to
     @pending_relationships = @current_startup.pending_relationships
+    @current_checkin = @current_startup.current_checkin
   end
 
   def create
