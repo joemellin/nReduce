@@ -84,15 +84,15 @@ class Startup < ActiveRecord::Base
   end
 
   def self.stage_select_options
-    Settings.startup_options.stage.to_hash.map{|k,v| [v,k]}
+    Settings.startup_options.stage.to_hash.stringify_keys.map{|k,v| [k,v]}
   end
 
   def self.company_goal_select_options
-    Settings.startup_options.company_goal.to_hash.map{|k,v| [v,k]}
+    Settings.startup_options.company_goal.to_hash.stringify_keys.map{|k,v| [k,v]}
   end
 
   def self.growth_model_select_options
-    Settings.startup_options.growth_model.to_hash.map{|k,v| [v,k]}
+    Settings.startup_options.growth_model.to_hash.stringify_keys.map{|k,v| [k,v]}
   end
 
   protected
