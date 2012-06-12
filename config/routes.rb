@@ -33,7 +33,7 @@ Nreduce::Application.routes.draw do
   end
 
     # Searching other startups, seeing checkins - plural resource
-  resources :startups, :only => [:show] do
+  resources :startups, :only => [:show, :index] do
     collection do
       get 'search'
       post 'search'
