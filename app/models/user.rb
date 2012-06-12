@@ -33,10 +33,10 @@ class User < ActiveRecord::Base
     return false unless Settings.apis.mailchimp.enabled
 
     h = Hominid::API.new(Settings.apis.mailchimp.api_key)
-    h.list_subscribe(Settings.apis.mailchimp.everyone_list_id, email, {}, "html", false)
 
     h.list_subscribe(Settings.apis.mailchimp.startup_list_id, email, {}, "html", false) unless self.startup_id.blank?
     h.list_subscribe(Settings.apis.mailchimp.mentor_list_id, email, {}, "html", false) if self.mentor?
+    h.list_subscribe(Settings.apis.mailchimp.everyone_list_id, email, {}, "html", false)
 
     self.mailchimped = true
     self.save!
