@@ -40,7 +40,7 @@ class Checkin < ActiveRecord::Base
     if time.sunday? or (time.monday? and time.hour < 16)
       time = time.beginning_of_week - 5.days
     else
-      time = time.begining_of_day + (time.days_to_week_start.days - 5.days)
+      time = time.beginning_of_day + (time.days_to_week_start.days - 5.days)
     end
     time += 16.hours # set it at 4pm
     week_end = time + 7.days
