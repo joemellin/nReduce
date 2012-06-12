@@ -31,9 +31,9 @@ class StartupsController < ApplicationController
 
     # Add conditions
     # Ignore current user's startup
-    if user_signed_in? and !current_user.startup_id.blank?
-      @startups = @startups.where("startups.id != '#{current_user.startup_id}'")
-    end
+    #if user_signed_in? and !current_user.startup_id.blank?
+    #  @startups = @startups.where("startups.id != '#{current_user.startup_id}'")
+    #end
     unless @search[:name].blank?
       @startups = @startups.where(['startups.name LIKE ?', "%#{@search[:name]}%"])
     end
