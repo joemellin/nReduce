@@ -48,7 +48,7 @@ unless data.blank?
     l.symbolize_keys!
     meeting = Meeting.new
     unless l[:organizer_authentication_ids].blank?
-      org = auth_by_id[l[:organizer_authentication_ids].first]
+      org = auth_by_id[l[:organizer_authentication_ids].first.to_sym]
       meeting.organizer_id = org[:user_id] if !org.blank?
     end
     l.delete_if{|k, v| k == :organizer_authentication_ids }
@@ -77,13 +77,13 @@ unless data.blank?
     end
 
     unless s[:stage].blank?
-      startup.stage = Settings.startup_options.stage.to_hash[s[:stage]]
+      startup.stage = Settings.startup_options.stage.to_hash.stringify_keys[s[:stage]]
     end
     unless s[:company_goal].blank?
-      startup.company_goal = Settings.startup_options.company_goal.to_hash[s[:company_goal]]
+      startup.company_goal = Settings.startup_options.company_goal.to_hash.stringify_keys[s[:company_goal]]
     end
     unless s[:growth_model].blank?
-      startup.growth_model = Settings.startup_options.growth_model.to_hash[s[:company_goal]]
+      startup.growth_model = Settings.startup_options.growth_model.to_hash.stringify_keys[s[:company_goal]]
     end
 
     if startup.save!
