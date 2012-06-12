@@ -23,6 +23,10 @@ class User < ActiveRecord::Base
 
   acts_as_taggable_on :skills
 
+  def first_name
+    self.name.blank? ? '' : self.name.sub(/\s+.*/, '')
+  end
+
   def mailchimp!
     return true if mailchimped?
     return false unless email.present?

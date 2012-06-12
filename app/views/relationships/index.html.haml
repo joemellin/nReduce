@@ -16,16 +16,21 @@
   - c = 0
   - @startups.each do |s|
     .span3.left{:align => 'center'}
-      = link_to image_tag('nreducetile.png'), latest_startup_checkins_path(s)
       %h3= link_to s.name, latest_startup_checkins_path(s)
       = link_to 'View Progress', latest_startup_checkins_path(s), :class => 'btn btn-success'
-      %p.hide
-        %small 5 Awesomes - 6 Comments
 
-  .span3.left{:align => 'center'}
-    = link_to image_tag('nreducetilewait.png'), '#'
-    %h3= link_to 'Team Suck', '#'
-    %a.hide{:href => '#', :class => 'btn'} <i class="icon-heart icon"></i> Encourage
+  / - @startups.each do |s|
+  /   .span3.left{:align => 'center'}
+  /     = link_to image_tag('nreducetile.png'), latest_startup_checkins_path(s)
+  /     %h3= link_to s.name, latest_startup_checkins_path(s)
+  /     = link_to 'View Progress', latest_startup_checkins_path(s), :class => 'btn btn-success'
+  /     %p.hide
+  /       %small 5 Awesomes - 6 Comments
+
+  / .span3.left{:align => 'center'}
+  /   = link_to image_tag('nreducetilewait.png'), '#'
+  /   %h3= link_to 'Team Suck', '#'
+  /   %a.hide{:href => '#', :class => 'btn'} <i class="icon-heart icon"></i> Encourage
   .span3.left{:align => 'center'}
     = link_to image_tag('addteam.png'), search_startups_path
     %h3= link_to 'Add Team', search_startups_path

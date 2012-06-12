@@ -63,7 +63,7 @@ class CheckinsController < ApplicationController
     if @checkin.update_attributes(params[:checkin])
       if @checkin.completed?
         flash[:notice] = "Your check-in has been completed!"
-        redirect_to checkins_path
+        redirect_to '/'
       else
         redirect_to edit_checkin_path(@checkin)
       end

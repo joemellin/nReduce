@@ -79,20 +79,46 @@ class Startup < ActiveRecord::Base
     9
   end
 
+  def self.stages
+    {1 => "Idea", 
+    2 => "Prototype",
+    3 => "Private Alpha/Beta",
+    4 => "Launched",
+    6 => "Generating Revenue/Scaling"}
+  end
+
+  def self.growth_models
+    {1 => "Not Sure Yet :)",
+    2 => "Viral",
+    3 => "SEO",
+    4 => "Advertising",
+    5 => "Partnerships",
+    6 => "SMB Sales",
+    7 => "Enterprise Sales"}
+  end
+  
+  def self.company_goals
+    {1 => "Fun Project - Chatroulette",
+    2 => "Life Style Business - 4 Hour Workweek",
+    3 => "Steady Revenue - 37Signals",
+    4 => "Improve Society - Kiva",
+    5 => "Big Exit - Facebook"}
+  end
+
   def self.industry_select_options
     Settings.startup_options.industry
   end
 
   def self.stage_select_options
-    Settings.startup_options.stage.to_hash.stringify_keys.map{|k,v| [k,v]}
+    Startup.stages.map{|k,v| [v,k]}
   end
 
   def self.company_goal_select_options
-    Settings.startup_options.company_goal.to_hash.stringify_keys.map{|k,v| [k,v]}
+    Startup.company_goals.map{|k,v| [v,k]}
   end
 
   def self.growth_model_select_options
-    Settings.startup_options.growth_model.to_hash.stringify_keys.map{|k,v| [k,v]}
+    Startup.growth_models.map{|k,v| [v,k]}
   end
 
   protected
