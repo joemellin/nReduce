@@ -25,7 +25,7 @@ class StartupsController < ApplicationController
     @search = session[:search] || {}
 
     # Establish basic query to find public startups
-    @startups = Startup.is_public.order(:name).includes(:meeting).paginate(:page => params[:page] || 1, :per_page => 10)
+    @startups = Startup.is_public.where(:onboarding_step => Startup.num_onboarding_steps).order(:name).includes(:meeting).paginate(:page => params[:page] || 1, :per_page => 10)
 
     # Add conditions
     # Ignore current user's startup
