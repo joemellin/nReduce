@@ -172,7 +172,7 @@ class User < ActiveRecord::Base
   protected
 
   def geocode_location
-    return true if self.location.blank? or (!self.location_changed? and !self.lat.blank?)
+    return true if !Rails.env.production? or self.location.blank? or (!self.location_changed? and !self.lat.blank?)
     begin
       res = User.geocode(self.location)
       self.lat, self.lng = res.lat, res.lng
