@@ -37,7 +37,7 @@ class Checkin < ActiveRecord::Base
   # ex: Jul 5 to Jul 12
   def self.week_for_time(time)
     # reset to tuesday
-    if time.sunday? or (time.monday? and time.hour < 16)
+    if time.sunday? or time.monday? or (time.tuesday? and time.hour < 16)
       time = time.beginning_of_week - 5.days
     else
       time = time.beginning_of_day + (time.days_to_week_start.days - 5.days)
