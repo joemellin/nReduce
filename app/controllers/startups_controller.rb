@@ -3,6 +3,10 @@ class StartupsController < ApplicationController
 
   # Actions for all startups
 
+  def index
+    redirect_to :action => :search
+  end
+
   def show
     if !params[:id].blank?
       @startup = Startup.find(params[:id])
