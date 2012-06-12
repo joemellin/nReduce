@@ -18,7 +18,10 @@ Nreduce::Application.routes.draw do
   get "/contact_joe" => "pages#contact_joe"
 
   resources :users do
-    get 'chat', :on => :collection
+    collection do
+      get 'chat'
+      post 'reset_hipchat_account'
+    end
   end
 
   resources :comments do
