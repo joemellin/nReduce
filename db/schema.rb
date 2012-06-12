@@ -35,10 +35,11 @@ ActiveRecord::Schema.define(:version => 20120611223934) do
     t.datetime "completed_at"
     t.integer  "startup_id"
     t.integer  "user_id"
-    t.integer  "week_id"
     t.datetime "created_at",      :null => false
     t.datetime "updated_at",      :null => false
   end
+
+  add_index "checkins", ["startup_id", "created_at"], :name => "index_checkins_on_startup_id_and_created_at"
 
   create_table "comments", :force => true do |t|
     t.text     "content"
@@ -49,18 +50,6 @@ ActiveRecord::Schema.define(:version => 20120611223934) do
   end
 
   add_index "comments", ["checkin_id"], :name => "index_comments_on_checkin_id"
-
-  create_table "connections", :force => true do |t|
-    t.integer  "startup_id"
-    t.integer  "connected_with_id"
-    t.integer  "user_id"
-    t.integer  "status"
-    t.datetime "accepted_at"
-    t.datetime "created_at",        :null => false
-    t.datetime "updated_at",        :null => false
-  end
-
-  add_index "connections", ["startup_id", "connected_with_id", "status"], :name => "connection_index"
 
   create_table "instruments", :force => true do |t|
     t.string   "data"
@@ -100,10 +89,9 @@ ActiveRecord::Schema.define(:version => 20120611223934) do
     t.integer  "startup_id"
     t.integer  "connected_with_id"
     t.integer  "status"
+    t.datetime "created_at"
     t.datetime "approved_at"
     t.datetime "rejected_at"
-    t.datetime "created_at",        :null => false
-    t.datetime "updated_at",        :null => false
   end
 
   add_index "relationships", ["startup_id", "connected_with_id", "status"], :name => "relationship_index", :unique => true
@@ -113,14 +101,13 @@ ActiveRecord::Schema.define(:version => 20120611223934) do
     t.string   "location"
     t.string   "one_liner"
     t.string   "phone"
-    t.integer  "team_size"
     t.string   "website_url"
-    t.string   "industry"
     t.string   "stage"
     t.string   "growth_model"
     t.string   "company_goal"
     t.string   "intro_video_url"
     t.integer  "onboarding_step",   :default => 1
+    t.integer  "team_size",         :default => 1
     t.boolean  "active",            :default => true
     t.boolean  "public",            :default => true
     t.datetime "launched_at"
