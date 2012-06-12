@@ -95,7 +95,8 @@ unless data.blank?
           auth = auth_by_id[auth_id.to_sym]
           if auth and auth[:user_id]
             u = User.find(auth[:user_id])
-            u.update_attribute('startup_id', startup.id)
+            u.startup_id = startup.id
+            u.save
           end
         end
       end
