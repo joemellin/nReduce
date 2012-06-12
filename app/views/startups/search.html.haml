@@ -13,11 +13,11 @@
     .span3
       %p
         %small Meeting Location
-      = select_tag 'search[meeting_id]', options_for_select(Meeting.select_options, @search[:meeting_id]), :class => 'input-large'
+      = select_tag 'search[meeting_id]', options_for_select(Meeting.select_options, @search[:meeting_id]), :class => 'input-large', :include_blank => true
     .span3
       %p
         %small Markets (coming soon)
-      = select_tag 'search[name]', options_for_select([], @search[:industry]), :class => 'input-large'
+      = select_tag 'search[name]', options_for_select([], @search[:industry]), :class => 'input-large', :include_blank => true
     .span1
       %p &nbsp;
       = submit_tag 'Search', :class => 'btn'
