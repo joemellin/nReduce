@@ -1,5 +1,3 @@
-= f.hidden_field :week_id
-
 - if @checkin.completed?
   %strong Your check-in was completed on #{@checkin.completed_at.to_s(:short)}.
 - elsif @checkin.submitted?
