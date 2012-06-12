@@ -8,7 +8,13 @@
   .span4
     %p Check out each team's progress this week and give them feedback
   .span4
-    %p Start by Wednesday at 4pm PST: #{link_to('Get Back to Work', '#', :class => 'btn')}
+    %p
+      - if Checkin.in_before_time_window?
+        Start by Wednesday at 4pm PST:
+        = link_to 'Start Check-in', new_checkin_path, :class => 'btn btn-danger'
+      - elsif Checkin.in_after_time_window?
+        Complete before Tuesday at 4pm PST:
+        = link_to 'Finish Check-in', new_checkin_path, :class => 'btn btn-danger'
 %hr
 %br
 %br
