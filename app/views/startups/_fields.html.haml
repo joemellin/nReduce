@@ -16,6 +16,11 @@
     - @startup.team_members.order(:name).each do |u|
       %li= u.name
 
+.control-group{error_css(@startup, :main_contact_id)}
+  = f.label :main_contact_id, "Main Contact", :class => 'control-label'
+  .controls
+    = !@startup.main_contact.blank? ? @startup.main_contact.name : 'Not assigned'
+
 .control-group{error_css(@startup, :team_size)}
   = f.label :team_size, "# of Team Members", :class => 'control-label'
   .controls
@@ -44,11 +49,6 @@
       Current Image:
       = image_tag @startup.logo.url(:thumb)
 
-.control-group{error_css(@startup, :main_contact_id)}
-  = f.label :main_contact_id, "Main Contact - this should be checkbox next to team members", :class => 'control-label'
-  .controls
-    = f.text_field :main_contact_id
-    = f.semantic_errors :main_contact_id
 
 .control-group{error_css(@startup, :phone)}
   = f.label :phone, "Phone Number", :class => 'control-label'
@@ -61,7 +61,8 @@
 .control-group{error_css(@startup, :industry_list)}
   = f.label :industry_list, "Market(s)", :class => 'control-label'
   .controls
-    = f.text_field :industry_list, :class => 'span3'
+    = @startup.industry_list
+    =# f.text_field :industry_list, :class => 'span3'
     = f.semantic_errors :industry_list
     -# %p.help-block Are you in 
 
