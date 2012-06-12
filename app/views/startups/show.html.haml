@@ -12,6 +12,11 @@
         = link_to "Edit Startup", "/startup/edit", :class => "btn"
 
 %hr
+
+- vid_url = Youtube.embed_url(s.intro_video_url)
+- unless vid_url.blank?
+  %iframe{:width => '500', :height => '315', :src => vid_url, :frameborder => 0, :allowfullscreen => true}
+
 .row
   .span8
     %h3 Team Members

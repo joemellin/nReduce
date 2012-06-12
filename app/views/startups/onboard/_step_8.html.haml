@@ -27,6 +27,8 @@
       .controls
         = f.text_field :intro_video_url, :class => 'span5 with-placeholder', :placeholder => 'http://www.youtube.com/watch?v=dQw4w9WgXcQ'
         = f.semantic_errors :intro_video_url
+        %p.help-block
+          Make sure to allow embedding for the video
     .form-actions.buttons
       = f.submit 'Submit Video', :class => 'btn btn-primary btn-large'
 
