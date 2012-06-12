@@ -27,7 +27,7 @@
     .span1
       %p &nbsp;
     .span11
-      %h2 #{pluralize(@startups.size, 'startup')}:
+      %h2 #{pluralize(@startups.total_entries, 'startup')}:
 
   - @startups.each do |s|
     .row{:id => "startup_#{s.id}"}
