@@ -16,7 +16,7 @@ class StartupsController < ApplicationController
   def search
     if !params[:search].blank?
       # sanitize search params
-      params[:search].delete_if{|k,v| ![:name, :meeting_id, :industry_id].include?(k) }
+      params[:search].select{|k,v| [:name, :meeting_id, :industry_id].include?(k) }
 
       # save in session for pagination
       @search = session[:search] = params[:search]
@@ -44,7 +44,7 @@ class StartupsController < ApplicationController
       @startups = @startups.where(['industry_id = ?', @search[:industry_id]])
     end
 
-    @meetings_by_id = Meeting.by_id
+    @meetings_by_id = Meeting.location_name_by_id
   end
 
   #

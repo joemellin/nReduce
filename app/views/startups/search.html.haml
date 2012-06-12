@@ -1,7 +1,7 @@
 - content_for :subtitle do
   Discover Startups
 
-= form_tag search_startups_path, :class => 'form-inline'  do
+= form_tag search_startups_path, :method => :post, :class => 'form-inline'  do
   .row
     .span2{:align => 'right'}
       %p &nbsp;
@@ -13,11 +13,11 @@
     .span3
       %p
         %small Meeting Location
-      = select_tag 'search[meeting_id]', options_for_select(Meeting.select_options, @search[:meeting_id]), :class => 'input-large', :include_blank => true
+      = select_tag 'search[meeting_id]', options_for_select(@meetings_by_id.map{|id, name| [name, id] }, @search[:meeting_id].to_i), :class => 'input-large', :include_blank => true
     .span3
       %p
         %small Markets (coming soon)
-      = select_tag 'search[name]', options_for_select([], @search[:industry]), :class => 'input-large', :include_blank => true
+      = select_tag 'search[industry]', options_for_select([], @search[:industry]), :class => 'input-large', :include_blank => true
     .span1
       %p &nbsp;
       = submit_tag 'Search', :class => 'btn'
@@ -53,7 +53,7 @@
               %p Goal: #{Startup.company_goals[s.company_goal.to_i]}
             %p
               Meeting:
-              = !s.meeting_id.blank? and !@meetings_by_id[s.meeting_id].blank? ? @meetings_by_id[s.meeting_id].location_name : 'none'
+              = !s.meeting_id.blank? and !@meetings_by_id[s.meeting_id].blank? ? @meetings_by_id[s.meeting_id] : 'none'
             %p
               Team:
               %br
