@@ -48,6 +48,11 @@ class StartupsController < ApplicationController
   #
 
   def new
+    if !registration_open?
+      flash[:notice] = "Sorry but registration is closed for the current nReduce class"
+      redirect_to '/'
+      return
+    end
     redirect_if_user_has_startup
     @startup = Startup.new(:website_url => 'http://')
   end

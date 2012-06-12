@@ -3,6 +3,10 @@ class ApplicationController < ActionController::Base
 
   protected
 
+  def registration_open?
+    false
+  end
+
   def login_required
     authenticate_user!
   end
