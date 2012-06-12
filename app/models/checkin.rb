@@ -47,6 +47,10 @@ class Checkin < ActiveRecord::Base
     "#{time.strfime('%b %-d')} to #{week_end.strfime('%b %-d')}"
   end
 
+  def time_label
+    Checkin.week_for_time(self.created_at)
+  end
+
   def submitted?
     !submitted_at.blank?
   end

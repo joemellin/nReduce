@@ -5,7 +5,7 @@
 
 - hide_nav = @checkin.submitted?
 
-%h2 Check-in for #{Week.name_for_id(@checkin.week_id)}
+%h2 Check-in for #{@checkin.time_label)}
 .row
   .span7
     = semantic_form_for @checkin, :html => {:class => "form-horizontal"} do |f|
