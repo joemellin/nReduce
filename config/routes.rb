@@ -10,6 +10,7 @@ Nreduce::Application.routes.draw do
   # Easy routes for auth/account stuff
   as :user do
     get '/sign_in' => "devise/sessions#new"
+    get '/login' => "devise/sessions#new"
     get '/sign_up' => "registrations#new"
     get '/logout' => "devise/sessions#destroy"
   end
