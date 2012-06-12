@@ -4,7 +4,7 @@ class CheckinsController < ApplicationController
 
   def index
     # For now only allow access to your own checkin list (future will be to allow investors)
-    @startup = current_startup
+    @startup = @current_startup
     @checkins = @startup.checkins.ordered
   end
 
@@ -25,13 +25,13 @@ class CheckinsController < ApplicationController
   end
 
   def edit
-    @startup = current_startup
+    @startup = @current_startup
     @checkin = Checkin.find(params[:id])
     redirect_to(checkins_path) && return unless authorize_edit_checkin(@checkin) # only allow owner to edit
   end
 
   def new
-    @startup = current_startup
+    @startup = @current_startup
     if @startup.current_checkin and Checkin.in_after_time_window?
       @checkin = @startup.current_checkin
     elsif Checkin.in_before_time_window?
@@ -45,7 +45,7 @@ class CheckinsController < ApplicationController
   end
 
   def create
-    @startup = current_startup
+    @startup = @current_startup
     @checkin = Checkin.new(params[:checkin])
     @checkin.startup = @startup
     if @checkin.save
