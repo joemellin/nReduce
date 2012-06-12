@@ -49,11 +49,23 @@
         %h3 #{s.one_liner}
         .row
           .span2
-            %p Goal: #{s.company_goal}
-            %p Meeting: #{!s.meeting_id.blank? ? s.meeting.location_name : 'none'}
-            %p Team: ..[pics here]..
-          .span2
-            %p Idea Stage: #{s.stage}
+            - unless s.company_goal.blank?
+              %p Goal: #{Startup.company_goals[s.company_goal.to_i]}
+            %p
+              Meeting:
+              = !s.meeting_id.blank? and !@meetings_by_id[s.meeting_id].blank? ? @meetings_by_id[s.meeting_id].location_name : 'none'
+            %p
+              Team:
+              %br
+              - s.team_members.each do |tm|
+                - if tm.external_pic_url.blank?
+                  [ #{tm.first_name} ]
+                - else
+                  .left{:style => 'margin: 0 5px 5px 0'}= image_tag(tm.external_pic_url, :style => 'width: 50px; height: 50px', :title => tm.name)
+              .clear
+          .span3
+            - unless s.stage.blank?
+              %p Idea Stage: #{Startup.stages[s.stage.to_i]}
             %p Industry: #{s.industry_list}
       .span3.relationship
         = button_to 'Invite to Group', relationships_path(:startup_id => s.id), :class => 'btn btn-large btn-info', :remote => true

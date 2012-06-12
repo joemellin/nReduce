@@ -14,15 +14,17 @@ class StartupsController < ApplicationController
   end
 
   def search
-    unless params[:search].blank?
+    if !params[:search].blank?
       # sanitize search params
-      params[:search].delete_if{|k,v| [:name, :meeting_id, :industry_id].include?(k) }
+      params[:search].delete_if{|k,v| ![:name, :meeting_id, :industry_id].include?(k) }
 
       # save in session for pagination
-      session[:search] = params[:search]
+      @search = session[:search] = params[:search]
+    elsif !params[:page].blank? 
+      @search = session[:search]
     end
 
-    @search = session[:search] || {}
+    @search ||= {}
 
     # Establish basic query to find public startups
     @startups = Startup.is_public.where(:onboarding_step => Startup.num_onboarding_steps).order(:name).includes(:team_members).paginate(:page => params[:page] || 1, :per_page => 10)
