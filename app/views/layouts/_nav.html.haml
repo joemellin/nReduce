@@ -17,7 +17,7 @@
       %div{:style => 'text-align: right'}
         My meeting:
         &nbsp;
-        = link_to current_user.meeting.location_name, users_edit_path
+        = link_to current_user.meeting.location_name, edit_user_path
         %br
         Tue at #{current_user.meeting.start_time}
         - unless current_user.meeting.url.blank?
