@@ -6,18 +6,23 @@
     %br/
     %p
       %strong An alliance of creators built on accountability and community
-    %br/
-    %a.btn.btn-large{:href => '/auth/twitter'}
-      = image_tag('twitter_32.png')
-      Sign In With Twitter
-    %a.btn.btn-large{:href => '/auth/linkedin'}
-      = image_tag('linkedin_32.png')
-      Sign In With LinkedIn
+    - unless @omniauth
+      %br/
+      %a.btn.btn-large{:href => '/auth/twitter'}
+        = image_tag('twitter_32.png')
+        Sign In With Twitter
+      %a.btn.btn-large{:href => '/auth/linkedin'}
+        = image_tag('linkedin_32.png')
+        Sign In With LinkedIn
   .span3
 
-= render 'devise/shared/sign_in_sign_up'
-
-/ %h2 Sign up
-/ = semantic_form_for(resource, :as => resource_name, :url => registration_path(resource_name), :html => { :class => 'form-horizontal' }) do |f|
-/   = render 'devise/registrations/fields', :f => f
-/ = link_to "Forgot your password?", new_password_path(resource_name)
+.row
+  .span4
+    %p &nbsp;
+  .span4
+    %div{:align => 'center'}
+      %h2 Sign up
+    = semantic_form_for(resource, :as => resource_name, :url => registration_path(resource_name), :html => { :class => 'form-horizontal' }) do |f|
+      = render 'devise/registrations/fields', :f => f
+  .span4
+    %p &nbsp;
