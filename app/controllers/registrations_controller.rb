@@ -1,6 +1,7 @@
 class RegistrationsController < Devise::RegistrationsController
   def new
     super
+    @omniauth = !session[:omniauth].blank?
     @user.geocode_from_ip(request.remote_ip) if @user.location.blank?
   end
 
