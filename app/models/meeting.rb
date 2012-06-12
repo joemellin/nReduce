@@ -5,8 +5,8 @@ class Meeting < ActiveRecord::Base
 
   attr_accessible :location_name, :venue_name, :venue_address, :venue_url, :description,  :start_time, :day_of_week, :organizer_id
 
-  validates_presence_of :name
-  validates_uniqueness_of :name, :on => :create, :message => "must be unique"
+  validates_presence_of :location_name
+  validates_uniqueness_of :location_name, :on => :create, :message => "must be unique"
 
   before_save :geocode_location
 
