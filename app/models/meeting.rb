@@ -10,8 +10,8 @@ class Meeting < ActiveRecord::Base
 
   before_save :geocode_location
 
-  def self.by_id
-    Meeting.all.inject({}){|r,e| r[e.id] = e; r }
+  def self.location_name_by_id
+    Meeting.select('id, location_name').all.inject({}){|r,e| r[e.id] = e.location_name; r }
   end
 
   def self.select_options
