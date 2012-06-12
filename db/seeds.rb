@@ -83,7 +83,7 @@ unless data.blank?
       startup.company_goal = Settings.startup_options.company_goal.to_hash.stringify_keys[s[:company_goal]]
     end
     unless s[:growth_model].blank?
-      startup.growth_model = Settings.startup_options.growth_model.to_hash.stringify_keys[s[:company_goal]]
+      startup.growth_model = Settings.startup_options.growth_model.to_hash.stringify_keys[s[:growth_model]]
     end
 
     if startup.save!
