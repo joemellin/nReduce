@@ -49,4 +49,4 @@
       = render :partial => 'comments/form', :object => @new_comment
       
       - @comments.each do |c|
-        = render :partial => 'comments/comment', :object => c
+        = render 'comments/comment', :comment => c
