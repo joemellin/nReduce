@@ -21,6 +21,9 @@
     .pass
       = link_to '(show password)', '#', :onclick => "$('.pass').toggle()"
   .clear
+  %i
+    Problems logging in?
+    = link_to 'Reset HipChat login', reset_hipchat_account_users_path, :method => :post
 .clear
 %br
 %iframe{:src => "http://nreduce.hipchat.com/chat", :width => 920, :height => 625, :frameborder => 0, :style => 'border: 1px solid #ccc'}
