@@ -1,11 +1,12 @@
 class User < ActiveRecord::Base
   acts_as_mappable
   belongs_to :startup
-  has_many :authentications
+  has_many :authentications, :dependent => :destroy
   has_one :meeting, :class_name => 'Meeting', :through => :startup
   has_many :organized_meetings, :class_name => 'Meeting', :foreign_key => 'organizer_id'
   has_many :sent_messages, :foreign_key => 'sender_id'
   has_many :received_messages, :foreign_key => 'recipient_id'
+  has_many :comments
 
   # Include default devise modules. Others available are:
   # :token_authenticatable, :confirmable,
