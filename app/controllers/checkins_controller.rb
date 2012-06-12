@@ -32,15 +32,16 @@ class CheckinsController < ApplicationController
 
   def new
     @startup = @current_startup
-    if @startup.current_checkin and Checkin.in_after_time_window?
-      @checkin = @startup.current_checkin
-    elsif Checkin.in_before_time_window?
-      @checkin = Checkin.new
-    else
-      flash[:alert] = "Sorry you've missed the check-in times."
-      redirect_to root_path
-      return
-    end
+    @checkin = @current_startup.current_checkin
+    # if @startup.current_checkin and Checkin.in_after_time_window?
+    #   @checkin = @startup.current_checkin
+    # elsif Checkin.in_before_time_window?
+    #   @checkin = Checkin.new
+    # else
+    #   flash[:alert] = "Sorry you've missed the check-in times."
+    #   redirect_to root_path
+    #   return
+    # end
     render :action => :edit
   end
 
