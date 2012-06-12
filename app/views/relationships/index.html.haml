@@ -9,12 +9,21 @@
     %p Check out each team's progress this week and give them feedback
   .span4
     %p
-      - if Checkin.in_before_time_window?
-        Start by Wednesday at 4pm PST:
-        = link_to 'Start Check-in', new_checkin_path, :class => 'btn btn-danger'
-      - elsif Checkin.in_after_time_window?
-        Complete before Tuesday at 4pm PST:
-        = link_to 'Finish Check-in', new_checkin_path, :class => 'btn btn-danger'
+      - if !@checkin.blank?
+        - if @checkin.completed?
+          = link_to 'Your Check-in', @checkin, :class => 'btn'
+        - elsif @checkin.submitted? and Checkin.in_after_time_window?
+          Complete before Tuesday at 4pm PST:
+          = link_to 'Finish Check-in', new_checkin_path, :class => 'btn btn-danger'
+        - else
+          Keep workin!
+      - else
+        - if Checkin.in_before_time_window?
+          Start by Wednesday at 4pm PST:
+          = link_to 'Start Check-in', new_checkin_path, :class => 'btn btn-danger'
+        - else
+          Come back to start your checkin by Wednesday at 4pm PST
+        
 %hr
 %br
 %br
