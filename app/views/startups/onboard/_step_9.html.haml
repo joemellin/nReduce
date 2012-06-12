@@ -46,19 +46,16 @@
           %li Location: #{@startup.meeting.venue_name}
           - unless @startup.meeting.venue_url.blank?
             %li= link_to 'View on Map', @startup.meeting.venue_url
-          - if @startup.meeting.organizer_twitters.blank?
+          - if @startup.meeting.organizer.blank?
             %li Organizer: not yet picked
           - else
-            - organizers = @startup.meeting.organizer_auths
             %li
-              Organizer#{organizers.size == 1 ? '' : 's'}:
+              Organizer: 
+              = link_to_twitter(@startup.meeting.organizer.twitter, :target => '_blank')
+              - unless @startup.meeting.organizer.phone.blank?
+                \-
+                = @startup.meeting.organizer.phone
               %br
-              - organizers.each do |a|
-                = link_to_twitter(a.twitter, :target => '_blank')
-                - unless a.phone_number.blank?
-                  \-
-                  = a.phone_number
-                %br
     %br
     %h2 3) #{link_to('Chat online', chat_users_path)} with everyone!
   .span4
