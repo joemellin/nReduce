@@ -44,8 +44,8 @@
             = link_to 'change', edit_startup_path
           %li Local Start Time: Tuesdays at #{@startup.meeting.start_time}
           %li Location: #{@startup.meeting.venue_name}
-          - unless @startup.meeting.map_url.blank?
-            %li= link_to 'View on Map', @startup.meeting.map_url
+          - unless @startup.meeting.venue_url.blank?
+            %li= link_to 'View on Map', @startup.meeting.venue_url
           - if @startup.meeting.organizer_twitters.blank?
             %li Organizer: not yet picked
           - else
