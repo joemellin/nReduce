@@ -13,7 +13,7 @@ contents = file.read
 data = JSON.parse(contents).symbolize_keys
 
 unless data.blank?
-  auth_by_id = data[:authentication].inject({}){|res, e| res[e[:id].to_sym] = e.symbolize_keys; res }
+  auth_by_id = data[:authentication].inject({}){|res, e| res[e['id'].to_sym] = e.symbolize_keys unless e.blank?; res }
   failed = {}
   failed[:user] = []
   data[:user].each do |u|
@@ -29,7 +29,11 @@ unless data.blank?
       user.send("#{k}=".to_sym, v)
     end
 
-    user.authentications.build(auth_by_id[auth_id.to_sym])
+
+    unless auth_by_id[auth_id.to_sym].blank?
+      user.authentications.build(auth_by_id[auth_id.to_sym].delete_if{|k,v| [:email, :twitter, :id].include?(k) })
+    end
+
     # Save the object
     if user.save!(:validate => false)
       auth_by_id[:user_id] = user.id
@@ -87,6 +91,7 @@ unless data.blank?
 
       unless team_members_authentication_ids.blank?
         team_members_authentication_ids.each do |auth_id|
+          next if auth_id.blank?
           auth = auth_by_id[auth_id.to_sym]
           if auth and auth[:user_id]
             u = User.find(auth[:user_id])
