@@ -96,7 +96,7 @@ unless data.blank?
           if auth and auth[:user_id]
             u = User.find(auth[:user_id])
             u.startup_id = startup.id
-            u.save
+            u.save(:validate => false)
           end
         end
       end
