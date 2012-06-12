@@ -12,7 +12,7 @@ Nreduce::Application.routes.draw do
     get '/sign_in' => "devise/sessions#new"
     get '/login' => "devise/sessions#new"
     get '/sign_up' => "registrations#new"
-    get '/logout' => "devise/sessions#destroy"
+    match '/logout' => "devise/sessions#destroy"
   end
 
   get "/contact_joe" => "pages#contact_joe"

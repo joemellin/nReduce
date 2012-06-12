@@ -12,7 +12,7 @@
           %li{:class => is_controller_action?('users', 'edit') ? 'active' : ''}= link_to "Account", edit_user_path(current_user)
           - if current_user.admin?
             %li= link_to "Admin Tools", "/admin"
-          %li= link_to "Log out", logout_path, :class => 'btn'
+          %li= link_to "Log out", logout_path, :class => 'btn', :method => :delete
     - if user_signed_in? and !current_user.meeting.blank?
       %div{:style => 'text-align: right'}
         My meeting:
