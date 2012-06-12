@@ -31,7 +31,7 @@ class UsersController < ApplicationController
     if @user.reset_hipchat_account!
       flash[:notice] = "Your HipChat account has been reset, please try logging in again."
     else
-      flash[:error] = "Sorry but your HipChat account could not be reset. Please contact josh@nreduce.com"
+      flash[:alert] = "Sorry but your HipChat account could not be reset. Please contact josh@nreduce.com"
     end
     redirect_to :action => :chat
   end
