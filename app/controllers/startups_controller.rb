@@ -53,12 +53,12 @@ class StartupsController < ApplicationController
       redirect_to current_user
       return
     end
-    redirect_if_user_has_startup
+    return unless redirect_if_user_has_startup
     @startup = Startup.new(:website_url => 'http://')
   end
 
   def create
-    redirect_if_user_has_startup
+    return unless redirect_if_user_has_startup
     @startup = Startup.new(params[:startup])
     if @startup.save
       current_user.update_attribute('startup_id', @startup.id)
@@ -149,7 +149,8 @@ class StartupsController < ApplicationController
     if !current_user.startup_id.blank?
       flash.keep
       redirect_to "/startup"
-      return
+      return false
     end
+    true
   end
 end

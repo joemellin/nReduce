@@ -3,6 +3,7 @@ class UsersController < ApplicationController
 
   def show
     @user = current_user
+
   end
 
   def edit
@@ -23,5 +24,15 @@ class UsersController < ApplicationController
   def chat
     @user = current_user
     @user.generate_hipchat! unless @user.hipchat?
+  end
+
+  protected
+
+  def redirect_unless_user_can_view_user(user)
+    unless current_user.id == user.id or current_user.admin?
+      redirect_to '/'
+      return false
+    end
+    true
   end
 end
