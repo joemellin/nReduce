@@ -47,6 +47,6 @@
   .span12
     #comments
       = render :partial => 'comments/form', :object => @new_comment
-      
-      - @comments.each do |c|
-        = render 'comments/comment', :comment => c
+      .list
+        - @comments.each do |c|
+          = render 'comments/comment', :comment => c
