@@ -51,7 +51,7 @@ class CheckinsController < ApplicationController
     @checkin.startup = @startup
     if @checkin.save
       flash[:notice] = "Your checkin has been saved!"
-      redirect_to startup_onboard_path
+      redirect_to onboard_startup_path
     else
       render :action => :edit
     end
