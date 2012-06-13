@@ -1,5 +1,5 @@
 class ApplicationController < ActionController::Base
-  before_filter :block_ips
+  #before_filter :block_ips
   protect_from_forgery
 
   protected
