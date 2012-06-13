@@ -127,8 +127,11 @@ RailsAdmin.config do |config|
       field :startup
       field :start_focus
       field :start_video_url
+      field :submitted_at
       field :end_video_url
       field :completed_at
+      field :start_why
+      field :end_comments
     end
   end
   # config.model Comment do
