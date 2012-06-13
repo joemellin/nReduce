@@ -48,7 +48,7 @@ class Checkin < ActiveRecord::Base
   end
 
   def time_label
-    Checkin.week_for_time(self.created_at)
+    Checkin.week_for_time(self.created_at || Time.now)
   end
 
   def submitted?
