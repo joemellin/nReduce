@@ -105,30 +105,32 @@ RailsAdmin.config do |config|
   #   create do; end
   #   update do; end
   # end
-  # config.model Checkin do
-  #   # Found associations:
-  #     configure :startup, :belongs_to_association 
-  #     configure :user, :belongs_to_association 
-  #     configure :comments, :has_many_association   #   # Found columns:
-  #     configure :id, :integer 
-  #     configure :start_focus, :string 
-  #     configure :start_why, :string 
-  #     configure :start_video_url, :string 
-  #     configure :end_video_url, :string 
-  #     configure :end_comments, :text 
-  #     configure :submitted_at, :datetime 
-  #     configure :completed_at, :datetime 
-  #     configure :startup_id, :integer         # Hidden 
-  #     configure :user_id, :integer         # Hidden 
-  #     configure :created_at, :datetime 
-  #     configure :updated_at, :datetime   #   # Sections:
-  #   list do; end
-  #   export do; end
-  #   show do; end
-  #   edit do; end
-  #   create do; end
-  #   update do; end
-  # end
+  config.model Checkin do
+    # Found associations:
+    # configure :startup, :belongs_to_association 
+    # configure :user, :belongs_to_association 
+    # configure :comments, :has_many_association   #   # Found columns:
+    # configure :id, :integer 
+    # configure :start_focus, :string 
+    # configure :start_why, :string 
+    # configure :start_video_url, :string 
+    # configure :end_video_url, :string 
+    # configure :end_comments, :text 
+    # configure :submitted_at, :datetime 
+    # configure :completed_at, :datetime 
+    # configure :startup_id, :integer         # Hidden 
+    # configure :user_id, :integer         # Hidden 
+    # configure :created_at, :datetime 
+    # configure :updated_at, :datetime   #   # Sections:
+    list do
+      field :id
+      field :startup
+      field :start_focus
+      field :start_video_url
+      field :end_video_url
+      field :completed_at
+    end
+  end
   # config.model Comment do
   #   # Found associations:
   #     configure :user, :belongs_to_association 
@@ -205,7 +207,7 @@ RailsAdmin.config do |config|
   #   create do; end
   #   update do; end
   # end
-  # config.model Relationship do
+  config.model Relationship do
   #   # Found associations:
   #     configure :startup, :belongs_to_association 
   #     configure :connected_with, :belongs_to_association   #   # Found columns:
@@ -216,13 +218,15 @@ RailsAdmin.config do |config|
   #     configure :created_at, :datetime 
   #     configure :approved_at, :datetime 
   #     configure :rejected_at, :datetime   #   # Sections:
-  #   list do; end
+    list do
+      filters [:startup_id, :connected_with_id]
+    end
   #   export do; end
   #   show do; end
   #   edit do; end
   #   create do; end
   #   update do; end
-  # end
+  end
   # config.model Startup do
   #   # Found associations:
   #     configure :main_contact, :belongs_to_association 
