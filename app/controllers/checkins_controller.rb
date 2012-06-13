@@ -1,6 +1,5 @@
 class CheckinsController < ApplicationController
   before_filter :current_startup_required
-  before_filter :load_startup_and_verify_access, :only => [:show]
 
   def index
     # For now only allow access to your own checkin list (future will be to allow investors)
@@ -20,6 +19,7 @@ class CheckinsController < ApplicationController
     else
       @checkin = Checkin.find(params[:id])
     end
+    redirect_to(checkins_path) && return unless authorize_view_checkin(@checkin) # only allow owner to edit
     @new_comment = Comment.new(:checkin_id => @checkin.id)
     @comments = @checkin.comments.ordered
   end
@@ -74,14 +74,13 @@ class CheckinsController < ApplicationController
   protected
 
     # Loads startup from params, and verifies the logged-in user is connected to them
-  def load_startup_and_verify_access
-    if params[:startup_id].blank?
-      # User viewing own checkins
-      @startup = @current_startup
+  def authorize_view_checkin(checkin)
+    if @current_startup.id == checkin.startup_id
+      @startup == @current_startup
       @owner = true
     else
       # Someone else looking at checkins for a startup
-      @startup = Startup.find(params[:startup_id])
+      @startup = checkin.startup
       unless @current_startup.connected_to?(@startup)
         flash[:alert] = "Sorry you don't have access to view that startup because you aren't connected to them."
         redirect_to relationships_path
@@ -92,6 +91,7 @@ class CheckinsController < ApplicationController
   end
 
   def authorize_edit_checkin(checkin)
-    current_user.admin? or checkin.startup_id == @current_startup.id
+    return true if current_user.admin? or (checkin.startup_id == @current_startup.id)
+    false
   end
 end
