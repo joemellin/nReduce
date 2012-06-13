@@ -57,7 +57,7 @@ class StartupsController < ApplicationController
 
   def new
     if !registration_open?
-      flash[:notice] = "Sorry but registration is closed for the current nReduce class"
+      flash[:notice] = "Sorry but registration is closed for the current nReduce class. Email Joe if you have any questions: joe@nReduce.com"
       redirect_to current_user
       return
     end
