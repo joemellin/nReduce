@@ -20,7 +20,7 @@ class CheckinsController < ApplicationController
     else
       @checkin = Checkin.find(params[:id])
     end
-    redirect_to(checkins_path) && return unless authorize_view_checkin(@checkin) # only allow owner to edit
+    return unless authorize_view_checkin(@checkin) # only allow owner to edit
     @new_comment = Comment.new(:checkin_id => @checkin.id)
     @comments = @checkin.comments.ordered
   end
