@@ -1,7 +1,15 @@
 class ApplicationController < ActionController::Base
+  before_filter :block_ips
   protect_from_forgery
 
   protected
+
+  def block_ips
+    if request.remote_ip == '75.161.16.187'
+      render :nothing => true
+      return
+    end
+  end
 
   def registration_open?
     false
