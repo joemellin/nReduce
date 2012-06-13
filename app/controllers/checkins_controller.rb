@@ -11,9 +11,9 @@ class CheckinsController < ApplicationController
     @startup = Startup.find(params[:startup_id]) unless params[:startup_id].blank?
     params[:id] ||= params[:checkin_id]
     if params[:id] == 'latest'
-      @checkin = @startup.checkins.ordered.first
+      @checkin = @startup.checkins.completed.ordered.first
       if @checkin.blank?
-        flash[:alert] = "#{@startup.name} hasn't made any check-ins yet."
+        flash[:alert] = "#{@startup.name} hasn't completed any check-ins yet."
         redirect_to @startup
         return
       end
