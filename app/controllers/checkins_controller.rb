@@ -8,6 +8,7 @@ class CheckinsController < ApplicationController
   end
 
   def show
+    @startup = Startup.find(params[:startup_id]) unless params[:startup_id].blank?
     params[:id] ||= params[:checkin_id]
     if params[:id] == 'latest'
       @checkin = @startup.checkins.ordered.first
@@ -80,7 +81,7 @@ class CheckinsController < ApplicationController
       @owner = true
     else
       # Someone else looking at checkins for a startup
-      @startup = checkin.startup
+      @startup ||= checkin.startup
       unless @current_startup.connected_to?(@startup)
         flash[:alert] = "Sorry you don't have access to view that startup because you aren't connected to them."
         redirect_to relationships_path
