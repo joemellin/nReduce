@@ -9,6 +9,9 @@ class Relationship < ActiveRecord::Base
   APPROVED = 2
   REJECTED = 3
 
+  validates_presence_of :startup_id
+  validates_presence_of :connected_with_id
+
   scope :pending, where(:status => Relationship::PENDING)
   scope :approved, where(:status => Relationship::APPROVED)
   scope :rejected, where(:status => Relationship::REJECTED)
