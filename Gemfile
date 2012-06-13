@@ -24,6 +24,7 @@ gem 'aws-s3'
 gem 'aws-sdk'
 gem 'formtastic'
 gem 'will_paginate', "~> 3.0"
+gem 'rails_admin'
 
 group :test, :development do
   # Pretty printed test output
