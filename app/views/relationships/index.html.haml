@@ -12,14 +12,14 @@
     - if !@current_checkin.blank?
       - if @current_checkin.completed?
         %p= link_to 'Your Completed Check-in', @current_checkin, :class => 'btn btn-primary'
-      - elsif @current_checkin.submitted? # and Checkin.in_after_time_window?
+      - elsif @current_checkin.submitted? and (@current_checkin.created_at < Time.now - 1.day) # and Checkin.in_after_time_window?
         %p
           %span.label.label-warning Extended 1 day
           %i Complete before Tue at 4pm PST:
           = link_to "Complete 'After' Check-in", edit_checkin_path(@current_checkin), :class => 'btn btn-danger'
-      / - else
-      /   Keep workin!
-    - if Checkin.in_before_time_window?
+      - else
+        Keep workin! (checkin was submitted this week)
+    - if Checkin.in_before_time_window? and (@current_checkin.blank? or (!@current_checkin.blank? and @current_checkin.created_at < Time.now - 1.day))
       %p
         %i Start by Wed at 4pm PST:
         = link_to "Start 'Before' Check-in", new_checkin_path, :class => 'btn btn-success'
