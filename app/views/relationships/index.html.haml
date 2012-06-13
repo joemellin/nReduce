@@ -10,7 +10,7 @@
   .span6{:align => 'right'}
     %h4 Your Check-ins
     - if !@current_checkin.blank?
-      - if 1 == 2 # @current_checkin.completed?
+      - if @current_checkin.completed?
         %p= link_to 'Your Completed Check-in', @current_checkin, :class => 'btn btn-primary'
       - elsif @current_checkin.submitted? # and Checkin.in_after_time_window?
         %p
