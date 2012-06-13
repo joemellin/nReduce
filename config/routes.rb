@@ -57,6 +57,9 @@ Nreduce::Application.routes.draw do
     end
   end
 
+  match '/mentors/new' => "pages#mentor"
+  match '/investors/new' => "pages#investor"
+
 
   root :to => 'relationships#index'
 end
