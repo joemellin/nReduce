@@ -27,6 +27,11 @@ class User < ActiveRecord::Base
     self.name.blank? ? '' : self.name.sub(/\s+.*/, '')
   end
 
+  def awesome_for_object(object)
+    a = object.awesomes.where(:user_id => self.id).first
+    return a.blank? ? nil : a
+  end
+
   def mailchimp!
     return true if mailchimped?
     return false unless email.present?

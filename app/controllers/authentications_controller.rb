@@ -1,5 +1,6 @@
 class AuthenticationsController < ApplicationController
   include Devise::Controllers::Rememberable # included to set cookie manually
+  around_filter :record_user_action, :only => [:create, :failure, :destroy]
 
   def index
    @authentications = current_user.authentications if current_user
@@ -35,11 +36,12 @@ class AuthenticationsController < ApplicationController
   
   def failure
     flash[:alert] = "Sorry but you could't be authenticated. Please try again:"
-    #@ua = {:action => UserAction.id_for('oauth_failure'), :data => {:message => params[:message]}}
+    @ua = {:data => {:message => params[:message]}}
     redirect_to new_user_registration_url
   end
 
   def destroy
+    @ua = {:attachable => current_user}
     @authentication = current_user.authentications.find(params[:id])
     @authentication.destroy
     flash[:notice] = "Successfully destroyed authentication."

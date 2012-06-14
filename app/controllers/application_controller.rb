@@ -4,6 +4,32 @@ class ApplicationController < ActionController::Base
 
   protected
 
+  # use an around_filter
+  def record_user_action
+    return true if @ua
+    started = Time.now
+    yield
+    begin
+      #if Rails.env == 'production'
+        @ua ||= {}
+        # for user tracking
+        elapsed = Time.now - started
+        @ua[:action] = UserAction.id_for("#{controller_name}_#{action_name}")
+        @ua[:ip] = request.remote_ip
+        @ua[:time_taken] = elapsed
+        @ua[:browser] = request.env['HTTP_USER_AGENT']
+        @ua[:user_id] ||= current_user.id if user_signed_in?
+        @ua[:created_at] = Time.now
+        @ua[:url_path] = request.env['REQUEST_PATH']
+        user_action = UserAction.new(@ua)
+        user_action.save!
+    #  end
+    rescue
+      # do nothing
+    end
+  end
+
+
   def block_ips
     if request.remote_ip == '75.161.16.187'
       render :nothing => true

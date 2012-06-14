@@ -2,6 +2,7 @@ class Comment < ActiveRecord::Base
   belongs_to :user
   belongs_to :checkin
   has_one :startup, :through => :checkin
+  has_many :awesomes, :as => :awsm
   
   attr_accessible :content, :checkin_id
   

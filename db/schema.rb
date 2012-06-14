@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120612221428) do
+ActiveRecord::Schema.define(:version => 20120614051221) do
 
   create_table "authentications", :force => true do |t|
     t.string   "provider"
@@ -25,6 +25,16 @@ ActiveRecord::Schema.define(:version => 20120612221428) do
 
   add_index "authentications", ["provider", "uid"], :name => "index_authentications_on_provider_and_uid"
 
+  create_table "awesomes", :force => true do |t|
+    t.string   "awsm_type"
+    t.integer  "awsm_id"
+    t.integer  "user_id"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  add_index "awesomes", ["user_id", "awsm_type", "awsm_id"], :name => "awesomes_index", :unique => true
+
   create_table "checkins", :force => true do |t|
     t.string   "start_focus"
     t.string   "start_why"
@@ -35,8 +45,9 @@ ActiveRecord::Schema.define(:version => 20120612221428) do
     t.datetime "completed_at"
     t.integer  "startup_id"
     t.integer  "user_id"
-    t.datetime "created_at",      :null => false
-    t.datetime "updated_at",      :null => false
+    t.datetime "created_at",                     :null => false
+    t.datetime "updated_at",                     :null => false
+    t.integer  "awesome_count",   :default => 0
   end
 
   add_index "checkins", ["startup_id", "created_at"], :name => "index_checkins_on_startup_id_and_created_at"
@@ -45,8 +56,9 @@ ActiveRecord::Schema.define(:version => 20120612221428) do
     t.text     "content"
     t.integer  "user_id"
     t.integer  "checkin_id"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.datetime "created_at",                   :null => false
+    t.datetime "updated_at",                   :null => false
+    t.integer  "awesome_count", :default => 0
   end
 
   add_index "comments", ["checkin_id"], :name => "index_comments_on_checkin_id"
@@ -151,6 +163,20 @@ ActiveRecord::Schema.define(:version => 20120612221428) do
 
   create_table "tags", :force => true do |t|
     t.string "name"
+  end
+
+  create_table "user_actions", :force => true do |t|
+    t.integer  "action"
+    t.string   "url_path"
+    t.string   "ip"
+    t.string   "browser"
+    t.text     "data"
+    t.float    "time_taken"
+    t.integer  "user_id"
+    t.integer  "attachable_id"
+    t.string   "attachable_type"
+    t.datetime "created_at",      :null => false
+    t.datetime "updated_at",      :null => false
   end
 
   create_table "users", :force => true do |t|

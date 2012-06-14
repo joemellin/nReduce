@@ -1,4 +1,5 @@
 class StartupsController < ApplicationController
+  around_filter :record_user_action, :only => [:onboard_next]
   before_filter :login_required
 
   # Actions for all startups
