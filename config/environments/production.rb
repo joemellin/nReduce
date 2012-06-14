@@ -66,4 +66,6 @@ Nreduce::Application.configure do
   # config.active_record.auto_explain_threshold_in_seconds = 0.5
 
   config.time_zone = 'Pacific Time (US & Canada)'
+
+  config.action_mailer.smtp_settings = Settings.smtp_settings.to_hash
 end

@@ -24,7 +24,9 @@ gem 'aws-s3'
 gem 'aws-sdk'
 gem 'formtastic'
 gem 'will_paginate', "~> 3.0"
-gem 'rails_admin'
+gem 'rails_admin' # full admin package
+gem 'backup' # db backup 
+gem 'whenever' # cron scheduling
 
 group :test, :development do
   # Pretty printed test output

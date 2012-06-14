@@ -7,6 +7,7 @@ class User < ActiveRecord::Base
   has_many :sent_messages, :foreign_key => 'sender_id', :class_name => 'Message'
   has_many :received_messages, :foreign_key => 'recipient_id', :class_name => 'Message'
   has_many :comments
+  has_many :notifications
 
   # Include default devise modules. Others available are:
   # :token_authenticatable, :confirmable,
@@ -16,6 +17,8 @@ class User < ActiveRecord::Base
 
   # Setup accessible (or protected) attributes for your model
   attr_accessible :email, :password, :password_confirmation, :remember_me, :name, :skill_list, :startup, :mentor, :investor, :location, :phone, :startup_id
+
+  serialize :notification_prefs
 
   validates_presence_of :location
 

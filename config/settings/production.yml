@@ -16,3 +16,12 @@ apis:
     mentor_list_id: "fbf2bec566"
     investor_list_id: "6dc0fcba2b"
 
+smtp_settings:
+  address: 'smtp.sendgrid.net'
+  port: 587
+  domain: 'nreduce.com'
+  user_name: 'nreduce'
+  password: 'th3 dude abides'
+  authentication: 'plain'
+  enable_starttls_auto: true
+

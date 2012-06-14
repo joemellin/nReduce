@@ -22,5 +22,9 @@
     %h3 Team Members
     %ul
       - @startup.team_members.each do |team_member|
-        %li= team_member.name
+        %li
+          = team_member.name
+          - unless team_member.twitter.blank?
+            \- 
+            = link_to_twitter("@#{team_member.twitter}")
 

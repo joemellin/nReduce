@@ -5,6 +5,8 @@ Nreduce::Application.routes.draw do
 
   resources :authentications, :checkins
 
+  resources :notifications
+
   resources :awesomes, :only => [:create, :destroy]
 
   # for omniauth authentications with other providers

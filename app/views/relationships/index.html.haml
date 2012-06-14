@@ -35,7 +35,7 @@
   - c = 0
   - @startups.each do |s|
     .span3.left{:align => 'center', :style => 'margin-bottom: 15px'}
-      %h3= link_to s.name, latest_startup_checkins_path(s)
+      %h3= link_to s.id == @current_startup.id ? 'You' : s.name, latest_startup_checkins_path(s)
       = link_to 'View Progress', latest_startup_checkins_path(s), :class => 'btn btn-success'
 
   / - @startups.each do |s|
