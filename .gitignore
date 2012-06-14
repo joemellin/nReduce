@@ -11,6 +11,9 @@
 /db/*.sqlite3
 /config/database.yml
 
+# Ignore backup.rb file with passwords
+/config/backup.rb
+
 # Ignore all logfiles and tempfiles.
 /log/*.log
 /tmp

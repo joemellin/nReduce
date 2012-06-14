@@ -43,10 +43,15 @@ class UserAction < ActiveRecord::Base
       'comments_update' => 28,
       'comments_destroy' => 29,
       'pages_mentor' => 30,
-      'pages_investor' => 31
+      'pages_investor' => 31,
+      'awesomes_create' => 32,
+      'awesomes_destroy' => 33,
+      'meetings_index' => 34,
+      'meetings_show' => 35,
+      'meetings_edit' => 36
     }
   end
-  
+
     # When given an action name (string), this will return the action id for that action name
   def self.id_for(action_name = nil)
     id = self.actions[action_name]

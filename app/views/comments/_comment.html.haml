@@ -7,8 +7,9 @@
       = link_to '<i class="icon-white icon-remove"></i>'.html_safe, comment, :method => :delete, :remote => true, :class => 'btn btn-small btn-danger controls', :confirm => "Are you sure you want to delete it?"
   .left{:style => 'width: 120px; padding-right: 10px;', :align => 'right'}
     - if !comment.user.external_pic_url.blank?
-      %div= image_tag comment.user.external_pic_url, :style => 'width: 50px; height: 50px;'
-    .name= "#{is_owner ? 'You' : truncate(comment.user.name, :length => 20)}"
+      - title = comment.user.name + (!comment.user.twitter.blank? ? " - @#{comment.user.twitter}" : '')
+      %div= link_to image_tag(comment.user.external_pic_url, :style => 'width: 50px; height: 50px;', :title => title), startup_path(:id => comment.user.startup_id)
+    .name= link_to "#{is_owner ? 'You' : truncate(comment.user.name, :length => 20)}", startup_path(:id => comment.user.startup_id)
     .time= "#{time_ago_in_words(comment.created_at)} ago"
   .left.content= simple_format(h(comment.content))
   .clear
