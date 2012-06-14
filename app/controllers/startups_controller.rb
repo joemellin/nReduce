@@ -30,9 +30,10 @@ class StartupsController < ApplicationController
     end
 
     @search ||= {}
+    @search[:page] = params[:page] || 1
 
     # Establish basic query to find public startups
-    @startups = Startup.is_public.where(:onboarding_step => Startup.num_onboarding_steps).order(:name).includes(:team_members).paginate(:page => params[:page] || 1, :per_page => 10)
+    @startups = Startup.is_public.where(:onboarding_step => Startup.num_onboarding_steps).order(:name).includes(:team_members).paginate(:page => @search[:page], :per_page => 10)
 
     # Add conditions
     # Ignore current user's startup
@@ -48,7 +49,7 @@ class StartupsController < ApplicationController
     unless @search[:industry_id].blank?
       @startups = @startups.where(['startups.industry_id = ?', @search[:industry_id]])
     end
-
+    @ua = {:data => @search}
     @meetings_by_id = Meeting.location_name_by_id
   end
 
