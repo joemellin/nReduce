@@ -1,4 +1,5 @@
 class CommentsController < ApplicationController
+  around_filter :record_user_action, :except => [:cancel_edit]
   before_filter :login_required
 
   def create
@@ -9,6 +10,7 @@ class CommentsController < ApplicationController
     else
       flash[:alert] = 'The comment could not be added'
     end
+    @ua = {:attachable => @comment}
     respond_to do |format|
       format.html { redirect_to @comment.checkin }
       format.js
@@ -17,7 +19,7 @@ class CommentsController < ApplicationController
   
   def edit
     @comment = Comment.find(params[:id])
-    #@ua = {:action => UserAction.id_for('edit_comment'), :attachable => @comment}
+    @ua = {:attachable => @comment}
     respond_to do |format|
       format.html
       format.js
@@ -47,6 +49,7 @@ class CommentsController < ApplicationController
   
   def destroy
     @comment = Comment.find(params[:id])
+    @ua = {:attachable => @comment}
     if @comment.delete
       flash[:notice] = 'The commment has been deleted'
     else

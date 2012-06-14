@@ -2,6 +2,7 @@ class Checkin < ActiveRecord::Base
   belongs_to :startup
   belongs_to :user # the user logged in who created check-in
   has_many :comments
+  has_many :awesomes, :as => :awsm
 
   attr_accessible :start_focus, :start_why, :start_video_url, :end_video_url, :end_comments, :startup_id
 
@@ -22,7 +23,7 @@ class Checkin < ActiveRecord::Base
   def self.in_before_time_window?
     # tues from 4pm - wed 4pm
     t = Time.now
-    return true if (t.tuesday? and t.hour > 16) or (t.wednesday? and t.hour < 16)
+    return true if (t.tuesday? and t.hour > 16) or (t.thursday? and t.hour < 16)
     false
   end
 
@@ -41,7 +42,7 @@ class Checkin < ActiveRecord::Base
     if time.sunday? or time.monday? or (time.tuesday? and time.hour < 16)
       time = time.beginning_of_week - 5.days
     else
-      time = time.beginning_of_day + (time.days_to_week_start.days - 5.days)
+      time = time.beginning_of_day - time.days_to_week_start.days + 2.days
     end
     time += 16.hours # set it at 4pm
     week_end = time + 6.days

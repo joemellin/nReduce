@@ -1,4 +1,5 @@
 class CheckinsController < ApplicationController
+  around_filter :record_user_action
   before_filter :current_startup_required
 
   def index

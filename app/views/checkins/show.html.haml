@@ -2,7 +2,6 @@
   Check-in For Week of #{@checkin.time_label}
 
 -# Show team nav if this is someone else's check-ins
-%hr
 .row
   .span4
     = link_to '<i class="icon icon-chevron-left"></i> All Teams'.html_safe, relationships_path, :class => 'btn btn-large'
@@ -12,7 +11,7 @@
       %h2 Team #{@checkin.startup.name}
     - @checkin.startup.team_members.each do |tm|
       - next if tm.external_pic_url.blank?
-      .inline-block{:style => 'margin-left: 4px'}= image_tag tm.external_pic_url
+      .inline-block{:style => 'margin-left: 4px'}= image_tag tm.external_pic_url, :title => tm.name
     .clear
   .span4{:align => 'right'}
     / = link_to 'Next Team <i class="icon icon-chevron-right"></i>'.html_safe, '#', :class => 'btn btn-large'
@@ -37,7 +36,13 @@
       %small Why?
     %h3= h(@checkin.start_why)
   .span2{:align => 'center', :style => 'padding-top: 8px'}
-    .hide= link_to '<i class="icon-thumbs-up icon"></i> Awesome'.html_safe, '#', :class => 'btn'
+    - if current_user.startup_id == @checkin.startup_id
+      / - if @checkin.awesome_count > 0
+      /   %br
+      /   = pluralize(@checkin.awesome_count, 'awesome')
+      &nbsp;
+    - else
+      != render_awesome_button(@checkin)
   .span5
     %p{:style => 'margin-bottom: 0'}
       %small Question:
@@ -45,8 +50,11 @@
 
 .row{:style => 'margin-top: 15px'}
   .span12
-    #comments
-      = render :partial => 'comments/form', :object => @new_comment
-      .list
-        - @comments.each do |c|
-          = render 'comments/comment', :comment => c
+    - if !@checkin.completed?
+      %h4 This check-in hasn't been completed yet. Once it has you can add comments.
+    - else
+      #comments
+        = render :partial => 'comments/form', :object => @new_comment
+        .list
+          - @comments.each do |c|
+            = render 'comments/comment', :comment => c

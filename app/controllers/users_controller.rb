@@ -1,4 +1,5 @@
 class UsersController < ApplicationController
+  around_filter :record_user_action, :except => [:reset_hipchat_account]
   before_filter :login_required
 
   def show
