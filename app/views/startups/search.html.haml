@@ -27,7 +27,12 @@
     .span1
       %p &nbsp;
     .span11
-      %h2 #{pluralize(@startups.total_entries, 'startup')}:
+      .right
+        - if @startups.total_pages > 1
+          %h3{:style => 'color: #ccc'} Page #{@startups.current_page} of #{@startups.total_pages}
+      .left
+        %h2 #{pluralize(@startups.total_entries, 'startup')}:
+      .clear
 
   - @startups.each do |s|
     .row{:id => "startup_#{s.id}"}
@@ -76,26 +81,3 @@
   = will_paginate @startups
 - else
   %h4 No startups matched your search
-
-= content_for :js do
-  :plain
-    <script type="text/javascript" charset="utf-8">
-      jQuery(document).ready(function($) {
-        $("#startupTable").tablesorter({
-          textExtraction: function(node) {
-            var val = $(node).data("val");
-            if(val) {
-              return val;
-            }
-            else {
-              return $(node).text();
-            }
-          }
-        });
-
-        $("#view").on("change", function(e) {
-          var view = $(this);
-          window.location = "/admin/startups?view="+view.val();
-        });
-      });
-    </script>
