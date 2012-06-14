@@ -87,6 +87,17 @@ RailsAdmin.config do |config|
 
   # All fields marked as 'hidden' won't be shown anywhere in the rails_admin unless you mark them as visible. (visible(true))
 
+  config.model UserAction do
+    list do
+      field :user
+      field :url_path
+      field :time_taken
+      field :ip
+      field :browser
+      field :created_at
+    end
+  end
+
   # config.model Authentication do
   #   # Found associations:
   #     configure :user, :belongs_to_association   #   # Found columns:
