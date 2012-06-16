@@ -1,0 +1,9 @@
+Hi #{@user.name},
+\n#{@comment.user.name} has posted a new comment on your check-in from #{@checkin.time_label}:
+\------------------------------
+#{h(@comment.content)}
+\------------------------------
+\nRespond: #{checkin_url(@checkin)}
+\n
+\nThanks,
+\nnReduce

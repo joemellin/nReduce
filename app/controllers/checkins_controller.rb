@@ -35,7 +35,7 @@ class CheckinsController < ApplicationController
   def new
     @startup = @current_startup
     @checkin = @current_startup.current_checkin
-    if @checkin.blank? or Checkin.in_before_time_window?
+    if @checkin.blank? and Checkin.in_before_time_window?
       @checkin = Checkin.new
     end
     if @checkin.blank?

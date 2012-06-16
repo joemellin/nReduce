@@ -1,1 +1,9 @@
 == nReduce Rails App
+
+App Requirements:
+* rvm with ruby 1.9.3-p125-falcon, gemset nreduce-web
+* redis server
+
+== Testing
+
+To run full test suite: bundle exec guard start
