@@ -4,6 +4,8 @@ class Relationship < ActiveRecord::Base
 
   attr_accessible :startup_id, :connected_with_id, :status, :approved_at, :rejected_at
 
+  after_create :notify_users
+
   # Statuses
   PENDING = 1
   APPROVED = 2
@@ -56,6 +58,7 @@ class Relationship < ActiveRecord::Base
           inv.update_attributes(:status => APPROVED, :approved_at => Time.now) unless inv.approved?
         else
           Relationship.create(:startup_id => connected_with_id, :connected_with_id => startup_id, :status => APPROVED, :approved_at => Time.now)
+          Notification.create_for_relationship_approved(self)
         end
       end
     rescue ActiveRecord::RecordNotUnique
@@ -92,5 +95,11 @@ class Relationship < ActiveRecord::Base
 
   def rejected?
     self.status == REJECTED
+  end
+
+  protected
+
+  def notify_users
+    Notification.create_for_relationship_request(self)
   end
 end

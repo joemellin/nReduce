@@ -1,5 +1,9 @@
 Nreduce::Application.routes.draw do
+  # Main Admin
   mount RailsAdmin::Engine => '/admin', :as => 'rails_admin'
+  # Resque Admin
+  require 'resque/server'
+  mount Resque::Server.new, :at => "/resque"
 
   devise_for :users, :controllers => {:registrations => 'registrations'}
 

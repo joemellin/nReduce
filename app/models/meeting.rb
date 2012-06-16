@@ -1,6 +1,7 @@
 class Meeting < ActiveRecord::Base
   acts_as_mappable
   has_many :startups
+  has_many :attendees, :class_name => 'User'
   belongs_to :organizer, :class_name => 'User'
 
   attr_accessible :location_name, :venue_name, :venue_address, :venue_url, :description,  :start_time, :day_of_week, :organizer_id
@@ -9,6 +10,8 @@ class Meeting < ActiveRecord::Base
   validates_uniqueness_of :location_name, :on => :create, :message => "must be unique"
 
   before_save :geocode_location
+
+  @queue = :meeting_email
 
   def self.location_name_by_id
     Meeting.select('id, location_name').all.inject({}){|r,e| r[e.id] = e.location_name; r }
@@ -32,6 +35,19 @@ class Meeting < ActiveRecord::Base
     t = Time.now.in_time_zone(Nreduce::Application.config.time_zone)
     t = t.beginning_of_week.change(:hour => hours, :min => mins) + (self.day_of_week - 1).days
     t = t.in_time_zone(Time.zone)
+  end
+
+  def send_message_to_attendees(message, subject)
+    self.attendees.select('id, email, settings').where('email IS NOT NULL').each do |u|
+      Resque.enqueue(Meeting, self.id, u.id) if u.email_for?('meeting')
+    end
+  end
+
+  # Resque method to send meeting reminder email
+  def self.perform(meeting_id, user_id, message, subject)
+    meeting = Meeting.find(meeting_id)
+    user = User.find(user_id)
+    UserMailer.meeting_reminder(user, meeting, message, subject).deliver
   end
 
   protected

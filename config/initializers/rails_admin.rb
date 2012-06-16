@@ -87,16 +87,16 @@ RailsAdmin.config do |config|
 
   # All fields marked as 'hidden' won't be shown anywhere in the rails_admin unless you mark them as visible. (visible(true))
 
-  config.model UserAction do
-    list do
-      field :user
-      field :url_path
-      field :time_taken
-      field :ip
-      field :browser
-      field :created_at
-    end
-  end
+  # config.model UserAction do
+  #   list do
+  #     field :user
+  #     field :url_path
+  #     field :time_taken
+  #     field :ip
+  #     field :browser
+  #     field :created_at
+  #   end
+  # end
 
   # config.model Authentication do
   #   # Found associations:
@@ -221,7 +221,7 @@ RailsAdmin.config do |config|
   #   create do; end
   #   update do; end
   # end
-  config.model Relationship do
+  #config.model Relationship do
   #   # Found associations:
   #     configure :startup, :belongs_to_association 
   #     configure :connected_with, :belongs_to_association   #   # Found columns:
@@ -232,15 +232,12 @@ RailsAdmin.config do |config|
   #     configure :created_at, :datetime 
   #     configure :approved_at, :datetime 
   #     configure :rejected_at, :datetime   #   # Sections:
-    list do
-      filters [:startup_id, :connected_with_id]
-    end
   #   export do; end
   #   show do; end
   #   edit do; end
   #   create do; end
   #   update do; end
-  end
+  #end
   # config.model Startup do
   #   # Found associations:
   #     configure :main_contact, :belongs_to_association 
