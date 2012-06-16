@@ -7,7 +7,7 @@ class Comment < ActiveRecord::Base
   
   attr_accessible :content, :checkin_id
 
-  after_create :create_notification
+  after_create :notify_users
   
   validates_presence_of :content
   validates_presence_of :user_id
@@ -17,7 +17,7 @@ class Comment < ActiveRecord::Base
 
   protected
 
-  def create_notification
-    #Notification.create_and_send_for_object(self)
+  def notify_users
+    Notification.create_for_new_comment(self)
   end
 end

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120614051221) do
+ActiveRecord::Schema.define(:version => 20120616022226) do
 
   create_table "authentications", :force => true do |t|
     t.string   "provider"
@@ -48,6 +48,8 @@ ActiveRecord::Schema.define(:version => 20120614051221) do
     t.datetime "created_at",                     :null => false
     t.datetime "updated_at",                     :null => false
     t.integer  "awesome_count",   :default => 0
+    t.text     "before_comments"
+    t.text     "start_comments"
   end
 
   add_index "checkins", ["startup_id", "created_at"], :name => "index_checkins_on_startup_id_and_created_at"
@@ -96,6 +98,18 @@ ActiveRecord::Schema.define(:version => 20120614051221) do
   end
 
   add_index "messages", ["recipient_id", "folder", "read_at"], :name => "messages_comp_index"
+
+  create_table "notifications", :force => true do |t|
+    t.string   "message"
+    t.integer  "attachable_id"
+    t.string   "attachable_type"
+    t.integer  "user_id"
+    t.boolean  "emailed",         :default => false
+    t.datetime "read_at"
+    t.datetime "created_at"
+  end
+
+  add_index "notifications", ["user_id", "read_at"], :name => "index_notifications_on_user_id_and_read_at"
 
   create_table "rails_admin_histories", :force => true do |t|
     t.text     "message"
@@ -214,6 +228,8 @@ ActiveRecord::Schema.define(:version => 20120614051221) do
     t.string   "phone"
     t.string   "hipchat_username"
     t.string   "hipchat_password"
+    t.string   "settings"
+    t.integer  "meeting_id"
   end
 
   add_index "users", ["reset_password_token"], :name => "index_users_on_reset_password_token", :unique => true

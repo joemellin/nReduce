@@ -3,6 +3,7 @@ class Awesome < ActiveRecord::Base
   belongs_to :awsm, :polymorphic => true
 
   after_create :update_awesome_count
+  after_create :notify_users
   before_destroy :update_awesome_count
 
   validate :check_user_doesnt_own_object
@@ -18,6 +19,10 @@ class Awesome < ActiveRecord::Base
     "#{awsm_type}_#{awsm_id}_awesome"
   end
 
+  def for_checkin?
+    self.awsm_type == 'Checkin'
+  end
+
   protected
 
   def check_user_doesnt_own_object
@@ -31,5 +36,9 @@ class Awesome < ActiveRecord::Base
 
   def update_awesome_count
     self.awsm.update_attribute('awesome_count', self.awsm.awesomes.count)
+  end
+
+  def notify_users
+    Notification.create_for_new_awesome(self) if self.for_checkin?
   end
 end

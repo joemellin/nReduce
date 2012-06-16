@@ -12,7 +12,7 @@
     - @checkin.startup.team_members.each do |tm|
       - next if tm.external_pic_url.blank?
       - title = tm.name + (!tm.twitter.blank? ? " - @#{tm.twitter}" : '')
-      .inline-block{:style => 'margin-left: 4px'}= image_tag tm.external_pic_url, :title => title
+      .inline-block{:style => 'margin-left: 4px'}= image_tag tm.external_pic_url, :title => title, :style => 'width: 50px; height: 50px;'
     .clear
   .span4{:align => 'right'}
     / = link_to 'Next Team <i class="icon icon-chevron-right"></i>'.html_safe, '#', :class => 'btn btn-large'

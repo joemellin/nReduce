@@ -1,8 +1,9 @@
 class User < ActiveRecord::Base
   acts_as_mappable
   belongs_to :startup
+  belongs_to :meeting
   has_many :authentications, :dependent => :destroy
-  has_one :meeting, :class_name => 'Meeting', :through => :startup
+  has_one :startup_meeting, :class_name => 'Meeting', :through => :startup
   has_many :organized_meetings, :class_name => 'Meeting', :foreign_key => 'organizer_id'
   has_many :sent_messages, :foreign_key => 'sender_id', :class_name => 'Message'
   has_many :received_messages, :foreign_key => 'recipient_id', :class_name => 'Message'
@@ -16,15 +17,37 @@ class User < ActiveRecord::Base
          :recoverable, :rememberable, :trackable, :validatable #, :confirmable #, :omniauthable
 
   # Setup accessible (or protected) attributes for your model
-  attr_accessible :email, :password, :password_confirmation, :remember_me, :name, :skill_list, :startup, :mentor, :investor, :location, :phone, :startup_id
+  attr_accessible :email, :password, :password_confirmation, :remember_me, :name, :skill_list, :startup, :mentor, :investor, :location, :phone, :startup_id, :settings
 
-  serialize :notification_prefs
+  serialize :settings
 
   validates_presence_of :location
 
+  before_create :set_default_settings
   before_save :geocode_location
 
   acts_as_taggable_on :skills
+
+  def self.settings_labels
+    {
+      'email_on' =>
+        {
+        'comment' => 'New Comment', 
+        'meeting' => 'Meeting Reminder', 
+        'checkin' => 'New Checkin', 
+        'relationship' => 'Relationships'
+        }
+    }
+  end
+
+  def self.default_settings
+    {'email_on' => User.settings_labels['email_on'].keys}
+  end
+
+    # Returns boolean if user should be emailed for a specific action (action being the object class)
+  def email_for?(class_name)
+    !self.email.blank? and self.settings['email_on'] and self.settings['email_on'].include?(class_name)
+  end
 
   def first_name
     self.name.blank? ? '' : self.name.sub(/\s+.*/, '')
@@ -188,6 +211,10 @@ class User < ActiveRecord::Base
   end
 
   protected
+
+  def set_default_settings
+    self.settings ||= User.default_settings
+  end
 
   def geocode_location
     return true if !Rails.env.production? or self.location.blank? or (!self.location_changed? and !self.lat.blank?)

@@ -22,5 +22,15 @@
     = f.text_field :location, :class => 'span2', :placeholder => 'Zip/Postal Code or City/State'
     = f.semantic_errors :location
 
+.control-group{error_css(@user, :settings)}
+  = f.label :settings, 'Email me', :class => 'control-label'
+  .controls
+    - User.settings_labels['email_on'].each do |id, action|
+      %label{:class => 'checkbox inline'}
+        = check_box_tag "user[settings][email_on][]", id, @user.settings['email_on'].include?(id.to_s)
+        = action
+      &nbsp;&nbsp;
+    = f.semantic_errors :settings
+
 .form-actions
   = f.submit "Save", :class => "btn btn-primary btn-large"

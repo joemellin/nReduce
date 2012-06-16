@@ -4,9 +4,10 @@ class Checkin < ActiveRecord::Base
   has_many :comments
   has_many :awesomes, :as => :awsm
 
-  attr_accessible :start_focus, :start_why, :start_video_url, :end_video_url, :end_comments, :startup_id
+  attr_accessible :start_focus, :start_why, :start_video_url, :end_video_url, :end_comments, :startup_id, :start_comments
 
   after_validation :check_submitted_completed_times
+  before_save :notify_user
 
   validates_presence_of :startup_id
   validates_presence_of :start_focus, :message => "can't be blank"
@@ -87,5 +88,10 @@ class Checkin < ActiveRecord::Base
       self.completed_at = Time.now if self.submitted? and !self.completed? and !end_video_url.blank?
     end
     true
+  end
+
+  def notify_user
+    # only notify first time it changes state to completed
+    Notification.create_for_new_checkin(self) if checkin.completed? and checkin.completed_at_changed?
   end
 end
