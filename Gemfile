@@ -38,6 +38,13 @@ group :test, :development do
   gem 'database_cleaner'
   gem 'capistrano'
   gem 'rvm-capistrano'
+  gem 'timecop'
+  gem 'guard'
+  gem 'rb-fsevent' #, :require => false if RUBY_PLATFORM =~ /darwin/i
+  gem 'guard-rspec'
+  gem 'guard-livereload'
+  gem 'spork'
+  gem 'guard-spork'
   #gem 'jasmine-rails' # also need to do: brew install qt
 end
 

@@ -20,14 +20,15 @@ class Notification < ActiveRecord::Base
    # - Create a notification object that is displayed to user on the site
    # - Adds email to resque queue, if their notification settings allow it
    # Possible actions: new_checkin, relationship_request, relationship_approved, new_comment
-  def self.create_and_send(user, object, action, message)
+  def self.create_and_send(user, object, action, message = nil)
     return unless Notification.actions.include?(action)
     n = Notification.new
     n.attachable = object
-    n.user = object.user
+    n.user = user
+    n.action = action
     n.message = message || "You have a new #{object.class.to_s.downcase}"
     if n.save
-      Resque.enqueue(Notification, n.id) if self.email_user?
+      Resque.enqueue(Notification, n.id) if n.email_user?
     end
     n
   end
@@ -54,23 +55,41 @@ class Notification < ActiveRecord::Base
     Notification.create_and_send(comment.checkin, comment, :new_comment)
   end
 
+  # only intended for awesomes on checkins
   def self.create_for_new_awesome(awesome)
-    Notification.create_and_send(awesome.
+    awawesome.awsm
+    awesome.awsm.startup.team_members.each do |u|
+      n = Notification.new
+      n.attachable = awesome
+      n.user = u
+      n.message = "#{awesome.user.name} thought your checkin was awesome!"
+      n.save
+    end
   end
 
   # Delivers notification email
   def self.perform(notification_id)
     n = Notification.find(notification_id)
-    # Make sure it responds to action
-    if UserMailer.respond_to?(n.action.to_sym)
-      if UserMailer.send(n.action.to_sym, n).deliver
-        n.update_attribute('emailed', true) 
-      else
-        # TODO : re-queue if fail delivery?
-        logger.warn "Notification #{n.id}: Email could not be delivered to #{n.user.email}"
-      end
+    if n.emailed?
+      # Somehow it got queued again - but was already emailed
+      logger.info "Notification #{n.id}: Email already delivered to #{n.user.email}"
+      return true
     else
-      logger.warn "Notification #{n.id}: Email template could not be found for notification action #{n.action}"
+      # Make sure it responds to action
+      if UserMailer.respond_to?(n.action.to_sym)
+        deliver = UserMailer.send(n.action.to_sym, n).deliver
+        if deliver
+          n.update_attribute('emailed', true)
+          return deliver
+        else
+          # TODO : re-queue if fail delivery?
+          logger.warn "Notification #{n.id}: Email could not be delivered to #{n.user.email}"
+          return false
+        end
+      else
+        logger.warn "Notification #{n.id}: Email template could not be found for notification action #{n.action}"
+        return false
+      end
     end
   end
 

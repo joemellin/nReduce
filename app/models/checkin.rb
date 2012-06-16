@@ -16,8 +16,6 @@ class Checkin < ActiveRecord::Base
   validate :check_video_urls_are_valid
 
   scope :ordered, order('created_at DESC')
-  #scope :current, lambda { t = Time.now; t = t.beginning_of_day - 1.day if (t.monday? and t.hour < 16); where(['created_at > ?', t]) }
-  scope :current, where(['created_at > ?', Time.now - 7.days])
   scope :completed, where('completed_at IS NOT NULL')
 
     # Returns true if in the time window where startups can do 'before' check-in
