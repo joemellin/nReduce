@@ -1,9 +1,9 @@
-require 'rubygems'
-require 'spork'
-#uncomment the following line to use spork with the debugger
-#require 'spork/ext/ruby-debug'
+# require 'rubygems'
+# require 'spork'
+# #uncomment the following line to use spork with the debugger
+# #require 'spork/ext/ruby-debug'
 
-Spork.prefork do
+# Spork.prefork do
   # Loading more in this block will cause your tests to run faster. However,
   # if you change any configuration or code from libraries loaded here, you'll
   # need to restart spork for it take effect.
@@ -18,14 +18,6 @@ Spork.prefork do
   Dir[Rails.root.join("spec/support/**/*.rb")].each {|f| require f}
 
   RSpec.configure do |config|
-    # ## Mock Framework
-    #
-    # If you prefer to use mocha, flexmock or RR, uncomment the appropriate line:
-    #
-    # config.mock_with :mocha
-    # config.mock_with :flexmock
-    # config.mock_with :rr
-
     # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
     config.fixture_path = "#{::Rails.root}/spec/fixtures"
 
@@ -58,13 +50,13 @@ Spork.prefork do
       DatabaseCleaner.clean
     end
   end
-end
+# end
 
-Spork.each_run do
-  # This code will be run each time you run your specs.
-  load "#{Rails.root}/config/routes.rb"
-  Dir["#{Rails.root}/app/**/*.rb"].each {|f| load f}
-end
+# Spork.each_run do
+#   # This code will be run each time you run your specs.
+#   load "#{Rails.root}/config/routes.rb"
+#   Dir["#{Rails.root}/app/**/*.rb"].each {|f| load f}
+# end
 
 # --- Instructions ---
 # Sort the contents of this file into a Spork.prefork and a Spork.each_run

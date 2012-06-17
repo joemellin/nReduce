@@ -1,0 +1,10 @@
+= render :partial => 'header'
+%h1.h1 Congratulations #{@user.name}!
+%br/
+%h4.h4 Team #{@connected_with.name} is now a part of your group.
+%p You will be able to share your progress with each other an support each other in this crazy life of changing the world! 
+%br/
+%br/
+%br/
+%h3= link_to "View #{@connected_with.name.possessive} profile", startup_url(@connected_with)
+= render :partial => 'footer'

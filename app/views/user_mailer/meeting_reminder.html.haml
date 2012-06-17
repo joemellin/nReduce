@@ -1,0 +1,19 @@
+= render :partial => 'header'
+%h4.h4 Message from #{@meeting.organizer.name}
+%strong The #{meeting.location_name} Local nReduce Leader
+%br/
+%br/
+%p #{@message}
+%br/
+%br/
+%h4.h4 Meeting details:
+%strong Time:
+#{@meeting.day_of_week_human} at #{@meeting.start_time}
+%strong Location: #{@meeting.venue_name}
+%br
+#{@meeting.venue_address}
+- unless @meeting.venue_url.blank?
+  &nbsp;(
+  = link_to 'View Map', @meeting.venue_url
+  )
+= render :partial => 'footer'

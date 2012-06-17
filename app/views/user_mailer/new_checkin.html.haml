@@ -1,0 +1,11 @@
+= render :partial => 'header'
+%h1.h1 Team #{@checkin.startup.name}
+%br
+%h4.h4 Posted their "After" Video
+%br
+- cc = @user.startup.current_checkin
+- if !cc.blank? and !cc.completed?
+  %h3.h3= link_to "Post Your Team's \"After\" Video", url_for(edit_checkin_path(cc))
+- else
+  %h3.h3= link_to 'Give Feedback &amp; Support', url_for([@checkin.startup, @checkin])
+= render :partial => 'footer'

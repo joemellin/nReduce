@@ -1,0 +1,10 @@
+= render :partial => 'header'
+%h1.h1 Team #{@requesting_startup.name}
+%br
+%h4.h4 Would like to join your group.
+%p If accepted you will see each other's weekly progress and be able to help each other succeed.  It is important to build trusted relationships.
+%br
+%br
+%br
+%h3= link_to 'View Request', url_for(relationships_path)
+= render :partial => 'footer'

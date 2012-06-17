@@ -357,7 +357,7 @@ DEPENDENCIES
   rb-fsevent
   resque
   rspec
-  rspec-rails
+  rspec-rails (= 2.10.1)
   rvm-capistrano
   sass-rails (~> 3.2.3)
   spork

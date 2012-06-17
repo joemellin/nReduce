@@ -12,7 +12,9 @@ class RelationshipsController < ApplicationController
   def create
     connect_with = Startup.find(params[:startup_id])
     @relationship = Relationship.start_between(@current_startup, connect_with)
-    if @relationship.pending?
+    if @relationship.blank? and connect_with.id == @current_startup.id
+      flash[:alert] = "You aren't allowed to connect with yourself, silly!"
+    elsif @relationship.pending?
       flash[:notice] = "Your connection has been requested with #{connect_with.name}."
     elsif @relationship.approved?
       flash[:notice] = "You are already connected to #{connect_with.name}."
@@ -32,7 +34,7 @@ class RelationshipsController < ApplicationController
     else
       flash[:alert] = "Sorry but the relationship couldn't be approved at this time."
     end
-    redirect_to root_path
+    redirect_to relationships_path
   end
 
   def reject
@@ -42,6 +44,6 @@ class RelationshipsController < ApplicationController
     else
       flash[:alert] = "Sorry but the relationship couldn't be rejected at this time."
     end
-    redirect_to root_path
+    redirect_to relationships_path
   end
 end

@@ -1,12 +1,9 @@
 require 'spec_helper'
 
 describe Relationship do
-  before :all do
+  before :each do
     @startup1 = FactoryGirl.create(:startup)
     @startup2 = FactoryGirl.create(:startup, :name => 'Facebook for Ferrets')
-  end
-
-  before :each do
     @relationship = Relationship.start_between(@startup1, @startup2)
   end
 
