@@ -1,0 +1,15 @@
+= render :partial => 'header'
+%h1.h1 You Have Feedback!
+%br/
+%br/
+%strong #{@comment.user.name}
+of
+%strong Team #{@comment.user.startup.name}
+wrote on your #{@checkin.time_label} check-in:
+%hr/
+%h4.h4 "#{h(@comment.content)}"
+%hr/
+%br/
+%br/
+%h3= link_to "Respond to #{@comment.user.name}", checkin_url(@checkin)
+= render :partial => 'footer'

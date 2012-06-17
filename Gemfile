@@ -33,7 +33,7 @@ group :test, :development do
   # Pretty printed test output
   gem 'turn', '0.8.2', :require => false
   gem 'rspec'
-  gem 'rspec-rails'
+  gem 'rspec-rails', '2.10.1'
   gem 'factory_girl_rails'
   gem 'database_cleaner'
   gem 'capistrano'

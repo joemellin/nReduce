@@ -9,4 +9,8 @@ class MeetingController < ApplicationController
   def show
     @meeting = Meeting.find(params[:id])
   end
+
+  def message_attendees
+    @meeting = Meeting.find(params[:id])
+  end
 end

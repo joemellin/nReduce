@@ -3,35 +3,44 @@ require 'spec_helper'
 describe Checkin do
   before :all do
     @user = FactoryGirl.create(:user)
-    @checkin = Checkin.new(:user_id => @user.id, :start_comments => 'Make awesome happen')
+    @checkin = Checkin.new
+    @checkin.user_id = @user.id
+    @checkin.startup = FactoryGirl.create(:startup)
+    @checkin.start_focus = 'Make awesome happen'
     @valid_youtube_url = 'http://www.youtube.com/watch?v=4vkqBfv8OMM'
   end
 
   it "should allow valid youtube urls" do
     @checkin.start_video_url = 'http://www.youtube.com/watch?v=4vkqBfv8OMM'
-    @checkin.errors.on(:start_video_url).should be_nil
+    @checkin.errors[:start_video_url].should be_blank
 
     @checkin.start_video_url = 'http://youtu.be/Q8FPOcHZSnU'
-    @checkin.errors.on(:start_video_url).should be_nil
+    @checkin.errors[:start_video_url].should be_blank
 
     @checkin.start_video_url = 'http://www.youtube.com/embed/tsh8xvjtalo'
-    @checkin.errors.on(:start_video_url).should be_nil
+    @checkin.errors[:start_video_url].should be_blank
   end
 
   it "should not allow invalid youtube urls" do
     @checkin.start_video_url = 'http://google.com'
-    @checkin.errors.on(:start_video_url).should == "invalid Youtube URL"
+    @checkin.valid?
+    @checkin.errors.get(:start_video_url).should == ["invalid Youtube URL"]
 
     @checkin.start_video_url = 'http://www.youtube.com/testvideo'
-    @checkin.errors.on(:start_video_url).should == "invalid Youtube URL"
+    @checkin.valid?
+    @checkin.errors.get(:start_video_url).should == ["invalid Youtube URL"]
 
     @checkin.start_video_url = 'http://youtube.fakeurl.com/watch?v=4vkqBfv8OMM'
-    @checkin.errors.on(:start_video_url).should == "invalid Youtube URL"
+    @checkin.valid?
+    @checkin.errors.get(:start_video_url).should == ["invalid Youtube URL"]
   end
 
   it "should never change the timestamp on submitted at date" do
     @checkin.start_video_url = @valid_youtube_url
-    @checkin.save
+    @checkin.valid?
+    @checkin.errors.inspect
+    @checkin.save.should be_true
+
     submitted_at = @checkin.submitted_at
     # Make sure submitted as isn't nil
     submitted_at.should_not be_nil

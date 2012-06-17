@@ -90,6 +90,6 @@ class Checkin < ActiveRecord::Base
 
   def notify_user
     # only notify first time it changes state to completed
-    Notification.create_for_new_checkin(self) if checkin.completed? and checkin.completed_at_changed?
+    Notification.create_for_new_checkin(self) if self.completed? and self.completed_at_changed?
   end
 end

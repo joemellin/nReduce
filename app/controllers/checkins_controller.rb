@@ -21,29 +21,36 @@ class CheckinsController < ApplicationController
     else
       @checkin = Checkin.find(params[:id])
     end
-    return unless authorize_view_checkin(@checkin) # only allow owner to edit
+    unless authorize_view_checkin(@checkin) # only allow owner to edit
+      redirect_to checkins_path
+      return
+    end
     @new_comment = Comment.new(:checkin_id => @checkin.id)
     @comments = @checkin.comments.ordered
   end
 
   def edit
+    
     @startup = @current_startup
     @checkin = Checkin.find(params[:id])
-    redirect_to(checkins_path) && return unless authorize_edit_checkin(@checkin) # only allow owner to edit
+    unless authorize_edit_checkin(@checkin) # only allow owner to edit
+      redirect_to(checkins_path)
+      return
+    end 
   end
 
   def new
     @startup = @current_startup
-    @checkin = @current_startup.current_checkin
-    if @checkin.blank? and Checkin.in_before_time_window?
-      @checkin = Checkin.new
+    if Checkin.in_before_time_window?
+      @checkin = @current_startup.current_checkin
+      @checkin = Checkin.new if @checkin.blank?
     end
     if @checkin.blank?
-      flash[:alert] = "Sorry you've missed the check-in times."
-      redirect_to root_path
-      return
+      flash[:alert] = "Sorry you've missed the 'before' check-in time."
+      redirect_to checkins_path
+    else
+      render :action => :edit
     end
-    render :action => :edit
   end
 
   def create
@@ -52,7 +59,7 @@ class CheckinsController < ApplicationController
     @checkin.startup = @startup
     if @checkin.save
       flash[:notice] = "Your checkin has been saved!"
-      redirect_to '/'
+      redirect_to checkins_path
     else
       render :action => :edit
     end
@@ -93,7 +100,15 @@ class CheckinsController < ApplicationController
   end
 
   def authorize_edit_checkin(checkin)
-    return true if current_user.admin? or (checkin.startup_id == @current_startup.id)
+    if current_user.admin? or (checkin.startup_id == @current_startup.id)
+      if Checkin.in_after_time_window?
+        return true
+      else
+        flash[:alert] = "You aren't within the 'after' check-in time window."
+      end
+    else
+      flash[:alert] = "You aren't allowed to edit that check-in."
+    end
     false
   end
 end

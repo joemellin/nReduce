@@ -34,11 +34,11 @@
       = f.text_field :start_focus, :class => "span4"
       = f.semantic_errors :start_focus
 
-  .control-group{error_css(@checkin, :start_why)}
-    = f.label :start_why, "Why?", :class => 'control-label'
+  .control-group{error_css(@checkin, :start_comments)}
+    = f.label :start_comments, "Why?", :class => 'control-label'
     .controls
-      = f.text_area :start_why, :size => '120x4', :class => 'span4'
-      = f.semantic_errors :start_why
+      = f.text_area :start_comments, :size => '120x4', :class => 'span4'
+      = f.semantic_errors :start_comments
 
   .control-group{error_css(@checkin, :start_video_url)}
     = f.label :start_video_url, "'Before' Video URL", :class => 'control-label'

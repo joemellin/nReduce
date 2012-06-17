@@ -44,15 +44,22 @@ class Notification < ActiveRecord::Base
 
   # Notify requested startup that another startup wants to be connected
   def self.create_for_relationship_request(relationship)
-    Notification.create_and_send(relationship.connected_with, relationship, :relationship_request)
+    relationship.connected_with.team_members.each do |u|
+      Notification.create_and_send(u, relationship, :relationship_request)
+    end
   end
 
   def self.create_for_relationship_approved(relationship)
-    Notification.create_and_send(relationship.startup, relationship, :relationship_approved)
+    relationship.startup.team_members.each do |u|
+      Notification.create_and_send(u, relationship, :relationship_approved)
+    end
   end
 
   def self.create_for_new_comment(comment)
-    Notification.create_and_send(comment.checkin, comment, :new_comment)
+    startup = comment.checkin.startup
+    startup.team_members.each do |u|
+      Notification.create_and_send(u, comment, :new_comment)
+    end
   end
 
   # only intended for awesomes on checkins

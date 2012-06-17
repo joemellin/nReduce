@@ -1,9 +1,7 @@
-Hi #{@user.name},
-\n#{@comment.user.name} has posted a new comment on your check-in from #{@checkin.time_label}:
-\------------------------------
-#{h(@comment.content)}
-\------------------------------
-\nRespond: #{checkin_url(@checkin)}
+You Have Feedback!
 \n
-\nThanks,
-\nnReduce
+\n#{@comment.user.name} of Team #{@comment.user.startup.name} wrote on your #{@checkin.time_label} check-in:
+\-------------------------------------
+"#{h(@comment.content)}"
+\-------------------------------------
+\nRespond: #{checkin_url(@checkin)}

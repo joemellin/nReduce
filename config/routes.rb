@@ -11,6 +11,10 @@ Nreduce::Application.routes.draw do
 
   resources :notifications
 
+  resources :meetings, :only => [:index, :show] do
+    post 'message_attendees', :on => :member
+  end
+
   resources :awesomes, :only => [:create, :destroy]
 
   # for omniauth authentications with other providers

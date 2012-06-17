@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120616022226) do
+ActiveRecord::Schema.define(:version => 20120616222914) do
 
   create_table "authentications", :force => true do |t|
     t.string   "provider"
@@ -72,6 +72,18 @@ ActiveRecord::Schema.define(:version => 20120616022226) do
     t.datetime "updated_at", :null => false
   end
 
+  create_table "meeting_messages", :force => true do |t|
+    t.string   "subject"
+    t.text     "body"
+    t.text     "emailed_to"
+    t.integer  "user_id"
+    t.integer  "meeting_id"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  add_index "meeting_messages", ["meeting_id"], :name => "index_meeting_messages_on_meeting_id"
+
   create_table "meetings", :force => true do |t|
     t.string   "location_name"
     t.string   "venue_name"
@@ -107,6 +119,7 @@ ActiveRecord::Schema.define(:version => 20120616022226) do
     t.boolean  "emailed",         :default => false
     t.datetime "read_at"
     t.datetime "created_at"
+    t.string   "action"
   end
 
   add_index "notifications", ["user_id", "read_at"], :name => "index_notifications_on_user_id_and_read_at"

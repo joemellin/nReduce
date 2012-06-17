@@ -1,8 +1,10 @@
-Hi #{@user.name},
-
-#{@connected_with.name} has approved your connection request! Go check out their profile:
-
-#{url_for(@connected_with)}
-
-Thanks,
-nReduce
+Congratulations #{@user.name}!
+\n
+\nTeam #{@connected_with.name} is now a part of your group.
+\n
+\nYou will now be able to share your progress with each other an support each other in this crazy life of changing the world! 
+\n
+\nView their profile: #{url_for(@connected_with)}
+\n
+\nThanks,
+\nnReduce

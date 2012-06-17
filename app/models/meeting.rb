@@ -11,8 +11,6 @@ class Meeting < ActiveRecord::Base
 
   before_save :geocode_location
 
-  @queue = :meeting_email
-
   def self.location_name_by_id
     Meeting.select('id, location_name').all.inject({}){|r,e| r[e.id] = e.location_name; r }
   end
@@ -37,17 +35,8 @@ class Meeting < ActiveRecord::Base
     t = t.in_time_zone(Time.zone)
   end
 
-  def send_message_to_attendees(message, subject)
-    self.attendees.select('id, email, settings').where('email IS NOT NULL').each do |u|
-      Resque.enqueue(Meeting, self.id, u.id) if u.email_for?('meeting')
-    end
-  end
-
-  # Resque method to send meeting reminder email
-  def self.perform(meeting_id, user_id, message, subject)
-    meeting = Meeting.find(meeting_id)
-    user = User.find(user_id)
-    UserMailer.meeting_reminder(user, meeting, message, subject).deliver
+  def day_of_week_human
+    Meeting.days_of_week_arr[self.day_of_week.to_i]
   end
 
   protected
