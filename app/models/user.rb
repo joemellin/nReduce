@@ -33,6 +33,7 @@ class User < ActiveRecord::Base
     {
       'email_on' =>
         {
+        'docheckin' => 'Reminder to Check-in'
         'comment' => 'New Comment', 
         'meeting' => 'Meeting Reminder', 
         'checkin' => 'New Checkin', 

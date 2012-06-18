@@ -29,6 +29,7 @@ class Startup < ActiveRecord::Base
   scope :is_public, where(:public => true)
   scope :launched, where('launched_at IS NOT NULL')
   scope :with_intro_video, where('intro_video_url IS NOT NULL')
+  scope :onboarded, lambda { where(:onboarding_step => Startup.num_onboarding_steps) }
 
     # Startups this one is connected to (approved status)
   def connected_to

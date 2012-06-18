@@ -25,10 +25,10 @@ end
 
 # Send 'after' video reminder on Monday at 4pm (24 hours before due)
 every :monday, :at => '4pm' do
-  runner "Checkin.send_before_checkin_email"
+  runner "Checkin.send_after_checkin_email"
 end
 
 # Send 'before' video reminder on Wednesday at 4am (12 hours before due)
 every :wednesday, :at => '4am' do
-  runner "Checkin.send_after_checkin_email"
+  runner "Checkin.send_before_checkin_email"
 end
