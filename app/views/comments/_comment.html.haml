@@ -9,7 +9,11 @@
     - if !comment.user.external_pic_url.blank?
       - title = comment.user.name + (!comment.user.twitter.blank? ? " - @#{comment.user.twitter}" : '')
       %div= link_to image_tag(comment.user.external_pic_url, :style => 'width: 50px; height: 50px;', :title => title), startup_path(:id => comment.user.startup_id)
-    .name= link_to "#{is_owner ? 'You' : truncate(comment.user.name, :length => 20)}", startup_path(:id => comment.user.startup_id)
+    .name
+      = link_to "#{is_owner ? 'You' : truncate(comment.user.name, :length => 20)}", user_path(:id => comment.user)
+      - unless comment.user.startup_id.blank?
+        &nbsp;|&nbsp;
+        = link_to comment.user.startup.name, startup_path(:id => comment.user.startup.name)
     .time= "#{time_ago_in_words(comment.created_at)} ago"
   .left.content= simple_format(h(comment.content))
   .clear

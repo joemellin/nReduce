@@ -21,17 +21,54 @@ class Checkin < ActiveRecord::Base
     # Returns true if in the time window where startups can do 'before' check-in
   def self.in_before_time_window?
     # tues from 4pm - wed 4pm
-    t = Time.now
-    return true if (t.tuesday? and t.hour > 16) or (t.thursday? and t.hour < 16)
+    now = Time.now
+    next_before = Checkin.next_before_checkin
+    return true if now < next_before and now > (next_before - 24.hours)
     false
   end
 
     # Returns true if in the time window where startups can do 'after' check-in
   def self.in_after_time_window?
     # monday from 4pm - tue 4pm
-    t = Time.now
-    return true if (t.monday? and t.hour > 16) or (t.tuesday? and t.hour < 16)
+    now = Time.now
+    next_after = Checkin.next_after_checkin
+    return true if now < next_after and now > (next_after - 24.hours)
     false
+  end
+
+    # Returns Time of next before checkin
+  def self.next_before_checkin
+    t = Time.now
+    # Are we in Mon or tue? - if so next before checkin is this week
+    if t.monday? or (t.tuesday? and t.hour < 16)
+      return t.beginning_of_week + 1.day + 16.hours
+    else
+      # Otherwise it's next week
+      return t.beginning_of_week + 1.week + 1.day + 16.hours
+    end
+  end
+
+   # Returns Time of next after checkin
+  def self.next_after_checkin
+    t = Time.now
+    # Are we in Mon or tue? - if so next before checkin is this week
+    if t.monday? or t.tuesday? or (t.wednesday? and t.hour < 16)
+      t.beginning_of_week + 2.days + 16.hours
+    else
+      # Otherwise it's next week
+      t.beginning_of_week + 1.week + 2.days + 16.hours
+    end
+  end
+
+  # Returns an array with the next checkin type and time, ex: [:before, Time obj]
+  def self.next_checkin_type_and_time
+    before = Checkin.next_before_checkin
+    after = Checkin.next_after_checkin
+    if before < after
+      {:type => :before, :time => before}
+    else
+      {:type => :after, :time => after}
+    end
   end
 
   # Pass in a timestamp and this will return the current week description for that timestamp
