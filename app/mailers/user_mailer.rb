@@ -42,6 +42,18 @@ class UserMailer < ActionMailer::Base
     mail(:to => user.email, :subject => subject)
   end
 
+  def before_checkin_reminder(user)
+    setup_email
+    @user = user
+    mail(:to => user.email, :subject => "What's your focus this week?")
+  end
+
+  def after_checkin_reminder(user)
+    setup_email
+    @user = user
+    mail(:to => user.email, :subject => "What did you accomplish this week?")
+  end
+
   protected
 
   def setup_email

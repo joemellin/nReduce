@@ -18,6 +18,8 @@ class Checkin < ActiveRecord::Base
   scope :ordered, order('created_at DESC')
   scope :completed, where('completed_at IS NOT NULL')
 
+  @queue = :checkin_message
+
     # Returns true if in the time window where startups can do 'before' check-in
   def self.in_before_time_window?
     # tues from 4pm - wed 4pm
@@ -83,6 +85,34 @@ class Checkin < ActiveRecord::Base
     time += 16.hours # set it at 4pm
     week_end = time + 6.days
     "#{time.strftime('%b %-d')} to #{week_end.strftime('%b %-d')}"
+  end
+
+  # Queues up 'before' email to be sent to all active users
+  def self.send_before_checkin_email
+    users_with_startups = User.select('id, email, settings').where('email IS NOT NULL').where(:startup_id => Startup.select('id').onboarded.map{|s| s.id })
+
+    users_with_startups.each do |u|
+      Resque.enqueue(Checkin, :before, u.id) if u.email_for?('docheckin')
+    end
+  end
+
+  # Queues up 'after' email to be sent to all active users
+  def self.send_after_checkin_email
+    users_with_startups = User.select('id, email, settings').where('email IS NOT NULL').where(:startup_id => Startup.select('id').onboarded.map{|s| s.id })
+
+    users_with_startups.each do |u|
+      Resque.enqueue(Checkin, :after, u.id) if u.email_for?('docheckin')
+    end
+  end
+
+  # Mails checkin message
+  # Checkin type can be either :before, :after
+  def self.perform(checkin_type, user_id)
+    if checkin_type == :before
+      UserMailer.before_checkin_reminder(User.find(user_id)).deliver
+    elsif checkin_type == :after
+      UserMailer.after_checkin_reminder(User.find(user_id)).deliver
+    end
   end
 
   def time_label
