@@ -78,4 +78,18 @@ module ApplicationHelper
     ret.push(pluralize(seconds, 'second')) unless seconds.blank?
     ret.join(', ')
   end
+
+    # Returns link to attached object
+  def link_to_notification_object(title, notification)
+    obj = notification.attachable
+    return link_to(title, '#') if obj.blank? or notification.action.blank?
+    case notification.action.to_sym
+      when :new_checkin then link_to("#{obj.startup.name} completed their 'after' checkin", obj)
+      when :relationship_request then link_to("#{obj.startup.name} would like to connect with you", relationships_path)
+      when :relationship_approved then link_to("#{obj.connected_with.name} is now connected to you", startup_path(:id => obj.connected_with_id))
+      when :new_comment then link_to("#{obj.user.name} commented on your #{obj.checkin.time_label} checkin", checkin_path(:id => obj.checkin_id))
+      else link_to(title, '#')
+    end
+
+  end
 end

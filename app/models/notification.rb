@@ -10,8 +10,10 @@ class Notification < ActiveRecord::Base
   @queue = :notification_email
 
   scope :unread, where(:read_at => nil)
+  scope :read, where('read_at IS NOT NULL')
   scope :ordered, order('created_at DESC')
 
+    # Remember to update helper method in application.rb with new object types if they are added
   def self.actions
     [:new_checkin, :relationship_request, :relationship_approved, :new_comment]
   end
@@ -28,6 +30,7 @@ class Notification < ActiveRecord::Base
     n.action = action
     n.message = message || "You have a new #{object.class.to_s.downcase}"
     if n.save
+      n.user.update_unread_notifications_count
       Resque.enqueue(Notification, n.id) if n.email_user?
     end
     n
@@ -36,7 +39,7 @@ class Notification < ActiveRecord::Base
   # Notifies all connected startup team members of new checkin
   def self.create_for_new_checkin(checkin)
     startups_to_notify = checkin.startup.connected_to
-    users_to_notify = User.select('id, email, settings').where(:startup_id => startups_to_notify.map{|s| s.id }).all
+    users_to_notify = User.where(:startup_id => startups_to_notify.map{|s| s.id }).all
     users_to_notify.each do |u|
       Notification.create_and_send(u, checkin, :new_checkin)
     end
@@ -58,7 +61,7 @@ class Notification < ActiveRecord::Base
   def self.create_for_new_comment(comment)
     startup = comment.checkin.startup
     startup.team_members.each do |u|
-      Notification.create_and_send(u, comment, :new_comment)
+      Notification.create_and_send(u, comment, :new_comment) unless u.id == comment.user_id
     end
   end
 
@@ -98,6 +101,14 @@ class Notification < ActiveRecord::Base
         return false
       end
     end
+  end
+
+  # Mark all notifications as read for a user
+  def self.mark_all_read_for(user)
+    Notification.transaction do
+      user.notifications.unread.each{|n| n.read_at = Time.now; n.save }
+    end
+    true
   end
 
   # Checkins user settings to see if they want to be emailed on this action

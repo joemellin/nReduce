@@ -4,28 +4,29 @@
     %ul.nav.nav-pills
       - if user_signed_in?
         - unless hide_nav
-          %li{:class => is_controller_action?('relationships', 'index') ? 'active' : ''}= link_to "Dashboard", '/'
-          %li{:class => is_controller_action?('users', 'chat') ? 'active' : ''}= link_to "Chat", chat_users_path
-          %li{:class => is_controller_action?('startups', 'search') ? 'active' : ''}= link_to "Browse Startups", search_startups_path
-          - if !current_user.startup_id.blank?
-            %li{:class => is_controller_action?('startups', 'edit') ? 'active' : ''}= link_to "My Startup", edit_startup_path
-          %li{:class => is_controller_action?('users', 'edit') ? 'active' : ''}= link_to "Account", edit_user_path(current_user)
-          - if current_user.admin?
-            %li= link_to "Admin Tools", "/admin"
-          %li= link_to "Log out", logout_path, :class => 'btn', :method => :delete
-    - if user_signed_in? and !current_user.meeting.blank?
-      %div{:style => 'text-align: right'}
-        My meeting:
-        &nbsp;
-        = link_to current_user.meeting.location_name, edit_user_path(current_user)
-        %br
-        Tue at #{current_user.meeting.start_time}
-        - unless current_user.meeting.venue_address.blank?
-          |&nbsp;#{current_user.meeting.venue_address}
-        - unless current_user.meeting.venue_url.blank?
-          |&nbsp;
-          = link_to 'Map',  current_user.meeting.venue_url, :target => '_blank'
-      .clear
+          %li.padding{:class => is_controller_action?('relationships', 'index') ? 'active' : ''}= link_to "Home", '/'
+          %li.padding{:class => is_controller_action?('users', 'chat') ? 'active' : ''}= link_to "Chat", chat_users_path
+          %li.padding{:class => is_controller_action?('startups', 'search') ? 'active' : ''}= link_to "Browse Startups", search_startups_path
+          %li.dropdown
+            %a.dropdown-toggle{:href => '#', 'data-toggle' => 'dropdown'}
+              = image_tag(current_user.external_pic_url)
+              %b.caret
+            %ul.dropdown-menu
+              %li= link_to 'My Startup', startup_path(:id => current_user.startup_id)
+              %li= link_to 'My Account', edit_user_path(current_user)
+              %li
+                %a{:href => user_notifications_path(current_user)}
+                  Notifications
+                  %span.badge{:class => current_user.unread_nc > 0 ? 'badge-info' : ''}= current_user.unread_nc
+              %li.divider
+              - if current_user.meeting_id.blank?
+                %li= link_to 'Local Meetings', meetings_path
+              - else
+                %li= link_to "My Meeting", meeting_path(:id => current_user.meeting_id)
+              - if current_user.admin?
+                %li= link_to "Admin Tools", "/admin"
+              %li.divider
+              %li= link_to "Log out", logout_path, :method => :delete
   .left= link_to image_tag('nreduce_s.png'), "/"
   .clear
   %hr

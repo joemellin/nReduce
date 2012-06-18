@@ -32,3 +32,8 @@ end
 every :wednesday, :at => '4am' do
   runner "Checkin.send_before_checkin_email"
 end
+
+# Clear out notification older than a week
+# every :sunday, :at => '12pm' do
+#   runner "Notification.delete_old_notifications"
+# end

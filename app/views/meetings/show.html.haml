@@ -5,7 +5,9 @@
   .span6
     %h2 #{@meeting.location_name} Meeting
   .span6{:align => 'right'}
+    = link_to 'All Meetings', meetings_path
     - if @can_edit
+      &nbsp;&nbsp;
       = link_to 'Edit Meeting', edit_meeting_path(@meeting), :class => 'btn'
       - if @attendees.size > 0
         &nbsp&nbsp;

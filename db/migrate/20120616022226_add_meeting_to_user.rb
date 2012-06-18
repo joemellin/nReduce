@@ -4,7 +4,7 @@ class AddMeetingToUser < ActiveRecord::Migration
 
     Startup.transaction do
       Startup.where('meeting_id IS NOT NULL').each do |s|
-        s.team_members.each{|u| u.update_attribute('meeting_id', s.meeting_id) }
+        s.team_members.each{|u| u.meeting_id = s.meeting_id; u.save }
       end
     end
   end

@@ -33,7 +33,7 @@ class User < ActiveRecord::Base
     {
       'email_on' =>
         {
-        'docheckin' => 'Reminder to Check-in'
+        'docheckin' => 'Reminder to Check-in',
         'comment' => 'New Comment', 
         'meeting' => 'Meeting Reminder', 
         'checkin' => 'New Checkin', 
@@ -44,6 +44,20 @@ class User < ActiveRecord::Base
 
   def self.default_settings
     {'email_on' => User.settings_labels['email_on'].keys}
+  end
+
+  def update_unread_notifications_count
+    self.unread_nc = self.notifications.unread.count
+    self.save
+  end
+
+  def mark_all_notifications_read
+    if Notification.mark_all_read_for(self)
+      self.unread_nc = 0
+      self.save
+    else 
+      false
+    end
   end
 
     # Returns boolean if user should be emailed for a specific action (action being the object class)
