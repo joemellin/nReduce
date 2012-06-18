@@ -9,6 +9,8 @@
 
   .span6{:align => 'right'}
     %h4= link_to 'Your Check-ins', checkins_path
+    - nc = Checkin.next_checkin_type_and_time
+    %div Your #{nc[:type]} video is due in #{verbose_distance_until_time_from_now(nc[:time])}
     - if !@current_checkin.blank?
       - if @current_checkin.completed?
         %p= link_to 'Your Completed Check-in', @current_checkin, :class => 'btn btn-primary'

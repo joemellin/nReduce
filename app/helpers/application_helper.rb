@@ -58,4 +58,24 @@ module ApplicationHelper
   def registration_open?
     false
   end
+
+    # Given a time object, returns a verbose result of how many days, hours, minutes, seconds
+  def verbose_distance_until_time_from_now(time)
+    return '' if time.blank?
+    from_time = Time.now
+    to_time = time
+    seconds = ((to_time - from_time).abs).round
+    days = (seconds / 86400).floor
+    seconds -= 86400 * days
+    hours = (seconds / 3600).floor
+    seconds -= 3600 * hours
+    minutes = (seconds / 60).floor
+    seconds -= 60 * minutes
+    ret = []
+    ret.push(pluralize(days, 'day')) unless days.blank?
+    ret.push(pluralize(hours, 'hour')) unless hours.blank?
+    ret.push(pluralize(minutes, 'minute')) unless minutes.blank?
+    ret.push(pluralize(seconds, 'second')) unless seconds.blank?
+    ret.join(', ')
+  end
 end
