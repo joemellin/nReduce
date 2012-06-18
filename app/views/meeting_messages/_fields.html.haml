@@ -1,0 +1,13 @@
+.control-group{error_css(@meeting_message, :subject)}
+  = f.label :subject, :class => 'control-label'
+  .controls
+    = f.text_field :subject, :class => "span4"
+    %span.help-inline Optional
+    = f.semantic_errors :subject
+.control-group{error_css(@meeting_message, :message)}
+  = f.label :body, 'Message', :class => 'control-label'
+  .controls
+    = f.text_area :body, :size => '80x4', :class => "span4"
+    = f.semantic_errors :body
+.form-actions
+  = f.submit "Send", :class => "btn btn-primary btn-large"

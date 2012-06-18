@@ -89,4 +89,18 @@ class ApplicationController < ActionController::Base
     end
     true
   end
+
+  
+  def meeting_organizer_required
+    @meeting = Meeting.find(params[:meeting_id]) unless params[:meeting_id].blank?
+    @meeting ||= Meeting.find(params[:id]) unless params[:id].blank?
+    return false if @meeting.blank?
+    if (@meeting.organizer_id != current_user.id) and !current_user.admin?
+      flash[:alert] = "You don't have permission to mesage attendees"
+      redirect_to @meeting
+      return false
+    else
+      return true
+    end
+  end
 end

@@ -3,6 +3,7 @@ class Meeting < ActiveRecord::Base
   has_many :startups
   has_many :attendees, :class_name => 'User'
   belongs_to :organizer, :class_name => 'User'
+  has_many :meeting_messages
 
   attr_accessible :location_name, :venue_name, :venue_address, :venue_url, :description,  :start_time, :day_of_week, :organizer_id
 
@@ -36,7 +37,7 @@ class Meeting < ActiveRecord::Base
   end
 
   def day_of_week_human
-    Meeting.days_of_week_arr[self.day_of_week.to_i]
+    Date::DAYNAMES[self.day_of_week.to_i]
   end
 
   protected

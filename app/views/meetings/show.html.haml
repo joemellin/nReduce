@@ -1,0 +1,30 @@
+- content_for :subtitle do
+  #{@meeting.location_name} Meeting
+
+%h2 #{@meeting.location_name} Meeting
+
+- if @can_edit
+  .left
+    %h2
+      = link_to 'Edit Meeting', edit_meeting_path(@meeting)
+      &nbsp;|&nbsp;
+  .left
+    %h2= link_to 'Send a message to attendees', new_meeting_meeting_message_path(:meeting_id => @meeting.id)
+  .clear
+  .row
+    .span12
+      %h2 All Attendees
+      %table
+        %thead
+          %tr
+            %th Name
+            %th Startup
+            %th Twitter
+            %th Email
+        %tbody
+          - @meeting.attendees.includes(:startup).each do |u|
+            %tr
+              %td= u.name
+              %td= link_to u.startup.name, u.startup
+              %td= u.twitter
+              %td= u.email.blank? ? 'None' : mail_to(u.email)

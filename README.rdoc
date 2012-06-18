@@ -1,8 +1,13 @@
 == nReduce Rails App
 
 App Requirements:
-* rvm with ruby 1.9.3-p125-falcon, gemset nreduce-web
-* redis server
+
+>> RVM
+* rvm install ruby-1.9.3-p125-falcon
+* rvm use ruby-1.9.3-p125-falcon
+* rvm create gemset nreduce-web
+>> Redis
+>> MySQL
 
 == Testing
 
