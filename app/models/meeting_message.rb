@@ -2,13 +2,15 @@ class MeetingMessage < ActiveRecord::Base
   belongs_to :meeting
   belongs_to :user
 
-  attr_accessible :subject, :body
+  attr_accessible :subject, :body, :meeting_id
   serialize :emailed_to
 
   validates_presence_of :body
   validates_presence_of :meeting_id
 
   after_create :notify_attendees
+
+  scope :ordered, where('created_at DESC')
 
   @queue = :meeting_message
 

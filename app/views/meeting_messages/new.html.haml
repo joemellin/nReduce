@@ -1,0 +1,5 @@
+.row
+  .span12
+    %h2 Send a message to #{@meeting.location_name} attendees
+    = semantic_form_for [@meeting, @meeting_message], :html => {:class => "form-horizontal"} do |f|
+      = render 'meeting_messages/fields', :f => f

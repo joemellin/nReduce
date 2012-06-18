@@ -11,8 +11,9 @@ Nreduce::Application.routes.draw do
 
   resources :notifications
 
-  resources :meetings, :only => [:index, :show] do
+  resources :meetings, :only => [:index, :show, :edit, :update] do
     post 'message_attendees', :on => :member
+    resources :meeting_messages, :only => [:index, :new, :create, :edit]
   end
 
   resources :awesomes, :only => [:create, :destroy]
