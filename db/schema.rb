@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120616222914) do
+ActiveRecord::Schema.define(:version => 20120618153238) do
 
   create_table "authentications", :force => true do |t|
     t.string   "provider"
@@ -243,6 +243,7 @@ ActiveRecord::Schema.define(:version => 20120616222914) do
     t.string   "hipchat_password"
     t.string   "settings"
     t.integer  "meeting_id"
+    t.integer  "unread_nc",              :default => 0
   end
 
   add_index "users", ["reset_password_token"], :name => "index_users_on_reset_password_token", :unique => true

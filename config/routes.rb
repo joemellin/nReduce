@@ -1,9 +1,17 @@
 Nreduce::Application.routes.draw do
-  # Main Admin
+  # Admin constraint
+  admin_constraint = lambda do |request|
+    request.env['warden'].authenticate? and request.env['warden'].user.admin?
+  end
+
+  # Main Admin - has logic built-in to restrict to admins
   mount RailsAdmin::Engine => '/admin', :as => 'rails_admin'
+  
   # Resque Admin
-  require 'resque/server'
-  mount Resque::Server.new, :at => "/resque"
+  constraints admin_constraint do
+    require 'resque/server'
+    mount Resque::Server.new, :at => "/resque"
+  end
 
   devise_for :users, :controllers => {:registrations => 'registrations'}
 
@@ -37,6 +45,7 @@ Nreduce::Application.routes.draw do
       get 'chat'
       post 'reset_hipchat_account'
     end
+    resources :notifications
   end
 
   resources :comments do

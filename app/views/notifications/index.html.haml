@@ -1,0 +1,20 @@
+- content_for :subtitle do
+  = 'Your Notifications'
+
+%h2 Recent Activity
+.row
+  .span12
+    - if @notifications.size == 0
+      %h4 You have no recent activity.
+    - else
+      - @notifications.each do |n|
+        .row{:style => 'margin-bottom: 10px'}
+          .span12
+            - if n.read_at.blank?
+              %span.badge.badge-warning New
+              &nbsp;
+            = link_to_notification_object(n.message, n)
+            &nbsp;
+            %span.small{:style => 'color: #ccc'}
+              = distance_of_time_in_words_to_now(n.created_at)
+              ago

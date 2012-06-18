@@ -84,7 +84,7 @@ class Checkin < ActiveRecord::Base
     end
     time += 16.hours # set it at 4pm
     week_end = time + 6.days
-    "#{time.strftime('%b %-d')} to #{week_end.strftime('%b %-d')}"
+    "#{time.strftime('%b %-d')}-#{week_end.strftime('%b %-d')}"
   end
 
   # Queues up 'before' email to be sent to all active users
