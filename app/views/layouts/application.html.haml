@@ -19,9 +19,9 @@
   -# %body{body_attrs}
   %body{:class => 'apply'}
 
-    = render "layouts/flash_messages"
     .container
       = render 'layouts/nav'
+      = render "layouts/flash_messages"
       = yield
       
     = content_for :modals

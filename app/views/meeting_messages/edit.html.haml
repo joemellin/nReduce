@@ -1,3 +1,10 @@
-%h2 Send a message to #{@meeting.location_name} attendees
-= semantic_form_for [@meeting, @meeting_message], :html => {:class => "form-horizontal"} do |f|
-  = render 'meeting_messages/fields', :f => f
+.row
+  .span9
+    %h2 Send a message to #{@meeting.location_name} attendees
+  .span3{:align => 'right'}= link_to 'View Meeting', @meeting, :class => 'btn'
+.row
+  .span12
+    = semantic_form_for [@meeting, @meeting_message], :html => {:class => "form-horizontal"} do |f|
+      = render 'meeting_messages/fields', :f => f
+
+= render 'meeting_messages/list'

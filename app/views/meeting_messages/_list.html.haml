@@ -1,0 +1,12 @@
+%h4 Recent Messages
+%table.table
+  %thead
+    %th.span2 Date
+    %th.span2 Subject
+    %th.span2 Message
+  %tbody
+    - @meeting_messages.each do |mm|
+      %tr
+        %td= mm.created_at.to_s(:short)
+        %td= mm.subject.blank? ? '--' : truncate(mm.subject, :length => 35)
+        %td= truncate(mm.body, :length => 100)

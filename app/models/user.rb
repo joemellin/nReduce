@@ -3,12 +3,13 @@ class User < ActiveRecord::Base
   belongs_to :startup
   belongs_to :meeting
   has_many :authentications, :dependent => :destroy
-  has_one :startup_meeting, :class_name => 'Meeting', :through => :startup
+  has_one :startup_meeting, :class_name => 'Meeting'
   has_many :organized_meetings, :class_name => 'Meeting', :foreign_key => 'organizer_id'
   has_many :sent_messages, :foreign_key => 'sender_id', :class_name => 'Message'
   has_many :received_messages, :foreign_key => 'recipient_id', :class_name => 'Message'
   has_many :comments
   has_many :notifications
+  has_many :meeting_messages
 
   # Include default devise modules. Others available are:
   # :token_authenticatable, :confirmable,
