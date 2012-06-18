@@ -12,6 +12,7 @@ class MeetingsController < ApplicationController
     @can_edit = user_signed_in? and (current_user.admin? or (current_user.id == @meeting.organizer_id))
     if @can_edit
       @meeting_messages = @meeting.meeting_messages.ordered.limit(5)
+      @attendees = @meeting.attendees.order(:name).includes(:startup)
     end
   end
 

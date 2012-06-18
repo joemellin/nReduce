@@ -16,7 +16,7 @@
 .control-group{error_css(@meeting, :venue_address)}
   = f.label :venue_address, :class => 'control-label'
   .controls
-    = f.text_field :venue_address, :placeholder => 'Address, City, State/Province, Zip Code', :class => "span4"
+    = f.text_field :venue_address, :placeholder => 'Address, City, State/Province, Zip Code, Country', :class => "span4"
     = f.semantic_errors :venue_address
 .control-group{error_css(@meeting, :venue_url)}
   = f.label :venue_url, 'Google Maps URL', :class => 'control-label'

@@ -49,12 +49,18 @@
       Current Image:
       = image_tag @startup.logo.url(:thumb)
 
-
 .control-group{error_css(@startup, :phone)}
   = f.label :phone, "Phone Number", :class => 'control-label'
   .controls
     = f.text_field :phone, :class => 'span3'
     = f.semantic_errors :phone
+
+.control-group{error_css(@startup, :website_url)}
+  = f.label :intro_video_url, "Intro Video Url", :class => 'control-label'
+  .controls
+    = f.text_field :website_url, :class => 'span3 with-placeholder'
+    = f.semantic_errors :website_url
+    %span.help-inline.help-danger Upload a 30 second video to Youtube that introduces your team so that everyone can "meet" you. Set it as unlisted but allow it to be embedded.
     
 %hr
 
@@ -85,13 +91,14 @@
     = f.select :company_goal, options_for_select(Startup.company_goal_select_options, @startup.company_goal), :include_blank => true
     = f.semantic_errors :company_goal
 
-%hr
-.control-group{error_css(@startup, :meeting_id)}
-  = f.label :meeting_id, "Where is your<br>team located?".html_safe, :class => 'control-label'
-  .controls
-    = f.select :meeting_id, options_for_select(Meeting.select_options, @startup.meeting_id), :include_blank => true
-    = f.semantic_errors :meeting_id
-    .row
-      .span5
-        %p.help-block
-          We're looking to put together in-person dinners in the major startup hubs. If you are close enough to one of these hubs, choose it from this list. If your location is not on the list, choose "other" and enter it below.
+/ %hr
+
+/ .control-group{error_css(@startup, :meeting_id)}
+/   = f.label :meeting_id, "Where is your<br>team located?".html_safe, :class => 'control-label'
+/   .controls
+/     = f.select :meeting_id, options_for_select(Meeting.select_options, @startup.meeting_id), :include_blank => true
+/     = f.semantic_errors :meeting_id
+/     .row
+/       .span5
+/         %p.help-block
+/           We're looking to put together in-person dinners in the major startup hubs. If you are close enough to one of these hubs, choose it from this list. If your location is not on the list, choose "other" and enter it below.

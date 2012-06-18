@@ -7,4 +7,8 @@ describe StartupsController do
     get :search
     response.should render_template(:search)
   end
+
+  it "should allow a user to edit a startup" do
+    #post :update, {:name => 'Name with a pivot', :meeting_id => }
+  end
 end

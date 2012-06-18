@@ -10,7 +10,7 @@ class MeetingMessage < ActiveRecord::Base
 
   after_create :notify_attendees
 
-  scope :ordered, where('created_at DESC')
+  scope :ordered, order('created_at DESC')
 
   @queue = :meeting_message
 

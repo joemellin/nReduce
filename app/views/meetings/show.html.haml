@@ -1,30 +1,46 @@
 - content_for :subtitle do
   #{@meeting.location_name} Meeting
 
-%h2 #{@meeting.location_name} Meeting
-
+.row
+  .span6
+    %h2 #{@meeting.location_name} Meeting
+  .span6{:align => 'right'}
+    - if @can_edit
+      = link_to 'Edit Meeting', edit_meeting_path(@meeting), :class => 'btn'
+      - if @attendees.size > 0
+        &nbsp&nbsp;
+        = link_to '<i class="icon icon-envelope"></i> Message Attendees'.html_safe, new_meeting_meeting_message_path(:meeting_id => @meeting.id), :class => 'btn'
+.row
+  .span12
+    %p Meet every #{@meeting.day_of_week_human} at #{@meeting.start_time}
+    %p
+      %strong= @meeting.venue_name
+      \-
+      = @meeting.venue_url.blank? ? @meeting.venue_address : link_to(@meeting.venue_address.blank? ? 'View Details/Map' : @meeting.venue_address, @meeting.venue_url, :target => '_blank')
+    - unless @meeting.organizer.blank?
+      %p
+        Organizer: #{@meeting.organizer.name}
+        - unless @meeting.organizer.phone.blank?
+          (#{@meeting.organizer.phone})
 - if @can_edit
-  .left
-    %h2
-      = link_to 'Edit Meeting', edit_meeting_path(@meeting)
-      &nbsp;|&nbsp;
-  .left
-    %h2= link_to 'Send a message to attendees', new_meeting_meeting_message_path(:meeting_id => @meeting.id)
-  .clear
+  %hr{:style => 'margin: 20px 0 20px 0'}
   .row
     .span12
-      %h2 All Attendees
-      %table
-        %thead
-          %tr
-            %th Name
-            %th Startup
-            %th Twitter
-            %th Email
-        %tbody
-          - @meeting.attendees.includes(:startup).each do |u|
+      - if @attendees.size == 0
+        %h4 There aren't any attendees registered for this meeting.
+      - else
+        %h4 All Attendees (#{@attendees.size})
+        %table.table
+          %thead
             %tr
-              %td= u.name
-              %td= link_to u.startup.name, u.startup
-              %td= u.twitter
-              %td= u.email.blank? ? 'None' : mail_to(u.email)
+              %th Name
+              %th Startup
+              %th Twitter
+              %th Phone
+          %tbody
+            - @attendees.each do |u|
+              %tr
+                %td= u.name
+                %td= u.startup.blank? ? '' : link_to(u.startup.name, u.startup)
+                %td= u.twitter.blank? ? '' : link_to_twitter(u.twitter)
+                %td= u.phone

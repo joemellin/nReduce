@@ -7,8 +7,6 @@ class Startup < ActiveRecord::Base
 
   attr_accessible :name, :team_size, :website_url, :main_contact_id, :phone, :growth_model, :stage, :company_goal, :meeting_id, :one_liner, :active, :launched_at, :industry_list, :technology_list, :ideology_list, :industry, :intro_video_url
 
-  serialize :team_members
-
   validates_presence_of :name
   validate :check_video_urls_are_valid
 
