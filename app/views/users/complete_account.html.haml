@@ -1,0 +1,44 @@
+- content_for :subtitle do
+  Complete your account
+
+.row
+  .span3
+    %p &nbsp;
+  .span6
+    .row.well
+      %br
+      %br
+      %center
+        %h1 Please complete your information.
+        %br
+        %p This will help us contact you, and allow you to login with email and password.
+      %br
+      = semantic_form_for @user, :html => {:class => "form-horizontal"} do |f|
+        = hidden_field_tag :complete_account, true
+        .control-group{error_css(@user, :name)}
+          = f.label :name, "Your Name", :class => 'control-label'
+          .controls
+            = f.text_field :name, :class => "span3"
+            = f.semantic_errors :name
+        .control-group{error_css(@user, :email)}
+          = f.label :email, "Your Email", :class => 'control-label'
+          .controls
+            = f.text_field :email, :class => "span3"
+            = f.semantic_errors :email
+
+        .control-group{error_css(@user, :password)}
+          = f.label :password, "Create a Password", :class => 'control-label'
+          .controls
+            = f.password_field :password, :class => "span3"
+            = f.semantic_errors :password
+
+        .control-group{error_css(@user, :password_confirmation)}
+          = f.label :password_confirmation, "Confirm Password", :class => 'control-label'
+          .controls
+            = f.password_field :password_confirmation, :class => "span3"
+            = f.semantic_errors :password_confirmation
+
+        .form-actions
+          = f.submit "Continue", :class => "btn btn-primary btn-large"
+  .span3
+    %p &nbsp;

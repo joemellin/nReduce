@@ -21,7 +21,7 @@ class User < ActiveRecord::Base
 
   serialize :settings
 
-  validates_presence_of :location
+  validate :email_is_not_nreduce
 
   before_create :set_default_settings
   before_save :geocode_location
@@ -145,7 +145,7 @@ class User < ActiveRecord::Base
   end
 
   def password_required?
-    (authentications.empty? || !password.blank?) #&& super
+    (authentications.empty? || !password.blank?) && super
   end
   
   def uses_password_authentication?
@@ -234,6 +234,15 @@ class User < ActiveRecord::Base
   end
 
   protected
+
+  def email_is_not_nreduce
+    if !self.email.blank? and self.email.match(/\@\w+\.nreduce\.com$/) != nil
+      self.errors.add(:email, 'is not valid')
+      false
+    else
+      true
+    end
+  end
 
   def set_default_settings
     self.settings ||= User.default_settings

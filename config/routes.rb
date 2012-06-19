@@ -45,6 +45,7 @@ Nreduce::Application.routes.draw do
       get 'chat'
       post 'reset_hipchat_account'
     end
+    match 'complete_account', :on => :member
     resources :notifications
   end
 

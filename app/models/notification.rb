@@ -67,7 +67,6 @@ class Notification < ActiveRecord::Base
 
   # only intended for awesomes on checkins
   def self.create_for_new_awesome(awesome)
-    awawesome.awsm
     awesome.awsm.startup.team_members.each do |u|
       n = Notification.new
       n.attachable = awesome

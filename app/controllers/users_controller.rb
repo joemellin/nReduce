@@ -2,6 +2,10 @@ class UsersController < ApplicationController
   around_filter :record_user_action, :except => [:reset_hipchat_account]
   before_filter :login_required
 
+  def complete_account
+    @user = current_user
+  end
+
   def show
     @user = current_user if params[:id] == 'me'
     @user ||= User.find(params[:id])
@@ -17,7 +21,11 @@ class UsersController < ApplicationController
       flash[:notice] = "Your account has been updated!"
       render :action => :show
     else
-      render :action => :edit
+      if params[:complete_account].to_s == 'true'
+        render :action => :complete_account
+      else
+        render :action => :edit
+      end
     end
   end
 

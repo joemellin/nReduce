@@ -1,6 +1,4 @@
-%p.center= link_to 'Join with your email', '#', :class => 'sign_up_toggle'
-%p.center= link_to 'Sign in with your email', '#', :class => 'sign_in_toggle'
-
+- show_sign_in = !flash.blank?
 .row#sign_up.hide
   .span3
     %p &nbsp;
@@ -13,7 +11,7 @@
   .span3
     %p &nbsp;
 
-.row#sign_in.hide
+.row#sign_in{:class => show_sign_in ? '' : 'hide'}
   .span3
     %p &nbsp;
   .span6.well
@@ -25,3 +23,6 @@
     %p.center= link_to "Forgot your password?", new_password_path(resource_name)
   .span3
     %p &nbsp;
+
+%p.center= link_to 'Join with your email', '#', :class => 'sign_up_toggle'
+%p.center= link_to 'Sign in with your email', '#', :class => "sign_in_toggle #{show_sign_in ? 'hide' : ''}"
