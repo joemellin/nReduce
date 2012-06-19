@@ -30,6 +30,7 @@
                 %li= link_to "My Meeting", meeting_path(:id => current_user.meeting_id)
               - if current_user.admin?
                 %li= link_to "Admin Tools", "/admin"
+                %li= link_to "Jobs", "/resque"
               %li.divider
               %li= link_to "Log out", logout_path, :method => :delete
   .left= link_to image_tag('nreduce_s.png'), "/"
