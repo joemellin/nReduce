@@ -5,7 +5,7 @@
       = link_to 'Edit', edit_comment_path(comment), :remote => true, :class => 'controls btn'
       &nbsp;
       = link_to '<i class="icon-white icon-remove"></i>'.html_safe, comment, :method => :delete, :remote => true, :class => 'btn btn-small btn-danger controls', :confirm => "Are you sure you want to delete it?"
-  .left{:style => 'width: 120px; padding-right: 10px;', :align => 'right'}
+  .left{:style => 'width: 160px; padding-right: 10px;', :align => 'right'}
     - if !comment.user.external_pic_url.blank?
       - title = comment.user.name + (!comment.user.twitter.blank? ? " - @#{comment.user.twitter}" : '')
       %div= link_to image_tag(comment.user.external_pic_url, :style => 'width: 50px; height: 50px;', :title => title), startup_path(:id => comment.user.startup_id)
