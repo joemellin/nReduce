@@ -7,7 +7,7 @@ class User < ActiveRecord::Base
   has_many :sent_messages, :foreign_key => 'sender_id', :class_name => 'Message'
   has_many :received_messages, :foreign_key => 'recipient_id', :class_name => 'Message'
   has_many :comments
-  has_many :notifications
+  has_many :notifications, :dependent => :destroy
   has_many :meeting_messages
 
   # Include default devise modules. Others available are:

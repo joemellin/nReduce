@@ -17,7 +17,7 @@ To run full test suite: bundle exec guard start
 
 To start a worker on all queues run this:
 RAILS_ENV=production QUEUE=* bundle exec rake environment resque:work
-RAILS_ENV=production PIDFILE=./tmp/pids/resque.pid BACKGROUND=yes COUNT=2 QUEUE=* bundle exec rake environment resque:work
+RAILS_ENV=production PIDFILE=./tmp/pids/resque.pid BACKGROUND=yes QUEUE=* bundle exec rake environment resque:work
 
 == Whenever - for periodic emails - write to crontab
 
