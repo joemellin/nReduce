@@ -8,7 +8,7 @@
           %li.padding{:class => is_controller_action?('users', 'chat') ? 'active' : ''}= link_to "Chat", chat_users_path
           %li.dropdown
             %a.dropdown-toggle.btn{:href => '#', 'data-toggle' => 'dropdown'}
-              = current_user.external_pic_url.blank? ? 'My Stuff' : image_tag(current_user.external_pic_url)
+              = image_tag(user_avatar_url(current_user))
               %b.caret
               - if 1 == 2 #current_user.unread_nc > 0
                 %div{:style => 'margin-top: 5px'}

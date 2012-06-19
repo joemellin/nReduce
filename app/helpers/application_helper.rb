@@ -89,6 +89,10 @@ module ApplicationHelper
       when :new_comment then link_to("#{obj.user.name} commented on your #{obj.checkin.time_label} checkin", checkin_path(:id => obj.checkin_id))
       else link_to(title, '#')
     end
+  end
 
+  def user_avatar_url(user)
+    return user.external_pic_url unless user.external_pic_url.blank?
+    return image_path('avatar.png')
   end
 end
