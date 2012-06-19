@@ -65,7 +65,11 @@ class User < ActiveRecord::Base
 
     # Returns boolean if user should be emailed for a specific action (action being the object class)
   def email_for?(class_name)
-    !self.email.blank? and !self.settings['email_on'].blank? and self.settings['email_on'].is_a?(Array) and self.settings['email_on'].include?(class_name)
+    begin
+      !self.email.blank? and self.settings['email_on'].include?(class_name)
+    rescue # in case array isn't set
+      false
+    end
   end
 
   def first_name
