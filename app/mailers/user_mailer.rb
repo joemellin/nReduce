@@ -4,7 +4,7 @@ class UserMailer < ActionMailer::Base
 
   def new_checkin(notification)
     setup_email
-    @checkin = notification.checkin
+    @checkin = notification.attachable
     @user = notification.user
     mail(:to => user.email, :subject => "#{@checkin.startup.name} has posted their check-in for this week")
   end
