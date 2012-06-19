@@ -2,6 +2,6 @@ Team #{@checkin.startup.name} has posted their 'after' video for #{@checkin.time
 \n
 - cc = @user.startup.current_checkin
 - if !cc.blank? and !cc.completed?
-  Post Your Team's "After" Video: url_for(edit_checkin_path(cc))
+  Post Your Team's "After" Video: edit_checkin_url(cc)
 - else
   Give Feedback & Support: url_for([@checkin.startup, @checkin])
