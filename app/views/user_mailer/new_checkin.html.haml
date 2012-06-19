@@ -3,11 +3,10 @@
 %br
 %h4.h4 Posted their "After" Video
 %br
-- cc = @user.startup.current_checkin
-- if !cc.blank? and cc.completed?
+- if !@current_checkin.blank? and @current_checkin.completed?
   %h3.h3= link_to 'Give Feedback & Support', startup_checkin_url(:startup_id => @checkin.startup_id, :id => @checkin.id)
 - else
   %h4.h4 To view it and post comments...
-  %h3.h3= link_to "Post Your Team's \"After\" Video", edit_checkin_url(cc)
+  %h3.h3= link_to "Post Your Team's \"After\" Video", @current_checkin.new_record? ? new_checkin_url : edit_checkin_url(@current_checkin)
   
 = render :partial => 'footer'
