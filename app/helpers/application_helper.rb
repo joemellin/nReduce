@@ -72,11 +72,10 @@ module ApplicationHelper
     minutes = (seconds / 60).floor
     seconds -= 60 * minutes
     ret = []
-    ret.push(pluralize(days, 'day')) unless days.blank?
-    ret.push(pluralize(hours, 'hour')) unless hours.blank?
-    ret.push(pluralize(minutes, 'minute')) unless minutes.blank?
-    ret.push(pluralize(seconds, 'second')) unless seconds.blank?
-    ret.join(', ')
+    ret.push(pluralize(days, 'day')) unless days == 0
+    ret.push(pluralize(hours, 'hour')) unless hours == 0
+    ret.push(pluralize(minutes, 'min')) unless minutes.blank?
+    ret.join(', ') + ' and ' + pluralize(seconds, 'sec')
   end
 
     # Returns link to attached object

@@ -48,7 +48,10 @@ class UserAction < ActiveRecord::Base
       'awesomes_destroy' => 33,
       'meetings_index' => 34,
       'meetings_show' => 35,
-      'meetings_edit' => 36
+      'meetings_edit' => 36,
+      'meetings_update' => 37,
+      'notifications_index' => 38,
+
     }
   end
 

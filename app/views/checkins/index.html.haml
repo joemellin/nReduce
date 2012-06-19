@@ -9,8 +9,10 @@
     %ul
     - @checkins.each do |checkin|
       %li{:style => 'margin-bottom: 4px'}
-        - if checkin.completed?
-          %span.label.label-success Completed
-        - elsif checkin and checkin.submitted?
-          %span.label.label-inverse Before Completed
         = link_to "Check in for #{checkin.time_label}", checkin
+        - if checkin.submitted?
+          &nbsp;
+          %span.label.label-inverse Before
+        - if checkin.completed?
+          &nbsp;
+          %span.label.label-inverse After

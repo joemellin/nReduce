@@ -6,23 +6,22 @@
         - unless hide_nav
           %li.padding{:class => is_controller_action?('relationships', 'index') ? 'active' : ''}= link_to "Home", '/'
           %li.padding{:class => is_controller_action?('users', 'chat') ? 'active' : ''}= link_to "Chat", chat_users_path
-          %li.padding{:class => is_controller_action?('startups', 'search') ? 'active' : ''}= link_to "Browse Startups", search_startups_path
           %li.dropdown
-            %a.dropdown-toggle{:href => '#', 'data-toggle' => 'dropdown'}
+            %a.dropdown-toggle.btn{:href => '#', 'data-toggle' => 'dropdown'}
               = current_user.external_pic_url.blank? ? 'My Stuff' : image_tag(current_user.external_pic_url)
               %b.caret
-              - if current_user.unread_nc > 0
+              - if 1 == 2 #current_user.unread_nc > 0
                 %div{:style => 'margin-top: 5px'}
                   %span.badge.badge-info
                     = pluralize(current_user.unread_nc, 'notification')
             %ul.dropdown-menu
               %li= link_to 'My Startup', startup_path(:id => current_user.startup_id)
-              %li= link_to 'Check-ins', checkins_path
               %li= link_to 'My Account', edit_user_path(current_user)
-              %li
-                %a{:href => user_notifications_path(current_user)}
-                  Notifications
-                  %span.badge{:class => current_user.unread_nc > 0 ? 'badge-info' : ''}= current_user.unread_nc
+              - if 1 == 2
+                %li
+                  %a{:href => user_notifications_path(current_user)}
+                    Notifications
+                    %span.badge{:class => current_user.unread_nc > 0 ? 'badge-info' : ''}= current_user.unread_nc
               %li.divider
               - if current_user.meeting_id.blank?
                 %li= link_to 'Local Meetings', meetings_path

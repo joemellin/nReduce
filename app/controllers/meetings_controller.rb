@@ -1,4 +1,5 @@
 class MeetingsController < ApplicationController
+  around_filter :record_user_action
   before_filter :login_required
   before_filter :meeting_organizer_required, :only => [:edit, :update]
 

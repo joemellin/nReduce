@@ -30,25 +30,26 @@ class CheckinsController < ApplicationController
   end
 
   def edit
-    
     @startup = @current_startup
     @checkin = Checkin.find(params[:id])
     unless authorize_edit_checkin(@checkin) # only allow owner to edit
       redirect_to(checkins_path)
       return
-    end 
+    end
+    set_disabled_states(@checkin)
   end
 
   def new
     @startup = @current_startup
-    if Checkin.in_before_time_window?
-      @checkin = @current_startup.current_checkin
-      @checkin = Checkin.new if @checkin.blank?
+    @checkin = @current_startup.current_checkin
+    if Checkin.in_before_time_window? or Checkin.in_after_time_window?
+      @checkin = Checkin.new if @checkin.blank? or @checkin.completed?
     end
     if @checkin.blank?
-      flash[:alert] = "Sorry you've missed the 'before' check-in time."
+      flash[:alert] = "Sorry you've missed the check-in times."
       redirect_to checkins_path
     else
+      set_disabled_states(@checkin)
       render :action => :edit
     end
   end
@@ -61,6 +62,7 @@ class CheckinsController < ApplicationController
       flash[:notice] = "Your checkin has been saved!"
       redirect_to checkins_path
     else
+      set_disabled_states(@checkin)
       render :action => :edit
     end
   end
@@ -76,11 +78,21 @@ class CheckinsController < ApplicationController
         redirect_to edit_checkin_path(@checkin)
       end
     else
+      set_disabled_states(@checkin)
       render :action => :edit
     end
   end
 
   protected
+
+  def set_disabled_states(checkin)
+    @before_disabled = true #Checkin.in_before_time_window? ? false : true
+    @after_disabled = Checkin.in_after_time_window? ? false : true
+    if !checkin.new_record?
+      @before_disabled = true if checkin.created_at < Checkin.prev_before_checkin
+      @after_disabled = true if checkin.created_at < Checkin.prev_after_checkin
+    end
+  end
 
     # Loads startup from params, and verifies the logged-in user is connected to them
   def authorize_view_checkin(checkin)
