@@ -61,11 +61,11 @@
     = f.text_field :phone, :class => 'span3'
     = f.semantic_errors :phone
 
-.control-group{error_css(@startup, :website_url)}
+.control-group{error_css(@startup, :intro_video_url)}
   = f.label :intro_video_url, "Intro Video Url", :class => 'control-label'
   .controls
-    = f.text_field :website_url, :class => 'span3 with-placeholder'
-    = f.semantic_errors :website_url
+    = f.text_field :intro_video_url, :class => 'span3 with-placeholder'
+    = f.semantic_errors :intro_video_url
     %span.help-inline.help-danger
       Upload a 30 second video to Youtube that introduces your team so that everyone can "meet" you.
       %br/
