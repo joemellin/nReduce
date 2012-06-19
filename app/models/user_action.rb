@@ -51,6 +51,7 @@ class UserAction < ActiveRecord::Base
       'meetings_edit' => 36,
       'meetings_update' => 37,
       'notifications_index' => 38,
+      'users_complete_account' => 39
 
     }
   end

@@ -1,3 +1,9 @@
+.control-group{error_css(@user, :name)}
+  = f.label :name, "Your Name", :class => 'control-label'
+  .controls
+    = f.text_field :name, :class => "span4"
+    = f.semantic_errors :name
+
 .control-group{error_css(@user, :email)}
   = f.label :email, "Your Email", :class => 'control-label'
   .controls

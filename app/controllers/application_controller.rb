@@ -29,6 +29,15 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  def ensure_email_and_password
+    return true if controller_name == 'users' and (action_name == 'complete_account' or action_name == 'update')
+    if current_user.email.blank? or current_user.email.match(/\@users.nreduce.com/) != nil or current_user.encrypted_password.blank? or current_user.name.blank?
+      redirect_to complete_account_user_path(current_user)
+      return false
+    else
+      return true
+    end
+  end
 
   def block_ips
     if request.remote_ip == '75.161.16.187'
@@ -42,7 +51,11 @@ class ApplicationController < ActionController::Base
   end
 
   def login_required
-    authenticate_user!
+    if authenticate_user!
+      return ensure_email_and_password
+    else
+      return false
+    end
   end
 
   def admin_required
