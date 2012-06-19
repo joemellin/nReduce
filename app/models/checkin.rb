@@ -120,9 +120,9 @@ class Checkin < ActiveRecord::Base
   # Mails checkin message
   # Checkin type can be either :before, :after
   def self.perform(checkin_type, user_id)
-    if checkin_type == :before
+    if checkin_type.to_sym == :before
       UserMailer.before_checkin_reminder(User.find(user_id)).deliver
-    elsif checkin_type == :after
+    elsif checkin_type.to_sym == :after
       UserMailer.after_checkin_reminder(User.find(user_id)).deliver
     end
   end
