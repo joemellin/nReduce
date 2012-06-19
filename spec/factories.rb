@@ -9,10 +9,8 @@ single_instances = lambda do |factory_key|
     #was never created (is nil) or was cleared from db
     saved_single_instances[factory_key] = FactoryGirl.create(factory_key)  #recreate
   end
-
   return saved_single_instances[factory_key]
 end
-
 
 FactoryGirl.define do
   factory :startup do

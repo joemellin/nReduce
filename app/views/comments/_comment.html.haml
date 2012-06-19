@@ -13,7 +13,7 @@
       = link_to "#{is_owner ? 'You' : truncate(comment.user.name, :length => 20)}", user_path(:id => comment.user)
       - unless comment.user.startup_id.blank?
         &nbsp;|&nbsp;
-        = link_to comment.user.startup.name, startup_path(:id => comment.user.startup.name)
+        = link_to comment.user.startup.name, startup_path(:id => comment.user.startup.id)
     .time= "#{time_ago_in_words(comment.created_at)} ago"
   .left.content= simple_format(h(comment.content))
   .clear

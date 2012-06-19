@@ -36,7 +36,9 @@ class Awesome < ActiveRecord::Base
   end
 
   def update_awesome_count
-    self.awsm.update_attribute('awesome_count', self.awsm.awesomes.count)
+    obj = self.awsm
+    obj.awesome_count = obj.awesomes.count
+    obj.save(:validate => false)
   end
 
   def notify_users

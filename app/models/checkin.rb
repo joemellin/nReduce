@@ -127,6 +127,12 @@ class Checkin < ActiveRecord::Base
     end
   end
 
+  # Cache # of comments
+  def update_comments_count
+    self.comment_count = self.comments.count
+    self.save(:validate => false) # don't require validations in case we're during check-in window with requirements
+  end
+
   def time_label
     Checkin.week_for_time(self.created_at || Time.now)
   end

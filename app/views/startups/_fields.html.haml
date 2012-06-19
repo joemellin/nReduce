@@ -28,10 +28,16 @@
     = f.semantic_errors :team_size
     
 .control-group{error_css(@startup, :one_liner)}
-  = f.label :one_liner, "One Liner", :class => 'control-label'
+  = f.label :one_liner, :class => 'control-label'
   .controls
     = f.text_field :one_liner, :class => "span3 with-placeholder", :placeholder => "ex: Facebook for Kittens"
     = f.semantic_errors :one_liner
+
+.control-group{error_css(@startup, :elevator_pitch)}
+  = f.label :elevator_pitch, :class => 'control-label'
+  .controls
+    = f.text_area :elevator_pitch, :size => '80x4', :class => "span4"
+    = f.semantic_errors :elevator_pitch
 
 .control-group{error_css(@startup, :website_url)}
   = f.label :website_url, "Website", :class => 'control-label'
@@ -60,7 +66,10 @@
   .controls
     = f.text_field :website_url, :class => 'span3 with-placeholder'
     = f.semantic_errors :website_url
-    %span.help-inline.help-danger Upload a 30 second video to Youtube that introduces your team so that everyone can "meet" you. Set it as unlisted but allow it to be embedded.
+    %span.help-inline.help-danger
+      Upload a 30 second video to Youtube that introduces your team so that everyone can "meet" you.
+      %br/
+      Set it as unlisted but allow it to be embedded.
     
 %hr
 

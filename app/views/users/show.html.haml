@@ -1,19 +1,76 @@
 -# - content_for :subtitle do
 -#   Coming Soon!
 
-%p
-  %br
-  Logged in as
-  %strong
-    #{@user.name}
+.row
+  .span8
+    %h1
+      %small You!
+  .span4{:align => 'right'}
+    - if user_signed_in? and current_user.id == @user.id
+      = link_to "Edit Account", edit_user_path(@user), :class => "btn"
 
-%p
-  %br
-  - if !@user.startup.blank?
-    = link_to "My Startup", "/startup", :class => "btn btn-large btn-primary"
-  - else
-    = link_to "Register Startup", new_startup_path, :class => "btn btn-large"
-  - if @user.admin?
-    = link_to "Admin Tools", "/admin", :class => "btn btn-large"
+.row
+  .span12.well
+    .row
+      .span3= image_tag('user_avatar.png')
+      .span5
+        %br
+        %h1= h(@user.name)
+        %h3= h(@user.one_liner)
+        - if @user.startup_id.blank?
+          = link_to "Register Startup", new_startup_path, :class => "btn btn-large"
+        - else
+          %h3
+            %small Team :
+            = link_to h(@user.startup.name), @user.startup
+        %p
+          %small Skills: #{h(@user.skill_list)}
+        - unless @user.location.blank?
+          %p
+            %small Located: #{h(@user.location)}
+        %br
+        - unless @user.facebook_url.blank?
+          = link_to image_tag('facebook_32.png'), @user.facebook_url, :target => '_blank'
+        - unless @user.twitter.blank?
+          = link_to image_tag('twitter_32.png'), "https://twitter.com/#!/#{@user.twitter.sub('@', '')}", :target => '_blank'
+        - unless @user.linkedin_url.blank?
+          = link_to image_tag('linkedin_32.png'), @user.linkedin_url, :target => '_blank'
+        - unless @user.github_url.blank?
+          = link_to image_tag('github_32.png'), @user.github_url, :target => '_blank'
+        - unless @user.dribbble_url.blank?
+          = link_to image_tag('dribbble_32.png'), @user.dribbble_url, :target => '_blank'
+        - unless @user.blog_url.blank?
+          = link_to image_tag('blog_32.png'), @user.blog_url, :target => '_blank'
+      .span3
+        %br
+        %p
+          %small About #{h(@user.name)}
+        %p= h(@user.bio)
 
+- unless @user.startup.blank?
+  .row
+    .span12
+      %hr
+      %br
+      %h4
+        %small #{h(@user.name).possessive} Teammates
+      %br/
+      %hr
+      %br/
+  .row
+    .span12
+      - @user.startup.team_members.each do |team_member|
+        - next if team_member.id == @user.id
+        .left
+          .span1{:align => 'right'}= image_tag(user_avatar_url(team_member))
+          .span2
+            %h4= link_to team_member.name, team_member
+            %p
+              %small
+                Skills: #{team_member.skill_list}
+                %br/
+                Located: #{team_member.location}
+      .clear
+      %hr
+      %br
 

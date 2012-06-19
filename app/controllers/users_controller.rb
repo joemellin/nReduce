@@ -3,8 +3,8 @@ class UsersController < ApplicationController
   before_filter :login_required
 
   def show
-    @user = current_user
-
+    @user = current_user if params[:id] == 'me'
+    @user ||= User.find(params[:id])
   end
 
   def edit
@@ -14,6 +14,7 @@ class UsersController < ApplicationController
   def update
     @user = current_user
     if @user.update_attributes(params[:user])
+      flash[:notice] = "Your account has been updated!"
       render :action => :show
     else
       render :action => :edit

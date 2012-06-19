@@ -13,8 +13,20 @@
 .control-group{error_css(@user, :skill_list)}
   = f.label :skill_list, "Your Skills", :class => 'control-label'
   .controls
-    = f.text_field :skill_list, :class => "span2"
+    = f.text_field :skill_list, :placeholder => 'comma, separated', :maxlength => 45, :class => "span4"
     = f.semantic_errors :skill_list
+
+.control-group{error_css(@user, :one_liner)}
+  = f.label :one_liner, :class => 'control-label'
+  .controls
+    = f.text_field :one_liner, :class => "span4"
+    = f.semantic_errors :one_liner
+
+.control-group{error_css(@user, :bio)}
+  = f.label :bio, :class => 'control-label'
+  .controls
+    = f.text_area :bio, :size => '80x4', :class => "span4"
+    = f.semantic_errors :bio
 
 .control-group{error_css(@user, :location)}
   = f.label :location, "Your Location", :class => 'control-label'
@@ -42,6 +54,42 @@
         = action
       &nbsp;&nbsp;
     = f.semantic_errors :settings
+%hr
+.control-group
+  .controls
+    %h4
+      %small Me, elsewhere:
+
+.control-group{error_css(@user, :blog_url)}
+  = f.label :blog_url, :class => 'control-label'
+  .controls
+    = f.text_field :blog_url, :class => "span3"
+    = f.semantic_errors :blog_url
+
+.control-group{error_css(@user, :facebook_url)}
+  = f.label :facebook_url, :class => 'control-label'
+  .controls
+    = f.text_field :facebook_url, :class => "span3"
+    = f.semantic_errors :facebook_url
+
+.control-group{error_css(@user, :linkedin_url)}
+  = f.label :linkedin_url, :class => 'control-label'
+  .controls
+    = f.text_field :linkedin_url, :class => "span3"
+    = f.semantic_errors :linkedin_url
+
+.control-group{error_css(@user, :github_url)}
+  = f.label :github_url, :class => 'control-label'
+  .controls
+    = f.text_field :github_url, :class => "span3"
+    = f.semantic_errors :github_url
+
+.control-group{error_css(@user, :dribbble_url)}
+  = f.label :dribbble_url, :class => 'control-label'
+  .controls
+    = f.text_field :dribbble_url, :class => "span3"
+    = f.semantic_errors :dribble_url
+
 
 .form-actions
   = f.submit "Save", :class => "btn btn-primary btn-large"
