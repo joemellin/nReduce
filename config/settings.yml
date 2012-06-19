@@ -1,7 +1,8 @@
 email_host: "localhost:3000"
 
 default_time_zone: "Pacific Time (US & Canada)"
-default_from_email: "contact@nreduce.com"
+default_from_email: "nReduce <notifications@nreduce.com>"
+default_reply_to_email: "nReduce Support <support@nreduce.com>"
 
 client:
   test: "test"

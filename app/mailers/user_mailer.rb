@@ -1,5 +1,6 @@
 class UserMailer < ActionMailer::Base
-  default from: "notifications@nreduce.com"
+  default from: Settings.default_from_email
+  default reply_to: Settings.default_reply_to_email
 
   def new_checkin(notification)
     setup_email
