@@ -1,30 +1,133 @@
-- title = @owner ? "Your Startup: #{@startup.name}" : @startup.name
-
 - content_for :subtitle do
-  = title
+  = @startup.name
 
 .row
   .span8
-    %h2= title
-  .span4
+    %h1
+      %small Team
+  .span4{:align => 'right'}
     - if @owner
-      .actions
-        = link_to "Edit Startup", "/startup/edit", :class => "btn"
+      = link_to "Edit Startup", "/startup/edit", :class => "btn"
 
-%hr
-
-- vid_url = Youtube.embed_url(@startup.intro_video_url)
-- unless vid_url.blank?
-  %iframe{:width => '500', :height => '315', :src => vid_url, :frameborder => 0, :allowfullscreen => true}
-
+%hr/
+%br/
 .row
-  .span8
-    %h3 Team Members
-    %ul
-      - @startup.team_members.each do |team_member|
-        %li
-          = team_member.name
-          - unless team_member.twitter.blank?
-            \- 
-            = link_to_twitter("@#{team_member.twitter}")
+  .span12.well
+    .row
+      .span3
+        - vid_url = Youtube.embed_url(@startup.intro_video_url)
+        - if vid_url.blank?
+          [ no intro video ]
+        - else
+          %iframe{:width => '250', :height => '188', :src => vid_url, :frameborder => 0, :allowfullscreen => true}
+      .span5
+        %h1= h(@startup.name)
+        - unless @startup.one_liner.blank?
+          %h3= h(@startup.one_liner)
+        - unless @startup.website_url.blank?
+          %h3
+            %small= link_to @startup.website_url, :target => '_blank'
+        .row
+          .span2
+            - unless @startup.company_goal.blank?
+              %p
+                %small Goal: #{Startup.company_goals[@startup.company_goal.to_i]}
+            %p
+              %small Industry: #{h(@startup.industry_list)}
+            %p
+              Checkins:
+              %span.badge.badge-warning #{@num_checkins}
+          .span2
+            - unless @startup.stage.blank?
+              %p
+                %small Idea Stage: #{Startup.stages[@startup.stage.to_i]}
+            - unless @startup.growth_model.blank?
+              %p
+                %small Growth Model: #{Startup.growth_models[@startup.growth_model.to_i]}
+            %p
+              Awesomes:
+              %span.badge.badge-warning #{@num_awesomes}
+      .span3
+        %p
+          %small Elevator Pitch
+        %p= h(@startup.elevator_pitch)
+  
+.row
+  .span12
+    %h4
+      %small Team #{h(@startup.name)}:
+    %hr
+    %br
+.row
+  .span12
+    - @startup.team_members.each do |team_member|
+      .left
+        .span1{:align => 'right'}= image_tag(user_avatar_url(team_member))
+        .span2
+          %h4= link_to team_member.name, team_member
+          %p
+            %small
+              Skills: #{team_member.skill_list}
+              %br/
+              Located: #{team_member.location}
+    .clear
+    %hr
+    %br
+- if !@can_view_details
+  .row{:id => "startup_#{@startup.id}"}
+    .span12
+      %br/
+      .relationship{:align => 'center'}
+        %h3 #{h(@startup.name.possessive)} check-ins are private. To get permission to see them:
+        %br/
+        = button_to 'Ask to join their group', relationships_path(:startup_id => @startup.id), :class => 'btn btn-large btn-info', :remote => true
+- else
+  .row
+    .span12{:align => 'center'}
+      %hr/
+      %h2
+        %small Team #{h(@startup.name).possessive} Progress
+      %hr
+      %br
+      - if @checkins.size == 0
+        %p
+          %strong They haven't made any check-ins yet.
+  - @checkins.each do |c|
+    .row
+      .span3
+        %h3 Week of #{c.time_label}
+        %p 
+          %small Goal:
+        %p= truncate(h(c.start_focus), :length => 150)
+      .span3
+        %p
+          %small Before Video :
+        - if c.start_video_url.blank?
+          = image_tag('novideo_s.png')
+        - else
+          %iframe{:width => 250, :height => 188, :src => Youtube.embed_url(c.start_video_url), :frameborder => 0, :allowfullscreen => true}
+      .span3
+        %p
+          %small After Video :
+        - if c.end_video_url.blank?
+          = image_tag('novideo_s.png')
+        - else
+          %iframe{:width => 250, :height => 188, :src => Youtube.embed_url(c.end_video_url), :frameborder => 0, :allowfullscreen => true}
+      .span3
+        %p
+          %small Accomplished :
+        %p= truncate(h(c.end_comments), :length => 150)
+        - if c.awesome_count > 0
+          %p
+            Awesomes
+            %span.badge.badge-warning= c.awesome_count
+        - if c.comment_count > 0
+          %p
+            Comments
+            %span.badge= c.comment_count
+        %p= link_to 'View Discussion', [@startup, c], :class => 'btn'
+
+
+
+
 

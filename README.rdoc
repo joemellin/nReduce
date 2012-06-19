@@ -12,3 +12,11 @@ App Requirements:
 == Testing
 
 To run full test suite: bundle exec guard start
+
+== Resque
+
+To start a worker on all queues run this: RAILS_ENV=production QUEUE=* bundle exec rake environment resque:work
+
+== Whenever - for periodic emails - write to crontab
+
+bundle exec whenever -w

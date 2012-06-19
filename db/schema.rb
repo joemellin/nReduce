@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120618153238) do
+ActiveRecord::Schema.define(:version => 20120619061703) do
 
   create_table "authentications", :force => true do |t|
     t.string   "provider"
@@ -50,6 +50,7 @@ ActiveRecord::Schema.define(:version => 20120618153238) do
     t.integer  "awesome_count",   :default => 0
     t.text     "before_comments"
     t.text     "start_comments"
+    t.integer  "comment_count",   :default => 0
   end
 
   add_index "checkins", ["startup_id", "created_at"], :name => "index_checkins_on_startup_id_and_created_at"
@@ -171,6 +172,7 @@ ActiveRecord::Schema.define(:version => 20120618153238) do
     t.integer  "meeting_id"
     t.datetime "created_at",                          :null => false
     t.datetime "updated_at",                          :null => false
+    t.text     "elevator_pitch"
   end
 
   add_index "startups", ["public"], :name => "index_startups_on_public"
@@ -244,6 +246,11 @@ ActiveRecord::Schema.define(:version => 20120618153238) do
     t.string   "settings"
     t.integer  "meeting_id"
     t.integer  "unread_nc",              :default => 0
+    t.string   "one_liner"
+    t.text     "bio"
+    t.string   "github_url"
+    t.string   "dribbble_url"
+    t.string   "blog_url"
   end
 
   add_index "users", ["reset_password_token"], :name => "index_users_on_reset_password_token", :unique => true

@@ -93,6 +93,13 @@ module ApplicationHelper
 
   def user_avatar_url(user)
     return user.external_pic_url unless user.external_pic_url.blank?
-    return image_path('avatar.png')
+    return image_path('user_avatar_s.png')
+  end
+
+  # this seems to be broken for some reason
+  def video_embed_tag(youtube_url, width = '500', height = '315')
+    embed_url = Youtube.embed_url(youtube_url)
+    return '' if embed_url.blank?
+    tag(:iframe, {:width => width, :height => height, :src => embed_url, :frameborder => 0, :allowfullscreen => true})
   end
 end

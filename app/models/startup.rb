@@ -4,8 +4,9 @@ class Startup < ActiveRecord::Base
   belongs_to :main_contact, :class_name => 'User'
   belongs_to :meeting
   has_many :relationships
+  has_many :awesomes, :through => :checkins
 
-  attr_accessible :name, :team_size, :website_url, :main_contact_id, :phone, :growth_model, :stage, :company_goal, :meeting_id, :one_liner, :active, :launched_at, :industry_list, :technology_list, :ideology_list, :industry, :intro_video_url
+  attr_accessible :name, :team_size, :website_url, :main_contact_id, :phone, :growth_model, :stage, :company_goal, :meeting_id, :one_liner, :active, :launched_at, :industry_list, :technology_list, :ideology_list, :industry, :intro_video_url, :elevator_pitch
 
   validates_presence_of :name
   validate :check_video_urls_are_valid
@@ -19,7 +20,7 @@ class Startup < ActiveRecord::Base
       :storage => 's3',
       :s3_credentials => Settings.aws.s3.to_hash,
       :s3_headers => { 'Expires' => 1.year.from_now.httpdate },
-      :default_url => "http://www.nreduce.com/assets/avatar_:style.png",
+      :default_url => "http://www.nreduce.com/images/coavatar_:style.png",
       :s3_protocol => 'https'
     })
   else
