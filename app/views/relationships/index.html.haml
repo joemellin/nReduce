@@ -13,7 +13,7 @@
     %div Your #{nc[:type]} video is due in #{verbose_distance_until_time_from_now(nc[:time])}
     - if !@current_checkin.blank?
       - if @current_checkin.completed?
-        %p= link_to 'Your Completed Check-in', @current_checkin, :class => 'btn btn-primary'
+        %p= link_to 'This Week\'s Check-in', (Checkin.in_after_time_window? ? edit_checkin_path(@current_checkin) : @current_checkin), :class => 'btn btn-primary'
       - elsif @current_checkin.submitted? and Checkin.in_after_time_window?
         %p
           %i Complete before Tue at 4pm PST:
@@ -22,9 +22,10 @@
         Keep workin! (#{link_to("'before' checkin", @current_checkin)} was submitted this week)
         %br
         'After' check-in is due next Tue by 4pm PST
-    - if Checkin.in_before_time_window? and (@current_checkin.blank? or (!@current_checkin.blank? and @current_checkin.created_at < Time.now - 1.day))
+    - if Checkin.in_after_time_window? and @current_checkin.blank?
+      = link_to "Start 'After' Check-in", new_checkin_path, :class => 'btn btn-success'
+    - elsif Checkin.in_before_time_window?
       %p
-        %span.label.label-warning Extended 1 day
         %i Start by Wed at 4pm PST:
         = link_to "Start 'Before' Check-in", new_checkin_path, :class => 'btn btn-success'
     / - else

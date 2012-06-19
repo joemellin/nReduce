@@ -62,7 +62,7 @@ class Startup < ActiveRecord::Base
 
    # Returns the checkin for this week (or if Sun/Mon, it checks for last week's checkin)
   def current_checkin
-    checkins.ordered.first
+    checkins.ordered.where(['created_at > ?', Time.now - 1.week]).first
   end
 
   def onboarding_step_increment!

@@ -10,15 +10,19 @@ class Checkin < ActiveRecord::Base
   before_save :notify_user
 
   validates_presence_of :startup_id
-  validates_presence_of :start_focus, :message => "can't be blank"
-  validates_presence_of :start_video_url, :message => "can't be blank"
-  validates_presence_of :end_video_url, :message => "can't be blank", :if =>  Proc.new {|checkin| checkin.completed? }
+  validates_presence_of :start_focus, :message => "can't be blank", :if => lambda { Checkin.in_before_time_window? }
+  validates_presence_of :start_video_url, :message => "can't be blank", :if => lambda { Checkin.in_before_time_window? }
+  validates_presence_of :end_video_url, :message => "can't be blank", :if =>  lambda { Checkin.in_after_time_window? }
   validate :check_video_urls_are_valid
 
   scope :ordered, order('created_at DESC')
   scope :completed, where('completed_at IS NOT NULL')
 
   @queue = :checkin_message
+
+  def self.in_a_checkin_window?
+    self.in_before_time_window? or self.in_after_time_window?
+  end
 
     # Returns true if in the time window where startups can do 'before' check-in
   def self.in_before_time_window?
@@ -38,8 +42,8 @@ class Checkin < ActiveRecord::Base
     false
   end
 
-    # Returns Time of next before checkin
-  def self.next_before_checkin
+    # Returns Time of next before checkin: Tue 4pm - Wed 4pm
+  def self.next_after_checkin
     t = Time.now
     # Are we in Mon or tue? - if so next before checkin is this week
     if t.monday? or (t.tuesday? and t.hour < 16)
@@ -50,8 +54,8 @@ class Checkin < ActiveRecord::Base
     end
   end
 
-   # Returns Time of next after checkin
-  def self.next_after_checkin
+   # Returns Time of next after checkin: Mon 4pm - Tue 4pm
+  def self.next_before_checkin
     t = Time.now
     # Are we in Mon or tue? - if so next before checkin is this week
     if t.monday? or t.tuesday? or (t.wednesday? and t.hour < 16)
@@ -60,6 +64,14 @@ class Checkin < ActiveRecord::Base
       # Otherwise it's next week
       t.beginning_of_week + 1.week + 2.days + 16.hours
     end
+  end
+
+  def self.prev_after_checkin
+    self.next_after_checkin - 1.week
+  end
+
+  def self.prev_before_checkin
+    self.next_before_checkin - 1.week
   end
 
   # Returns an array with the next checkin type and time, ex: [:before, Time obj]
@@ -127,6 +139,16 @@ class Checkin < ActiveRecord::Base
     !completed_at.blank?
   end
 
+  # Returns true if the 'before' section of the checkin was completed
+  def before_completed?
+    !self.start_focus.blank? and !self.start_video_url.blank?
+  end
+
+  # Returns true if the 'after' section of the checkin was completed
+  def after_completed?
+    !self.end_video_url.blank?
+  end
+
   def self.video_url_is_unique?(url)
     cs = Checkin.where(:start_video_url => url).or(:end_video_url => url)
     return cs.map{|c| c.id }.delete_if{|id| id == self.id }.count > 0
@@ -149,8 +171,8 @@ class Checkin < ActiveRecord::Base
 
   def check_submitted_completed_times
     if self.errors.blank?
-      self.submitted_at = Time.now if !self.submitted? and !start_focus.blank? and !start_video_url.blank?
-      self.completed_at = Time.now if self.submitted? and !self.completed? and !end_video_url.blank?
+      self.submitted_at = Time.now if !self.submitted? and self.before_completed?
+      self.completed_at = Time.now if !self.completed? and self.after_completed?
     end
     true
   end
