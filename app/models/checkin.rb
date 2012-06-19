@@ -101,7 +101,7 @@ class Checkin < ActiveRecord::Base
 
   # Queues up 'before' email to be sent to all active users
   def self.send_before_checkin_email
-    users_with_startups = User.select('id, email, settings').where('email IS NOT NULL').where(:startup_id => Startup.select('id').onboarded.map{|s| s.id })
+    users_with_startups = User.where('email IS NOT NULL').where(:startup_id => Startup.select('id').onboarded.map{|s| s.id })
 
     users_with_startups.each do |u|
       Resque.enqueue(Checkin, :before, u.id) if u.email_for?('docheckin')
@@ -110,7 +110,7 @@ class Checkin < ActiveRecord::Base
 
   # Queues up 'after' email to be sent to all active users
   def self.send_after_checkin_email
-    users_with_startups = User.select('id, email, settings').where('email IS NOT NULL').where(:startup_id => Startup.select('id').onboarded.map{|s| s.id })
+    users_with_startups = User.where('email IS NOT NULL').where(:startup_id => Startup.select('id').onboarded.map{|s| s.id })
 
     users_with_startups.each do |u|
       Resque.enqueue(Checkin, :after, u.id) if u.email_for?('docheckin')

@@ -46,6 +46,10 @@ class User < ActiveRecord::Base
     {'email_on' => User.settings_labels['email_on'].keys}
   end
 
+  def settings
+    self['settings'].blank? ? [] : self['settings']
+  end
+
   def update_unread_notifications_count
     self.unread_nc = self.notifications.unread.count
     self.save
