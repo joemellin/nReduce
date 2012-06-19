@@ -1,6 +1,6 @@
 class IntroMailer < ActionMailer::Base
-
   default :from => Settings.default_from_email
+  default reply_to: Settings.default_reply_to_email
 
   def startup(user)
     @user = user
