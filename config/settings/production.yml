@@ -21,7 +21,7 @@ smtp_settings:
   port: 587
   domain: 'nreduce.com'
   user_name: 'nreduce'
-  password: 'th3 dude abides'
+  password: 'th3dudeabides'
   authentication: 'plain'
   enable_starttls_auto: true
 
