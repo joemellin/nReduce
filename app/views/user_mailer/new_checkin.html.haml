@@ -5,6 +5,7 @@
 %br
 - cc = @user.startup.current_checkin
 - if !cc.blank? and !cc.completed?
+  %h4.h4 To view it and post comments...
   %h3.h3= link_to "Post Your Team's \"After\" Video", edit_checkin_url(cc)
 - else
   %h3.h3= link_to 'Give Feedback &amp; Support', url_for([@checkin.startup, @checkin])
