@@ -17,7 +17,7 @@
             %ul.dropdown-menu
               - unless current_user.startup_id.blank?
                 %li= link_to 'My Startup', startup_path(:id => current_user.startup_id)
-              %li= link_to 'My Account', edit_user_path(current_user)
+              %li= link_to 'My Account', user_path(current_user)
               - if 1 == 2
                 %li
                   %a{:href => user_notifications_path(current_user)}
