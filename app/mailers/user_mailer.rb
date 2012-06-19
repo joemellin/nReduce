@@ -6,7 +6,7 @@ class UserMailer < ActionMailer::Base
     setup_email
     @checkin = notification.attachable
     @user = notification.user
-    mail(:to => user.email, :subject => "#{@checkin.startup.name} has posted their check-in for this week")
+    mail(:to => @user.email, :subject => "#{@checkin.startup.name} has posted their check-in for this week")
   end
 
   def relationship_request(notification)
