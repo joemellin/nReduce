@@ -12,8 +12,6 @@ class CreateNotifications < ActiveRecord::Migration
     add_column :users, :settings, :text
 
     # Add default settings for all users
-    User.transaction do
-      User.all.each{|u| u.update_attribute('settings', User.default_settings) }
-    end
+    User.all.each{|u| u.settings = User.default_settings; u.save(:validate => false) }
   end
 end
