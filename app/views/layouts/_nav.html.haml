@@ -15,7 +15,8 @@
                   %span.badge.badge-info
                     = pluralize(current_user.unread_nc, 'notification')
             %ul.dropdown-menu
-              %li= link_to 'My Startup', startup_path(:id => current_user.startup_id)
+              - unless current_user.startup_id.blank?
+                %li= link_to 'My Startup', startup_path(:id => current_user.startup_id)
               %li= link_to 'My Account', edit_user_path(current_user)
               - if 1 == 2
                 %li
