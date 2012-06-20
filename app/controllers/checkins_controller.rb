@@ -44,7 +44,14 @@ class CheckinsController < ApplicationController
     @startup = @current_startup
     @checkin = @current_startup.current_checkin
     if Checkin.in_before_time_window? or Checkin.in_after_time_window?
-      @checkin = Checkin.new if @checkin.blank? or @checkin.completed?
+      # if no checkin, give them a new one
+      if @checkin.blank?
+        @checkin = Checkin.new
+      elsif @checkin.completed? and Checkin.in_before_time_window?
+        @checkin = Checkin.new
+      elsif !@checkin.new_record? and (Checkin.prev_after_checkin > @checkin.created_at) and Checkin.in_before_time_window?
+        @checkin = Checkin.new
+      end
     end
     if @checkin.blank?
       flash[:alert] = "Sorry you've missed the check-in times."
