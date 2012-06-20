@@ -24,6 +24,7 @@ class Cache
         return nil
       end
     end
+    key = Cache.key_for(key) unless key.is_a?(String)
     value = $redis.get(key)
     # If key isn't set, and block is passed - set key to return value of block
     if value.nil? and !block.blank?
