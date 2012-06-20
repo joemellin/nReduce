@@ -145,9 +145,8 @@ class StartupsController < ApplicationController
   protected
 
   def can_view_details?(startup)
-    if startup.public?
-      return true
-    elsif user_signed_in?
+    #if startup.checkins_public?
+    if user_signed_in?
       # Admin or this is the user's startup
       return true if current_user.admin? or current_user.startup_id == startup.id
       # They are connected or the other startup has requested to be connected

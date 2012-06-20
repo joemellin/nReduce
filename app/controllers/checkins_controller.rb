@@ -87,7 +87,7 @@ class CheckinsController < ApplicationController
   protected
 
   def set_disabled_states(checkin)
-    @before_disabled = true #Checkin.in_before_time_window? ? false : true
+    @before_disabled = Checkin.in_before_time_window? ? false : true
     @after_disabled = Checkin.in_after_time_window? ? false : true
     if !checkin.new_record?
       @before_disabled = true if checkin.created_at < Checkin.prev_before_checkin
