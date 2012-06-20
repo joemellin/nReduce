@@ -100,6 +100,6 @@ class Relationship < ActiveRecord::Base
   protected
 
   def notify_users
-    Notification.create_for_relationship_request(self)
+    Notification.create_for_relationship_request(self) unless self.approved? # don't notify the inverse relationship when created
   end
 end
