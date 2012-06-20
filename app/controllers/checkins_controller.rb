@@ -114,7 +114,7 @@ class CheckinsController < ApplicationController
 
   def authorize_edit_checkin(checkin)
     if current_user.admin? or (checkin.startup_id == @current_startup.id)
-      if Checkin.in_after_time_window?
+      if Checkin.in_after_time_window? or Checkin.in_before_time_window?
         return true
       else
         flash[:alert] = "You aren't within the 'after' check-in time window."
