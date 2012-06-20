@@ -16,7 +16,6 @@
         %p= link_to 'This Week\'s Check-in', (Checkin.in_after_time_window? ? edit_checkin_path(@current_checkin) : @current_checkin), :class => 'btn btn-primary'
       - elsif @current_checkin.submitted? and Checkin.in_after_time_window?
         %p
-          %i Complete before Tue at 4pm PST:
           = link_to "Complete 'After' Check-in", edit_checkin_path(@current_checkin), :class => 'btn btn-danger'
       - else
         Keep workin! (#{link_to("'before' checkin", @current_checkin)} was submitted this week)
@@ -26,7 +25,6 @@
       = link_to "Start 'After' Check-in", new_checkin_path, :class => 'btn btn-success'
     - elsif Checkin.in_before_time_window?
       %p
-        %i Start by Wed at 4pm PST:
         = link_to "Start 'Before' Check-in", new_checkin_path, :class => 'btn btn-success'
     / - else
     /   Come back to start your checkin by Wednesday at 4pm PST
