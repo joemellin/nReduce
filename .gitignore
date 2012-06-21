@@ -9,6 +9,7 @@
 
 # Ignore database.
 /db/*.sqlite3
+/db/backups/*
 /config/database.yml
 
 # Ignore backup.rb file with passwords
