@@ -70,4 +70,9 @@ Nreduce::Application.configure do
   config.action_mailer.smtp_settings = Settings.smtp_settings.to_hash
 
   config.action_mailer.default_url_options = { :host => "new.nreduce.com" }
+
+  config.middleware.use ExceptionNotifier,
+    :email_prefix => "[nReduce Exception] ",
+    :sender_address => %{"notifications" <notifications@nreduce.com>},
+    :exception_recipients => %w{josh@nreduce.com}
 end
