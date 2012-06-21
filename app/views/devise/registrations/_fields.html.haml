@@ -1,3 +1,8 @@
+.control-group{error_css(resource, :name)}
+  = f.label :name, 'Your Name', :class => 'control-label'
+  .controls
+    = f.email_field :name
+    = f.semantic_errors :name
 .control-group{error_css(resource, :email)}
   = f.label :email, :class => 'control-label'
   .controls
@@ -5,12 +10,12 @@
     = f.semantic_errors :email
 - if resource.password_required?
   .control-group{error_css(resource, :password)}
-    = f.label :password, :class => 'control-label'
+    = f.label :password, 'Create a Password', :class => 'control-label'
     .controls
       = f.password_field :password
       = f.semantic_errors :password
   .control-group{error_css(resource, :password_confirmation)}
-    = f.label :password_confirmation, :class => 'control-label'
+    = f.label :password_confirmation, "Confirm Password", :class => 'control-label'
     .controls
       = f.password_field :password_confirmation
       = f.semantic_errors :password_confirmation
@@ -21,10 +26,5 @@
         = f.password_field :current_password
         = f.semantic_errors :current_password
         %p.help-block (we need your current password to confirm your changes)
-.control-group{error_css(resource, :location)}
-  = f.label :location, 'Your Location', :class => 'control-label'
-  .controls
-    = f.text_field :location, :placeholder => 'ex: San Francisco, CA'
-    = f.semantic_errors :location
 .control-group
   .controls= f.submit "Sign up", :class => 'btn btn-large btn-primary'
