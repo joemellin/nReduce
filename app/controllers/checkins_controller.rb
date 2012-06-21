@@ -92,6 +92,7 @@ class CheckinsController < ApplicationController
         set_disabled_states(@checkin)
         render :action => :edit
       end
+    end
   end
 
   protected
