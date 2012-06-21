@@ -77,18 +77,21 @@ class CheckinsController < ApplicationController
 
   def update
     @checkin = Checkin.find(params[:id])
-    return unless authorize_edit_checkin(@checkin)
-    if @checkin.update_attributes(params[:checkin])
-      if @checkin.completed?
-        flash[:notice] = "Your check-in has been completed!"
-        redirect_to '/'
-      else
-        redirect_to edit_checkin_path(@checkin)
-      end
+    if !authorize_edit_checkin(@checkin)
+      redirect_to @checkin
+      return
     else
-      set_disabled_states(@checkin)
-      render :action => :edit
-    end
+      if @checkin.update_attributes(params[:checkin])
+        if @checkin.completed?
+          flash[:notice] = "Your check-in has been completed!"
+          redirect_to '/'
+        else
+          redirect_to edit_checkin_path(@checkin)
+        end
+      else
+        set_disabled_states(@checkin)
+        render :action => :edit
+      end
   end
 
   protected
