@@ -3,7 +3,11 @@
 = form_for comment, :remote => true do |f|
   .comment
     .content
-      .left
+      .left{:style => 'width: 160px', :align => 'right'}
+        &nbsp;
+        - unless current_user.external_pic_url.blank?
+          = image_tag current_user.external_pic_url, :style => 'width: 50px; height: 50px;'
+      .left{:style => 'padding-left: 10px'}
         = f.hidden_field :checkin_id
         = f.text_area :content, :size => '50x1'
       .left{:style => 'padding-left: 5px;'}= f.submit (comment.new_record? ? 'Post Comment' : 'Update'), :class => 'btn primary'
