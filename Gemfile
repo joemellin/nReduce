@@ -28,7 +28,7 @@ gem 'rails_admin' # full admin package
 gem 'backup' # db backup 
 gem 'whenever' # cron scheduling
 gem 'resque'
-gem 'exception_notification', "~> 2.5", :require => 'exception_notifier'
+gem 'exception_notification'
 
 group :test, :development do
   # Pretty printed test output
