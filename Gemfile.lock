@@ -338,7 +338,7 @@ DEPENDENCIES
   coffee-rails (~> 3.2.1)
   database_cleaner
   devise (= 2.1.0)
-  exception_notification (~> 2.5)
+  exception_notification
   factory_girl_rails
   formtastic
   geokit-rails3
