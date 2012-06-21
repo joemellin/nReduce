@@ -26,17 +26,18 @@
             = f.text_field :email, :class => "span3"
             = f.semantic_errors :email
 
-        .control-group{error_css(@user, :password)}
-          = f.label :password, "Create a Password", :class => 'control-label'
-          .controls
-            = f.password_field :password, :class => "span3"
-            = f.semantic_errors :password
+        - if @user.password_required?
+          .control-group{error_css(@user, :password)}
+            = f.label :password, "Create a Password", :class => 'control-label'
+            .controls
+              = f.password_field :password, :class => "span3"
+              = f.semantic_errors :password
 
-        .control-group{error_css(@user, :password_confirmation)}
-          = f.label :password_confirmation, "Confirm Password", :class => 'control-label'
-          .controls
-            = f.password_field :password_confirmation, :class => "span3"
-            = f.semantic_errors :password_confirmation
+          .control-group{error_css(@user, :password_confirmation)}
+            = f.label :password_confirmation, "Confirm Password", :class => 'control-label'
+            .controls
+              = f.password_field :password_confirmation, :class => "span3"
+              = f.semantic_errors :password_confirmation
 
         .form-actions
           = f.submit "Continue", :class => "btn btn-primary btn-large"
