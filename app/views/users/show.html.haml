@@ -45,7 +45,7 @@
         %br
         %p
           %small About #{h(@user.name)}
-        %p= h(@user.bio)
+        %p= simple_format(h(@user.bio))
 
 - unless @user.startup.blank?
   .row
