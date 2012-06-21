@@ -3,10 +3,10 @@
 
 -# Show team nav if this is someone else's check-ins
 .row
-  .span4
+  .span2
     = link_to '<i class="icon icon-chevron-left"></i> All Teams'.html_safe, relationships_path, :class => 'btn btn-large'
     / = link_to '<i class="icon icon-chevron-left"></i> Previous Team'.html_safe, '#', :class => 'btn btn-large'
-  .span4{:align => 'center'}
+  .span8{:align => 'center'}
     .inline-block
       %h2= link_to "Team #{@checkin.startup.name}", startup_path(@checkin.startup)
     - @checkin.startup.team_members.each do |tm|
@@ -14,7 +14,9 @@
       - title = tm.name + (!tm.twitter.blank? ? " - @#{tm.twitter}" : '')
       .inline-block{:style => 'margin-left: 4px'}= link_to(image_tag(tm.external_pic_url, :title => title, :style => 'width: 50px; height: 50px;'), user_path(tm))
     .clear
-  .span4{:align => 'right'}
+    - unless @startup.one_liner.blank?
+      "#{@startup.one_liner}"
+  .span2{:align => 'right'}
     / = link_to 'Next Team <i class="icon icon-chevron-right"></i>'.html_safe, '#', :class => 'btn btn-large'
 %hr
 %br
@@ -41,7 +43,7 @@
   .span5{:align => 'right'}
     %p{:style => 'margin-bottom: 0'}
       %small Why?
-    %h3= h(@checkin.start_why)
+    %h3= simple_format(h(@checkin.start_why))
   .span2{:align => 'center', :style => 'padding-top: 8px'}
     - if current_user.startup_id == @checkin.startup_id
       / - if @checkin.awesome_count > 0
@@ -53,7 +55,7 @@
   .span5
     %p{:style => 'margin-bottom: 0'}
       %small Question:
-    %h3= h(@checkin.end_comments)
+    %h3= simple_format(h(@checkin.end_comments))
 
 .row{:style => 'margin-top: 15px'}
   .span12
