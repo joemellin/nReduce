@@ -22,12 +22,12 @@ class CheckinsController < ApplicationController
     else
       @checkin = Checkin.find(params[:id])
     end
-    unless authorize_view_checkin(@checkin) # only allow owner to edit
-      redirect_to checkins_path
+    if !authorize_view_checkin_or_redirect(@checkin) # only allow owner to edit
       return
+    else
+      @new_comment = Comment.new(:checkin_id => @checkin.id)
+      @comments = @checkin.comments.ordered
     end
-    @new_comment = Comment.new(:checkin_id => @checkin.id)
-    @comments = @checkin.comments.ordered
   end
 
   def edit
@@ -103,7 +103,7 @@ class CheckinsController < ApplicationController
   end
 
     # Loads startup from params, and verifies the logged-in user is connected to them
-  def authorize_view_checkin(checkin)
+  def authorize_view_checkin_or_redirect(checkin)
     if @current_startup.id == checkin.startup_id
       @startup == @current_startup
       @owner = true
@@ -111,8 +111,8 @@ class CheckinsController < ApplicationController
       # Someone else looking at checkins for a startup
       @startup ||= checkin.startup
       unless @current_startup.connected_to?(@startup)
-        flash[:alert] = "Sorry you don't have access to view that startup because you aren't connected to them."
-        redirect_to relationships_path
+        flash[:alert] = "Sorry you don't have access to view that checkin because you aren't connected to the startup."
+        redirect_to @startup
         return
       end
     end
