@@ -245,7 +245,7 @@ class User < ActiveRecord::Base
   end
 
   def set_default_settings
-    self.settings ||= User.default_settings
+    self.settings = User.default_settings if self.settings.blank?
   end
 
   def geocode_location
