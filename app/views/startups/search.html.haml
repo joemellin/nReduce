@@ -47,7 +47,7 @@ HELLO
           %iframe{:width => '250', :height => '188', :src => vid_url, :frameborder => 0, :allowfullscreen => true}
       .span5
         %h4
-          = link_to s.name, s
+          = link_to s.name, startup_path(s)
           - unless s.website_url.blank?
             %small
               \-
@@ -72,7 +72,12 @@ HELLO
           .span3
             - unless s.stage.blank?
               %p Idea Stage: #{Startup.stages[s.stage.to_i]}
-            %p Industry: #{@tags_by_startup_id[s.id].map{|t| t.name }.join(', ')}
+            %p
+              Industry:
+              - if @tags_by_startup_id[s.id].blank?
+                none
+              - else
+                = @tags_by_startup_id[s.id].map{|t| t.name }.join(', ')
       .span3.relationship
         - if s.connected_to_id?(current_user.startup_id)
           = link_to 'View Check-ins', s, :class => 'btn btn-large'

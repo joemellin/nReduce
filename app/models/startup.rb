@@ -119,12 +119,13 @@ class Startup < ActiveRecord::Base
     Startup.growth_models.map{|k,v| [v,k]}
   end
 
-  def self.tags_by_startup_id
-    tags_by_id = ActsAsTaggableOn::Tag.all.inject({}){|res, tag| res[tag.id] = tag; res }
+  def self.tags_by_startup_id(startups = [])
     tags_by_startup_id = {}
-    ActsAsTaggableOn::Tagging.where(:taggable_type => 'Startup').each do |tagging| 
+    taggings = ActsAsTaggableOn::Tagging.where(:taggable_type => 'Startup').includes(:tag)
+    taggings = taggings.where(:taggable_id => startups.map{|s| s.id }) unless startups.blank?
+    taggings.each do |tagging|
       tags_by_startup_id[tagging.taggable_id] ||= []
-      tags_by_startup_id[tagging.taggable_id] << tags_by_id[tagging.tag_id]
+      tags_by_startup_id[tagging.taggable_id] << tagging.tag
     end
     tags_by_startup_id
   end
