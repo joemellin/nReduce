@@ -29,6 +29,7 @@ gem 'backup' # db backup
 gem 'whenever' # cron scheduling
 gem 'resque'
 gem 'exception_notification'
+gem 'json' # much faster than activerecord -- http://flori.github.com/json/
 
 group :test, :development do
   # Pretty printed test output

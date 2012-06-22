@@ -47,12 +47,12 @@ HELLO
           %iframe{:width => '250', :height => '188', :src => vid_url, :frameborder => 0, :allowfullscreen => true}
       .span5
         %h4
-          = s.name
+          = link_to s.name, s
           - unless s.website_url.blank?
             %small
               \-
               #{s.website_url}
-        %h3 #{s.one_liner}
+        %h3= s.one_liner
         .row
           .span2
             - unless s.company_goal.blank?
@@ -72,9 +72,11 @@ HELLO
           .span3
             - unless s.stage.blank?
               %p Idea Stage: #{Startup.stages[s.stage.to_i]}
-            %p Industry: #{s.industry_list}
+            %p Industry: #{@tags_by_startup_id[s.id].map{|t| t.name }.join(', ')}
       .span3.relationship
-        - unless user_signed_in? and current_user.startup_id == s.id
+        - if s.connected_to_id?(current_user.startup_id)
+          = link_to 'View Check-ins', s, :class => 'btn btn-large'
+        - elsif user_signed_in? and current_user.startup_id != s.id
           = button_to 'Invite to Group', relationships_path(:startup_id => s.id), :class => 'btn btn-large btn-info', :remote => true
     %hr
     %br
