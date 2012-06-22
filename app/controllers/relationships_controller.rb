@@ -7,9 +7,7 @@ class RelationshipsController < ApplicationController
     @startups = [@current_startup] + @current_startup.connected_to
     @pending_relationships = @current_startup.pending_relationships
     @current_checkin = @current_startup.current_checkin
-    # Find all checkins created after last before checkin requirement
-    #if Checkin.in_before_window
-    #@checkins_by_startup = Checkin.where(:startup_id => @startups.map{|s| s.id }).where(['created_at > ?', Checkin.prev_before_checkin])
+    @checkins_by_startup = Checkin.current_checkin_for_startups(@startups)
   end
 
   def create

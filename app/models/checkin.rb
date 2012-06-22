@@ -20,6 +20,18 @@ class Checkin < ActiveRecord::Base
 
   @queue = :checkin_message
 
+  def self.current_checkin_for_startups(startups = [])
+    return {} if startups.blank?
+    next_checkin = Checkin.next_checkin_type_and_time
+    if Checkin.in_after_time_window?
+      start_time = next_checkin[:time] - 24.hours
+    else # if in before checkin or in the week after, get prev week's checkin start time
+      start_time = Checkin.prev_after_checkin - 24.hours
+    end
+    checkins = Checkin.where(:startup_id => startups.map{|s| s.id }).where(['created_at > ?', start_time])
+    checkins.inject({}){|res, e| res[e.startup_id] = e; res }
+  end
+
   def self.in_a_checkin_window?
     self.in_before_time_window? or self.in_after_time_window?
   end
