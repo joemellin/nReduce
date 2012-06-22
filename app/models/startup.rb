@@ -129,7 +129,7 @@ class Startup < ActiveRecord::Base
       data[:pending_relationships] = Relationship.where(:connected_with_id => s.id).pending.count
       data[:approved_relationships] = rel.inject(0){|num, r| r.approved? ? num + 1 : num }
       data[:rejected_relationships] = rel.inject(0){|num, r| r.rejected? ? num + 1 : num }
-      data[:checkins_completed] = cs.inject(0){|num, c| c.completed? ? c + 1 : num }
+      data[:checkins_completed] = cs.inject(0){|num, c| c.completed? ? num + 1 : num }
       data[:comments_given] = s.team_members.inject(0){|num, tm| !comments_by_user_id[tm.id].blank? ? num + comments_by_user_id[tm.id] : num }
       data[:comments_received] = cs.inject(0){|num, c| !comments_by_checkin_id[c.id].blank? ? num + comments_by_checkin_id[c.id] : num }
       ret[s.id] = data
