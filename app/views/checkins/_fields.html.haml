@@ -5,7 +5,7 @@
   .control-group
     %strong You have #{verbose_distance_until_time_from_now(Checkin.next_before_checkin)} to make any changes
   .control-group{error_css(@checkin, :start_focus)}
-    = f.label :start_focus, "This week's focus", :class => 'control-label'
+    = f.label :start_focus, "This week's focus", :maxlength => 255, :class => 'control-label'
     .controls
       = f.text_field :start_focus, :class => "span4"
       = f.semantic_errors :start_focus

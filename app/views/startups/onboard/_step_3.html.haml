@@ -2,7 +2,7 @@
 %br
 .row
   .span6
-    = semantic_form_for @startup, :url => onboard_next_startup_path, :method => :post, :html => {:class => "form-horizontal"} do |f|
+    = semantic_form_for @startup, :url => onboard_next_startup_path, :method => :post, :html => {:class => "form-horizontal", :multipart => true} do |f|
       %fieldset
         %legend All information is private.
         = hidden_field_tag 'startup_form', true
