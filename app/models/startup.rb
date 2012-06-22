@@ -20,6 +20,7 @@ class Startup < ActiveRecord::Base
   scope :launched, where('launched_at IS NOT NULL')
   scope :with_intro_video, where('intro_video_url IS NOT NULL')
   scope :onboarded, lambda { where(:onboarding_step => Startup.num_onboarding_steps) }
+  scope :named, lambda{|name| where(:name => name) }
 
     # Startups this one is connected to (approved status)
   def connected_to
@@ -125,10 +126,10 @@ class Startup < ActiveRecord::Base
       data = {:name => s.name}
       rel = s.relationships
       data[:pending_relationships] = Relationship.where(:connected_with_id => s.id).pending.count
-      data[:approved_relationships] = rel.inject(0){|num, r| num += 1 if r.approved?; num }
-      data[:rejected_relationships] = rel.inject(0){|num, r| num += 1 if r.rejected?; num }
-      data[:comments_given] = s.team_members.inject(0){|num, tm| num += comments_by_user_id[tm.id]; num }
-      data[:comments_received] = s.checkins.inject(0){|num, c| num += comments_by_checkin_id[c.id]; num }
+      data[:approved_relationships] = rel.inject(0){|num, r| r.approved? ? num + 1 : num }
+      data[:rejected_relationships] = rel.inject(0){|num, r| r.rejected? ? num + 1 : num }
+      data[:comments_given] = s.team_members.inject(0){|num, tm| !comments_by_user_id[tm.id].blank? ? num + comments_by_user_id[tm.id] : num }
+      data[:comments_received] = s.checkins.inject(0){|num, c| !comments_by_checkin_id[c.id].blank? ? num + comments_by_checkin_id[c.id] : num }
       ret[s.id] = data
     end
     ret
@@ -137,9 +138,9 @@ class Startup < ActiveRecord::Base
   def self.generate_stats_csv
     stats = Startup.generate_stats
     CSV.generate do |csv|
-      csv << ['ID', 'Name', 'Pending Relationships', 'Approved Relationships', 'Rejected Relationships', 'Comments Given', 'Comments Received']
+      csv << ['Link', 'ID', 'Name', 'Pending Relationships', 'Approved Relationships', 'Rejected Relationships', 'Comments Given', 'Comments Received']
       stats.each do |startup_id, data|
-        csv << [startup_id, data[:name], data[:pending_relationships], data[:approved_relationships], data[:rejected_relationships], data[:comments_given], data[:comments_received]]
+        csv << ['http://new.nreduce.com/startups/' + startup_id.to_s, startup_id, data[:name], data[:pending_relationships], data[:approved_relationships], data[:rejected_relationships], data[:comments_given], data[:comments_received]]
       end
     end
   end
