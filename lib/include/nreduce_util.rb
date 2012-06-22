@@ -3,8 +3,8 @@ class NreduceUtil
     number.to_s.strip.gsub(%r{\D}, "").gsub(%r{^\+1}, "").gsub(%r{^1}, "")
   end
 
-  def self.friendly_token
-    SecureRandom.base64(15).tr('+/=', 'xyz')
+  def self.friendly_token(length = 15)
+    SecureRandom.base64(length).tr('+/=', 'xyz')
   end
 
   def self.parse_twitter_handles(twitter_text)

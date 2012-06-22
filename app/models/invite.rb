@@ -74,6 +74,6 @@ class Invite < ActiveRecord::Base
   protected
 
   def generate_code
-    self.code = NreduceUtil.friendly_token if self.code.blank?
+    self.code = NreduceUtil.friendly_token(20) if self.code.blank?
   end
 end
