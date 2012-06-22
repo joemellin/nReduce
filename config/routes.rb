@@ -13,7 +13,7 @@ Nreduce::Application.routes.draw do
     mount Resque::Server.new, :at => "/resque"
   end
 
-  devise_for :users, :controllers => {:registrations => 'registrations'}
+  devise_for :users, :controllers => {:registrations => 'registrations', :sessions => 'sessions'}
 
   resources :authentications, :checkins
 
@@ -72,12 +72,18 @@ Nreduce::Application.routes.draw do
     end
   end
 
+  resources :invites, :only => [:create, :destroy] do
+    get 'accept', :on => :member
+  end
+
+
     # Your startup - singular resource
   resource :startup do
     member do
       get 'onboard'
       post 'onboard_next'
       get 'dashboard'
+      post 'remove_team_member'
     end
   end
 

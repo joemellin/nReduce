@@ -1,0 +1,11 @@
+#{@invite.startup.name} wants you!\n
+\n
+(to join their team on nReduce)\n
+\n
+- unless @invite.msg.blank?
+  #{h(@invite.msg)}\n
+  \n
+Once you accept their invite you can join the nReduce entrepreneurial community.\n
+\n
+\n
+Join #{@invite.startup.name.possessive} team: #{accept_invite_url(:id => @invite.code)}

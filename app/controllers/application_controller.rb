@@ -4,6 +4,23 @@ class ApplicationController < ActionController::Base
 
   protected
 
+    # Override sign in path so we can accept invite if they have one
+  def after_sign_in_path_for(resource)
+    session[:sign_in_up_email] = nil
+    if !session[:invite_id].blank?
+      i = Invite.find(session[:invite_id])
+      if current_user.email == i.email
+        accept_invite_path(:id => i.code)
+      else
+        session[:invite_id] = nil
+        flash[:alert] = "The invite you tried to use is for #{i.email} - please sign in with that account if you want to accept it."
+        root_path
+      end
+    else
+      root_path
+    end
+  end
+
   # use an around_filter
   def record_user_action
     return true if @ua
@@ -115,5 +132,12 @@ class ApplicationController < ActionController::Base
     else
       return true
     end
+  end
+
+  # use stored invite id and accept
+  def accept_invite_for_user(user)
+    invite = Invite.find(session[:invite_id])
+    invite.accepted_by(user)
+    session[:invite_id] = nil
   end
 end

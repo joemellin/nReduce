@@ -7,6 +7,6 @@
 %br/
 %br/
 %br/
-= link_to('Submit "After" Video', @current_checkin.blank? ? new_checkin_url : edit_checkin_url(@startup.current_checkin))
+%h3= link_to('Submit "After" Video', @current_checkin.blank? ? new_checkin_url : edit_checkin_url(@startup.current_checkin))
 
 = render :partial => 'footer'

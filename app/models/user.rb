@@ -9,6 +9,7 @@ class User < ActiveRecord::Base
   has_many :comments
   has_many :notifications, :dependent => :destroy
   has_many :meeting_messages
+  has_many :invites, :foreign_key => 'to_id'
 
   # Include default devise modules. Others available are:
   # :token_authenticatable, :confirmable,

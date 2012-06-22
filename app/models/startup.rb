@@ -5,6 +5,8 @@ class Startup < ActiveRecord::Base
   belongs_to :meeting
   has_many :relationships
   has_many :awesomes, :through => :checkins
+  has_many :invites
+  has_many :invited_team_members, :through => :invites, :class_name => 'User'
 
   attr_accessible :name, :team_size, :website_url, :main_contact_id, :phone, :growth_model, :stage, :company_goal, :meeting_id, :one_liner, :active, :launched_at, :industry_list, :technology_list, :ideology_list, :industry, :intro_video_url, :elevator_pitch
 
@@ -20,7 +22,6 @@ class Startup < ActiveRecord::Base
   scope :launched, where('launched_at IS NOT NULL')
   scope :with_intro_video, where('intro_video_url IS NOT NULL')
   scope :onboarded, lambda { where(:onboarding_step => Startup.num_onboarding_steps) }
-  scope :named, lambda{|name| where(:name => name) }
 
     # Startups this one is connected to (approved status)
     # uses cache
@@ -62,6 +63,10 @@ class Startup < ActiveRecord::Base
    # Returns the checkin for this week (or if Sun/Mon, it checks for last week's checkin)
   def current_checkin
     checkins.ordered.where(['created_at > ?', Time.now - 1.week]).first
+  end
+
+  def self.named(name)
+    Startup.find_by_name(name)
   end
 
   def onboarding_step_increment!
