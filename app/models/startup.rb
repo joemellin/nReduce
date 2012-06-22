@@ -17,7 +17,7 @@ class Startup < ActiveRecord::Base
   # Use S3 for production
   # http://blog.tristanmedia.com/2009/09/using-amazons-cloudfront-with-rails-and-paperclip/
   if Rails.env.production?
-    has_attached_file :logo, Settings.paperclip_config.to_hash.merge!({
+    has_attached_file :logo, Settings.paperclip_config.to_hash.merge({
       :storage => 's3',
       :s3_credentials => Settings.aws.s3.to_hash,
       :s3_headers => { 'Expires' => 1.year.from_now.httpdate },

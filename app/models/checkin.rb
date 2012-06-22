@@ -28,7 +28,7 @@ class Checkin < ActiveRecord::Base
     else # if in before checkin or in the week after, get prev week's checkin start time
       start_time = Checkin.prev_after_checkin - 24.hours
     end
-    checkins = Checkin.where(:startup_id => startups.map{|s| s.id }).where(['created_at > ?', start_time])
+    checkins = Checkin.where(:startup_id => startups.map{|s| s.id }).where(['completed_at > ?', start_time])
     checkins.inject({}){|res, e| res[e.startup_id] = e; res }
   end
 
