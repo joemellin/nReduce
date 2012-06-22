@@ -1,5 +1,5 @@
 class StartupsController < ApplicationController
-  around_filter :record_user_action, :except => [:onboard_next]
+  around_filter :record_user_action, :except => [:onboard_next, :stats]
   before_filter :login_required
 
   # Actions for all startups
@@ -140,6 +140,17 @@ class StartupsController < ApplicationController
       @startup.onboarding_step_increment!
     end
     redirect_to :action => :onboard
+  end
+
+  def stats
+    redirect_to(root_path) && return unless current_user.admin?
+    respond_to do |format|
+      format.csv { send_data(Startup.generate_stats_csv,
+                   :type => 'text/csv; charset=iso-8859-1; header=present',
+                   :disposition => "attachment; filename=startup_stats_#{Date.today.to_s(:db)}.csv")
+                 }
+      format.html { render :nothing => true }
+    end
   end
 
   protected

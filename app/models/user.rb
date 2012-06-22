@@ -28,6 +28,8 @@ class User < ActiveRecord::Base
 
   acts_as_taggable_on :skills
 
+  has_attached_file :pic, {:default_url => "http://new.nreduce.com/images/user_avatar_:style.png"}
+
   def self.settings_labels
     {
       'email_on' =>
@@ -145,7 +147,7 @@ class User < ActiveRecord::Base
   end
 
   def password_required?
-    (authentications.empty? || !password.blank?) #&& super
+    (authentications.empty? || !password.blank?) && super
   end
   
   def uses_password_authentication?

@@ -37,7 +37,10 @@ class Cache
 
   # Hashes objects to a key that can be used for cache set/get
   def self.key_for(*args)
-    args.join('_').downcase
+    # if args is an array of items, flatten it
+    args = args.flatten if args.size == 1 and args.first.is_a?(Array)
+    # any args that are active record objects - use classname_id
+    args.map{|a| (!a.is_a?(String) and a.ancestors.include?(ActiveRecord::Base)) ? "#{a.class}_#{a.id}" : a.to_s }.join('_').downcase
   end
 
   def self.enabled?
