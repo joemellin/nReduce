@@ -19,10 +19,16 @@ class Invite < ActiveRecord::Base
 
   def self.invite_team_member(prms)
     i = Invite.new(prms)
+    user_with_email = User.where(:email => prms[:email]).first
     if Invite.where(:email => prms[:email]).count > 0
       i.errors.add(:email, 'has already been invited')
+    elsif user_with_email and !user_with_email.startup_id.blank?
+      if user_with_email.startup_id == prms[:startup_id].to_i
+        i.errors.add(:email, 'is already a team member on that startup')
+      else
+        i.errors.add(:email, 'is already a team member on another startup')
+      end
     else
-      user_with_email = User.where(:email => prms[:email]).first
       i.invite_type = Invite.types['team member']
       i.to = user_with_email unless user_with_email.blank?
       i.expires_at = Time.now + 30.days
