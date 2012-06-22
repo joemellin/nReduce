@@ -65,6 +65,7 @@ Nreduce::Application.routes.draw do
     collection do
       get 'search'
       post 'search'
+      get 'stats'
     end
     resources :checkins do
       get 'latest' => "checkins#show", :checkin_id => 'latest', :on => :collection

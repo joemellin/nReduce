@@ -14,19 +14,7 @@ class Startup < ActiveRecord::Base
 
   acts_as_taggable_on :industries, :technologies, :ideologies
 
-  # Use S3 for production
-  # http://blog.tristanmedia.com/2009/09/using-amazons-cloudfront-with-rails-and-paperclip/
-  if Rails.env.production?
-    has_attached_file :logo, Settings.paperclip_config.to_hash.merge({
-      :storage => 's3',
-      :s3_credentials => Settings.aws.s3.to_hash,
-      :s3_headers => { 'Expires' => 1.year.from_now.httpdate },
-      :default_url => "http://www.nreduce.com/images/coavatar_:style.png",
-      :s3_protocol => 'https'
-    })
-  else
-    has_attached_file :logo, Settings.paperclip_config.to_hash
-  end
+  has_attached_file :logo, {:default_url => "http://new.nreduce.com/images/coavatar_:style.png"}
 
   scope :is_public, where(:public => true)
   scope :launched, where('launched_at IS NOT NULL')
@@ -120,6 +108,40 @@ class Startup < ActiveRecord::Base
 
   def self.growth_model_select_options
     Startup.growth_models.map{|k,v| [v,k]}
+  end
+
+    # Generates stats for all active startsup (onboarded)
+    # of pending relationships
+    # of approved relationships
+    # of rejected relationships
+    # of comments given
+    # of comments received
+  def self.generate_stats
+    ret = {}
+    startups = Startup.where(:onboarding_step => Startup.num_onboarding_steps)
+    comments_by_user_id = Comment.group('user_id').count
+    comments_by_checkin_id = Comment.group('checkin_id').count
+    startups.each do |s|
+      data = {:name => s.name}
+      rel = s.relationships
+      data[:pending_relationships] = Relationship.where(:connected_with_id => s.id).pending.count
+      data[:approved_relationships] = rel.inject(0){|num, r| num += 1 if r.approved?; num }
+      data[:rejected_relationships] = rel.inject(0){|num, r| num += 1 if r.rejected?; num }
+      data[:comments_given] = s.team_members.inject(0){|num, tm| comments_by_user_id[tm.id]; num }
+      data[:comments_received] = s.checkins.inject(0){|num, c| comments_by_checkin_id[c.id]; num }
+      ret[s.id] = data
+    end
+    ret
+  end
+
+  def self.generate_stats_csv
+    stats = Startup.generate_stats
+    CSV.generate do |csv|
+      csv << ['ID', 'Name', 'Pending Relationships', 'Approved Relationships', 'Rejected Relationships', 'Comments Given', 'Comments Received']
+      stats.each do |startup_id, data|
+        csv << [startup_id, data[:name], data[:pending_relationships], data[:approved_relationships], data[:rejected_relationships], data[:comments_given], data[:comments_received]]
+      end
+    end
   end
 
   protected
