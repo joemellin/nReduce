@@ -13,6 +13,7 @@
         = f.submit "Save", :class => "btn btn-primary btn-large"
   .span4
     %h4 Add Team Member
+    %p{:style => 'margin: 5px 0 0 0;'} They will get full access to post and view checkins, and participate in nReduce.
     %br/
     = form_for Invite.new(:startup_id => @startup.id, :from_id => current_user.id), :html => {:class => 'form-inline'} do |f|
       = f.hidden_field :startup_id
