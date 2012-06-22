@@ -14,12 +14,16 @@
   .controls
     %ul
     - @startup.team_members.order(:name).each do |u|
-      %li= u.name
+      %li
+        = u.name
+        &nbsp;
+        = link_to '<i class="icon icon-remove"></i>'.html_safe, remove_team_member_startup_path, :method => :delete, :confirm => "Are you sure you want to remove #{u.name}?"
 
 .control-group{error_css(@startup, :main_contact_id)}
   = f.label :main_contact_id, "Main Contact", :class => 'control-label'
   .controls
-    = !@startup.main_contact.blank? ? @startup.main_contact.name : 'Not assigned'
+    = f.select :main_contact_id, options_for_select(@startup.team_members.map{|tm| [tm.name, tm.id] }, @startup.main_contact_id), :include_blank => true
+    = f.semantic_errors :main_contact_id
 
 .control-group{error_css(@startup, :team_size)}
   = f.label :team_size, "# of Team Members", :class => 'control-label'

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120619061703) do
+ActiveRecord::Schema.define(:version => 20120622200247) do
 
   create_table "authentications", :force => true do |t|
     t.string   "provider"
@@ -72,6 +72,23 @@ ActiveRecord::Schema.define(:version => 20120619061703) do
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
   end
+
+  create_table "invites", :force => true do |t|
+    t.string   "email"
+    t.string   "code"
+    t.string   "msg"
+    t.integer  "invite_type"
+    t.datetime "expires_at"
+    t.datetime "accepted_at"
+    t.boolean  "accepted"
+    t.integer  "to_id"
+    t.integer  "from_id"
+    t.integer  "startup_id"
+    t.datetime "created_at",  :null => false
+    t.datetime "updated_at",  :null => false
+  end
+
+  add_index "invites", ["code"], :name => "index_invites_on_code"
 
   create_table "meeting_messages", :force => true do |t|
     t.string   "subject"

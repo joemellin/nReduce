@@ -1,0 +1,14 @@
+= render :partial => 'header'
+%h1.h1 #{@invite.startup.name} wants you!
+%br/
+%h4 (to join their team on nReduce)
+- unless @invite.msg.blank?
+  %p= simple_format(h(@invite.msg))
+  %br/
+  %br/
+%p Once you accept their invite you can join the nReduce entrepreneurial community.
+%br/
+%br/
+%br/
+%h3= link_to("Join #{@invite.startup.name.possessive} team", accept_invite_url(:id => @invite.code))
+= render :partial => 'footer'

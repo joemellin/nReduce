@@ -83,7 +83,7 @@ class StartupsController < ApplicationController
     end
   end
 
-  before_filter :current_startup_required, :only => [:update] # allow people to update without valid checkin
+  before_filter :current_startup_required, :only => [:update, :remove_team_member] # allow people to update without valid checkin
   before_filter :current_startup_and_checkin_required, :only => [:show, :edit, :onboard, :onboard_next]
 
   def dashboard
@@ -105,6 +105,22 @@ class StartupsController < ApplicationController
     else
       render :edit
     end
+  end
+
+    # Removes a team member
+  def remove_team_member
+    u = User.find(params[:user_id])
+    if @current_startup.id != u.startup_id
+      flash[:alert] = "#{u.name} could not be removed because they aren't a member of your team."
+    else
+      u.startup_id = nil
+      if u.save
+        flash[:notice] = "#{u.name} has been removed from your team."
+      else
+        flash[:alert] = "Sorry, but #{u.name} could not be removed at this time."
+      end
+    end
+    redirect_to edit_startup_path(@current_startup)
   end
 
     # multi-page process that any new startup has to go through
@@ -143,8 +159,12 @@ class StartupsController < ApplicationController
     redirect_to :action => :onboard
   end
 
+  #
+  # ADMIN ONLY
+  #
+  before_filter :admin_required, :only => [:stats]
+
   def stats
-    redirect_to(root_path) && return unless current_user.admin?
     respond_to do |format|
       format.csv { send_data(Startup.generate_stats_csv,
                    :type => 'text/csv; charset=iso-8859-1; header=present',

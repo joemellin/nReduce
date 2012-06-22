@@ -56,6 +56,12 @@ class UserMailer < ActionMailer::Base
     mail(:to => user.email, :subject => "What did you accomplish this week?")
   end
 
+  def invite_team_member(invite)
+    setup_email
+    @invite = invite
+    mail(:to => invite.email, :subject => "#{invite.startup.name} wants to add you to their team on nReduce")
+  end
+
   protected
 
   def setup_email
