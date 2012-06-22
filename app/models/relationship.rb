@@ -35,7 +35,14 @@ class Relationship < ActiveRecord::Base
 
     # Returns all startups that this startup is connected to (approved status)
   def self.all_connections_for(startup)
-    startup.relationships.approved.includes(:connected_with).map{|r| r.connected_with }
+    Startup.where(:id => Relationship.all_connection_ids_for(startup))
+  end
+
+    # Returns all ids for startups that this startup is connected to
+  def self.all_connection_ids_for(startup)
+    startup_ids = Cache.get(['connections', startup]){
+      startup.relationships.approved.map{|r| r.connected_with_id }
+    }
   end
 
     # Returns all startups that this startup has initiated, but are still pending
@@ -60,6 +67,8 @@ class Relationship < ActiveRecord::Base
           Relationship.create(:startup_id => connected_with_id, :connected_with_id => startup_id, :status => APPROVED, :approved_at => Time.now)
           Notification.create_for_relationship_approved(self)
         end
+        # Reset relationship cache for both startups involved
+        self.reset_cache_for_startups_involved
       end
     rescue ActiveRecord::RecordNotUnique
       # Already approved don't need to do anything
@@ -74,6 +83,7 @@ class Relationship < ActiveRecord::Base
         self.update_attributes(:status => REJECTED, :rejected_at => Time.now) unless self.rejected?
         inv = self.inverse_relationship
         inv.update_attributes(:status => REJECTED, :rejected_at => Time.now) unless inv.blank? or inv.rejected?
+        self.reset_cache_for_startups_involved
       end
     rescue ActiveRecord::RecordNotUnique
       # Already rejected don't need to do anything
@@ -98,6 +108,11 @@ class Relationship < ActiveRecord::Base
   end
 
   protected
+
+  def reset_cache_for_startups_involved
+    Cache.delete(['connections', "startup_#{startup_id}"])
+    Cache.delete(['connections', "startup_#{connected_with_id}"])
+  end
 
   def notify_users
     Notification.create_for_relationship_request(self) unless self.approved? # don't notify the inverse relationship when created

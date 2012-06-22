@@ -349,6 +349,7 @@ DEPENDENCIES
   haml-rails
   hominid
   jquery-rails
+  json
   mysql2
   omniauth (>= 1.0)
   omniauth-linkedin

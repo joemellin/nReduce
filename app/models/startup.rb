@@ -23,27 +23,35 @@ class Startup < ActiveRecord::Base
   scope :named, lambda{|name| where(:name => name) }
 
     # Startups this one is connected to (approved status)
+    # uses cache
   def connected_to
     Relationship.all_connections_for(self)
   end
 
     # Relationships this startup has requested with others
+    # not cached
   def requested_relationships
     Relationship.all_requested_relationships_for(self)
   end
 
     # relationships that other startups have requested with this startup
+    # not cached
   def pending_relationships
     Relationship.all_pending_relationships_for(self)
   end
 
     # Returns true if these two startups are connected in an approved relationship
+    # uses cache
   def connected_to?(startup)
-    r = Relationship.between(self, startup)
-    r and r.approved?
+    self.connected_to_id?(startup.id)
+  end
+
+  def connected_to_id?(startup_id)
+    Relationship.all_connection_ids_for(self).include?(startup_id)
   end
 
     # Returns true if these two starts are connected, or if the provided startup requested to be connected to this startup
+    # not cached
   def connected_or_pending_to?(startup)
     # check reverse direction because we need to see if pending request is coming from other startup
     r = Relationship.between(startup, self)
@@ -109,6 +117,16 @@ class Startup < ActiveRecord::Base
 
   def self.growth_model_select_options
     Startup.growth_models.map{|k,v| [v,k]}
+  end
+
+  def self.tags_by_startup_id
+    tags_by_id = ActsAsTaggableOn::Tag.all.inject({}){|res, tag| res[tag.id] = tag; res }
+    tags_by_startup_id = {}
+    ActsAsTaggableOn::Tagging.where(:taggable_type => 'Startup').each do |tagging| 
+      tags_by_startup_id[tagging.taggable_id] ||= []
+      tags_by_startup_id[tagging.taggable_id] << tags_by_id[tagging.tag_id]
+    end
+    tags_by_startup_id
   end
 
     # Generates stats for all active startsup (onboarded)

@@ -1,3 +1,5 @@
+require 'json/add/rails'
+
 class Cache
   @@enabled = true
 
@@ -7,7 +9,7 @@ class Cache
   def self.set(key, value, expires_in = nil, raw = false)
     return true if !@@enabled
     key = Cache.key_for(key) unless key.is_a?(String)
-    value = value.to_json unless raw
+    value = JSON.generate(value) unless raw
     res = $redis.set(key, value) == 'OK' ? true : false
     $redis.expire(key, expires_in) if res and !expires_in.blank?
     res
@@ -27,12 +29,20 @@ class Cache
     key = Cache.key_for(key) unless key.is_a?(String)
     value = $redis.get(key)
     # If key isn't set, and block is passed - set key to return value of block
-    if value.nil? and !block.blank?
+    if !value.nil?
+      value = JSON.parse(value) unless value.blank? or raw
+    elsif value.nil? and !block.blank?
       value = yield
-      Cache.set(key, value, expires_in)
+      Cache.set(key, value, expires_in, raw)
     end
-    value = JSON.parse(value) unless value.blank? or raw
     value
+  end
+
+    # Deletes a key
+  def self.delete(key)
+    key = Cache.key_for(key) unless key.is_a?(String)
+    $redis.del(key) # returns 1 if was set, 0 if not. ignore results anyway
+    true
   end
 
   # Hashes objects to a key that can be used for cache set/get
@@ -40,7 +50,7 @@ class Cache
     # if args is an array of items, flatten it
     args = args.flatten if args.size == 1 and args.first.is_a?(Array)
     # any args that are active record objects - use classname_id
-    args.map{|a| (!a.is_a?(String) and a.ancestors.include?(ActiveRecord::Base)) ? "#{a.class}_#{a.id}" : a.to_s }.join('_').downcase
+    args.map{|a| (a.respond_to?(:new_record?)) ? "#{a.class}_#{a.id}" : a.to_s }.join('_').downcase
   end
 
   def self.enabled?

@@ -54,6 +54,7 @@ class StartupsController < ApplicationController
     end
     @ua = {:data => @search}
     @meetings_by_id = Meeting.location_name_by_id
+    @tags_by_startup_id = Startup.tags_by_startup_id
   end
 
   #
