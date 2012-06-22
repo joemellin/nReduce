@@ -125,11 +125,13 @@ class Startup < ActiveRecord::Base
     startups.each do |s|
       data = {:name => s.name}
       rel = s.relationships
+      cs = s.checkins
       data[:pending_relationships] = Relationship.where(:connected_with_id => s.id).pending.count
       data[:approved_relationships] = rel.inject(0){|num, r| r.approved? ? num + 1 : num }
       data[:rejected_relationships] = rel.inject(0){|num, r| r.rejected? ? num + 1 : num }
+      data[:checkins_completed] = cs.inject(0){|num, c| c.completed? ? c + 1 : num }
       data[:comments_given] = s.team_members.inject(0){|num, tm| !comments_by_user_id[tm.id].blank? ? num + comments_by_user_id[tm.id] : num }
-      data[:comments_received] = s.checkins.inject(0){|num, c| !comments_by_checkin_id[c.id].blank? ? num + comments_by_checkin_id[c.id] : num }
+      data[:comments_received] = cs.inject(0){|num, c| !comments_by_checkin_id[c.id].blank? ? num + comments_by_checkin_id[c.id] : num }
       ret[s.id] = data
     end
     ret
@@ -138,9 +140,9 @@ class Startup < ActiveRecord::Base
   def self.generate_stats_csv
     stats = Startup.generate_stats
     CSV.generate do |csv|
-      csv << ['Link', 'ID', 'Name', 'Pending Relationships', 'Approved Relationships', 'Rejected Relationships', 'Comments Given', 'Comments Received']
+      csv << ['Link', 'ID', 'Name', 'Pending Relationships', 'Approved Relationships', 'Rejected Relationships', 'Checkins Completed', 'Comments Given', 'Comments Received']
       stats.each do |startup_id, data|
-        csv << ['http://new.nreduce.com/startups/' + startup_id.to_s, startup_id, data[:name], data[:pending_relationships], data[:approved_relationships], data[:rejected_relationships], data[:comments_given], data[:comments_received]]
+        csv << ['http://new.nreduce.com/startups/' + startup_id.to_s, startup_id, data[:name], data[:pending_relationships], data[:approved_relationships], data[:rejected_relationships], data[:checkins_completed], data[:comments_given], data[:comments_received]]
       end
     end
   end
