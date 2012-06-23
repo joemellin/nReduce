@@ -152,8 +152,8 @@ aws:
     bucket: 'assets.nreduce.com'
 
 paperclip_config:
-  path: "/:hash.extension"
-  url: "/:hash:.extension"
+  url: "/:class/:style/:updated_at.:extension"
+  path: "/:class/:style/:updated_at.:extension"
   hash_secret: "6S0Z6CwVt7w1zPYpomycLFL9rTffnzGBDtCBhqcXJIrdmHWUwCQHdbKq4f5AMjt"
   styles:
     medium: '250x250>'

@@ -29,7 +29,7 @@ class User < ActiveRecord::Base
 
   acts_as_taggable_on :skills
 
-  has_attached_file :pic, {:default_url => "http://new.nreduce.com/images/user_avatar_:style.png"}
+  has_attached_file :pic, {:default_url => "http://new.nreduce.com/images/user_avatar_:style.png"}.merge(Nreduce::Application.config.paperclip_config)
 
   def self.settings_labels
     {
