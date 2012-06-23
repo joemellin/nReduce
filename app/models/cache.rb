@@ -8,7 +8,7 @@ class Cache
     # Unless raw is passed, it serializes to JSON
   def self.set(key, value, expires_in = nil, raw = false)
     return true if !@@enabled
-    key = Cache.key_for(key) unless key.is_a?(String)
+    key = Cache.key_for(key)
     value = JSON.generate(value) unless raw
     res = $redis.set(key, value) == 'OK' ? true : false
     Cache.logger.info "CACHE: #{res ? 'hit' : 'miss'} #{key}"
@@ -27,7 +27,7 @@ class Cache
         return nil
       end
     end
-    key = Cache.key_for(key) unless key.is_a?(String)
+    key = Cache.key_for(key)
     value = $redis.get(key)
     # If key isn't set, and block is passed - set key to return value of block
     if !value.nil?
@@ -43,15 +43,44 @@ class Cache
 
     # Deletes a key
   def self.delete(key)
-    key = Cache.key_for(key) unless key.is_a?(String)
+    key = Cache.key_for(key)
     res = $redis.del(key) # returns 1 if was set, 0 if not. ignore results anyway
     Cache.logger.info "CACHE: delete #{res == 1 ? 'success' : 'failure'} #{key}"
     true
   end
 
+  #
+  # Array manipulation methods
+  #
+
+    # Add an item to an array
+  def self.arr_push(key, value)
+    res = $redis.lpush(key, value)
+    Cache.logger.info "CACHE: arr push with index #{res} to #{key}"
+    true
+  end
+
+    # return all elements in an array
+  def self.arr_get(key)
+    key = Cache.key_for(key)
+    res = $redis.lrange(key, 0, Cache.arr_count(key))
+    Cache.logger.info "CACHE: arr get for #{key}"
+    res
+  end
+
+  def self.arr_count(key)
+    key = Cache.key_for(key)
+    $redis.llen(key)
+  end
+
+  #
+  # Utility methods
+  #
+
   # Hashes objects to a key that can be used for cache set/get
   def self.key_for(*args)
     # if args is an array of items, flatten it
+    return args.first if args.size == 1 and args.first.is_a?(String)
     args = args.flatten if args.size == 1 and args.first.is_a?(Array)
     # any args that are active record objects - use classname_id
     args.map{|a| (a.respond_to?(:new_record?)) ? "#{a.class}_#{a.id}" : a.to_s }.join('_').downcase
