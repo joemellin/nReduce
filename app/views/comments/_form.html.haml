@@ -1,6 +1,7 @@
 - comment = form
 - cancel_link ||= false
 = form_for comment, :remote => true do |f|
+  = f.hidden_field :parent_id
   .comment
     .content
       .left{:style => 'width: 160px', :align => 'right'}

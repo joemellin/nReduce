@@ -65,6 +65,11 @@ class Notification < ActiveRecord::Base
     end
   end
 
+    # Notify this person that someone has replied to their comment
+  def self.create_for_comment_reply(new_comment, reply_to_user)
+    Notification.create_and_send(reply_to_user, new_comment, :new_comment) unless reply_to_user.id == new_comment.user_id
+  end
+
   # only intended for awesomes on checkins
   def self.create_for_new_awesome(awesome)
     awesome.awsm.startup.team_members.each do |u|

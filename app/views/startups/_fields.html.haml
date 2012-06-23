@@ -54,6 +54,7 @@
   = f.label :logo, 'Logo', :class => 'control-label'
   .controls
     = f.file_field :logo
+    = f.semantic_errors :logo
     - if @startup.logo.exists?
       %br
       Current Image:

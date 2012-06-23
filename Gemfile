@@ -30,6 +30,7 @@ gem 'whenever' # cron scheduling
 gem 'resque'
 gem 'exception_notification'
 gem 'json' # much faster than activerecord -- http://flori.github.com/json/
+gem 'ancestry' # for threaded comments
 
 group :test, :development do
   # Pretty printed test output

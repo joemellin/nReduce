@@ -50,7 +50,10 @@ Nreduce::Application.routes.draw do
   end
 
   resources :comments do
-    get 'cancel_edit', :on => :member
+    member do
+      get 'reply_to'
+      get 'cancel_edit'
+    end
   end
   
   resources :relationships, :only => [:create, :index] do

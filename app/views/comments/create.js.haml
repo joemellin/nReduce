@@ -1,22 +1,31 @@
 - if @comment.new_record?
   /* Error - show message */
-  // $("#itinerary_#{@comment.itinerary_id}_comments .messages").html('<div class="flash error">#{escape_javascript(flash.discard(:error))}</div>');
+  - if @comment.parent_id.blank?
+    $('.comments .new_comment').first.prepend('#{escape_javascript(render('layouts/flash_messages'))}');
+  - else
+    $("#comment_#{@comment.parent_id} .new_comment").prepend('#{escape_javascript(render('layouts/flash_messages'))}');
 - else
   /* Show message */
   /* $("#itinerary_<%= @comment.itinerary_id %>_comments .messages").html('<div class="flash notice"><%= escape_javascript(flash.discard(:notice)) %></div>'); */
 
-  /* Add the new comment to the bottom of the comments list */
-  $("#comments .list").prepend("#{escape_javascript(render(@comment))}");
+  // No parent
+  - if @comment.parent_id.blank?
+    :plain
+      /* Add the new comment to the top of the comments list */
+      $("#comments .list").prepend("#{escape_javascript(render(@comment))}");
+      /* Reset the comment form */
+      $("#comments #new_comment")[0].reset();
+  - else
+    :plain
+      // Append underneath parent
+      $("#comment_#{@comment.parent_id}").append("#{escape_javascript(render(@comment))}");
+      // Remove reply-to comment form
+      $("#comment_#{@comment.parent_id} .new_comment").remove();
 
-  /* Highlight the new comment */
-  $("#comment_#{@comment.id}").effect("highlight", {}, 3000);
+  :plain
+    /* Highlight the new comment */
+    $("#comment_#{@comment.id}").effect("highlight", {}, 3000);
 
-  /* Reset the comment form */
-  $("#comments #new_comment")[0].reset();
-  //$('#itinerary_<%= @comment.itinerary_id %>_cancel_link').click();
-
-  /* setTimeout(function(){ $("#itinerary_<%= @comment.itinerary_id %>_comments .messages").hide() }, 10000) */
-
-addCommentControlsListeners();
+    addCommentControlsListeners();
 
 - flash.discard

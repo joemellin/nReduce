@@ -65,5 +65,4 @@
       #comments
         = render :partial => 'comments/form', :object => @new_comment
         .list
-          - @comments.each do |c|
-            = render 'comments/comment', :comment => c
+          = nested_comments @comments

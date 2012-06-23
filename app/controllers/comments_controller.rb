@@ -8,7 +8,7 @@ class CommentsController < ApplicationController
     if @comment.save
       flash[:notice] = 'The comment has been added'
     else
-      flash[:alert] = 'The comment could not be added'
+      flash[:alert] = "The comment could not be added: #{@comment.errors.full_messages.join(', ')}."
     end
     @ua = {:attachable => @comment}
     respond_to do |format|
@@ -22,6 +22,16 @@ class CommentsController < ApplicationController
     @ua = {:attachable => @comment}
     respond_to do |format|
       format.html
+      format.js
+    end
+  end
+
+    # Render form to create a comment reply
+  def reply_to
+    reply_to = Comment.find(params[:id])
+    @comment = Comment.new(:parent_id => reply_to.id, :checkin_id => reply_to.checkin_id)
+    respond_to do |format|
+      format.html { render :nothing => true }
       format.js
     end
   end
