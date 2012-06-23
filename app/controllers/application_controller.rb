@@ -27,21 +27,20 @@ class ApplicationController < ActionController::Base
     started = Time.now
     yield
     begin
-      #if Rails.env == 'production'
-        @ua ||= {}
-        # for user tracking
-        elapsed = Time.now - started
-        @ua[:action] = UserAction.id_for("#{controller_name}_#{action_name}")
-        @ua[:ip] = request.remote_ip
-        @ua[:time_taken] = elapsed
-        @ua[:browser] = request.env['HTTP_USER_AGENT']
-        @ua[:user_id] ||= current_user.id if user_signed_in?
-        @ua[:created_at] = Time.now
-        @ua[:url_path] = request.env['REQUEST_PATH']
-        user_action = UserAction.new(@ua)
-        user_action.save!
-    #  end
-    rescue
+      @ua ||= {}
+      # for user tracking
+      elapsed = Time.now - started
+      @ua[:action] = UserAction.id_for("#{controller_name}_#{action_name}")
+      @ua[:ip] = request.remote_ip
+      @ua[:time_taken] = elapsed
+      @ua[:browser] = request.env['HTTP_USER_AGENT']
+      @ua[:user_id] ||= current_user.id if user_signed_in?
+      @ua[:created_at] = Time.now
+      @ua[:url_path] = request.env['REQUEST_PATH']
+      user_action = UserAction.new(@ua)
+      user_action.save!
+    rescue => error
+      logger.info "UserAction save error: #{error}"
       # do nothing
     end
   end

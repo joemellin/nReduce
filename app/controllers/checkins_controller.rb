@@ -28,6 +28,7 @@ class CheckinsController < ApplicationController
       @new_comment = Comment.new(:checkin_id => @checkin.id)
       @comments = @checkin.comments.includes(:user).arrange(:order => :created_at) # arrange in nested order
     end
+    @ua = {:attachable => @checkin}
   end
 
   def edit
@@ -38,6 +39,7 @@ class CheckinsController < ApplicationController
       return
     end
     set_disabled_states(@checkin)
+    @ua = {:attachable => @checkin}
   end
 
   def new
@@ -73,6 +75,7 @@ class CheckinsController < ApplicationController
       set_disabled_states(@checkin)
       render :action => :edit
     end
+    @ua = {:attachable => @checkin}
   end
 
   def update
@@ -93,6 +96,7 @@ class CheckinsController < ApplicationController
         render :action => :edit
       end
     end
+    @ua = {:attachable => @checkin}
   end
 
   protected

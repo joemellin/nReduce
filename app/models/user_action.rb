@@ -6,6 +6,12 @@ class UserAction < ActiveRecord::Base
 
   serialize :data
 
+  # queue to cache, then write when cache reaches 1000 user actions
+  @@queue_actions = true
+
+  # Resque queue name
+  @queue = :user_actions
+
   scope :ordered, :order => 'created_at DESC'
   
     # Returns hash of all user actions
@@ -74,5 +80,49 @@ class UserAction < ActiveRecord::Base
   
   def unknown_action?
     self.action.blank? or self.action == 0
+  end
+
+  # overwrite save action to queue to cache
+  def save!(*args)
+    if self.new_record? and UserAction.queue_actions?
+      # Add to in-memory cache
+      Cache.arr_push('user_actions', Marshal.dump(self))
+      # Trigger in-memory cache to write to disk
+      Resque.enqueue(UserAction) if Cache.arr_count('user_actions') > 1000
+      true
+    else
+      super
+    end
+  end
+
+    # Writes user actions to database
+  def self.perform
+    # have to call all classes or ruby will complain when unmarshaling
+    [UserAction.class, Checkin.class, Comment.class, User.class, Meeting.class, Invite.class, Authentication.class, Awesome.class, Instrument.class, Startup.class, Relationship.class]
+    t = Time.now
+    uas = Cache.arr_get('user_actions')
+    Cache.delete('user_actions')
+    saved = 0
+    UserAction.transaction do
+      uas.each do |marshaled_ua|
+        ua = Marshal.load(marshaled_ua)
+        if ua.save # count successes
+          saved += 1
+        else # push failures back onto cache
+          Cache.arr_push('user_actions', marshaled_ua)
+        end
+      end
+    end
+    msg = "User Actions: wrote #{saved} of #{uas.size} user actions in #{Time.now - t} seconds"
+    logger.info msg
+    msg
+  end
+
+  def self.queue_actions?
+    @@queue_actions
+  end
+
+  def self.queue_actions=(queue_actions)
+    @@queue_actions = queue_actions
   end
 end
