@@ -14,7 +14,7 @@
     .left{:style => 'padding: 11px 0 0 5px;'}= f.submit (comment.new_record? ? 'Post Comment' : 'Update'), :class => 'btn primary'
     .left{:style => 'padding: 15px 0 0 8px;'}
       - if comment.new_record? and cancel_link
-        = link_to 'Cancel', '#', :id => "comment_cancel_link", :onclick => "$('#new_comment').hide(); return false;"
+        = link_to 'Cancel', '#', :onclick => "$('#comment_#{comment.parent_id} .new_comment').remove(); return false;"
       - elsif !comment.new_record?
         = link_to 'Cancel', cancel_edit_comment_path(comment), :remote => true
     .clear
