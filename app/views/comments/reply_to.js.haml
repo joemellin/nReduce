@@ -1,0 +1,12 @@
+:plain
+  parent = $('#comment_#{@comment.parent_id}');
+
+  /* Add new comment form */
+  parent.append("#{escape_javascript(render(:partial => 'form', :object => @comment))}");
+
+  /* Place focus on textarea */
+  parent.find('.new_comment textarea').first().focus().autoResize({
+    extraSpace: 3
+  });
+
+- flash.discard

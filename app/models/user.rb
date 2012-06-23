@@ -31,6 +31,9 @@ class User < ActiveRecord::Base
 
   has_attached_file :pic, {:default_url => "http://new.nreduce.com/images/user_avatar_:style.png"}.merge(Nreduce::Application.config.paperclip_config)
 
+  validates_attachment :pic, :content_type => { :content_type => ['image/jpg', 'image/png', 'image/jpeg', 'image/gif']}, 
+                              :size => {:in => 0..500.kilobytes}
+
   def self.settings_labels
     {
       'email_on' =>

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120622200247) do
+ActiveRecord::Schema.define(:version => 20120623054526) do
 
   create_table "authentications", :force => true do |t|
     t.string   "provider"
@@ -62,8 +62,10 @@ ActiveRecord::Schema.define(:version => 20120622200247) do
     t.datetime "created_at",                   :null => false
     t.datetime "updated_at",                   :null => false
     t.integer  "awesome_count", :default => 0
+    t.string   "ancestry"
   end
 
+  add_index "comments", ["ancestry"], :name => "index_comments_on_ancestry"
   add_index "comments", ["checkin_id"], :name => "index_comments_on_checkin_id"
 
   create_table "instruments", :force => true do |t|

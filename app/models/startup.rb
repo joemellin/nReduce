@@ -18,6 +18,9 @@ class Startup < ActiveRecord::Base
 
   has_attached_file :logo, {:default_url => "http://new.nreduce.com/images/coavatar_:style.png"}.merge(Nreduce::Application.config.paperclip_config)
 
+  validates_attachment :logo, :content_type => { :content_type => ['image/jpg', 'image/png', 'image/jpeg', 'image/gif'] }, 
+                              :size => {:in => 0..500.kilobytes}
+
   scope :is_public, where(:public => true)
   scope :launched, where('launched_at IS NOT NULL')
   scope :with_intro_video, where('intro_video_url IS NOT NULL')

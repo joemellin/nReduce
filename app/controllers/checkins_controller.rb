@@ -26,7 +26,7 @@ class CheckinsController < ApplicationController
       return
     else
       @new_comment = Comment.new(:checkin_id => @checkin.id)
-      @comments = @checkin.comments.ordered
+      @comments = @checkin.comments.arrange(:order => :created_at) # arrange in nested order
     end
   end
 
