@@ -1,21 +1,23 @@
 - is_owner = (user_signed_in? and (comment.user_id.to_s == current_user.id.to_s)) ? true : false
 = div_for comment do
-  .right{:style => 'padding-top: 8px;'}
-    != render_awesome_button(comment)
-    = link_to 'Reply', reply_to_comment_path(comment), :remote => true, :class => 'controls btn'
+  .right.controls{:style => 'padding-top: 8px;'}
+    .left!= render_awesome_button(comment)
+    .left= link_to 'Reply', reply_to_comment_path(comment), :remote => true, :class => 'btn'
     - if is_owner
-      = link_to 'Edit', edit_comment_path(comment), :remote => true, :class => 'controls btn'
-      &nbsp;
-      = link_to '<i class="icon-white icon-remove"></i>'.html_safe, comment, :method => :delete, :remote => true, :class => 'btn btn-small btn-danger controls', :confirm => "Are you sure you want to delete it?"
-  .left{:style => 'width: 160px; padding-right: 10px;', :align => 'right'}
+      .left
+        = link_to 'Edit', edit_comment_path(comment), :remote => true, :class => 'btn'
+        &nbsp;
+        = link_to '<i class="icon-white icon-remove"></i>'.html_safe, comment, :method => :delete, :remote => true, :class => 'btn btn-small btn-danger', :confirm => "Are you sure you want to delete the comment?"
+    .clear
+  .left.pic
     - if !comment.user.external_pic_url.blank?
       - title = comment.user.name + (!comment.user.twitter.blank? ? " - @#{comment.user.twitter}" : '')
       %div= link_to image_tag(comment.user.external_pic_url, :style => 'width: 50px; height: 50px;', :title => title), user_path(:id => comment.user_id)
-    .name
-      = link_to "#{is_owner ? 'You' : truncate(comment.user.name, :length => 20)}", user_path(:id => comment.user)
-      - unless comment.user.startup_id.blank?
-        &nbsp;|&nbsp;
-        = link_to comment.user.startup.name, startup_path(:id => comment.user.startup.id)
-    .time= "#{time_ago_in_words(comment.created_at)} ago"
-  .left.content= simple_format(h(comment.content))
+  .left
+    = link_to "#{is_owner ? 'You' : truncate(comment.user.name, :length => 20)}", user_path(:id => comment.user)
+    - unless comment.user.startup_id.blank?
+      &nbsp;•&nbsp;
+      = link_to comment.user.startup.name, startup_path(:id => comment.user.startup.id)
+    %span.time= "• #{time_ago_in_words(comment.created_at)} ago"
+    .content= simple_format(h(comment.content))
   .clear

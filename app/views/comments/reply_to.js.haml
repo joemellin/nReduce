@@ -2,7 +2,7 @@
   parent = $('#comment_#{@comment.parent_id}');
 
   /* Add new comment form */
-  parent.append("#{escape_javascript(render(:partial => 'form', :object => @comment))}");
+  parent.append("<div class='nested_comments'>#{escape_javascript(render(:partial => 'form', :object => @comment))}</div>");
 
   /* Place focus on textarea */
   parent.find('.new_comment textarea').first().focus().autoResize({

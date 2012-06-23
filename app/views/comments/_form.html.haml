@@ -3,18 +3,18 @@
 = form_for comment, :remote => true do |f|
   = f.hidden_field :parent_id
   .comment
-    .content
-      .left{:style => 'width: 160px', :align => 'right'}
+    .left
+      - if current_user.external_pic_url.blank?
         &nbsp;
-        - unless current_user.external_pic_url.blank?
-          = image_tag current_user.external_pic_url, :style => 'width: 50px; height: 50px;'
-      .left{:style => 'padding-left: 10px'}
-        = f.hidden_field :checkin_id
-        = f.text_area :content, :size => '50x1'
-      .left{:style => 'padding-left: 5px;'}= f.submit (comment.new_record? ? 'Post Comment' : 'Update'), :class => 'btn primary'
-      .left{:style => 'padding-left: 5px;'}
-        - if comment.new_record? and cancel_link
-          = link_to 'Cancel', '#', :id => "comment_cancel_link", :onclick => "$('#new_comment').hide(); return false;"
-        - elsif !comment.new_record?
-          = link_to 'Cancel', cancel_edit_comment_path(comment), :remote => true
-      .clear
+      - else
+        = image_tag current_user.external_pic_url, :style => 'width: 50px; height: 50px;'
+    .left.content{:style => 'padding-left: 10px'}
+      = f.hidden_field :checkin_id
+      = f.text_area :content, :size => '50x1'
+    .left{:style => 'padding: 11px 0 0 5px;'}= f.submit (comment.new_record? ? 'Post Comment' : 'Update'), :class => 'btn primary'
+    .left{:style => 'padding: 15px 0 0 8px;'}
+      - if comment.new_record? and cancel_link
+        = link_to 'Cancel', '#', :id => "comment_cancel_link", :onclick => "$('#new_comment').hide(); return false;"
+      - elsif !comment.new_record?
+        = link_to 'Cancel', cancel_edit_comment_path(comment), :remote => true
+    .clear
