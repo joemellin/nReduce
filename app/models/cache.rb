@@ -11,6 +11,7 @@ class Cache
     key = Cache.key_for(key) unless key.is_a?(String)
     value = JSON.generate(value) unless raw
     res = $redis.set(key, value) == 'OK' ? true : false
+    Cache.logger.info "CACHE: #{res ? 'hit' : 'miss'} #{key}"
     $redis.expire(key, expires_in) if res and !expires_in.blank?
     res
   end
@@ -30,8 +31,10 @@ class Cache
     value = $redis.get(key)
     # If key isn't set, and block is passed - set key to return value of block
     if !value.nil?
+      Cache.logger.info "CACHE: get #{key}"
       value = JSON.parse(value) unless value.blank? or raw
     elsif value.nil? and !block.blank?
+      Cache.logger.info "CACHE: set a get for key #{key}"
       value = yield
       Cache.set(key, value, expires_in, raw)
     end
@@ -41,7 +44,8 @@ class Cache
     # Deletes a key
   def self.delete(key)
     key = Cache.key_for(key) unless key.is_a?(String)
-    $redis.del(key) # returns 1 if was set, 0 if not. ignore results anyway
+    res = $redis.del(key) # returns 1 if was set, 0 if not. ignore results anyway
+    Cache.logger.info "CACHE: delete #{res == 1 ? 'success' : 'failure'} #{key}"
     true
   end
 
@@ -59,5 +63,9 @@ class Cache
 
   def self.enabled=(enabled)
     @@enabled = enabled
+  end
+
+  def self.logger
+    ActiveRecord::Base.logger
   end
 end

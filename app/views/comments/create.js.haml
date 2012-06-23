@@ -18,7 +18,7 @@
   - else
     :plain
       // Append underneath parent
-      $("#comment_#{@comment.parent_id}").append("#{escape_javascript(render(@comment))}");
+      $("#comment_#{@comment.parent_id}").after("<div class='nested_comments'>#{escape_javascript(render(@comment))}</div>");
       // Remove reply-to comment form
       $("#comment_#{@comment.parent_id} .new_comment").remove();
 

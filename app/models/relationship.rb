@@ -40,7 +40,7 @@ class Relationship < ActiveRecord::Base
 
     # Returns all ids for startups that this startup is connected to
   def self.all_connection_ids_for(startup)
-    startup_ids = Cache.get(['connections', startup]){
+    Cache.get(['connections', startup]){
       startup.relationships.approved.map{|r| r.connected_with_id }
     }
   end

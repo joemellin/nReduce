@@ -1,6 +1,7 @@
 - is_owner = (user_signed_in? and (comment.user_id.to_s == current_user.id.to_s)) ? true : false
 = div_for comment do
   .right{:style => 'padding-top: 8px;'}
+    != render_awesome_button(comment)
     = link_to 'Reply', reply_to_comment_path(comment), :remote => true, :class => 'controls btn'
     - if is_owner
       = link_to 'Edit', edit_comment_path(comment), :remote => true, :class => 'controls btn'
@@ -9,7 +10,7 @@
   .left{:style => 'width: 160px; padding-right: 10px;', :align => 'right'}
     - if !comment.user.external_pic_url.blank?
       - title = comment.user.name + (!comment.user.twitter.blank? ? " - @#{comment.user.twitter}" : '')
-      %div= link_to image_tag(comment.user.external_pic_url, :style => 'width: 50px; height: 50px;', :title => title), startup_path(:id => comment.user.startup_id)
+      %div= link_to image_tag(comment.user.external_pic_url, :style => 'width: 50px; height: 50px;', :title => title), user_path(:id => comment.user_id)
     .name
       = link_to "#{is_owner ? 'You' : truncate(comment.user.name, :length => 20)}", user_path(:id => comment.user)
       - unless comment.user.startup_id.blank?

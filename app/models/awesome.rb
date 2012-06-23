@@ -4,8 +4,8 @@ class Awesome < ActiveRecord::Base
   belongs_to :user
 
   after_create :update_awesome_count
+  after_destroy :update_awesome_count
   after_create :notify_users
-  before_destroy :update_awesome_count
 
   validate :check_user_doesnt_own_object
   validates_presence_of :awsm_id
@@ -14,6 +14,10 @@ class Awesome < ActiveRecord::Base
 
   def self.user_awesomed_object?(object, user_id)
     object.awesomes.where(:user_id => user_id).count
+  end
+
+  def self.unique_id_for_object(object)
+    "#{object.class}_#{object.id}_awesome"
   end
 
   def unique_id
@@ -36,9 +40,11 @@ class Awesome < ActiveRecord::Base
   end
 
   def update_awesome_count
+    logger.info "UPDATE AWESOME COUNT"
     obj = self.awsm
     obj.awesome_count = obj.awesomes.count
     obj.save(:validate => false)
+    Cache.delete(['awesome_ids', self.user])
   end
 
   def notify_users

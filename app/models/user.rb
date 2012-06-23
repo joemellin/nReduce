@@ -10,6 +10,7 @@ class User < ActiveRecord::Base
   has_many :notifications, :dependent => :destroy
   has_many :meeting_messages
   has_many :invites, :foreign_key => 'to_id'
+  has_many :awesomes
 
   # Include default devise modules. Others available are:
   # :token_authenticatable, :confirmable,
@@ -82,9 +83,21 @@ class User < ActiveRecord::Base
     self.name.blank? ? '' : self.name.sub(/\s+.*/, '')
   end
 
-  def awesome_for_object(object)
-    a = object.awesomes.where(:user_id => self.id).first
-    return a.blank? ? nil : a
+  def awesome_id_for_object(object)
+    cached = self.cached_awesome_ids
+    # when hash is retrieved from cache, id keys are converted to strings so have to look for string
+    return cached[object.class.to_s][object.id.to_s] if cached[object.class.to_s] and cached[object.class.to_s][object.id.to_s]
+    return nil
+  end
+
+    # returns hash all objects this user has 'awesomed' organized by object class. also includes awesome id
+    # eg {:comment => {23 (comment id) => 12 (awesome id), 12 => 52}, :checkin => {56 => 54, 55 => 33}}
+  def cached_awesome_ids
+    Cache.get(['awesome_ids', self]){
+      ids = {}
+      self.awesomes.each{|a| ids[a.awsm_type] ||= {}; ids[a.awsm_type][a.awsm_id.to_s] = a.id }
+      ids
+    }
   end
 
   def mailchimp!
