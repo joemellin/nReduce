@@ -39,5 +39,5 @@ Nreduce::Application.configure do
 
   config.action_mailer.default_url_options = { :host => "localhost:3000" }
 
-  config.paperclip_defaults = Settings.paperclip_config.to_hash
+  config.paperclip_config = Paperclip::Attachment.default_options.merge(Settings.paperclip_config.to_hash)
 end
