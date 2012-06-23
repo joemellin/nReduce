@@ -14,7 +14,7 @@ class AwesomesController < ApplicationController
   
   def destroy
     @awesome = Awesome.find(params[:id])
-    @success = true if current_user.id == @awesome.user_id and @awesome.delete
+    @success = true if current_user.id == @awesome.user_id and @awesome.destroy
     respond_to do |format|
       format.html { redirect_to @awesome.awsm }
       format.js { render :action => :button }
