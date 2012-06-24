@@ -50,15 +50,19 @@
     = f.semantic_errors :website_url
     %span.help-inline.help-danger Optional
 
-.control-group
+.control-group{error_css(@startup, :logo)}
   = f.label :logo, 'Logo', :class => 'control-label'
   .controls
     = f.file_field :logo
+    = f.hidden_field :logo_cache
     = f.semantic_errors :logo
-    - if @startup.logo.exists?
-      %br
+    - if @startup.logo?
+      %br/
       Current Image:
-      = image_tag @startup.logo.url(:thumb)
+      = image_tag(@startup.logo_url(:small))
+      &nbsp;
+      = f.check_box :remove_logo
+      Remove logo
 
 .control-group{error_css(@startup, :phone)}
   = f.label :phone, "Phone Number", :class => 'control-label'

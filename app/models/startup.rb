@@ -8,7 +8,7 @@ class Startup < ActiveRecord::Base
   has_many :invites
   has_many :invited_team_members, :through => :invites, :class_name => 'User'
 
-  attr_accessible :name, :team_size, :website_url, :main_contact_id, :phone, :growth_model, :stage, :company_goal, :meeting_id, :one_liner, :active, :launched_at, :industry_list, :technology_list, :ideology_list, :industry, :intro_video_url, :elevator_pitch, :logo
+  attr_accessible :name, :team_size, :website_url, :main_contact_id, :phone, :growth_model, :stage, :company_goal, :meeting_id, :one_liner, :active, :launched_at, :industry_list, :technology_list, :ideology_list, :industry, :intro_video_url, :elevator_pitch, :logo, :remote_logo_url, :logo_cache, :remove_logo
 
   validates_presence_of :intro_video_url, :if => lambda {|startup| startup.onboarding_complete? }
   validates_presence_of :name
@@ -16,10 +16,11 @@ class Startup < ActiveRecord::Base
 
   acts_as_taggable_on :industries, :technologies, :ideologies
 
-  has_attached_file :logo, {:default_url => "http://new.nreduce.com/images/coavatar_:style.png"}.merge(Nreduce::Application.config.paperclip_config)
+  mount_uploader :logo, ImageUploader # carrierwave file uploads
+  #has_attached_file :logo, {:default_url => "http://new.nreduce.com/images/coavatar_:style.png"}.merge(Nreduce::Application.config.paperclip_config)
 
-  validates_attachment :logo, :content_type => { :content_type => ['image/jpg', 'image/png', 'image/jpeg', 'image/gif'] }, 
-                              :size => {:in => 0..500.kilobytes}
+  #validates_attachment :logo, :content_type => { :content_type => ['image/jpg', 'image/png', 'image/jpeg', 'image/gif'] }, 
+                             # :size => {:in => 0..500.kilobytes}
 
   scope :is_public, where(:public => true)
   scope :launched, where('launched_at IS NOT NULL')

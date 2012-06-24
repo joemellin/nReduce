@@ -23,3 +23,4 @@
 *.DS_Store
 
 public/assets/*
+public/uploads/*

@@ -38,6 +38,4 @@ Nreduce::Application.configure do
   config.time_zone = 'Pacific Time (US & Canada)'
 
   config.action_mailer.default_url_options = { :host => "localhost:3000" }
-
-  config.paperclip_config = Paperclip::Attachment.default_options.merge(Settings.paperclip_config.to_hash)
 end

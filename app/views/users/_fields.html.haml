@@ -16,6 +16,20 @@
     = f.text_field :phone, :class => "span2"
     = f.semantic_errors :phone
 
+.control-group{error_css(@user, :pic)}
+  = f.label :pic, 'Your Picture', :class => 'control-label'
+  .controls
+    = f.file_field :pic
+    = f.hidden_field :pic_cache
+    = f.semantic_errors :pic
+    - if @user.pic?
+      %br/
+      Current Image:
+      = image_tag(@user.pic_url(:small))
+      &nbsp;
+      = f.check_box :remove_pic
+      Remove pic
+
 .control-group{error_css(@user, :skill_list)}
   = f.label :skill_list, "Your Skills", :class => 'control-label'
   .controls

@@ -37,5 +37,4 @@ Nreduce::Application.configure do
 
   config.time_zone = 'Pacific Time (US & Canada)'
 
-  config.paperclip_config = Paperclip::Attachment.default_options.merge(Settings.paperclip_config.to_hash)
 end
