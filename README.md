@@ -23,7 +23,7 @@ For sending periodic emails - write to crontab on the server:
 * bundle exec whenever -w
 
 ### Rmagick
-Used for image resizing. To get it to install on OS X:
+Used for image resizing. To install on OS X:
 * Make sure you have the latest version of Xcode (free download from App Store)
 * brew install imagemagick --disable-openmp
 
