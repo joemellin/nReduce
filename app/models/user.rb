@@ -30,12 +30,7 @@ class User < ActiveRecord::Base
 
   acts_as_taggable_on :skills
 
-  mount_uploader :pic, ImageUploader # carrierwave file uploads
-
-  #has_attached_file :pic, {:default_url => "http://new.nreduce.com/images/user_avatar_:style.png"}.merge(Nreduce::Application.config.paperclip_config)
-
-  #validates_attachment :pic, :content_type => { :content_type => ['image/jpg', 'image/png', 'image/jpeg', 'image/gif']}, 
-                          #:size => {:in => 0..500.kilobytes}
+  mount_uploader :pic, PicUploader # carrierwave file uploads
 
   def self.settings_labels
     {
