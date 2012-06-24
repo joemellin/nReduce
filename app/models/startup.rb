@@ -16,11 +16,7 @@ class Startup < ActiveRecord::Base
 
   acts_as_taggable_on :industries, :technologies, :ideologies
 
-  mount_uploader :logo, ImageUploader # carrierwave file uploads
-  #has_attached_file :logo, {:default_url => "http://new.nreduce.com/images/coavatar_:style.png"}.merge(Nreduce::Application.config.paperclip_config)
-
-  #validates_attachment :logo, :content_type => { :content_type => ['image/jpg', 'image/png', 'image/jpeg', 'image/gif'] }, 
-                             # :size => {:in => 0..500.kilobytes}
+  mount_uploader :logo, LogoUploader # carrierwave file uploads
 
   scope :is_public, where(:public => true)
   scope :launched, where('launched_at IS NOT NULL')

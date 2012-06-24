@@ -12,7 +12,7 @@
 .row
   .span12.well
     .row
-      .span3= image_tag('user_avatar.png')
+      .span3= image_tag @user.pic_url(:medium)
       .span5
         %br
         %h1= h(@user.name)
