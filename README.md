@@ -20,7 +20,7 @@ Background job processor with multiple queues. Admins can see job status at /res
 > RAILS_ENV=production PIDFILE=./tmp/pids/resque.pid BACKGROUND=yes QUEUE=* bundle exec rake environment resque:work
 
 ### Whenever
-For sending periodic emails (see config/schedule.rb). To write the tasks to the crontab on the server:
+For sending periodic emails to remind everyone to check in (see config/schedule.rb). To write the tasks to the crontab on the server:
 > bundle exec whenever -w
 
 ### Rmagick
