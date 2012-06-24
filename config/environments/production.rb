@@ -75,13 +75,4 @@ Nreduce::Application.configure do
     :email_prefix => "[nReduce Exception] ",
     :sender_address => %{"notifications" <notifications@nreduce.com>},
     :exception_recipients => %w{josh@nreduce.com}
-
-  # Use S3 for production
-  # http://blog.tristanmedia.com/2009/09/using-amazons-cloudfront-with-rails-and-paperclip/
-  config.paperclip_config = Settings.paperclip_config.to_hash.merge({
-      :storage => 's3',
-      :s3_credentials => Settings.aws.s3.to_hash,
-      :s3_headers => { 'Expires' => 1.year.from_now.httpdate },
-      :s3_protocol => 'https'
-    })
 end

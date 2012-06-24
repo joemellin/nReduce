@@ -19,7 +19,7 @@ class User < ActiveRecord::Base
          :recoverable, :rememberable, :trackable, :validatable #, :confirmable #, :omniauthable
 
   # Setup accessible (or protected) attributes for your model
-  attr_accessible :email, :password, :password_confirmation, :remember_me, :name, :skill_list, :startup, :mentor, :investor, :location, :phone, :startup_id, :settings, :meeting_id, :one_liner, :bio, :facebook_url, :linkedin_url, :github_url, :dribbble_url, :blog_url
+  attr_accessible :email, :password, :password_confirmation, :remember_me, :name, :skill_list, :startup, :mentor, :investor, :location, :phone, :startup_id, :settings, :meeting_id, :one_liner, :bio, :facebook_url, :linkedin_url, :github_url, :dribbble_url, :blog_url, :pic, :remote_pic_url, :pic_cache, :remove_pic
 
   serialize :settings
 
@@ -30,10 +30,12 @@ class User < ActiveRecord::Base
 
   acts_as_taggable_on :skills
 
-  has_attached_file :pic, {:default_url => "http://new.nreduce.com/images/user_avatar_:style.png"}.merge(Nreduce::Application.config.paperclip_config)
+  mount_uploader :pic, ImageUploader # carrierwave file uploads
 
-  validates_attachment :pic, :content_type => { :content_type => ['image/jpg', 'image/png', 'image/jpeg', 'image/gif']}, 
-                              :size => {:in => 0..500.kilobytes}
+  #has_attached_file :pic, {:default_url => "http://new.nreduce.com/images/user_avatar_:style.png"}.merge(Nreduce::Application.config.paperclip_config)
+
+  #validates_attachment :pic, :content_type => { :content_type => ['image/jpg', 'image/png', 'image/jpeg', 'image/gif']}, 
+                          #:size => {:in => 0..500.kilobytes}
 
   def self.settings_labels
     {

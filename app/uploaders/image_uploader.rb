@@ -1,0 +1,88 @@
+# encoding: utf-8
+
+class ImageUploader < CarrierWave::Uploader::Base
+  include CarrierWave::RMagick
+  include CarrierWave::MimeTypes
+
+  process :set_content_type
+
+  # Include the Sprockets helpers for Rails 3.1+ asset pipeline compatibility:
+  include Sprockets::Helpers::RailsHelper
+  include Sprockets::Helpers::IsolatedHelper
+
+  # Choose what kind of storage to use for this uploader:
+  storage Rails.env.production? ? :fog : :file
+
+  # Override the directory where uploaded files will be stored.
+  # This is a sensible default for uploaders that are meant to be mounted:
+  def store_dir
+    dir = "/#{model.class.to_s.underscore}/#{mounted_as}/#{model.id}"
+    dir = "public/uploads#{dir}" if !Rails.env.production?
+  end
+
+  # Provide a default URL as a default if there hasn't been a file uploaded:
+  def default_url
+    # For Rails 3.1+ asset pipeline compatibility:
+    asset_path([mounted_as, "default", "#{version_name}.png"].compact.join('_'))
+  end
+
+  # Process files as they are uploaded to no more than 800x600
+  process :resize_to_fit => [800, 600]
+
+  # Create different versions of your uploaded files:
+  version :medium do
+    process :resize_to_fit => [250, 250]
+  end
+
+  version :small, :from_version => :medium do
+    process :resize_to_fill => [50, 50]
+  end
+
+  #
+  # def scale(width, height)
+  #   # do something
+  # end
+
+  # Add a white list of extensions which are allowed to be uploaded.
+  # For images you might use something like this:
+  def extension_white_list
+    %w(jpg jpeg gif png)
+  end
+
+  # Override the filename of the uploaded files:
+  # Avoid using model.id or version_name here, see uploader/store.rb for details.
+  def filename
+    @name ||= "#{secure_token}.#{file.extension}" if original_filename
+  end
+
+  private
+
+  def secure_token
+    ivar = "@#{mounted_as}_secure_token"
+    token = model.instance_variable_get(ivar)
+    token ||= model.instance_variable_set(ivar, SecureRandom.hex(4))  
+  end
+end
+
+# In order to speed up your tests, it's recommended to switch off processing in your tests
+if Rails.env.test? or Rails.env.cucumber?
+  CarrierWave.configure do |config|
+    config.storage = :file
+    config.enable_processing = false
+  end
+end
+
+if Rails.env.production?
+  CarrierWave.configure do |config|
+    config.fog_credentials = {
+      :provider               => 'AWS',
+      :aws_access_key_id      => Settings.aws.s3.access_key_id,
+      :aws_secret_access_key  => Settings.aws.s3.secret_access_key,
+      :region                 => 'us-east-1'  # optional, defaults to 'us-east-1'
+    }
+    config.fog_directory  =  Settings.aws.s3.bucket                  # required
+    #config.fog_host       = 'https://assets.example.com'            # optional, defaults to nil
+    #config.fog_public     = false                                   # optional, defaults to true
+    config.fog_attributes = {'Cache-Control'=>'max-age=315576000'}  # optional, defaults to {}
+  end
+end

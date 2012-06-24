@@ -19,9 +19,9 @@ gem "omniauth-twitter"
 gem "omniauth-linkedin"
 gem "rails_config", "= 0.2.5"
 gem 'acts-as-taggable-on', '~> 2.3.1'
-gem "paperclip", "~> 3.0"
-gem 'aws-s3'
-gem 'aws-sdk'
+#gem "paperclip", "~> 3.0"
+#gem 'aws-s3'
+#gem 'aws-sdk'
 gem 'formtastic'
 gem 'will_paginate', "~> 3.0"
 gem 'rails_admin' # full admin package
@@ -31,6 +31,10 @@ gem 'resque'
 gem 'exception_notification'
 gem 'json' # much faster than activerecord -- http://flori.github.com/json/
 gem 'ancestry' # for threaded comments
+gem 'carrierwave' # file/image attachments
+gem 'rmagick' # image resizing
+gem 'mime-types' # for assigning mime type on upload
+gem 'fog' # S3 upload for carrierwave
 
 group :test, :development do
   # Pretty printed test output

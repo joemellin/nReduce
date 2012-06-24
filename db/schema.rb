@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120623054526) do
+ActiveRecord::Schema.define(:version => 20120623234721) do
 
   create_table "authentications", :force => true do |t|
     t.string   "provider"
@@ -178,20 +178,17 @@ ActiveRecord::Schema.define(:version => 20120623054526) do
     t.string   "growth_model"
     t.string   "company_goal"
     t.string   "intro_video_url"
-    t.integer  "onboarding_step",   :default => 1
-    t.integer  "team_size",         :default => 1
-    t.boolean  "active",            :default => true
-    t.boolean  "public",            :default => true
+    t.integer  "onboarding_step", :default => 1
+    t.integer  "team_size",       :default => 1
+    t.boolean  "active",          :default => true
+    t.boolean  "public",          :default => true
     t.datetime "launched_at"
-    t.string   "logo_file_name"
-    t.string   "logo_content_type"
-    t.integer  "logo_file_size"
-    t.datetime "logo_updated_at"
     t.integer  "main_contact_id"
     t.integer  "meeting_id"
-    t.datetime "created_at",                          :null => false
-    t.datetime "updated_at",                          :null => false
+    t.datetime "created_at",                        :null => false
+    t.datetime "updated_at",                        :null => false
     t.text     "elevator_pitch"
+    t.string   "logo"
   end
 
   add_index "startups", ["public"], :name => "index_startups_on_public"
@@ -252,10 +249,6 @@ ActiveRecord::Schema.define(:version => 20120623054526) do
     t.boolean  "mentor",                 :default => false
     t.boolean  "investor",               :default => false
     t.boolean  "mailchimped",            :default => false
-    t.string   "pic_file_name"
-    t.string   "pic_content_type"
-    t.integer  "pic_file_size"
-    t.datetime "pic_updated_at"
     t.integer  "startup_id"
     t.datetime "created_at",                                :null => false
     t.datetime "updated_at",                                :null => false
@@ -270,6 +263,7 @@ ActiveRecord::Schema.define(:version => 20120623054526) do
     t.string   "github_url"
     t.string   "dribbble_url"
     t.string   "blog_url"
+    t.string   "pic"
   end
 
   add_index "users", ["reset_password_token"], :name => "index_users_on_reset_password_token", :unique => true
