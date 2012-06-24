@@ -8,7 +8,8 @@
 * rvm create gemset nreduce-web
 
 ### MySQL
-Standard MySQL install - nothing special required.
+Standard MySQL install - nothing special required. Just copy database config and edit:
+* cp config/database.sample.yml config/database.yml
 
 ### Redis
 Used as in-memory cache, as well as by Resque
@@ -19,7 +20,7 @@ Background job processor with multiple queues. Admins can see job status at /res
 * RAILS_ENV=production PIDFILE=./tmp/pids/resque.pid BACKGROUND=yes QUEUE=* bundle exec rake environment resque:work
 
 ### Whenever
-For sending periodic emails - write to crontab on the server:
+For sending periodic emails (see config/schedule.rb). To write the tasks to the crontab on the server:
 * bundle exec whenever -w
 
 ### Rmagick
@@ -28,6 +29,6 @@ Used for image resizing. To install on OS X:
 * brew install imagemagick --disable-openmp
 
 
-# Testing
+## Testing
 All tests are currently written in RSpec, and can run continuously during development using guard. To start the test suite:
 * bundle exec guard start
