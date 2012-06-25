@@ -92,8 +92,9 @@ module ApplicationHelper
   end
 
   def user_avatar_url(user)
+    return user.pic_url(:small) if user.pic?
     return user.external_pic_url unless user.external_pic_url.blank?
-    return image_path('user_avatar_s.png')
+    return image_path('pic_default_small.png')
   end
 
   # this seems to be broken for some reason

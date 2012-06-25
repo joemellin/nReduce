@@ -59,17 +59,7 @@
     %br
 .row
   .span12
-    - @startup.team_members.each do |team_member|
-      .left
-        .span1{:align => 'right'}= image_tag(user_avatar_url(team_member))
-        .span2
-          %h4= link_to team_member.name, team_member
-          %p
-            %small
-              Skills: #{team_member.skill_list}
-              %br/
-              Located: #{team_member.location}
-    .clear
+    = render 'startups/team_members', :team_members => @startup.team_members, :add_team_member => (@startup.id == current_user.startup_id ? true : false)
     %hr
     %br
 - if !@can_view_details
