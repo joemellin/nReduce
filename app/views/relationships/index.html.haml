@@ -31,46 +31,41 @@
 .row.checkins
   - c = 0
   - @startups.each do |s|
-    - if current_user.admin?
-      - current_checkin = @checkins_by_startup[s.id]
-      - this_startup_url = (current_checkin and current_checkin.completed?) ? latest_startup_checkins_url(s) : startup_url(s)
-      - logo_path = s.logo_url(:medium)
-      .checkin.span3{:align => 'center', :class => (current_checkin and current_checkin.completed?) ? 'completed' : 'incomplete'}
-        .top{:align => 'center', :onclick => "window.location = '#{this_startup_url}';"}
-          .background{:style => "background-image: url('#{logo_path}'); cursor: pointer;"} &nbsp;
-          - if current_checkin and current_checkin.completed?
-            %div= image_tag('checkin_completed.png')
-          - else
-            %div= image_tag('checkin_incomplete.png')
-          .team{:align => 'center'}
-            - s.team_members.shuffle.first(3).each do |tm|
-              - next if tm.external_pic_url.blank?
-              .inline-block{:style => 'margin-left: 4px'}= image_tag(tm.external_pic_url, :title => tm.name, :style => 'width: 50px; height: 50px;')          
-        .bottom{:align => 'center'}
-          %h3= link_to s.id == @current_startup.id ? 'You' : truncate(s.name, :length => 20), startup_path(s)
-          - if current_checkin and current_checkin.completed?
-            = link_to 'Give Feedback', latest_startup_checkins_path(s), :class => 'btn btn-success'
-            %p
-              %small
-                &nbsp;
-                - if current_checkin.awesome_count > 0
-                  = pluralize(current_checkin.awesome_count, 'awesome')
-                - if current_checkin.awesome_count > 0 and current_checkin.comment_count > 0
-                  &nbsp;-&nbsp;
-                - if current_checkin.comment_count > 0
-                  = pluralize(current_checkin.comment_count, 'comment')
-                &nbsp;
-          - elsif s.id != @current_startup.id
-            = form_for Nudge.new(:startup_id => s.id), :html => {:id => "new_nudge_#{s.id}"} do |f|
-              = f.hidden_field :startup_id
-              = link_to '<i class="icon-hand-left icon"></i> Nudge'.html_safe, '#', :title => "Nudge #{s.name} to complete their check-in with an email!", :onclick => "$('#new_nudge_#{s.id}').submit();", :class => 'btn'
-      - c += 1
-      - if c != 0 and c % 4 == 0
-        .clear
-    - else
-      .span3.left{:align => 'center', :style => 'margin-bottom: 15px'}
-        %h3= link_to s.id == @current_startup.id ? 'You' : s.name, latest_startup_checkins_path(s)
-        = link_to 'Give Feedback', latest_startup_checkins_path(s), :class => 'btn btn-success'
+    - current_checkin = @checkins_by_startup[s.id]
+    - this_startup_url = (current_checkin and current_checkin.completed?) ? latest_startup_checkins_url(s) : startup_url(s)
+    - logo_path = s.logo_url(:medium)
+    .checkin.span3{:align => 'center', :class => (current_checkin and current_checkin.completed?) ? 'completed' : 'incomplete'}
+      .top{:align => 'center', :onclick => "window.location = '#{this_startup_url}';"}
+        - if current_checkin and current_checkin.completed?
+          %div= image_tag('checkin_completed.png')
+        - else
+          %div= image_tag('checkin_incomplete.png')
+        .team{:align => 'center'}
+          - s.team_members.shuffle.first(3).each do |tm|
+            - next if tm.external_pic_url.blank?
+            .inline-block{:style => 'margin-left: 4px'}= image_tag(tm.external_pic_url, :title => tm.name, :style => 'width: 50px; height: 50px;')
+        .background{:style => "background-image: url('#{logo_path}'); cursor: pointer;"} &nbsp;
+      .bottom{:align => 'center'}
+        %h3= link_to s.id == @current_startup.id ? 'You' : truncate(s.name, :length => 20), startup_path(s)
+        - if current_checkin and current_checkin.completed?
+          = link_to 'Give Feedback', latest_startup_checkins_path(s), :class => 'btn btn-success'
+          %p
+            %small
+              &nbsp;
+              - if current_checkin.awesome_count > 0
+                = pluralize(current_checkin.awesome_count, 'awesome')
+              - if current_checkin.awesome_count > 0 and current_checkin.comment_count > 0
+                &nbsp;-&nbsp;
+              - if current_checkin.comment_count > 0
+                = pluralize(current_checkin.comment_count, 'comment')
+              &nbsp;
+        - elsif s.id != @current_startup.id
+          = form_for Nudge.new(:startup_id => s.id), :html => {:id => "new_nudge_#{s.id}"} do |f|
+            = f.hidden_field :startup_id
+            = link_to '<i class="icon-hand-left icon"></i> Nudge'.html_safe, '#', :title => "Nudge #{s.name} to complete their check-in with an email!", :onclick => "$('#new_nudge_#{s.id}').submit();", :class => 'btn'
+    - c += 1
+    - if c != 0 and c % 4 == 0
+      .clear
   - if @startups.size < 8
     - 1.upto(8 - @startups.size) do
       .checkin.span3{:align => 'center', :onclick => "window.location = '#{search_startups_url}';"}

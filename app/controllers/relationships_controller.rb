@@ -10,12 +10,13 @@ class RelationshipsController < ApplicationController
     @checkins_by_startup = Checkin.current_checkin_for_startups(@startups + [@current_startup])
     # Sort by startups who have the most recent completed checkins first
     long_ago = Time.now - 100.years
-    
-    # @startups.sort! do |a,b|
-    #   !@checkins_by_startup[a.id].blank? ? @checkins_by_startup[a.id].completed_at : long_ago  <=> !@checkins_by_startup[b.id].blank? ? @checkins_by_startup[b.id].completed_at : long_ago
-    # end
-    # # Add user's startup to the beginning, and then sort by reverse chrono order
-    # @startups = [@current_startup] + @startups.reverse
+    @startups.sort! do |a,b|
+      a_time, b_time = long_ago, long_ago
+      a_time = @checkins_by_startup[a.id].completed_at if !@checkins_by_startup[a.id].blank? and @checkins_by_startup[a.id].completed?
+      b_time = @checkins_by_startup[b.id].completed_at if !@checkins_by_startup[b.id].blank? and @checkins_by_startup[b.id].completed?
+      a_time <=> b_time
+    end
+    # Add user's startup to the beginning, and then sort by reverse chrono order
     @startups = [@current_startup] + @startups.reverse
   end
 
