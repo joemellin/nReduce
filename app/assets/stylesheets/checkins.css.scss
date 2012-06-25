@@ -4,23 +4,44 @@
 
 .checkins {
   .checkin {
-    background-repeat: no-repeat;
     .top {
+      position: relative;
       width: 200px;
-      height: 135px;
+      height: 200px;
       -webkit-border-radius: 15px;
       -moz-border-radius: 15px;
       border-radius: 15px;
       padding-top: 5px;
-    }
-    .middle {
-      height: 55px;
+      border: 2px solid #ccc;
+      z-index: 1;
+      .team {
+        height: 55px;
+        margin-left:auto;
+        margin-right:auto;
+        width: 98%;
+        z-index: 3;
+        position: absolute;
+        bottom: 0;
+      }
+      .background {
+        z-index: 2;
+        position: absolute;
+        top: 0;
+        width: 200px;
+        height: 200px;
+        background-repeat: no-repeat;
+        background-position: center;
+        -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";
+        filter: alpha(opacity=50);
+        -moz-opacity:0.5;
+        -khtml-opacity: 0.5;
+        opacity: 0.5;
+      }
     }
     .bottom {
       margin-top: 10px;
     }
-    width: 200px;
-    margin: 0 15px 25px 0;
+    margin-bottom: 25px;
   }
 
 }

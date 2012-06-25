@@ -7,6 +7,7 @@ class Startup < ActiveRecord::Base
   has_many :awesomes, :through => :checkins
   has_many :invites
   has_many :invited_team_members, :through => :invites, :class_name => 'User'
+  has_many :nudges
 
   attr_accessible :name, :team_size, :website_url, :main_contact_id, :phone, :growth_model, :stage, :company_goal, :meeting_id, :one_liner, :active, :launched_at, :industry_list, :technology_list, :ideology_list, :industry, :intro_video_url, :elevator_pitch, :logo, :remote_logo_url, :logo_cache, :remove_logo
 

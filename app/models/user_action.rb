@@ -59,7 +59,9 @@ class UserAction < ActiveRecord::Base
       'notifications_index' => 38,
       'users_complete_account' => 39,
       'invites_create' => 40,
-      'invites_accept' => 41
+      'invites_accept' => 41,
+      'nudges_create' => 42,
+      'nudges_show' => 43
     }
   end
 

@@ -15,7 +15,7 @@ class Notification < ActiveRecord::Base
 
     # Remember to update helper method in application.rb with new object types if they are added
   def self.actions
-    [:new_checkin, :relationship_request, :relationship_approved, :new_comment]
+    [:new_checkin, :relationship_request, :relationship_approved, :new_comment, :new_nudge]
   end
 
    # Pass in a user to notify, related object (ex: a relationship) and the action performed, and this will:
@@ -78,6 +78,13 @@ class Notification < ActiveRecord::Base
       n.user = u
       n.message = "#{awesome.user.name} thought your checkin was awesome!"
       n.save
+    end
+  end
+
+  # Nudges a startup to finish their checkin
+  def self.create_for_new_nudge(nudge)
+    nudge.startup.team_members.each do |u|
+       Notification.create_and_send(u, nudge, :new_nudge) unless u.id == nudge.from_id
     end
   end
 

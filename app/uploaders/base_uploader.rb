@@ -30,7 +30,7 @@ class BaseUploader < CarrierWave::Uploader::Base
 
   # Create different versions of your uploaded files:
   version :medium do
-    process :resize_to_fit => [250, 250]
+    process :resize_to_fill => [200, 200]
     process :quality => 70
   end
 
