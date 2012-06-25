@@ -17,7 +17,7 @@
       %li
         = u.name
         &nbsp;
-        = link_to '<i class="icon icon-remove"></i>'.html_safe, remove_team_member_startup_path, :method => :delete, :confirm => "Are you sure you want to remove #{u.name}?"
+        = link_to '<i class="icon icon-remove"></i>'.html_safe, remove_team_member_startup_path(:user_id => u.id), :method => :post, :confirm => "Are you sure you want to remove #{u.name}?"
 
 .control-group{error_css(@startup, :main_contact_id)}
   = f.label :main_contact_id, "Main Contact", :class => 'control-label'

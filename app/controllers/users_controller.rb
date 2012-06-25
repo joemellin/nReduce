@@ -9,6 +9,12 @@ class UsersController < ApplicationController
   def show
     @user = current_user if params[:id] == 'me'
     @user ||= User.find(params[:id])
+    
+    # Load current invite if they have one  - don't search by email because that opens security hole where a user can sign up with an email they don't own and get invite - really should be verifying email
+    if @user.id == current_user.id
+      @current_invite = Invite.not_accepted.where(:to_id => current_user.id).first
+      @current_invite = nil if @current_invite and !@current_invite.active?
+    end
   end
 
   def edit

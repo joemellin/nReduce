@@ -1,7 +1,7 @@
 class InvitesController < ApplicationController
   around_filter :record_user_action
   before_filter :login_required, :except => [:accept]
-  before_filter :current_startup_required, :except => [:accept]
+  before_filter :current_startup_required, :except => [:accept, :destroy]
 
   def create
     i = Invite.invite_team_member(params[:invite])
@@ -14,17 +14,28 @@ class InvitesController < ApplicationController
   end
 
   def destroy
+    @current_startup = current_user.startup
     i = Invite.find(params[:id])
-    if i.startup_id == @current_startup.id
+    invite_owner = i.to_id == current_user.id ? true : false
+    # If the current startup invited them, or the current user was invited
+    if invite_owner or (@current_startup and (i.startup_id == @current_startup.id))
       if i.destroy
-        flash[:notice] = "#{i.email} is no longer invited to join your team."
+        if i.to_id == current_user.id
+          flash[:notice] = "The invite has been declined."
+        else
+          flash[:notice] = "#{i.email} is no longer invited to join your team."
+        end
       else
         flash[:alert] = "Sorry but invite could not be removed at this time."
       end
     else
       flash[:alert] = "You don't have permission to delete that invite."
     end
-    redirect_to edit_startup_path(@current_startup)
+    if invite_owner
+      redirect_to current_user
+    else
+      redirect_to edit_startup_path(@current_startup)
+    end
   end
   
   def accept
@@ -46,6 +57,7 @@ class InvitesController < ApplicationController
           session[:invite_id] = invite.id # make sure it's set
           redirect_to new_session_path(:user)
         else # they are signed in as correct user
+          session[:invite_id] = invite.id
           if accept_invite_for_user(current_user)
             flash[:notice] = "You have been added to the #{invite.startup.name} team!"
             redirect_to startup_path(invite.startup)
