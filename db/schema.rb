@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120623234721) do
+ActiveRecord::Schema.define(:version => 20120625184104) do
 
   create_table "authentications", :force => true do |t|
     t.string   "provider"
@@ -143,6 +143,14 @@ ActiveRecord::Schema.define(:version => 20120623234721) do
   end
 
   add_index "notifications", ["user_id", "read_at"], :name => "index_notifications_on_user_id_and_read_at"
+
+  create_table "nudges", :force => true do |t|
+    t.integer  "from_id"
+    t.integer  "startup_id"
+    t.datetime "seen_at"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
 
   create_table "rails_admin_histories", :force => true do |t|
     t.text     "message"

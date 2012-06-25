@@ -62,6 +62,16 @@ class UserMailer < ActionMailer::Base
     mail(:to => invite.email, :subject => "#{invite.startup.name} wants to add you to their team on nReduce")
   end
 
+  # Nudges startup to do check-in
+  def new_nudge(notification)
+    setup_email
+    @nudge = notification.attachable
+    @from = @nudge.from
+    @to = notification.user
+    @to_startup = @nudge.startup
+    mail(:to => @to.email, :subject => "#{@from.name} nudged you to complete your check-in")
+  end
+
   protected
 
   def setup_email

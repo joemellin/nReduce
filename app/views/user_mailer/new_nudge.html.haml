@@ -1,0 +1,9 @@
+= render :partial => 'header'
+%h1.h1 You've been nudged!
+%br/
+%h4 #{@from.name} is waiting to give you feedback on your progress this week.  
+%br/
+%br/
+%br/
+%h3= link_to('Post your checkin!', nudge_url(@nudge))
+= render :partial => 'footer'

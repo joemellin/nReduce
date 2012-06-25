@@ -1,0 +1,21 @@
+- skip_user ||= false
+- add_team_member ||= false
+- team_members.each do |team_member|
+  - next if skip_user and team_member.id == @user.id
+  .left
+    .span1{:align => 'right', :style => 'margin-left: 0'}= link_to(image_tag(user_avatar_url(team_member)), team_member)
+    .span2
+      %h4= link_to team_member.name, team_member
+      %p
+        %small
+          Skills: #{team_member.skill_list}
+          %br/
+          Located: #{team_member.location}
+- if add_team_member
+  .left
+    .span1{:align => 'right', :style => 'margin-left: 0'}= link_to image_tag('adduser.png'), edit_startup_path(:id => current_user.startup_id)
+    .span2
+      %h4= link_to 'Invite to Team', edit_startup_path(:id => current_user.startup_id)
+      %p
+        %small Add team members to your startup
+.clear

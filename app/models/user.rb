@@ -11,6 +11,8 @@ class User < ActiveRecord::Base
   has_many :meeting_messages
   has_many :invites, :foreign_key => 'to_id'
   has_many :awesomes
+  has_many :sent_nudges, :class_name => 'Nudge', :foreign_key => 'from_id'
+  has_many :received_nudges, :through => :startup
 
   # Include default devise modules. Others available are:
   # :token_authenticatable, :confirmable,
