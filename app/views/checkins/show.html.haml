@@ -59,10 +59,7 @@
 
 .row{:style => 'margin-top: 15px'}
   .span12
-    - if !@checkin.completed?
-      %h4 This check-in hasn't been completed yet. Once it has you can add comments.
-    - else
-      #comments
-        = render :partial => 'comments/form', :object => @new_comment
-        .list
-          = nested_comments @comments
+    #comments
+      = render :partial => 'comments/form', :object => @new_comment
+      .list
+        = nested_comments @comments

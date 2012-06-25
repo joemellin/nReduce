@@ -146,6 +146,7 @@ class Startup < ActiveRecord::Base
     startups = Startup.where(:onboarding_step => Startup.num_onboarding_steps)
     comments_by_user_id = Comment.group('user_id').count
     comments_by_checkin_id = Comment.group('checkin_id').count
+    virtual_meeting_id = Meeting.where(:location_name => 'Virtual').first.id
     startups.each do |s|
       data = {:name => s.name}
       rel = s.relationships
@@ -156,6 +157,8 @@ class Startup < ActiveRecord::Base
       data[:checkins_completed] = cs.inject(0){|num, c| c.completed? ? num + 1 : num }
       data[:comments_given] = s.team_members.inject(0){|num, tm| !comments_by_user_id[tm.id].blank? ? num + comments_by_user_id[tm.id] : num }
       data[:comments_received] = cs.inject(0){|num, c| !comments_by_checkin_id[c.id].blank? ? num + comments_by_checkin_id[c.id] : num }
+      meeting_ids = s.team_members.map{|tm| tm.meeting_id }.uniq.delete_if{|m| m.nil? }
+      data[:virtual] = (meeting_ids.include?(virtual_meeting_id) or meeting_ids.blank?) ? true : false
       ret[s.id] = data
     end
     ret
