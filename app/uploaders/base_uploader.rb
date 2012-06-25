@@ -47,8 +47,11 @@ class BaseUploader < CarrierWave::Uploader::Base
   # Override the directory where uploaded files will be stored.
   # This is a sensible default for uploaders that are meant to be mounted:
   def store_dir
-    dir = "#{model.class.to_s.underscore}/#{mounted_as}/#{model.id}"
-    dir = "uploads#{dir}" if !Rails.env.production?
+    if Rails.env.production?
+      "#{model.class.to_s.underscore}/#{mounted_as}/#{model.id}"
+    else
+      "uploads#{dir}"
+    end
   end
 
   # Provide a default URL as a default if there hasn't been a file uploaded:
@@ -66,7 +69,7 @@ class BaseUploader < CarrierWave::Uploader::Base
   # Override the filename of the uploaded files:
   # Avoid using model.id or version_name here, see uploader/store.rb for details.
   def filename
-    @name ||= "#{secure_token}.#{file.extension}" if original_filename
+    @filename ||= "#{secure_token}.#{file.extension}" if original_filename
   end
 
   # returns true if dimensions greater than 800x600
