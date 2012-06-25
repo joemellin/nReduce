@@ -51,7 +51,8 @@ class CheckinsController < ApplicationController
         @checkin = Checkin.new
       elsif @checkin.completed? and Checkin.in_before_time_window?
         @checkin = Checkin.new
-      elsif !@checkin.new_record? and (Checkin.prev_after_checkin > @checkin.created_at) and Checkin.in_before_time_window?
+      # last week's checkin
+      elsif !@checkin.new_record? and (Checkin.prev_after_checkin > @checkin.created_at) and (Checkin.in_before_time_window? or Checkin.in_after_time_window?)
         @checkin = Checkin.new
       end
     end
