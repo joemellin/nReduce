@@ -136,7 +136,8 @@ class ApplicationController < ActionController::Base
   # use stored invite id and accept
   def accept_invite_for_user(user)
     invite = Invite.find(session[:invite_id])
-    invite.accepted_by(user)
+    res = invite.accepted_by(user)
     session[:invite_id] = nil
+    res
   end
 end
