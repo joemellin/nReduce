@@ -1,14 +1,8 @@
 - is_owner = (user_signed_in? and (comment.user_id.to_s == current_user.id.to_s)) ? true : false
 = div_for comment do
   .right.controls{:style => 'padding-top: 8px;'}
-    .left!= render_awesome_button(comment)
-    .left= link_to 'Reply', reply_to_comment_path(comment), :remote => true, :class => 'btn'
-    - if is_owner
-      .left
-        = link_to 'Edit', edit_comment_path(comment), :remote => true, :class => 'btn'
-        &nbsp;
-        = link_to '<i class="icon-white icon-remove"></i>'.html_safe, comment, :method => :delete, :remote => true, :class => 'btn btn-small btn-danger', :confirm => "Are you sure you want to delete the comment?"
-    .clear
+    -# .left!= render_awesome_button(comment)
+    &nbsp;
   .left.pic
     - if !comment.user.external_pic_url.blank?
       - title = comment.user.name + (!comment.user.twitter.blank? ? " - @#{comment.user.twitter}" : '')
@@ -22,5 +16,12 @@
     - unless comment.awesome_count == 0
       •
       %strong= pluralize(comment.awesome_count, 'awesome')
+    •
+    = link_to 'Reply', reply_to_comment_path(comment), :remote => true
+    - if is_owner
+      &nbsp;•&nbsp;
+      = link_to 'Edit', edit_comment_path(comment), :remote => true
+      &nbsp;•&nbsp;
+      %strong= link_to 'x', comment, :method => :delete, :remote => true, :confirm => "Are you sure you want to delete the comment?"
     .content= simple_format(h(comment.content))
   .clear
