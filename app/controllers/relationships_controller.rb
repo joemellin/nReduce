@@ -12,8 +12,20 @@ class RelationshipsController < ApplicationController
     long_ago = Time.now - 100.years
     @startups.sort! do |a,b|
       a_time, b_time = long_ago, long_ago
-      a_time = @checkins_by_startup[a.id].completed_at if !@checkins_by_startup[a.id].blank? and @checkins_by_startup[a.id].completed?
-      b_time = @checkins_by_startup[b.id].completed_at if !@checkins_by_startup[b.id].blank? and @checkins_by_startup[b.id].completed?
+      if !@checkins_by_startup[a.id].blank?
+        if @checkins_by_startup[a.id].completed?
+          a_time = @checkins_by_startup[a.id].completed_at
+        elsif @checkins_by_startup[a.id].submitted?
+          a_time = @checkins_by_startup[a.id].submitted_at
+        end
+      end
+      if !@checkins_by_startup[b.id].blank?
+        if @checkins_by_startup[b.id].completed?
+          b_time = @checkins_by_startup[b.id].completed_at
+        elsif @checkins_by_startup[b.id].submitted?
+          b_time = @checkins_by_startup[b.id].submitted_at
+        end
+      end
       a_time <=> b_time
     end
     # Add user's startup to the beginning, and then sort by reverse chrono order
