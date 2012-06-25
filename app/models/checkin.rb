@@ -22,13 +22,13 @@ class Checkin < ActiveRecord::Base
 
   def self.current_checkin_for_startups(startups = [])
     return {} if startups.blank?
-    next_checkin = Checkin.next_checkin_type_and_time
+    # next_checkin = Checkin.next_checkin_type_and_time
     if Checkin.in_after_time_window?
-      start_time = next_checkin[:time] - 24.hours
+      checkins = Checkin.where(:startup_id => startups.map{|s| s.id }).where(['created_at > ?', Checkin.prev_after_checkin])
     else # if in before checkin or in the week after, get prev week's checkin start time
       start_time = Checkin.prev_after_checkin - 24.hours
+      checkins = Checkin.where(:startup_id => startups.map{|s| s.id }).where(['completed_at > ?', start_time])
     end
-    checkins = Checkin.where(:startup_id => startups.map{|s| s.id }).where(['completed_at > ?', start_time])
     checkins.inject({}){|res, e| res[e.startup_id] = e; res }
   end
 
