@@ -3,7 +3,7 @@
 # You can use CoffeeScript in this file: http://jashkenas.github.com/coffee-script/
 
 $ ->
-  addCommentControlsListeners()
+  #addCommentControlsListeners()
   $('#comments form textarea').autoResize(
     extraSpace: 3
   )
