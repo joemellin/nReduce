@@ -26,7 +26,7 @@ class CheckinsController < ApplicationController
       return
     else
       @new_comment = Comment.new(:checkin_id => @checkin.id)
-      @comments = @checkin.comments.includes(:user).arrange(:order => :created_at) # arrange in nested order
+      @comments = @checkin.comments.includes(:user).arrange(:order => 'created_at DESC') # arrange in nested order
     end
     @ua = {:attachable => @checkin}
   end
