@@ -42,13 +42,17 @@ class User < ActiveRecord::Base
         'comment' => 'New Comment', 
         'meeting' => 'Meeting Reminder', 
         'checkin' => 'New Checkin', 
-        'relationship' => 'Relationships'
+        'relationship' => 'Relationships',
         }
     }
   end
 
   def self.default_settings
     {'email_on' => User.settings_labels['email_on'].keys}
+  end
+
+  def self.force_email_on
+    ['nudge']
   end
 
   def settings
@@ -72,6 +76,7 @@ class User < ActiveRecord::Base
     # Returns boolean if user should be emailed for a specific action (action being the object class)
   def email_for?(class_name)
     begin
+      return true if User.force_email_on.include?(class_name)
       !self.email.blank? and self.settings['email_on'].include?(class_name)
     rescue # in case array isn't set
       false

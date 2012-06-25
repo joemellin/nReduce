@@ -34,14 +34,12 @@
     - current_checkin = @checkins_by_startup[s.id]
     - this_startup_url = (current_checkin and current_checkin.completed?) ? latest_startup_checkins_url(s) : startup_url(s)
     - logo_path = s.logo_url(:square)
-    .checkin.span3{:align => 'center', :class => (current_checkin and current_checkin.completed?) ? 'completed' : 'incomplete'}
+    .checkin.span3{:align => 'center'}
       .top{:align => 'center', :onclick => "window.location = '#{this_startup_url}';"}
         .background{:style => "background-image: url('#{logo_path}'); cursor: pointer;"} &nbsp;
-        .status{:align => 'center'}
-          - if current_checkin and current_checkin.completed?
-            = image_tag('checkin_completed.png')
-          - else
-            = image_tag('checkin_incomplete.png')
+        .status.btn-group{:align => 'center', 'data-toggle' => 'buttons-checkbox'}
+          %button.btn{:href => '#', :class => ((current_checkin and current_checkin.submitted?) ? 'btn-success' : 'disabled active')} Before
+          %button.btn{:href => '#', :class => ((current_checkin and current_checkin.completed?) ? 'btn-success' : 'disabled active')} After
         .team{:align => 'center'}
           - s.team_members.shuffle.first(3).each do |tm|
             - next if tm.external_pic_url.blank?
