@@ -1,11 +1,19 @@
 = render :partial => 'header'
-%h1.h1 You Have Feedback!
+- if @owner
+  %h1.h1 You Have Feedback!
+- else
+  %h1.h1 #{@comment.user.name} responded to you!
 %br/
 %br/
 %strong #{@comment.user.name}
 of
 %strong Team #{@comment.user.startup.name}
-wrote on your #{@checkin.time_label} check-in:
+- if @owner
+  wrote on your #{@checkin.time_label} check-in:
+- elsif @comment.parent.blank?
+  They wrote in response to your comment "#{truncate(@comment.parent.content, :length => 30)}":
+- else
+  They wrote:
 %hr/
 %h4.h4 "#{h(@comment.content)}"
 %hr/
