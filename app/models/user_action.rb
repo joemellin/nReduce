@@ -100,7 +100,7 @@ class UserAction < ActiveRecord::Base
     # Writes user actions to database
   def self.perform
     # have to call all classes or ruby will complain when unmarshaling
-    [UserAction.class, Checkin.class, Comment.class, User.class, Meeting.class, Invite.class, Authentication.class, Awesome.class, Instrument.class, Startup.class, Relationship.class]
+    [UserAction.class, Checkin.class, Comment.class, User.class, Meeting.class, Invite.class, Authentication.class, Awesome.class, Instrument.class, Startup.class, Relationship.class, Nudge.class]
     t = Time.now
     uas = Cache.arr_get('user_actions')
     Cache.delete('user_actions')
