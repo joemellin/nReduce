@@ -94,7 +94,8 @@
   - if @startups.size < 8
     - 1.upto(8 - @startups.size) do
       .checkin.span3{:align => 'center', :onclick => "window.location = '#{search_startups_url}';"}
-        .top{:style => "background-image: url('#{image_path('addteam.png')}'); cursor: pointer;"} &nbsp;
+        .top{:style => "background-image: url('#{image_path('addteam.png')}'); cursor: pointer;"}
+          .background &nbsp;
         .bottom
           %h3= link_to '+ Add Team', search_startups_path
 
