@@ -1,6 +1,8 @@
 class Message < ActiveRecord::Base
   belongs_to :sender, :class_name => 'User'
   belongs_to :recipient, :class_name => 'User'
+  has_many :notifications, :as => :attachable
+  has_many :user_actions, :as => :attachable
 
   attr_accessible :subject, :body, :recipient_id
 

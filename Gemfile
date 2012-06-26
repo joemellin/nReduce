@@ -25,7 +25,7 @@ gem 'acts-as-taggable-on', '~> 2.3.1'
 gem 'formtastic'
 gem 'will_paginate', "~> 3.0"
 gem 'rails_admin' # full admin package
-gem 'backup' # db backup 
+gem 'backup', "~> 3.0.24" # db backup 
 gem 'whenever' # cron scheduling
 gem 'resque'
 gem 'exception_notification'
@@ -35,6 +35,10 @@ gem 'carrierwave' # file/image attachments
 gem 'rmagick' # image resizing
 gem 'mime-types' # for assigning mime type on upload
 gem 'fog' # S3 upload for carrierwave
+
+gem 'sunspot_rails' # for use with solr
+gem 'sunspot_solr' # pre-packaged solr distro for use in dev
+gem 'progress_bar' # shows solr indexing progress
 
 group :test, :development do
   # Pretty printed test output

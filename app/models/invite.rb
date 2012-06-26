@@ -3,6 +3,8 @@ class Invite < ActiveRecord::Base
   belongs_to :from, :class_name => 'User'
   belongs_to :to, :class_name => 'User'
   before_save :generate_code
+  has_many :notifications, :as => :attachable
+  has_many :user_actions, :as => :attachable
 
   validates_presence_of :email
   validates_presence_of :from_id

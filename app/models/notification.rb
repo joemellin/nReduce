@@ -1,6 +1,7 @@
 class Notification < ActiveRecord::Base
   belongs_to :attachable, :polymorphic => true
   belongs_to :user
+  has_many :user_actions, :as => :attachable
 
   validates_presence_of :user_id
   validates_presence_of :attachable_id

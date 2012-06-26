@@ -6,6 +6,7 @@ class Comment < ActiveRecord::Base
   has_one :startup, :through => :checkin
   has_many :awesomes, :as => :awsm
   has_many :notifications, :as => :attachable
+  has_many :user_actions, :as => :attachable
   
   attr_accessible :content, :checkin_id, :parent_id
 
