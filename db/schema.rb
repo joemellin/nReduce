@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120625184104) do
+ActiveRecord::Schema.define(:version => 20120626205803) do
 
   create_table "authentications", :force => true do |t|
     t.string   "provider"
@@ -197,6 +197,7 @@ ActiveRecord::Schema.define(:version => 20120625184104) do
     t.datetime "updated_at",                        :null => false
     t.text     "elevator_pitch"
     t.string   "logo"
+    t.float    "rating"
   end
 
   add_index "startups", ["public"], :name => "index_startups_on_public"
@@ -272,6 +273,7 @@ ActiveRecord::Schema.define(:version => 20120625184104) do
     t.string   "dribbble_url"
     t.string   "blog_url"
     t.string   "pic"
+    t.float    "rating"
   end
 
   add_index "users", ["reset_password_token"], :name => "index_users_on_reset_password_token", :unique => true
