@@ -59,7 +59,7 @@
               - if current_checkin.comment_count > 0
                 = pluralize(current_checkin.comment_count, 'comment')
               &nbsp;
-        - if current_checkin and !current_checkin.completed? and !owner
+        - if !owner and (current_checkin.blank? or (current_checkin and !current_checkin.completed?))
           = form_for Nudge.new(:startup_id => s.id), :html => {:id => "new_nudge_#{s.id}"} do |f|
             = f.hidden_field :startup_id
             = link_to '<i class="icon-hand-left icon"></i> Nudge'.html_safe, '#', :title => "Nudge #{s.name} to complete their check-in with an email!", :onclick => "$('#new_nudge_#{s.id}').submit();", :class => 'btn'
