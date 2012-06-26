@@ -63,10 +63,7 @@
               Team:
               %br
               - s.team_members.each do |tm|
-                - if tm.external_pic_url.blank?
-                  [ #{tm.first_name} ]
-                - else
-                  .left{:style => 'margin: 0 5px 5px 0'}= image_tag(tm.external_pic_url, :style => 'width: 50px; height: 50px', :title => tm.name)
+                .left{:style => 'margin: 0 5px 5px 0'}= image_tag(user_avatar_url(tm), :style => 'width: 50px; height: 50px', :title => tm.name)
               .clear
           .span3
             - unless s.stage.blank?

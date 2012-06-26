@@ -4,10 +4,7 @@
   = f.hidden_field :parent_id
   .comment
     .left
-      - if current_user.external_pic_url.blank?
-        &nbsp;
-      - else
-        = image_tag current_user.external_pic_url, :style => 'width: 50px; height: 50px;'
+      = image_tag user_avatar_url(current_user), :style => 'width: 50px; height: 50px;'
     .left.content{:style => 'padding-left: 10px'}
       = f.hidden_field :checkin_id
       = f.text_area :content, :size => '50x1'
