@@ -2,6 +2,8 @@ class Awesome < ActiveRecord::Base
   attr_accessible :awsm, :user_id, :awsm_type, :awsm_id
   belongs_to :awsm, :polymorphic => true
   belongs_to :user
+  has_many :notifications, :as => :attachable
+  has_many :user_actions, :as => :attachable
 
   after_create :update_awesome_count
   after_destroy :update_awesome_count

@@ -4,6 +4,8 @@ class Meeting < ActiveRecord::Base
   has_many :attendees, :class_name => 'User'
   belongs_to :organizer, :class_name => 'User'
   has_many :meeting_messages
+  has_many :notifications, :as => :attachable
+  has_many :user_actions, :as => :attachable
 
   attr_accessible :location_name, :venue_name, :venue_address, :venue_url, :description,  :start_time, :day_of_week, :organizer_id
 

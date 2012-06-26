@@ -13,10 +13,10 @@
 /config/database.yml
 
 # Ignore backup.rb file with passwords
-/lib/backup.rb
+/Backup/config.rb
 
 # Ignore all logfiles and tempfiles.
-/log/*.log
+/log/*
 /tmp
 
 # Mac artifacts
@@ -24,3 +24,5 @@
 
 public/assets/*
 public/uploads/*
+
+solr/*

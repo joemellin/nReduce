@@ -1,6 +1,8 @@
 class Relationship < ActiveRecord::Base
   belongs_to :startup
   belongs_to :connected_with, :class_name => 'Startup'
+  has_many :notifications, :as => :attachable
+  has_many :user_actions, :as => :attachable
 
   attr_accessible :startup_id, :connected_with_id, :status, :approved_at, :rejected_at
 

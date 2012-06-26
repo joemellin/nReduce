@@ -1,6 +1,8 @@
 class MeetingMessage < ActiveRecord::Base
   belongs_to :meeting
   belongs_to :user
+  has_many :notifications, :as => :attachable
+  has_many :user_actions, :as => :attachable
 
   attr_accessible :subject, :body, :meeting_id
   serialize :emailed_to

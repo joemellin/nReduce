@@ -8,6 +8,8 @@ class Startup < ActiveRecord::Base
   has_many :invites
   has_many :invited_team_members, :through => :invites, :class_name => 'User'
   has_many :nudges
+  has_many :notifications, :as => :attachable
+  has_many :user_actions, :as => :attachable
 
   attr_accessible :name, :team_size, :website_url, :main_contact_id, :phone, :growth_model, :stage, :company_goal, :meeting_id, :one_liner, :active, :launched_at, :industry_list, :technology_list, :ideology_list, :industry, :intro_video_url, :elevator_pitch, :logo, :remote_logo_url, :logo_cache, :remove_logo
 
@@ -25,6 +27,31 @@ class Startup < ActiveRecord::Base
   scope :launched, where('launched_at IS NOT NULL')
   scope :with_intro_video, where('intro_video_url IS NOT NULL')
   scope :onboarded, lambda { where(:onboarding_step => Startup.num_onboarding_steps) }
+
+  # Uses Sunspot gem with Solr backend. Docs: http://outoftime.github.com/sunspot/docs/index.html
+  searchable do
+    # full-text search fields - can add :stored => true if you don't want to hit db
+    text :name, :boost => 4.0
+    text :location do
+      team_members.map{|tm| tm.location }.delete_if{|l| l.blank? }
+    end
+    text :industries  do
+      self.industries.map{|t| t.name }.join(' ')
+    end
+    text :website_url, :one_liner
+
+    # filterable fields
+    integer :stage
+    integer :company_goal
+    integer :onboarding_step
+    boolean :public
+    integer :industry_tag_ids, :multiple => true, :stored => true do
+      self.industries.map{|t| t.id }
+    end
+    string :sort_name do
+      name.downcase.gsub(/^(an?|the)/, '')
+    end
+  end
 
     # Startups this one is connected to (approved status)
     # uses cache

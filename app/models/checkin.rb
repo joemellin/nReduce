@@ -3,6 +3,8 @@ class Checkin < ActiveRecord::Base
   belongs_to :user # the user logged in who created check-in
   has_many :comments
   has_many :awesomes, :as => :awsm
+  has_many :notifications, :as => :attachable
+  has_many :user_actions, :as => :attachable
 
   attr_accessible :start_focus, :start_why, :start_video_url, :end_video_url, :end_comments, :startup_id, :start_comments
 
