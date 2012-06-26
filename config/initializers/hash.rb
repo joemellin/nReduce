@@ -1,6 +1,8 @@
 class Hash
-  # Returns a hash keyed by a method or an attribute
-  def self.by_key(objs, attr = nil, method = nil, array = false)
+  # Pass an array of objects - will return a hash keyed by a method or an attribute
+  # Set array to be true to allow multiple objects stored by that key
+  def self.by_key(objs = [], attr = nil, method = nil, array = false)
+    return {} if objs.blank?
     if !method.blank?
       method = method.to_sym
       objs.inject({}) do |r,e|

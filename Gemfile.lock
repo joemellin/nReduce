@@ -333,7 +333,7 @@ DEPENDENCIES
   haml-rails
   hominid
   jquery-rails
-  json
+  json (~> 1.7.3)
   mime-types
   mysql2
   omniauth (>= 1.0)

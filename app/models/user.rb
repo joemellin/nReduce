@@ -129,7 +129,7 @@ class User < ActiveRecord::Base
     # Simply calculates avg number of comments given per startup per week
     # @from_time (start metrics on this date)
     # @to_time (optional - end metrics on this date, defaults to now)
-  def self.calculate_engagement_metrics(from_time, to_time = nil, dont_save = false)
+  def self.calculate_engagement_metrics(from_time, to_time = nil, dont_save = false, max_comments_per_checkin = 2)
     to_time ||= Time.now
     return 'From time is not after to time' if from_time > to_time
 
@@ -148,6 +148,8 @@ class User < ActiveRecord::Base
       results[startup.id] = {}
       results[startup.id][:total] = nil
 
+      checkins_by_this_startup = Hash.by_key(checkins_by_startup[startup.id], :id)
+
       # How many checkins did your connected startups make?
       Relationship.all_connection_ids_for(startup).map do |startup_id|
         num_checkins += checkins_by_startup[startup_id].size unless checkins_by_startup[startup_id].blank?
@@ -159,10 +161,18 @@ class User < ActiveRecord::Base
         # Skip if their connections haven't made any checkins
         if num_checkins > 0
           num_comments_by_user = 0
-
           # What is total number of comments on these checkins?
+          # - ignore comments on your own checkins
+          # - max 2 comments per checkin are counted
           unless comments_by_user[user.id].blank?
-            num_comments_by_user = comments_by_user[user.id].inject(0){|res, c| res += 1 if c.user_id == user.id; res }
+            comments_by_checkin_id = Hash.by_key(comments_by_user[user.id], :checkin_id, nil, true)
+            comments_by_checkin_id.each do |checkin_id, comments|
+              # skip if this is one of their checkins
+              next unless checkins_by_this_startup[checkin_id].blank?
+
+              # limit count to max comments per checkin number
+              num_comments_by_user += (comments.size > max_comments_per_checkin ? max_comments_per_checkin : comments.size)
+            end
           end
           
           rating = (num_comments_by_user.to_f / num_checkins.to_f).round(3)
@@ -177,7 +187,7 @@ class User < ActiveRecord::Base
       rating = nil
       rating = (num_for_startup.to_f / startup.team_members.size.to_f).round(3) unless num_checkins == 0
       startup.rating = rating
-      startup.save(:validate => false)
+      startup.save(:validate => false) unless dont_save
       results[startup.id][:total] = rating
     end
     results
