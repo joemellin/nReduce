@@ -1,5 +1,8 @@
-Message from #{@meeting.organizer.name}\n
-The #{@meeting.location_name} Local nReduce Leader\n
+- if @meeting.organizer.blank?
+  Message about your nReduce #{@meeting.location_name} local meeting\n
+- else
+  Message from #{@meeting.organizer.name}\n
+  The #{@meeting.location_name} Local nReduce Leader\n
 \n
 \n
 #{@message}\n

@@ -1,6 +1,9 @@
 = render :partial => 'header'
-%h4.h4 Message from #{@meeting.organizer.name}
-%strong The #{@meeting.location_name} Local nReduce Leader
+- if @meeting.organizer.blank?
+  %h4.h4 Message about your nReduce #{@meeting.location_name} local meeting
+- else
+  %h4.h4 Message from #{@meeting.organizer.name}
+  %strong The #{@meeting.location_name} Local nReduce Leader
 %br/
 %br/
 %p #{@message}
