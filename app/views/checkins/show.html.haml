@@ -50,7 +50,7 @@
       /   %br
       /   = pluralize(@checkin.awesome_count, 'awesome')
       &nbsp;
-    - else
+    - elsif @checkin.completed?
       != render_awesome_button(@checkin)
   .span5
     %p{:style => 'margin-bottom: 0'}
