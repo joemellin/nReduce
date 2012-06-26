@@ -1,6 +1,4 @@
 require 'json/ext' # faster json parsing https://github.com/flori/json
-# require 'json/add/rails'
-
 
 class Cache
   @@enabled = true
