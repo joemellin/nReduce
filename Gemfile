@@ -29,7 +29,7 @@ gem 'backup', "~> 3.0.24" # db backup
 gem 'whenever' # cron scheduling
 gem 'resque'
 gem 'exception_notification'
-gem 'json' # much faster than activerecord -- http://flori.github.com/json/
+gem 'json', '~> 1.7.3' # much faster than activerecord -- http://flori.github.com/json/
 gem 'ancestry' # for threaded comments
 gem 'carrierwave' # file/image attachments
 gem 'rmagick' # image resizing
