@@ -66,29 +66,39 @@
 
 }
 
-#countdown {
-  .number_block{
-    padding: 0 12px;
-    margin: 0 0 0 4px;
-    height: 88px;
-    text-align: center;
-    .numbers {
-      position: relative;
-      overflow: hidden;
-      font-size: 55px;
-      line-height: 60px;
-      padding: 12px 0 0;
-      span {
+.countdown_and_checkin {
+  position: relative;
+  height: 90px;
+  .checkin_button {
+    position: relative;
+    right: 0;
+    top: 30%;
+  }
+  #countdown {
+    margin-top: -15px;
+    .number_block{
+      padding: 0 12px;
+      margin: 0 0 0 4px;
+      height: 88px;
+      text-align: center;
+      .numbers {
         position: relative;
+        overflow: hidden;
+        font-size: 55px;
+        line-height: 60px;
+        padding: 12px 0 0;
+        span {
+          position: relative;
+        }
+        height: 66px;
       }
-      height: 66px;
-    }
-    p {
-      margin-top: -5px;
-      padding: 0;
-      font-weight: normal;
-      font-size: 1em;
-      color: #ccc;
+      p {
+        margin-top: -10px;
+        padding: 0;
+        font-weight: normal;
+        font-size: 1em;
+        color: #999;
+      }
     }
   }
 }
