@@ -43,11 +43,10 @@
           %button.btn{:href => '#', :class => ((current_checkin and current_checkin.completed?) ? 'btn-success' : 'disabled active')} After
         .team{:align => 'center'}
           - s.team_members.shuffle.first(3).each do |tm|
-            - next if tm.external_pic_url.blank?
-            .inline-block{:style => 'margin-left: 4px'}= image_tag(tm.external_pic_url, :title => tm.name, :style => 'width: 50px; height: 50px;')
+            .inline-block{:style => 'margin-left: 4px'}= image_tag(user_avatar_url(tm), :title => tm.name, :style => 'width: 50px; height: 50px;')
       .bottom{:align => 'center'}
         %h3= link_to owner ? 'You' : truncate(s.name, :length => 20), startup_path(s)
-        - if current_checkin and (current_checkin.submitted? or current_checkin.completed?)
+        - if current_checkin and current_checkin.completed?
           = link_to (owner ? 'Respond to Feedback' : 'Give Feedback'), latest_startup_checkins_path(s), :class => 'btn btn-success'
           %p
             %small
