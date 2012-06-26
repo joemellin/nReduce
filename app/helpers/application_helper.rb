@@ -62,6 +62,15 @@ module ApplicationHelper
     # Given a time object, returns a verbose result of how many days, hours, minutes, seconds
   def verbose_distance_until_time_from_now(time)
     return '' if time.blank?
+    arr = distance_until_time_from_now_arr(time)
+    ret.push(pluralize(arr[0], 'day')) unless arr[0] == 0
+    ret.push(pluralize(arr[1], 'hour')) unless arr[1] == 0
+    ret.push(pluralize(arr[2], 'min')) unless arr[2].blank?
+    ret.join(', ') + ' and ' + pluralize(arr[3], 'sec')
+  end
+
+  def distance_until_time_from_now_arr(time)
+    return [] if time.blank?
     from_time = Time.now
     to_time = time
     seconds = ((to_time - from_time).abs).round
@@ -71,11 +80,7 @@ module ApplicationHelper
     seconds -= 3600 * hours
     minutes = (seconds / 60).floor
     seconds -= 60 * minutes
-    ret = []
-    ret.push(pluralize(days, 'day')) unless days == 0
-    ret.push(pluralize(hours, 'hour')) unless hours == 0
-    ret.push(pluralize(minutes, 'min')) unless minutes.blank?
-    ret.join(', ') + ' and ' + pluralize(seconds, 'sec')
+    return [days, hours, minutes, seconds]
   end
 
     # Returns link to attached object

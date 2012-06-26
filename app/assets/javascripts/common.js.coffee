@@ -11,3 +11,100 @@ $ ->
     $(this).hide()
     $('.sign_in_toggle, #sign_up').show()
     $('#sign_in').hide()
+
+  # much grateful thanks to the countdown code from http://mahamusicfestival.com/wp-content/themes/maha2012/js/maha.js
+  oxide_countdown = ->
+    d = new Array()
+    h = new Array()
+    m = new Array()
+    s = new Array()
+    go = 0
+    countdown_element = $('#countdown');
+    $dayspan = $(countdown_element).find('.days span')
+    $hourspan = $(countdown_element).find('.hours span')
+    $minutespan = $(countdown_element).find('.minutes span')
+    $secondspan = $(countdown_element).find('.seconds span')
+
+    $dayspan.each((i, e) ->
+        n = parseFloat($(e).text())
+        d.push(n);
+        go = go + n
+      )
+    $hourspan.each((i, e) ->
+      n = parseFloat($(e).text())
+      h.push(n)
+      go = go + n
+    )
+    $minutespan.each((i, e) ->
+      n = parseFloat($(e).text())
+      m.push(n)
+      go = go + n
+    )
+    $secondspan.each((i, e) ->
+      n = parseFloat($(e).text())
+      s.push(n)
+      go = go + n
+    )
+    # Preset the arrays in an expected failure condition
+    di = d.length
+    s[1]--
+    if s[1] < 0
+      # Underrun on seconds, take away one from tens of seconds!
+      s[1] = 9
+      s[0] = s[0] - 1
+    if s[0] < 0
+      # Underrun on tens of seconds, take away a minute!
+      s[0] = 5
+      m[1] = m[1] - 1
+    if m[1] < 0 # min right
+      m[1] = 9
+      m[0] = m[0] - 1
+    if m[0] < 0 # min left
+      m[0] = 5
+      h[1] = h[1] - 1 
+    if h[1] < 0 # hour right
+      h[1] = 9
+      h[0] = h[0] - 1 
+    if h[0] < 0
+      h[0] = 2
+      h[1] = 3
+      d[di-1] = d[di-1] - 1
+    while (di--)
+      if (d[di] < 0)
+        d[di] = 9
+        if (di > 0)
+          d[di - 1] = d[di - 1] - 1
+    if go == 0
+      clearInterval(timer)
+    else
+      $dayspan.each( (i, e) ->
+        if parseFloat($(e).text()) != d[i]
+          oxide_number_drop(e, d, i)
+      )
+      $hourspan.each( (i, e) ->
+        if parseFloat($(e).text()) != h[i]
+          oxide_number_drop(e, h, i)
+      )
+      $minutespan.each( (i, e) ->
+        if parseFloat($(e).text()) != m[i]
+          oxide_number_drop(e, m, i)
+      )
+      $secondspan.each( (i, e) ->
+        if parseFloat($(e).text()) != s[i]
+          oxide_number_drop(e, s, i)
+      )
+
+  oxide_number_drop = (elem, array, index) ->
+    $(elem).stop(true).animate(
+      'top': '80px'
+    , 100, () -> 
+      $(elem).css(
+        'top': '-80px'
+      ).text(array[index]).animate(
+        'top': '0'
+      , 100)
+    )
+
+  if $('#countdown').length > 0
+    timer = setInterval(oxide_countdown, 1000);
+
