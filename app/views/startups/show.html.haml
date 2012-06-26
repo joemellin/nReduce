@@ -23,9 +23,9 @@
         %h1= h(@startup.name)
         - unless @startup.one_liner.blank?
           %h3= h(@startup.one_liner)
-        - unless @startup.website_url.blank?
+        - unless @startup.website_url_to_uri.blank?
           %h3
-            %small= link_to @startup.website_url, @startup.website_url, :target => '_blank'
+            %small= link_to @startup.website_url_to_uri.hostname, @startup.website_url, :target => '_blank'
         .row
           .span2
             - unless @startup.company_goal.blank?
@@ -87,7 +87,7 @@
         %h3 Week of #{c.time_label}
         %p 
           %small Goal:
-        %p= truncate(h(c.start_focus), :length => 150)
+        %p= simple_format(truncate(h(c.start_focus), :length => 150))
       .span3
         %p
           %small Before Video :
@@ -105,7 +105,7 @@
       .span3
         %p
           %small Accomplished :
-        %p= truncate(h(c.end_comments), :length => 150)
+        %p= simple_format(truncate(h(c.end_comments), :length => 150))
         - if c.awesome_count > 0
           %p
             Awesomes

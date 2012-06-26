@@ -13,6 +13,11 @@
   .controls
     = f.text_field :start_time, :maxlength => 4, :placeholder => '630', :class => "span1"
     = f.semantic_errors :start_time
+.control-group{error_css(@meeting, :venue_name)}
+  = f.label :venue_name, :class => 'control-label'
+  .controls
+    = f.text_field :venue_name, :class => "span4"
+    = f.semantic_errors :venue_name
 .control-group{error_css(@meeting, :venue_address)}
   = f.label :venue_address, :class => 'control-label'
   .controls

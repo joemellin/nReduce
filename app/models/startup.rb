@@ -15,6 +15,8 @@ class Startup < ActiveRecord::Base
   validates_presence_of :name
   validate :check_video_urls_are_valid
 
+  before_save :format_url
+
   acts_as_taggable_on :industries, :technologies, :ideologies
 
   mount_uploader :logo, LogoUploader # carrierwave file uploads
@@ -173,6 +175,19 @@ class Startup < ActiveRecord::Base
         csv << ['http://new.nreduce.com/startups/' + startup_id.to_s, startup_id, data[:name], data[:pending_relationships], data[:approved_relationships], data[:rejected_relationships], data[:checkins_completed], data[:comments_given], data[:comments_received]]
       end
     end
+  end
+
+  # converts url to uri - and adds http if necessary
+  def website_url_to_uri
+    URI.parse(self.website_url)
+  end
+
+  def format_url
+    return true if website_url.blank?
+    if website_url.match(/^https?:\/\//) == nil
+      self.website_url = "http://#{website_url}"
+    end
+    true
   end
 
   protected

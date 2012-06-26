@@ -31,7 +31,9 @@ class UserMailer < ActionMailer::Base
     @comment = notification.attachable
     @checkin = @comment.checkin
     @user = notification.user
-    mail(:to => @user.email, :subject => "#{@comment.user.name} commented on your check-in")
+    @owner = @user.startup_id == @checkin.startup_id
+    subject = @owner ? "#{@comment.user.name} commented on your check-in" : "#{@comment.user.name} replied to your comment"
+    mail(:to => @user.email, :subject => subject)
   end
 
 
