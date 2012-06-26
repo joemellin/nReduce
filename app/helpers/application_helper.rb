@@ -63,6 +63,7 @@ module ApplicationHelper
   def verbose_distance_until_time_from_now(time)
     return '' if time.blank?
     arr = distance_until_time_from_now_arr(time)
+    ret = []
     ret.push(pluralize(arr[0], 'day')) unless arr[0] == 0
     ret.push(pluralize(arr[1], 'hour')) unless arr[1] == 0
     ret.push(pluralize(arr[2], 'min')) unless arr[2].blank?
