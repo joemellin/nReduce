@@ -107,10 +107,14 @@ class UserAction < ActiveRecord::Base
     saved = 0
     UserAction.transaction do
       uas.each do |marshaled_ua|
-        ua = Marshal.load(marshaled_ua)
-        if ua.save # count successes
-          saved += 1
-        else # push failures back onto cache
+        begin
+          ua = Marshal.load(marshaled_ua)
+          if ua.save # count successes
+            saved += 1
+          else # push failures back onto cache
+            Cache.arr_push('user_actions', marshaled_ua)
+          end
+        rescue
           Cache.arr_push('user_actions', marshaled_ua)
         end
       end
