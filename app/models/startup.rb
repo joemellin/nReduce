@@ -29,28 +29,32 @@ class Startup < ActiveRecord::Base
   scope :onboarded, lambda { where(:onboarding_step => Startup.num_onboarding_steps) }
 
   # Uses Sunspot gem with Solr backend. Docs: http://outoftime.github.com/sunspot/docs/index.html
-  searchable do
-    # full-text search fields - can add :stored => true if you don't want to hit db
-    text :name, :boost => 4.0
-    text :location do
-      team_members.map{|tm| tm.location }.delete_if{|l| l.blank? }
-    end
-    text :industries  do
-      self.industries.map{|t| t.name }.join(' ')
-    end
-    text :website_url, :one_liner
+  # searchable do
+  #   # full-text search fields - can add :stored => true if you don't want to hit db
+  #   text :name, :boost => 4.0
+  #   text :location do
+  #     team_members.map{|tm| tm.location }.delete_if{|l| l.blank? }
+  #   end
+  #   text :industries  do
+  #     self.industries.map{|t| t.name }.join(' ')
+  #   end
+  #   text :website_url, :one_liner
 
-    # filterable fields
-    integer :stage
-    integer :company_goal
-    integer :onboarding_step
-    boolean :public
-    integer :industry_tag_ids, :multiple => true, :stored => true do
-      self.industries.map{|t| t.id }
-    end
-    string :sort_name do
-      name.downcase.gsub(/^(an?|the)/, '')
-    end
+  #   # filterable fields
+  #   integer :stage
+  #   integer :company_goal
+  #   integer :onboarding_step
+  #   boolean :public
+  #   integer :industry_tag_ids, :multiple => true, :stored => true do
+  #     self.industries.map{|t| t.id }
+  #   end
+  #   string :sort_name do
+  #     name.downcase.gsub(/^(an?|the)/, '')
+  #   end
+  # end
+
+  def self.named(name)
+    Startup.find_by_name(name)
   end
 
     # Startups this one is connected to (approved status)
@@ -93,10 +97,6 @@ class Startup < ActiveRecord::Base
    # Returns the checkin for this week (or if Sun/Mon, it checks for last week's checkin)
   def current_checkin
     checkins.ordered.where(['created_at > ?', Time.now - 1.week]).first
-  end
-
-  def self.named(name)
-    Startup.find_by_name(name)
   end
 
   def onboarding_step_increment!
