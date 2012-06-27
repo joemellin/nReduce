@@ -66,7 +66,7 @@ class RelationshipsController < ApplicationController
     if relationship.reject!
       flash[:notice] = "You have removed #{relationship.startup.name} from your group."
     else
-      flash[:alert] = "Sorry but the relationship couldn't be rejected at this time."
+      flash[:alert] = "Sorry but the relationship couldn't be removed at this time."
     end
     redirect_to relationships_path
   end
