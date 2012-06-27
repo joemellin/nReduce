@@ -210,7 +210,11 @@ class Startup < ActiveRecord::Base
 
   # converts url to uri - and adds http if necessary
   def website_url_to_uri
-    URI.parse(self.website_url)
+    begin
+      URI.parse(self.website_url)
+    rescue
+      nil
+    end
   end
 
   def format_url
