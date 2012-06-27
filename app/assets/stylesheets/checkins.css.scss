@@ -68,8 +68,9 @@
 
 .countdown_and_checkin {
   position: relative;
-  height: 90px;
+  height: 70px;
   .checkin_button {
+    height: 70px;
     position: relative;
     right: 0;
     top: 30%;
@@ -79,18 +80,18 @@
     .number_block{
       padding: 0 12px;
       margin: 0 0 0 4px;
-      height: 88px;
+      height: 68px;
       text-align: center;
       .numbers {
         position: relative;
         overflow: hidden;
-        font-size: 55px;
-        line-height: 60px;
+        font-size: 35px;
+        line-height: 40px;
         padding: 12px 0 0;
         span {
           position: relative;
         }
-        height: 66px;
+        height: 46px;
       }
       p {
         margin-top: -10px;

@@ -40,6 +40,7 @@
         - unless @user.blog_url.blank?
           = link_to image_tag('blog_32.png'), @user.blog_url, :target => '_blank'
       .span3
+        != rating_link(@user)
         %br
         %p
           %small About #{h(@user.name)}

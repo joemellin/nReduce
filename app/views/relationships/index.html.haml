@@ -2,31 +2,16 @@
   Your Alliance / Group
 
 .row
-  .span2
+  .span3
     %h2
       %small Your Alliance / Group
 
-  .span10.countdown_and_checkin{:align => 'right'}
+  .span6.countdown_and_checkin{:align => 'center'}
     - nc = Checkin.next_checkin_type_and_time
     - left = distance_until_time_from_now_arr(nc[:time])
     - left = left.map{|d| "%02d" % d }
-    .right.checkin_button{:style => 'margin-left: 10px'}
-      - if !@current_checkin.blank?
-        - if @current_checkin.completed?
-          = link_to 'This Week\'s Check-in', (Checkin.in_after_time_window? ? edit_checkin_path(@current_checkin) : @current_checkin), :class => 'btn btn-primary'
-        - elsif @current_checkin.submitted? and Checkin.in_after_time_window?
-          = link_to "Complete 'After' Check-in", edit_checkin_path(@current_checkin), :class => 'btn btn-danger'
-        - else
-          %p Keep workin! (#{link_to("'before' checkin", @current_checkin)} was submitted)
-      - if Checkin.in_after_time_window? and @current_checkin.blank?
-        = link_to "Start 'After' Check-in", new_checkin_path, :class => 'btn btn-success'
-      - elsif Checkin.in_before_time_window?
-        = link_to "Start 'Before' Check-in", new_checkin_path, :class => 'btn btn-success'
-      / - else
-      /   Come back to start your checkin by Wednesday at 4pm PST
-    .right
-      %div{:align => 'center'}
-        %h4 Your #{nc[:type]} video is due in
+    %div{:align => 'center', :style => 'width: 310px; overflow: hidden;'}
+      %h4 Your #{nc[:type]} video is due in
       #countdown
         .left.number_block
           .numbers.days
@@ -49,8 +34,21 @@
             %span= left[3][1,1]
           %p Seconds
         %br.clear/
-    
-    .clear
+  .span3
+    .checkin_button{:align => 'right'}
+      - if !@current_checkin.blank?
+        - if @current_checkin.completed?
+          = link_to 'This Week\'s Check-in', (Checkin.in_after_time_window? ? edit_checkin_path(@current_checkin) : @current_checkin), :class => 'btn btn-primary'
+        - elsif @current_checkin.submitted? and Checkin.in_after_time_window?
+          = link_to "Complete 'After' Check-in", edit_checkin_path(@current_checkin), :class => 'btn btn-danger'
+        - else
+          %p Keep workin! (#{link_to("'before' checkin", @current_checkin)} was submitted)
+      - if Checkin.in_after_time_window? and @current_checkin.blank?
+        = link_to "Start 'After' Check-in", new_checkin_path, :class => 'btn btn-success'
+      - elsif Checkin.in_before_time_window?
+        = link_to "Start 'Before' Check-in", new_checkin_path, :class => 'btn btn-success'
+      / - else
+      /   Come back to start your checkin by Wednesday at 4pm PST
 %hr
 %br
 %br
@@ -73,7 +71,12 @@
       .bottom{:align => 'center'}
         %h3= link_to owner ? 'You' : truncate(s.name, :length => 20), startup_path(s)
         - if current_checkin and current_checkin.completed?
-          = link_to (owner ? 'Respond to Feedback' : 'Give Feedback'), latest_startup_checkins_path(s), :class => 'btn btn-success'
+          - if owner
+            = link_to 'Respond to Feedback', latest_startup_checkins_path(s), :class => 'btn btn-success'
+          - elsif @commented_on_checkin_ids.include?(current_checkin.id)
+            = link_to '<i class="icon icon-ok"></i> Feedback Given'.html_safe, latest_startup_checkins_path(s), :class => 'btn'
+          - else
+            = link_to 'Give Feedback', latest_startup_checkins_path(s), :class => 'btn btn-success'
           %p
             %small
               &nbsp;

@@ -94,6 +94,7 @@ Nreduce::Application.routes.draw do
 
   match '/mentors/new' => "pages#mentor"
   match '/investors/new' => "pages#investor"
+  match '/community_guidelines' => "pages#community_guidelines", :as => :community_guidelines
 
 
   root :to => 'relationships#index'

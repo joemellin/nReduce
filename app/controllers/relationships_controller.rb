@@ -30,6 +30,7 @@ class RelationshipsController < ApplicationController
     end
     # Add user's startup to the beginning, and then sort by reverse chrono order
     @startups = [@current_startup] + @startups.reverse
+    @commented_on_checkin_ids = current_user.commented_on_checkin_ids
   end
 
   def create
