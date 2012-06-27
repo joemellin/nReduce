@@ -116,11 +116,11 @@ module ApplicationHelper
     html = "<p><small>#{obj.name.possessive} Community Status</small></p>"
     html += "<h1>#{obj.rating.round(2)} "
     if obj.rating < 0.25
-      html += link_to('Not Helpful', community_guidelines_path, :class => "btn btn-large") 
+      html += link_to(Startup.community_status[0], community_guidelines_path, :class => "btn btn-large") 
     elsif obj.rating >= 0.25 and obj.rating < 1
-      html += link_to('Kinda Helpful', community_guidelines_path, :class => "btn btn-large btn-warning") 
+      html += link_to(Startup.community_status[1], community_guidelines_path, :class => "btn btn-large btn-warning") 
     elsif obj.rating >= 1
-      html += link_to('Helpful', community_guidelines_path, :class => "btn btn-large btn-success") 
+      html += link_to(Startup.community_status[2], community_guidelines_path, :class => "btn btn-large btn-success") 
     end
     html += '</h1><br />'
     html

@@ -53,6 +53,10 @@ class Startup < ActiveRecord::Base
   #   end
   # end
 
+  def self.community_status
+    {0 => 'Inactive', 1 => 'Helpful', 2 => 'Very Helpful'}
+  end
+
   def self.named(name)
     Startup.find_by_name(name)
   end

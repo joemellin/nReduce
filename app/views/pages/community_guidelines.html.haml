@@ -26,19 +26,19 @@
 		%hr{:style => 'margin: 18px 0 18px;'}
 		.row
 			.span2{:align => 'right'}
-				%button.btn.btn-large.btn-success Helpful
+				%button.btn.btn-large.btn-success #{Startup.community_status[2]}
 			.span4
 				%h3 1+ comments given per startup per week
 		%hr{:style => 'margin: 18px 0 18px;'}
 		.row
 			.span2{:align => 'right'}
-				%button.btn.btn-large.btn-warning Kinda Helpful
+				%button.btn.btn-large.btn-warning #{Startup.community_status[1]}
 			.span4
 				%h3 0.25 - 1 comments given per startup per week
 		%hr{:style => 'margin: 18px 0 18px;'}
 		.row
 			.span2{:align => 'right'}
-				%button.btn.btn-large Not Helpful
+				%button.btn.btn-large #{Startup.community_status[0]}
 			.span4
 				%h3 less than .25 comments given per startup per week
 		%hr{:style => 'margin: 18px 0 18px;'}
