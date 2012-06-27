@@ -60,6 +60,12 @@ class Startup < ActiveRecord::Base
     Startup.find_by_name(name)
   end
 
+  def self.nreduce_id
+    Cache.get('nreduce_id', nil, true){
+      Startup.named('nreduce').id
+    }
+  end
+
     # Startups this one is connected to (approved status)
     # uses cache
   def connected_to

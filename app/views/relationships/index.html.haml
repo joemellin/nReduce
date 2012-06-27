@@ -119,3 +119,8 @@
           = link_to '<i class="icon-ok icon-white"></i> Accept'.html_safe, approve_relationship_path(r), :class => 'btn btn-success', :method => :post
           = link_to '<i class="icon-remove icon-white"></i> Not Now'.html_safe, reject_relationship_path(r), :class => 'btn btn-danger', :method => :post
       .clear
+
+- nreduce_id = Startup.nreduce_id
+- unless nreduce_id.blank?
+  %hr
+  %h3= link_to 'View nReduce\'s latest checkin', latest_startup_checkins_path(:startup_id => nreduce_id)
