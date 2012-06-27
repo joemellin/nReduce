@@ -19,6 +19,7 @@ class StartupsController < ApplicationController
     @num_checkins = @startup.checkins.count
     @num_awesomes = @startup.awesomes.count
     @checkins = @startup.checkins.ordered
+    @relationship = Relationship.between(current_user.startup, @startup) unless current_user.startup.blank?
   end
 
   def search
