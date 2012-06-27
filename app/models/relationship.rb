@@ -32,7 +32,7 @@ class Relationship < ActiveRecord::Base
 
     # Finds relationship between two startups
   def self.between(startup1, startup2)
-    Relationship.where(:startup_id => startup1.id, :connected_with_id => startup2.id).first
+    Relationship.where(:startup_id => startup1.id, :connected_with_id => startup2.id).order('created_at DESC').first
   end
 
     # Returns all startups that this startup is connected to (approved status)

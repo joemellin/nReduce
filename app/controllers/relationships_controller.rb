@@ -46,7 +46,7 @@ class RelationshipsController < ApplicationController
       flash[:alert] = "Sorry, but #{connect_with.name} has ignored your connection request."
     end
     respond_to do |format|
-      format.html { redirect_to search_startups_path }
+      format.html { redirect_to '/' }
       format.js
     end
   end
@@ -64,7 +64,7 @@ class RelationshipsController < ApplicationController
   def reject
     relationship = Relationship.find(params[:id])
     if relationship.reject!
-      flash[:notice] = "You have rejected a connection with #{relationship.startup.name}."
+      flash[:notice] = "You have removed #{relationship.startup.name} from your group."
     else
       flash[:alert] = "Sorry but the relationship couldn't be rejected at this time."
     end
