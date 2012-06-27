@@ -47,6 +47,7 @@
               Awesomes:
               %span.badge.badge-warning #{@num_awesomes}
       .span3
+        != rating_link(@startup)
         %p
           %small Elevator Pitch
         %p= simple_format(h(@startup.elevator_pitch))

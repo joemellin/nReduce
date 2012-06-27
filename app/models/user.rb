@@ -106,6 +106,12 @@ class User < ActiveRecord::Base
     }
   end
 
+  def commented_on_checkin_ids
+    Cache.get(['cids', self]){
+      self.comments.map{|c| c.checkin_id }
+    }
+  end
+
   def mailchimp!
     return true if mailchimped?
     return false unless email.present?

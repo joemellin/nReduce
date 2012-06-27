@@ -74,6 +74,12 @@ class UserMailer < ActionMailer::Base
     mail(:to => @to.email, :subject => "#{@from.name} nudged you to complete your check-in")
   end
 
+  def community_status(user)
+    setup_email
+    @user = user
+    mail(:to => @user.email, :subject => "Your nReduce community status")
+  end
+
   protected
 
   def setup_email
