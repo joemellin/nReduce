@@ -1,11 +1,11 @@
 = render :partial => 'header'
 %h4.h4 Your Community Status
 - if @user.rating < 0.25
-	%h3 Not Helpful
+	%h3 #{Startup.community_status[0]}
 - elsif @user.rating >= 0.25 and @user.rating < 1
-	%h3{:style => 'color: #F89406'} Kinda Helpful
+	%h3{:style => 'color: #F89406'} #{Startup.community_status[1]}
 - elsif @user.rating >= 1
-	%h3{:style => 'color: #51A351'} Helpful
+	%h3{:style => 'color: #51A351'} #{Startup.community_status[2]}
 %br/
 %p We are all a part of building the nReduce community. Each week we support each other and give feedback. In order to encourage engagement we have introduced the community status for all startups and team members.
 %br/
