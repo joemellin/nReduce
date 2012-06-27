@@ -6,7 +6,7 @@ class Startup < ActiveRecord::Base
   has_many :relationships
   has_many :awesomes, :through => :checkins
   has_many :invites
-  has_many :invited_team_members, :through => :invites, :class_name => 'User'
+  has_many :invited_team_members, :through => :invites, :class_name => 'User', :foreign_key => 'from_id'
   has_many :nudges
   has_many :notifications, :as => :attachable
   has_many :user_actions, :as => :attachable
@@ -193,6 +193,7 @@ class Startup < ActiveRecord::Base
       data[:comments_received] = cs.inject(0){|num, c| !comments_by_checkin_id[c.id].blank? ? num + comments_by_checkin_id[c.id] : num }
       meeting_ids = s.team_members.map{|tm| tm.meeting_id }.uniq.delete_if{|m| m.nil? }
       data[:virtual] = (meeting_ids.include?(virtual_meeting_id) or meeting_ids.blank?) ? true : false
+      data[:rating] = s.rating
       ret[s.id] = data
     end
     ret
@@ -201,9 +202,9 @@ class Startup < ActiveRecord::Base
   def self.generate_stats_csv
     stats = Startup.generate_stats
     CSV.generate do |csv|
-      csv << ['Link', 'ID', 'Name', 'Pending Relationships', 'Approved Relationships', 'Rejected Relationships', 'Checkins Completed', 'Comments Given', 'Comments Received']
+      csv << ['Link', 'ID', 'Name', 'Pending Relationships', 'Approved Relationships', 'Rejected Relationships', 'Checkins Completed', 'Comments Given', 'Comments Received', 'Rating']
       stats.each do |startup_id, data|
-        csv << ['http://new.nreduce.com/startups/' + startup_id.to_s, startup_id, data[:name], data[:pending_relationships], data[:approved_relationships], data[:rejected_relationships], data[:checkins_completed], data[:comments_given], data[:comments_received]]
+        csv << ['http://new.nreduce.com/startups/' + startup_id.to_s, startup_id, data[:name], data[:pending_relationships], data[:approved_relationships], data[:rejected_relationships], data[:checkins_completed], data[:comments_given], data[:comments_received], data[:rating]]
       end
     end
   end
