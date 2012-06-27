@@ -47,7 +47,8 @@ module ApplicationHelper
     end
   end
 
-  def link_to_twitter(handle, opts = {})
+  def link_to_twitter(handle = '', opts = {})
+    return '' if handle.blank?
     link_to(handle, "https://twitter.com/#!/#{handle.sub('@', '')}", opts)
   end
 
