@@ -87,6 +87,8 @@ class UserAction < ActiveRecord::Base
   # overwrite save action to queue to cache
   def save!(*args)
     if self.new_record? and UserAction.queue_actions?
+      # Remove attached object if it's a new record, it won't marshal correctly
+      self.attachable = nil if !self.attachable.blank? and self.attachable.new_record?
       # Add to in-memory cache
       Cache.arr_push('user_actions', Marshal.dump(self))
       # Trigger in-memory cache to write to disk

@@ -6,7 +6,6 @@ class Startup < ActiveRecord::Base
   has_many :relationships
   has_many :awesomes, :through => :checkins
   has_many :invites
-  has_many :invited_team_members, :through => :invites, :class_name => 'User', :foreign_key => 'from_id'
   has_many :nudges
   has_many :notifications, :as => :attachable
   has_many :user_actions, :as => :attachable
