@@ -15,7 +15,7 @@ class StartupsController < ApplicationController
       @startup = current_user.startup
     end
     @owner = true if user_signed_in? and (@startup.id == current_user.startup_id)
-    @can_view_details = can_view_details?(@startup)
+    @can_view_checkin_details = can_view_checkin_details?(@startup)
     @num_checkins = @startup.checkins.count
     @num_awesomes = @startup.awesomes.count
     @checkins = @startup.checkins.ordered
@@ -177,8 +177,9 @@ class StartupsController < ApplicationController
 
   protected
 
-  def can_view_details?(startup)
-    #if startup.checkins_public?
+  def can_view_checkin_details?(startup)
+    # Startup's checkins are public
+    return true if startup.checkins_public?
     if user_signed_in?
       # Admin or this is the user's startup
       return true if current_user.admin? or current_user.startup_id == startup.id

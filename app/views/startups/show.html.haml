@@ -68,7 +68,7 @@
     = render 'startups/team_members', :team_members => @startup.team_members, :add_team_member => (@startup.id == current_user.startup_id ? true : false)
     %hr
     %br
-- if !@can_view_details
+- if !@can_view_checkin_details
   .row{:id => "startup_#{@startup.id}"}
     .span12
       %br/

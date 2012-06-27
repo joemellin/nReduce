@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120626205803) do
+ActiveRecord::Schema.define(:version => 20120627154545) do
 
   create_table "authentications", :force => true do |t|
     t.string   "provider"
@@ -193,11 +193,12 @@ ActiveRecord::Schema.define(:version => 20120626205803) do
     t.datetime "launched_at"
     t.integer  "main_contact_id"
     t.integer  "meeting_id"
-    t.datetime "created_at",                        :null => false
-    t.datetime "updated_at",                        :null => false
+    t.datetime "created_at",                         :null => false
+    t.datetime "updated_at",                         :null => false
     t.text     "elevator_pitch"
     t.string   "logo"
     t.float    "rating"
+    t.boolean  "pub_checkins",    :default => false
   end
 
   add_index "startups", ["public"], :name => "index_startups_on_public"
