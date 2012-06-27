@@ -11,7 +11,7 @@ class Comment < ActiveRecord::Base
   attr_accessible :content, :checkin_id, :parent_id
 
   after_create :notify_users_and_update_count
-  after_destroy :reset_user_comment_cache
+  after_destroy :update_cache_and_count
   
   validates_presence_of :content
   validates_presence_of :user_id
@@ -22,17 +22,18 @@ class Comment < ActiveRecord::Base
   protected
 
   def notify_users_and_update_count
-    reset_user_comment_cache
+    update_cache_and_count
     parent_comment = self.parent
     # Notify person that this comment was a reply to
     Notification.create_for_comment_reply(self, parent_comment.user) if !parent_comment.blank?
     # Notify all team members who are on team with checkin of new comment
     Notification.create_for_new_comment(self) unless parent_comment and (parent_comment.user_id == self.user_id)
-    self.checkin.update_comments_count
   end
 
-  def reset_user_comment_cache
+  def update_cache_and_count
     # delete cache of checkin ids this user has commented on
     Cache.delete(['cids', self.user])
+    # update checkin comment count
+    self.checkin.update_comments_count
   end
 end

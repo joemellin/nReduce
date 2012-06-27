@@ -2,11 +2,37 @@ class StartupsController < ApplicationController
   around_filter :record_user_action, :except => [:onboard_next, :stats]
   before_filter :login_required
 
+  #
   # Actions for all startups
+  #
 
   def index
     redirect_to :action => :search
   end
+
+  def new
+    if !registration_open?
+      flash[:notice] = "Sorry but registration is closed for the current nReduce class. Email Joe if you have any questions: joe@nReduce.com"
+      redirect_to current_user
+      return
+    end
+    return unless redirect_if_user_has_startup
+    @startup = Startup.new(:website_url => 'http://')
+  end
+
+  def create
+    return unless redirect_if_user_has_startup
+    @startup = Startup.new(params[:startup])
+    if @startup.save
+      current_user.update_attribute('startup_id', @startup.id)
+      flash[:notice] = "Startup information has been saved. Thanks!"
+      redirect_to "/startup"
+    else
+      render :new
+    end
+  end
+
+  before_filter :current_startup_required, :except => [:index, :new, :create, :stats]
 
   def show
     if !params[:id].blank?
@@ -61,31 +87,6 @@ class StartupsController < ApplicationController
   #
   # Actions for user's startup
   #
-
-  def new
-    if !registration_open?
-      flash[:notice] = "Sorry but registration is closed for the current nReduce class. Email Joe if you have any questions: joe@nReduce.com"
-      redirect_to current_user
-      return
-    end
-    return unless redirect_if_user_has_startup
-    @startup = Startup.new(:website_url => 'http://')
-  end
-
-  def create
-    return unless redirect_if_user_has_startup
-    @startup = Startup.new(params[:startup])
-    if @startup.save
-      current_user.update_attribute('startup_id', @startup.id)
-      flash[:notice] = "Startup information has been saved. Thanks!"
-      redirect_to "/startup"
-    else
-      render :new
-    end
-  end
-
-  before_filter :current_startup_required, :only => [:update, :remove_team_member] # allow people to update without valid checkin
-  before_filter :current_startup_and_checkin_required, :only => [:show, :edit, :onboard, :onboard_next]
 
   def dashboard
     @startup = @current_startup
@@ -163,6 +164,7 @@ class StartupsController < ApplicationController
   #
   # ADMIN ONLY
   #
+
   before_filter :admin_required, :only => [:stats]
 
   def stats
