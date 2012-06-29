@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120627154545) do
+ActiveRecord::Schema.define(:version => 20120629004814) do
 
   create_table "authentications", :force => true do |t|
     t.string   "provider"
@@ -166,15 +166,17 @@ ActiveRecord::Schema.define(:version => 20120627154545) do
   add_index "rails_admin_histories", ["item", "table", "month", "year"], :name => "index_rails_admin_histories"
 
   create_table "relationships", :force => true do |t|
-    t.integer  "startup_id"
+    t.integer  "entity_id"
     t.integer  "connected_with_id"
     t.integer  "status"
     t.datetime "created_at"
     t.datetime "approved_at"
     t.datetime "rejected_at"
+    t.string   "entity_type"
+    t.string   "connected_with_type"
   end
 
-  add_index "relationships", ["startup_id", "connected_with_id", "status"], :name => "relationship_index", :unique => true
+  add_index "relationships", ["entity_id", "entity_type", "connected_with_id", "connected_with_type", "status"], :name => "relationship_index", :unique => true
 
   create_table "startups", :force => true do |t|
     t.string   "name"
@@ -198,7 +200,7 @@ ActiveRecord::Schema.define(:version => 20120627154545) do
     t.text     "elevator_pitch"
     t.string   "logo"
     t.float    "rating"
-    t.boolean  "pub_checkins",    :default => false
+    t.boolean  "checkins_public", :default => false
   end
 
   add_index "startups", ["public"], :name => "index_startups_on_public"

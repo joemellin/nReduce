@@ -3,7 +3,7 @@ class Startup < ActiveRecord::Base
   has_many :checkins
   belongs_to :main_contact, :class_name => 'User'
   belongs_to :meeting
-  has_many :relationships
+  has_many :relationships, :as => :entity
   has_many :awesomes, :through => :checkins
   has_many :invites
   has_many :nudges
@@ -69,7 +69,7 @@ class Startup < ActiveRecord::Base
     # Startups this one is connected to (approved status)
     # uses cache
   def connected_to
-    Relationship.all_connections_for(self)
+    Relationship.all_connections_for(self, 'Startup')
   end
 
     # Relationships this startup has requested with others
@@ -78,7 +78,7 @@ class Startup < ActiveRecord::Base
     Relationship.all_requested_relationships_for(self)
   end
 
-    # relationships that other startups have requested with this startup
+    # relationships that other entities have requested with this startup
     # not cached
   def pending_relationships
     Relationship.all_pending_relationships_for(self)
@@ -86,19 +86,21 @@ class Startup < ActiveRecord::Base
 
     # Returns true if these two startups are connected in an approved relationship
     # uses cache
-  def connected_to?(startup)
-    self.connected_to_id?(startup.id)
+  def connected_to?(entity)
+    self.connected_to_id?(entity)
   end
 
-  def connected_to_id?(startup_id)
-    Relationship.all_connection_ids_for(self).include?(startup_id)
+  def connected_to_id?(entity_class_string, entity_id)
+    ids = Relationship.all_connection_ids_for(self)
+    return ids[entity_class_string].include?(entity_id) if !ids.blank? and !ids[entity_class_string].blank?
+    return false
   end
 
     # Returns true if these two starts are connected, or if the provided startup requested to be connected to this startup
     # not cached
-  def connected_or_pending_to?(startup)
+  def connected_or_pending_to?(entity)
     # check reverse direction because we need to see if pending request is coming from other startup
-    r = Relationship.between(startup, self)
+    r = Relationship.between(entity, self)
     return true if r and (r.pending? or r.approved?)
     false
   end

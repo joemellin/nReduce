@@ -13,6 +13,7 @@ class User < ActiveRecord::Base
   has_many :awesomes
   has_many :sent_nudges, :class_name => 'Nudge', :foreign_key => 'from_id'
   has_many :user_actions, :as => :attachable
+  has_many :relationships, :as => :entity
 
 
   # Include default devise modules. Others available are:
