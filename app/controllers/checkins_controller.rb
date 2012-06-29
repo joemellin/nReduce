@@ -120,6 +120,7 @@ class CheckinsController < ApplicationController
       # Someone else looking at checkins for a startup
       @startup ||= checkin.startup
       return true if @startup.checkins_public?
+      return true if current_user.admin?
       unless @current_startup.connected_to?(@startup)
         flash[:alert] = "Sorry you don't have access to view that checkin because you aren't connected to the startup."
         redirect_to @startup
