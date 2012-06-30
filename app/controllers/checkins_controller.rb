@@ -1,7 +1,8 @@
 class CheckinsController < ApplicationController
   around_filter :record_user_action
   before_filter :login_required
-  before_filter :current_startup_required
+  before_filter :current_startup_required, :except => [:show]
+  before_filter :current_startup_or_mentor_required, :only => [:show]
 
   def index
     # For now only allow access to your own checkin list (future will be to allow investors)

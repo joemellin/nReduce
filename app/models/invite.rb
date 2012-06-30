@@ -8,8 +8,9 @@ class Invite < ActiveRecord::Base
 
   validates_presence_of :email
   validates_presence_of :from_id
+  validates_presence_of :invite_type
 
-  attr_accessible :from_id, :to_id, :email, :msg, :startup_id
+  attr_accessible :from_id, :to_id, :email, :msg, :startup_id, :invite_type
 
   @queue = :invites
 
