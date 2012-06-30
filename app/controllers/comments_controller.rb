@@ -1,9 +1,11 @@
 class CommentsController < ApplicationController
   around_filter :record_user_action, :except => [:cancel_edit]
   before_filter :login_required
+  load_and_authorize_resource :checkin
+  load_and_authorize_resource :comment
+
 
   def create
-    @comment = Comment.new(params[:comment])
     @comment.user = current_user
     if @comment.save
       flash[:notice] = 'The comment has been added'
@@ -18,7 +20,6 @@ class CommentsController < ApplicationController
   end
   
   def edit
-    @comment = Comment.find(params[:id])
     @ua = {:attachable => @comment}
     respond_to do |format|
       format.html
@@ -28,8 +29,7 @@ class CommentsController < ApplicationController
 
     # Render form to create a comment reply
   def reply_to
-    reply_to = Comment.find(params[:id])
-    @comment = Comment.new(:parent_id => reply_to.id, :checkin_id => reply_to.checkin_id)
+    @comment = Comment.new(:parent_id => @comment.id, :checkin_id => @checkin.id)
     respond_to do |format|
       format.html { render :nothing => true }
       format.js
@@ -37,7 +37,6 @@ class CommentsController < ApplicationController
   end
   
   def cancel_edit
-    @comment = Comment.find(params[:id])
     respond_to do |format|
       format.html { redirect_to @checkin }
       format.js
@@ -45,7 +44,6 @@ class CommentsController < ApplicationController
   end
   
   def update
-    @comment = Comment.find(params[:id])
     if @comment.update_attributes(params[:comment])
       flash[:notice] = 'The comment has been updated'
     else
@@ -58,7 +56,6 @@ class CommentsController < ApplicationController
   end
   
   def destroy
-    @comment = Comment.find(params[:id])
     @ua = {:attachable => @comment}
     if @comment.delete
       flash[:notice] = 'The commment has been deleted'
