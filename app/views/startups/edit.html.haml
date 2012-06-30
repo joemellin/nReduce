@@ -14,7 +14,7 @@
   .span4
     %h4 Add Team Member or Mentor
     %p{:style => 'margin: 5px 0 10px 0;'} Team members will get full access to post and view checkins, and participate in nReduce. Mentors will be able to view and comment on all of your checkins.
-    = form_for Invite.new(:startup_id => @startup.id, :from_id => current_user.id), :html => {:class => 'form-inline'} do |f|
+    = form_for Invite.new(:startup_id => @startup.id, :from_id => current_user.id), :url => startup_invites_path(:startup_id => @startup.id), :html => {:class => 'form-inline'} do |f|
       = f.hidden_field :startup_id
       = f.hidden_field :from_id
       %div{:style => 'margin-bottom: 5px'}

@@ -80,12 +80,11 @@ Nreduce::Application.routes.draw do
     resources :checkins do
       get 'latest' => "checkins#show", :checkin_id => 'latest', :on => :collection
     end
+    resources :invites, :only => :create
   end
 
-  resources :invites, :only => [:create, :destroy] do
-    get 'accept', :on => :member
-  end
-
+  delete '/invites/:id' => "invites#destroy"
+  get '/invites/:id/accept' => "invites#accept"
 
     # Your startup - singular resource
   resource :startup do

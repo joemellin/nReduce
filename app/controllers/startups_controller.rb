@@ -2,26 +2,15 @@ class StartupsController < ApplicationController
   around_filter :record_user_action, :except => [:onboard_next, :stats]
   before_filter :login_required
 
-  #
-  # Actions for all startups
-  #
-
   def index
     redirect_to :action => :search
   end
 
   def new
-    if !registration_open?
-      flash[:notice] = "Sorry but registration is closed for the current nReduce class. Email Joe if you have any questions: joe@nReduce.com"
-      redirect_to current_user
-      return
-    end
-    return unless redirect_if_user_has_startup
     @startup = Startup.new(:website_url => 'http://')
   end
 
   def create
-    return unless redirect_if_user_has_startup
     @startup = Startup.new(params[:startup])
     if @startup.save
       current_user.update_attribute('startup_id', @startup.id)
@@ -32,16 +21,12 @@ class StartupsController < ApplicationController
     end
   end
 
-  before_filter :current_startup_required, :except => [:index, :new, :create, :stats]
+  before_filter :load_requested_or_users_startup, :except => [:index, :stats]
+  authorize_resource, :except => [:index, :stats]
 
   def show
-    if !params[:id].blank?
-      @startup = Startup.find(params[:id])
-    elsif user_signed_in? and !current_user.startup.blank?
-      @startup = current_user.startup
-    end
     @owner = true if user_signed_in? and (@startup.id == current_user.startup_id)
-    @can_view_checkin_details = can_view_checkin_details?(@startup)
+    @can_view_checkin_details = can? :read, Checkin.new(:startup => @startup)
     @num_checkins = @startup.checkins.count
     @num_awesomes = @startup.awesomes.count
     @checkins = @startup.checkins.ordered
@@ -89,17 +74,14 @@ class StartupsController < ApplicationController
   #
 
   def dashboard
-    @startup = @current_startup
     @step = @startup.onboarding_step
     render :action => :onboard
   end
 
   def edit
-    @startup = @current_startup
   end
 
   def update
-    @startup = @current_startup
     @startup.attributes = params[:startup]
     if @startup.save
       flash[:notice] = "Startup information has been saved. Thanks!"
@@ -112,7 +94,7 @@ class StartupsController < ApplicationController
     # Removes a team member
   def remove_team_member
     u = User.find(params[:user_id])
-    if @current_startup.id != u.startup_id
+    if @startup.id != u.startup_id
       flash[:alert] = "#{u.name} could not be removed because they aren't a member of your team."
     else
       u.startup_id = nil
@@ -122,12 +104,11 @@ class StartupsController < ApplicationController
         flash[:alert] = "Sorry, but #{u.name} could not be removed at this time."
       end
     end
-    redirect_to edit_startup_path(@current_startup)
+    redirect_to edit_startup_path(@startup)
   end
 
     # multi-page process that any new startup has to go through
   def onboard
-    @startup = @current_startup
     @step = @startup.onboarding_step
     @complete = @startup.onboarding_complete?
     #@current_startups_with_videos = Startup.with_intro_video.order(updated_at: -1).paginate(:page => params[:page] || 1, :per_page => 10)
@@ -138,7 +119,6 @@ class StartupsController < ApplicationController
     # did this as a separate POST / redirect action so that 
     # if you refresh the onboard page it doesn't go to the next step
   def onboard_next
-    @startup = @current_startup
     # Check if we have any form data - Startup form or  Youtube url or 
     if params[:startup_form] and !params[:startup].blank?
       if @startup.update_attributes(params[:startup])
@@ -175,31 +155,5 @@ class StartupsController < ApplicationController
                  }
       format.html { render :nothing => true }
     end
-  end
-
-  protected
-
-  def can_view_checkin_details?(startup)
-    # Startup's checkins are public
-    return true if startup.checkins_public?
-    if user_signed_in?
-      # Admin or this is the user's startup
-      return true if current_user.admin? or current_user.startup_id == startup.id
-      # They are a mentor
-      return true if current_user.mentor? and current_user.connected_to?(startup)
-      # They are connected or the other startup has requested to be connected
-      return true if current_user.startup.connected_or_pending_to?(startup)
-    end
-    false
-  end
-
-  def redirect_if_user_has_startup
-    # Make sure they don't create another startup
-    if !current_user.startup_id.blank?
-      flash.keep
-      redirect_to "/startup"
-      return false
-    end
-    true
   end
 end
