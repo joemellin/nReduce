@@ -140,7 +140,8 @@ class User < ActiveRecord::Base
     # Simply calculates avg number of comments given per startup per week
     # @from_time (start metrics on this date)
     # @to_time (optional - end metrics on this date, defaults to now)
-  def self.calculate_engagement_metrics(from_time, to_time = nil, dont_save = false, max_comments_per_checkin = 2)
+  def self.calculate_engagement_metrics(from_time = nil, to_time = nil, dont_save = false, max_comments_per_checkin = 2)
+    from_time ||= Time.now - 4.weeks
     to_time ||= Time.now
     return 'From time is not after to time' if from_time > to_time
 

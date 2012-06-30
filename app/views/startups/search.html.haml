@@ -74,7 +74,7 @@
                 none
               - else
                 = @tags_by_startup_id[s.id].map{|t| t.name }.join(', ')
-      .span3.relationship
+      .span3
         = relationship_button_for(@current_startup, s)
     %hr
     %br
