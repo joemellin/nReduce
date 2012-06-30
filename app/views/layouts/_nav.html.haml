@@ -5,7 +5,8 @@
       - if user_signed_in?
         - unless hide_nav
           %li.padding{:class => is_controller_action?('relationships', 'index') ? 'active' : ''}= link_to "Home", '/'
-          %li.padding{:class => is_controller_action?('users', 'chat') ? 'active' : ''}= link_to "Chat", chat_users_path
+          - unless current_user.startup_id.blank?
+            %li.padding{:class => is_controller_action?('users', 'chat') ? 'active' : ''}= link_to "Chat", chat_users_path
           %li.dropdown
             %a.dropdown-toggle.btn{:href => '#', 'data-toggle' => 'dropdown'}
               = image_tag(user_avatar_url(current_user))

@@ -8,8 +8,8 @@
   .span4{:align => 'right'}
     - if @owner
       = link_to "Edit Startup", "/startup/edit", :class => "btn"
-    - elsif user_signed_in?
-      = relationship_button_for(@current_startup, @startup, @relationship)
+    - elsif !@entity.blank?
+      = relationship_button_for(@entity, @startup, @relationship)
 
 %hr/
 %br/

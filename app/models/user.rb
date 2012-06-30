@@ -58,6 +58,10 @@ class User < ActiveRecord::Base
     ['nudge']
   end
 
+  def has_startup_or_is_mentor?
+    !self.startup_id.blank? or self.mentor?
+  end
+
   def received_nudges
     self.startup.nudges
   end

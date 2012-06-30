@@ -9,6 +9,7 @@ class Relationship < ActiveRecord::Base
 
   attr_accessor :silent
 
+  before_create :set_pending_status
   after_create :notify_users, :unless => lambda{|r| !r.silent.blank? and r.silent? }
 
   # Statuses
@@ -32,26 +33,9 @@ class Relationship < ActiveRecord::Base
     ['Startup', 'User']
   end
 
-    # Start a relationship from form params
-  def self.start_from_params(params)
-    params[:entity_type].titleize
-    params[:connected_with_type].titleize
-    entity = params[:entity_type].constantize.find(params[:entity_id]) if Relationship.valid_classes.include?(params[:entity_type])
-    connected_with = params[:connected_with_type].constantize.find(params[:connected_with_id]) if Relationship.valid_classes.include?(params[:connected_with_type])
-    if entity and connected_with
-      Relationship.start_between(entity, connected_with)
-    else
-      return "Could not start a relationship."
-    end
-  end
-
-  # Start a relationship between two entities
+  # Start a relationship between two entities - same as calling create
+  # @silent when set to true doesn't notify user of connection
   def self.start_between(entity, connected_with, silent = false)
-    return nil if entity == connected_with
-    # Check if a relationship already exists
-    existing = Relationship.between(entity, connected_with)
-    return existing unless existing.blank?
-    # Create new pending relationship
     Relationship.create(:entity => entity, :connected_with => connected_with, :status => Relationship::PENDING, :silent => silent)
   end
 
@@ -149,12 +133,32 @@ class Relationship < ActiveRecord::Base
     self.status == REJECTED
   end
 
+    # Returns boolean true if entity is involved in this relationship - checks without db query
+  def is_involved?(entity)
+    return true if entity_type == entity.class.to_s and entity_id == entity.id
+    return true if connected_with_type == entity.class.to_s and connected_with_id == entity.id
+    false
+  end
+
   protected
 
+  def set_pending_status
+    self.status = Relationship::PENDING
+  end
+
   def entities_are_connectable
-    self.errors.add(:entity_type, "can't be connected") if !entity.connectable? or !Relationship.valid_classes.include?(entity_type)
-    self.errors.add(:connected_with_type, "can't be connected") if !connected_with.connectable? or !Relationship.valid_classes.include?(connected_with_type)
-    self.errors.add(:entity_type, "can't be connected to itself") if entity == connected_with
+    self.errors.add(:entity, "can't be connected") if !entity.connectable? or !Relationship.valid_classes.include?(entity_type)
+    self.errors.add(:connected_with, "can't be connected") if !connected_with.connectable? or !Relationship.valid_classes.include?(connected_with_type)
+    self.errors.add(:entity, "can't be connected to itself") if entity == connected_with
+    
+    # Check if there is already a connection
+    existing = Relationship.between(entity, connected_with)
+    unless existing.blank?
+      self.errors.add(:connected_with, "hasn't approved your request yet") if existing.pending?
+      self.errors.add(:entity, "is already connected to #{connected_with.name}") if existing.approved?
+      self.errors.add(:connected_with, "has ignored your request") if existing.rejected?
+    end
+
     # Now check if these two types can be connected
     if entity.is_a?(Startup) and connected_with.is_a?(Startup)
       return true
@@ -163,7 +167,7 @@ class Relationship < ActiveRecord::Base
     elsif connected_with.is_a?(Startup) and (entity.is_a?(User) and entity.mentor?)
       return true
     else
-      self.errors.add(:entity_type, "can't be connected to a #{connected_with_type.downcase}")
+      self.errors.add(:entity, "can't be connected to a #{connected_with_type.downcase}")
     end
   end
 
