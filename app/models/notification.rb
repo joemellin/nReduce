@@ -14,7 +14,7 @@ class Notification < ActiveRecord::Base
   scope :read, where('read_at IS NOT NULL')
   scope :ordered, order('created_at DESC')
 
-    # Remember to update helper method in application.rb with new object types if they are added
+    # Remember to update method in helpers/application_helper.rb with new object types if they are added for correct messaging
   def self.actions
     [:new_checkin, :relationship_request, :relationship_approved, :new_comment, :new_nudge]
   end
@@ -46,16 +46,30 @@ class Notification < ActiveRecord::Base
     end
   end
 
-  # Notify requested startup that another startup wants to be connected
+  # Notify requested entity that other entity wants to be connected
   def self.create_for_relationship_request(relationship)
-    relationship.connected_with.team_members.each do |u|
-      Notification.create_and_send(u, relationship, :relationship_request)
+    connected_with = relationship.connected_with
+    if connected_with.is_a?(Startup)
+      connected_with.team_members.each do |u|
+        Notification.create_and_send(u, relationship, :relationship_request)
+      end
+    elsif connected_with.is_a?(User)
+      Notification.create_and_send(connected_with, relationship, :relationship_request)
+    else
+      raise "Relationship type not added to notifications"
     end
   end
 
   def self.create_for_relationship_approved(relationship)
-    relationship.startup.team_members.each do |u|
-      Notification.create_and_send(u, relationship, :relationship_approved)
+    entity = relationship.entity
+    if entity.is_a?(Startup)
+      entity.team_members.each do |u|
+        Notification.create_and_send(u, relationship, :relationship_approved)
+      end
+    elsif entity.is_a?(User)
+      Notification.create_and_send(entity, relationship, :relationship_approved)
+    else
+      raise "Relationship type not added to notifications"
     end
   end
 

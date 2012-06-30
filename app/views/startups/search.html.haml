@@ -75,10 +75,7 @@
               - else
                 = @tags_by_startup_id[s.id].map{|t| t.name }.join(', ')
       .span3.relationship
-        - if s.connected_to_id?(current_user.startup_id)
-          = link_to 'View Check-ins', s, :class => 'btn btn-large'
-        - elsif user_signed_in? and current_user.startup_id != s.id
-          = button_to 'Invite to Group', relationships_path(:startup_id => s.id), :class => 'btn btn-large btn-info', :remote => true
+        = relationship_button_for(@current_startup, s)
     %hr
     %br
 

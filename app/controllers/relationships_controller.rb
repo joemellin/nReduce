@@ -34,16 +34,15 @@ class RelationshipsController < ApplicationController
   end
 
   def create
-    connect_with = Startup.find(params[:startup_id])
-    @relationship = Relationship.start_between(@current_startup, connect_with)
-    if @relationship.blank? and connect_with.id == @current_startup.id
+    @relationship = Relationship.start_from_params(params[:relationship])
+    if @relationship.blank? # TODO: NOT REALLY THE CORRECT CONCLUSION
       flash[:alert] = "You aren't allowed to connect with yourself, silly!"
     elsif @relationship.pending?
-      flash[:notice] = "Your connection has been requested with #{connect_with.name}."
+      flash[:notice] = "Your connection has been requested with #{@relationship.connected_with.name}."
     elsif @relationship.approved?
-      flash[:notice] = "You are already connected to #{connect_with.name}."
+      flash[:notice] = "You are already connected to #{@relationship.connected_with.name}."
     elsif @relationship.rejected?
-      flash[:alert] = "Sorry, but #{connect_with.name} has ignored your connection request."
+      flash[:alert] = "Sorry, but #{@relationship.connected_with.name} has ignored your connection request."
     end
     respond_to do |format|
       format.html { redirect_to '/' }
@@ -54,7 +53,7 @@ class RelationshipsController < ApplicationController
   def approve
     relationship = Relationship.find(params[:id])
     if relationship.approve!
-      flash[:notice] = "You are now connected to #{relationship.startup.name}."
+      flash[:notice] = "You are now connected to #{relationship.entity.name}."
     else
       flash[:alert] = "Sorry but the relationship couldn't be approved at this time."
     end
@@ -64,7 +63,7 @@ class RelationshipsController < ApplicationController
   def reject
     relationship = Relationship.find(params[:id])
     if relationship.reject!
-      flash[:notice] = "You have removed #{relationship.startup.name} from your group."
+      flash[:notice] = "You have removed #{relationship.connected_with.name} from your group."
     else
       flash[:alert] = "Sorry but the relationship couldn't be removed at this time."
     end

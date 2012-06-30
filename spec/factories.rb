@@ -38,6 +38,11 @@ FactoryGirl.define do
       name "Admin"
       admin true
     end
+    factory :mentor do
+      email 'mentor@famousfounder.com'
+      name "Famous Founder"
+      mentor true
+    end
   end
 
   factory :checkin do

@@ -1,4 +1,5 @@
 class User < ActiveRecord::Base
+  include Connectable # methods for relationships
   acts_as_mappable
   belongs_to :startup
   belongs_to :meeting

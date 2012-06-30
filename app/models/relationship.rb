@@ -1,10 +1,11 @@
 class Relationship < ActiveRecord::Base
+  # include the Connectable module in any classes you want some nice instance methods available for dealing with relationships
   belongs_to :entity, :polymorphic => true
   belongs_to :connected_with, :polymorphic => true
   has_many :notifications, :as => :attachable
   has_many :user_actions, :as => :attachable
 
-  attr_accessible :entity, :connected_with, :status, :approved_at, :rejected_at
+  attr_accessible :entity, :entity_id, :entity_type, :connected_with, :connected_with_id, :connected_with_type, :status, :approved_at, :rejected_at
 
   after_create :notify_users
 
@@ -14,15 +15,37 @@ class Relationship < ActiveRecord::Base
   REJECTED = 3
 
   validates_presence_of :entity_id
+  validates_presence_of :entity_type
   validates_presence_of :connected_with_id
+  validates_presence_of :connected_with_type
+  validate :entities_are_connectable
 
   scope :pending, where(:status => Relationship::PENDING)
   scope :approved, where(:status => Relationship::APPROVED)
   scope :rejected, where(:status => Relationship::REJECTED)
 
+    # Classes that can be added to a relationship
+    # When adding new ones make sure to also edit notifications and mailers
+  def self.valid_classes
+    ['Startup', 'User']
+  end
+
+    # Start a relationship from form params
+  def self.start_from_params(params)
+    params[:entity_type].titleize
+    params[:connected_with_type].titleize
+    entity = params[:entity_type].constantize.find(params[:entity_id]) if Relationship.valid_classes.include?(params[:entity_type])
+    connected_with = params[:connected_with_type].constantize.find(params[:connected_with_id]) if Relationship.valid_classes.include?(params[:connected_with_type])
+    if entity and connected_with
+      Relationship.start_between(entity, connected_with)
+    else
+      return "Could not start a relationship."
+    end
+  end
+
   # Start a relationship between two entities
   def self.start_between(entity, connected_with)
-    return nil if entity == connect_with
+    return nil if entity == connected_with
     # Check if a relationship already exists
     existing = Relationship.between(entity, connected_with)
     return existing unless existing.blank?
@@ -46,14 +69,20 @@ class Relationship < ActiveRecord::Base
     end
   end
 
+    # Returns boolean whether these two entities are connectable enabled, and not the same object
+    # Checks whether it's two startups, or a startup and a mentor
+  def self.can_connect?(entity1, entity2)
+    Relationship.new(:entity => entity1, :connected_with => entity2).valid?
+  end
+
     # Returns hash with all classes/ids this entity is connected to {'Startup' => [id, id], 'User' => [id, id]}
   def self.all_connection_ids_for(entity)
     # Cache doesn't work for hash
-    #Cache.get(['connections', entity]){
+    Cache.get(['connections', entity]){
       ret = {}
       entity.relationships.approved.each{|r| ret[r.connected_with_type] ||= []; ret[r.connected_with_type] << r.connected_with_id }
       ret
-    #}
+    }
   end
 
     # Returns all startups that this startup has initiated, but are still pending
@@ -103,7 +132,7 @@ class Relationship < ActiveRecord::Base
   end
 
   def inverse_relationship
-    Relationship.where(:startup_id => connected_with_id, :connected_with_id => startup_id).first
+    Relationship.where(:entity_id => connected_with_id, :entity_type => connected_with_type, :connected_with_id => entity_id, :connected_with_type => entity_type).first
   end
 
   def pending?
@@ -120,8 +149,24 @@ class Relationship < ActiveRecord::Base
 
   protected
 
-  def reset_cache_for_startups_involved
-    Cache.delete(['connections', "#{entity.type.downcase}_#{entity_id}"])
+  def entities_are_connectable
+    self.errors.add(:entity_type, "can't be connected") if !entity.connectable? or !Relationship.valid_classes.include?(entity_type)
+    self.errors.add(:connected_with_type, "can't be connected") if !connected_with.connectable? or !Relationship.valid_classes.include?(connected_with_type)
+    self.errors.add(:entity_type, "can't be connected to itself") if entity == connected_with
+    # Now check if these two types can be connected
+    if entity.is_a?(Startup) and connected_with.is_a?(Startup)
+      return true
+    elsif entity.is_a?(Startup) and (connected_with.is_a?(User) and connected_with.mentor?)
+      return true
+    elsif connected_with.is_a?(Startup) and (entity.is_a?(User) and entity.mentor?)
+      return true
+    else
+      self.errors.add(:entity_type, "can't be connected to a #{connected_with_type.downcase}")
+    end
+  end
+
+  def reset_cache_for_entities_involved
+    Cache.delete(['connections', "#{entity_type.downcase}_#{entity_id}"])
     Cache.delete(['connections', "#{connected_with_type.downcase}_#{connected_with_id}"])
   end
 
