@@ -123,7 +123,7 @@ module ApplicationHelper
     elsif obj.rating >= 1
       html += link_to(Startup.community_status[2], community_guidelines_path, :class => "btn btn-large btn-success") 
     end
-    html += '</h1><small>(calculated daily)</small><br />'
+    html += '</h1><br />'
     html
   end
 end
