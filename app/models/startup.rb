@@ -52,6 +52,10 @@ class Startup < ActiveRecord::Base
   #   end
   # end
 
+  def self.registration_open?
+    false
+  end
+
   def self.community_status
     {0 => 'Inactive', 1 => 'Helpful', 2 => 'Very Helpful'}
   end

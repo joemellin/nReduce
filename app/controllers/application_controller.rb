@@ -4,6 +4,15 @@ class ApplicationController < ActionController::Base
 
   protected
 
+  def current_ability
+    @current_ability ||= Ability.new(current_user, params)
+  end
+
+  # User will always be able to see their account so redirect them here
+  rescue_from CanCan::AccessDenied do |exception|
+    redirect_to current_user, :alert => exception.message
+  end
+
     # Override sign in path so we can accept invite if they have one
   def after_sign_in_path_for(resource)
     session[:sign_in_up_email] = nil
@@ -62,8 +71,9 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  def registration_open?
-    false
+  def load_requested_or_users_startup
+    @startup = Startup.find(params[:startup_id]) unless params[:startup_id].blank?
+    @startup = current_user.startup if params[:id].blank? and !current_user.startup_id.blank?
   end
 
   def login_required
@@ -84,30 +94,6 @@ class ApplicationController < ActionController::Base
       end
     end
     return false
-  end
-
-  def current_startup_and_checkin_required
-    @current_startup = current_user.startup if user_signed_in? and !current_user.startup.blank?
-    if @current_startup.blank?
-      redirect_to new_startup_path
-      return false
-    else
-      # filters to see if they have checked in
-      c = @current_startup.current_checkin
-      return true if !c.blank? and c.completed?
-      if !c.blank?
-        if Checkin.in_after_time_window? and controller_name != 'checkins' and action_name != 'edit'
-          flash[:notice] = "Finish your check-in for this week."
-          redirect_to edit_checkin_path(c)
-          return false
-        end
-      elsif Checkin.in_before_time_window? and controller_name != 'checkins' and action_name != 'new'
-        flash[:notice] = "Start your check-in for this week."
-        redirect_to new_checkin_path
-        return false
-      end
-    end
-    true
   end
 
   def current_startup_required

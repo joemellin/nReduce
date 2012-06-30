@@ -2,9 +2,23 @@
 # See https://github.com/svenfuchs/rails-i18n/tree/master/rails%2Flocale for starting points.
 
 en:
-  hello: "Hello world"
-errors:
-  messages:
-    carrierwave_processing_error: 'Cannot resize image.'
-    carrierwave_integrity_error: 'Not an image.'
-    carrierwave_download_error: "Couldn't download image."
+  errors:
+    messages:
+      carrierwave_processing_error: 'Cannot resize image.'
+      carrierwave_integrity_error: 'Not an image.'
+      carrierwave_download_error: "Couldn't download image."
+  unauthorized:
+    manage:
+      all: "Not authorized to %{action} %{subject}."
+      user: "Not allowed to manage other user accounts."
+    new:
+      startup: "Sorry but registration is closed for the current nReduce class. Email Joe if you have any questions: joe@nReduce.com"
+      checkin: "Sorry you've missed the check-in times."
+    create:
+      startup: "Sorry but registration is closed for the current nReduce class. Email Joe if you have any questions: joe@nReduce.com"
+    update:
+      project: "Not allowed to update this project."
+    accept:
+      invite: "Sorry, that is not a valid invite."
+
+

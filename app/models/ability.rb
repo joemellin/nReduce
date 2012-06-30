@@ -1,71 +1,146 @@
 class Ability
   include CanCan::Ability
 
-  def initialize(user)
+  # See the wiki for details: https://github.com/ryanb/cancan/wiki/Defining-Abilities
+
+  def initialize(user, params)
     user ||= User.new
+
     if user.admin?
       can :manage, :all
-    elsif !user.new_record?
-      can :manage, User, :id => user.id
-      can :read, Startup, :onboarding_complete? => true
+      can :stats, Startup
 
-      if user.startup_id.blank?
-        can :manage, Startup, :id => user.startup_id
-        can :manage, Checkin do |checkin|
+    elsif !user.new_record? and user.has_startup_or_is_mentor?
+
+      # Abilities if user has a startup
+      if !user.startup_id.blank?
+        can [:manage, :dashboard, :onboard, :onboard_next, :remove_team_member], Startup, :id => user.startup_id
+        
+        # Can manage checkin if in before or after time window and their startup owns checkin
+        can [:new, :edit, :update], Checkin do |checkin|
           (Checkin.in_after_time_window? or Checkin.in_before_time_window?) and (checkin.startup_id == user.startup_id)
         end
-        can :manage, Relationship do |relationship|
-          return true if relationship.entity_type == 'Startup' and relationship.entity_id == user.startup_id
-          return true if relationship.connected_with_type == 'Startup' and relationship.connected_with_id == user.startup_id
-        end
+
+        can :destroy, Checkin, :startup_id => user.startup_id
+
+        # Can manage if they created it
+        can :manage, Invite, :startup_id => user.startup_id
+
+        can :manage, Nudge, :startup_id => user.startup_id
       end
 
-      can :manage, Relationship do |relationship|
-        return true if relationship.entity_type == 'User' and relationship.entity_id == user.id
-        return true if relationship.connected_with_type == 'User' and relationship.connected_with_id == user.id
+      # Can destroy if they were assigned as receiver or created it
+      can :destroy, Invite do |invite|
+        invite.to == user || invite.from == user
+      end
+
+      # They can accept the invite if it's still active and their email matches invite email  or they are assigned as "to"
+      can :accept, Invite do |invite|
+        invite.active? and (invite.to == user) || (invite.email == user.email)
       end
 
       can :read, Checkin do |checkin|
-        return true if checkin.startup_id == user.startup_id
-        return true if checkin.startup.checkins_public?
-        return true if user.mentor? and user.connected_to?(checkin.startup)
-        return true if !user.startup.blank? and user.startup.connected_to?(checkin.startup)
+        # From user's startup
+        if checkin.startup_id == user.startup_id
+          true
+        # The checkin's startup has listed all as public
+        elsif checkin.startup.checkins_public?
+          true
+        # This user is a startup's mentor
+        elsif user.mentor? and user.connected_to?(checkin.startup)
+          true
+        # This user's startup is connected
+        elsif !user.startup.blank? and user.startup.connected_to?(checkin.startup)
+          true
+        else
+          false
+        end
       end
 
-      # Anyone can read meetings
-      can :read, Meeting
+      # User with startup or mentor can create a relationship
+      can :create, Relationship do |relationship|
+        if user.has_startup_or_is_mentor?
+          if user.mentor? and relationship.is_involved?(user)
+            true
+          elsif !user.startup.blank? and relationship.is_involved?(user.startup)
+            true
+          else
+            true
+          end
+        else
+          false
+        end
+      end
+
+      # Only connected_with party can approve relationship
+      can :approve, Relationship do |relationship|
+        if relationship.connected_with_type == 'User' and relationship.connected_with_id == user.id
+          true
+        elsif relationship.connected_with_type == 'Startup' and relationship.connected_with_id == user.startup_id
+          true
+        else
+          false
+        end
+      end
+
+      # Either party can reject a relationship
+      can :reject, Relationship do |relationship|
+        if user.mentor? and relationship.is_involved?(user)
+          true
+        elsif user.startup.blank? and relationship.is_involved?(user.startup)
+          true
+        else
+          false
+        end
+      end 
+
+      # Keep more specific rules at the top, as they are overwritten by broader abilities further down
+      
+      can [:manage, :cancel_edit], Comment, :user_id => user.id
+
+      can :manage, Awesome, :user_id => user.id
+      can :manage, Notification, :user_id => user.id
+      can :manage, Nudge, :from_id => user.id
+
+      # Only organizer can manage meetings
       can :manage, Meeting, :organizer_id => user.id
 
-      #can :manage, MeetingMessage
+      # Anyone can see all meetings
+      can :read, Meeting
 
-      can :read, Comment
-      can :manage, Comment, :user_id => user.id
+      # Only organizer can view/send meeting messages
+      can :manage, MeetingMessage, :meeting => { :organizer_id => user.id }
 
-      can :read, Awesome
-      can :manage, Awesome, :user_id => user.id
+      # User can only manage their own authentications
+      can [:read, :destroy], Authentication, :user_id => user.id
+
+      # Can only create a startup if registration is open and they don't have a current startup
+      can [:new, :create], Startup do |startup|
+        Startup.registration_open? and user.startup_id.blank?
+      end
+
+      # Startup can view relationships they are involved in
+      if !user.startup_id.blank?
+        can :read, Relationship do |relationship|
+          relationship.is_involved?(user.startup)
+        end
+      end
+
+      # Mentor can view relationships they are involved in (index)
+      if user.mentor?
+        can :read, Relationship do |relationship|
+          relationship.is_involved?(user)
+        end
+      end
+
+      # All users with startup/mentor can view a startup if onboarding is complete
+      can :read, Startup, :onboarding_complete? => true
     end
 
-    # Define abilities for the passed in user here. For example:
-    #
-    #   user ||= User.new # guest user (not logged in)
-    #   if user.admin?
-    #     can :manage, :all
-    #   else
-    #     can :read, :all
-    #   end
-    #
-    # The first argument to `can` is the action you are giving the user permission to do.
-    # If you pass :manage it will apply to every action. Other common actions here are
-    # :read, :create, :update and :destroy.
-    #
-    # The second argument is the resource the user can perform the action on. If you pass
-    # :all it will apply to every resource. Otherwise pass a Ruby class of the resource.
-    #
-    # The third argument is an optional hash of conditions to further filter the objects.
-    # For example, here the user can only update published articles.
-    #
-    #   can :update, Article, :published => true
-    #
-    # See the wiki for details: https://github.com/ryanb/cancan/wiki/Defining-Abilities
+    # User can only manage their own account
+    can :manage, User, :id => user.id
+
+    # Everyone can see users
+    can :read, User
   end
 end

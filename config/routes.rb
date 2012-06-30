@@ -55,7 +55,7 @@ Nreduce::Application.routes.draw do
     resources :notifications
   end
   match '/users/:id/onboard/:step' => "users#onboard"
-
+  
   resources :comments do
     member do
       get 'reply_to'
@@ -80,12 +80,11 @@ Nreduce::Application.routes.draw do
     resources :checkins do
       get 'latest' => "checkins#show", :checkin_id => 'latest', :on => :collection
     end
+    resources :invites, :only => :create
   end
 
-  resources :invites, :only => [:create, :destroy] do
-    get 'accept', :on => :member
-  end
-
+  delete '/invites/:id' => "invites#destroy", :as => :destroy_invite
+  get '/invites/:id/accept' => "invites#accept"
 
     # Your startup - singular resource
   resource :startup do

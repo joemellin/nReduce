@@ -1,6 +1,7 @@
 class AuthenticationsController < ApplicationController
   include Devise::Controllers::Rememberable # included to set cookie manually
   around_filter :record_user_action, :only => [:create, :failure, :destroy]
+  load_and_authorize_resource :only => [:index, :destroy]
 
   def index
    @authentications = current_user.authentications if current_user
@@ -41,8 +42,6 @@ class AuthenticationsController < ApplicationController
   end
 
   def destroy
-    @ua = {:attachable => current_user}
-    @authentication = current_user.authentications.find(params[:id])
     @authentication.destroy
     flash[:notice] = "Successfully destroyed authentication."
     redirect_to authentications_url

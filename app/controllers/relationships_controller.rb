@@ -1,13 +1,28 @@
 class RelationshipsController < ApplicationController
   around_filter :record_user_action
   before_filter :login_required
-  before_filter :current_startup_required
+  before_filter :load_requested_or_users_startup, :only => :index
+  load_and_authorize_resource :except => :index
 
   def index
-    @startups = @current_startup.connected_to
-    @pending_relationships = @current_startup.pending_relationships
-    @current_checkin = @current_startup.current_checkin
-    @checkins_by_startup = Checkin.current_checkin_for_startups(@startups + [@current_startup])
+    if current_user.mentor?
+      @entity = current_user
+    elsif @startup
+      @entity = @startup
+      @current_checkin = @entity.current_checkin
+    end
+    unless can? :read, Relationship.new(:entity => @entity)
+      redirect_to current_user
+      return
+    end
+    @startups = @entity.connected_to
+    @pending_relationships = @entity.pending_relationships
+    if current_user.mentor?
+      @checkins_by_startup = Checkin.current_checkin_for_startups(@startups)
+    else
+      @checkins_by_startup = Checkin.current_checkin_for_startups(@startups + [@startup])
+    end
+    
     # Sort by startups who have the most recent completed checkins first
     long_ago = Time.now - 100.years
     @startups.sort! do |a,b|
@@ -28,15 +43,18 @@ class RelationshipsController < ApplicationController
       end
       a_time <=> b_time
     end
-    # Add user's startup to the beginning, and then sort by reverse chrono order
-    @startups = [@current_startup] + @startups.reverse
+    # Add user's startup (if not mentor) to the beginning, and then sort by reverse chrono order
+    if current_user.mentor?
+      @startups.reverse!
+    else
+      @startups = [@startup] + @startups.reverse
+    end
     @commented_on_checkin_ids = current_user.commented_on_checkin_ids
   end
 
   def create
-    @relationship = Relationship.start_from_params(params[:relationship])
-    if @relationship.blank? # TODO: NOT REALLY THE CORRECT CONCLUSION
-      flash[:alert] = "You aren't allowed to connect with yourself, silly!"
+    if !@relationship.save
+      flash[:alert] = @relationship.errors.full_messages.join(', ') + '.'
     elsif @relationship.pending?
       flash[:notice] = "Your connection has been requested with #{@relationship.connected_with.name}."
     elsif @relationship.approved?
@@ -44,6 +62,7 @@ class RelationshipsController < ApplicationController
     elsif @relationship.rejected?
       flash[:alert] = "Sorry, but #{@relationship.connected_with.name} has ignored your connection request."
     end
+    logger.info flash.inspect
     respond_to do |format|
       format.html { redirect_to '/' }
       format.js
@@ -51,9 +70,8 @@ class RelationshipsController < ApplicationController
   end
 
   def approve
-    relationship = Relationship.find(params[:id])
-    if relationship.approve!
-      flash[:notice] = "You are now connected to #{relationship.entity.name}."
+    if @relationship.approve!
+      flash[:notice] = "You are now connected to #{@relationship.entity.name}."
     else
       flash[:alert] = "Sorry but the relationship couldn't be approved at this time."
     end
@@ -61,9 +79,8 @@ class RelationshipsController < ApplicationController
   end
 
   def reject
-    relationship = Relationship.find(params[:id])
-    if relationship.reject!
-      flash[:notice] = "You have removed #{relationship.connected_with.name} from your group."
+    if @relationship.reject!
+      flash[:notice] = "You have removed #{@relationship.connected_with.name} from your group."
     else
       flash[:alert] = "Sorry but the relationship couldn't be removed at this time."
     end

@@ -56,10 +56,6 @@ module ApplicationHelper
     controller.controller_name == controller_name and controller.action_name == action_name
   end
 
-  def registration_open?
-    false
-  end
-
     # Given a time object, returns a verbose result of how many days, hours, minutes, seconds
   def verbose_distance_until_time_from_now(time)
     return '' if time.blank?
