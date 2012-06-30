@@ -64,7 +64,7 @@ class CheckinsController < ApplicationController
         redirect_to @startup
         return
       end
-    else
+    end
   end
 
   def load_current_checkin

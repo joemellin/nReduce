@@ -4,6 +4,15 @@ class ApplicationController < ActionController::Base
 
   protected
 
+  def current_ability
+    @current_ability ||= Ability.new(current_user, params)
+  end
+
+  # User will always be able to see their account so redirect them here
+  rescue_from CanCan::AccessDenied do |exception|
+    redirect_to current_user, :alert => exception.message
+  end
+
     # Override sign in path so we can accept invite if they have one
   def after_sign_in_path_for(resource)
     session[:sign_in_up_email] = nil
@@ -62,13 +71,9 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  def registration_open?
-    false
-  end
-
   def load_requested_or_users_startup
-    @startup = Startup.find(params[:startup_id]) unless params[:id].blank?
-    @startup = current_user.startup unless current_user.startup_id.blank?
+    @startup = Startup.find(params[:startup_id]) unless params[:startup_id].blank?
+    @startup = current_user.startup if params[:id].blank? and !current_user.startup_id.blank?
   end
 
   def login_required

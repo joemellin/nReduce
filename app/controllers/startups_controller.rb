@@ -22,7 +22,7 @@ class StartupsController < ApplicationController
   end
 
   before_filter :load_requested_or_users_startup, :except => [:index, :stats]
-  authorize_resource, :except => [:index, :stats]
+  load_and_authorize_resource :except => [:index, :stats]
 
   def show
     @owner = true if user_signed_in? and (@startup.id == current_user.startup_id)
@@ -31,6 +31,11 @@ class StartupsController < ApplicationController
     @num_awesomes = @startup.awesomes.count
     @checkins = @startup.checkins.ordered
     @relationship = Relationship.between(current_user.startup, @startup) unless current_user.startup.blank?
+    if current_user.mentor?
+      @entity = current_user
+    elsif !@startup.blank?
+      @entity = @startup
+    end
   end
 
   def search
@@ -67,6 +72,12 @@ class StartupsController < ApplicationController
     @ua = {:data => @search}
     @meetings_by_id = Meeting.location_name_by_id
     @tags_by_startup_id = Startup.tags_by_startup_id(@startups)
+
+    if current_user.mentor?
+      @entity = current_user
+    elsif !@startup.blank?
+      @entity = @startup
+    end
   end
 
   #
@@ -111,8 +122,6 @@ class StartupsController < ApplicationController
   def onboard
     @step = @startup.onboarding_step
     @complete = @startup.onboarding_complete?
-    #@current_startups_with_videos = Startup.with_intro_video.order(updated_at: -1).paginate(:page => params[:page] || 1, :per_page => 10)
-    # hack - this needs to be for this week, but we're changing dashboard soon
     @checkin_total = Checkin.count if @startup.onboarding_complete?
   end
 

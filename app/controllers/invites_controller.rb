@@ -1,17 +1,18 @@
 class InvitesController < ApplicationController
   around_filter :record_user_action
   before_filter :login_required, :except => :accept
-  load_and_authorize_resource :startup
-  load_and_authorize_resource :invite, :through => :startup, :except => :accept
+  load_and_authorize_resource :startup, :only => :create
+  load_and_authorize_resource :invite, :through => :startup, :only => :create
+  load_and_authorize_resource :only => :destroy
 
   def create
-    i = Invite.invite_by_email(params[:invite])
-    if !i.new_record?
-      flash[:notice] = "Your invite has been sent to #{i.email}"
+    @invite.save
+    if @invite.new_record?
+      flash[:alert] = @invite.errors.full_messages.join(', ') + '.'
     else
-      flash[:alert] = "Sorry, but your invite could not be sent: #{i.errors.full_messages.join(', ')}."
+      flash[:notice] = "Your invite has been sent to #{@invite.email}"
     end
-    redirect_to edit_startup_path(@current_startup)
+    redirect_to edit_startup_path(@startup)
   end
 
   def destroy

@@ -10,6 +10,7 @@ class MeetingsController < ApplicationController
 
   def show
     if can? :edit, @meeting
+      @can_edit = true
       @meeting_messages = @meeting.meeting_messages.ordered.limit(5)
       @attendees = @meeting.attendees.order(:name).includes(:startup)
     end
