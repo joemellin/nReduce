@@ -1,7 +1,6 @@
 class CommentsController < ApplicationController
   around_filter :record_user_action, :except => [:cancel_edit]
   before_filter :login_required
-  load_and_authorize_resource :checkin
   load_and_authorize_resource :comment
 
 
@@ -29,7 +28,7 @@ class CommentsController < ApplicationController
 
     # Render form to create a comment reply
   def reply_to
-    @comment = Comment.new(:parent_id => @comment.id, :checkin_id => @checkin.id)
+    @comment = Comment.new(:parent_id => @comment.id, :checkin_id => @comment.checkin_id)
     respond_to do |format|
       format.html { render :nothing => true }
       format.js
@@ -38,7 +37,7 @@ class CommentsController < ApplicationController
   
   def cancel_edit
     respond_to do |format|
-      format.html { redirect_to @checkin }
+      format.html { redirect_to @comment.checkin }
       format.js
     end
   end

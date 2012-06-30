@@ -2,7 +2,7 @@ class RelationshipsController < ApplicationController
   around_filter :record_user_action
   before_filter :login_required
   before_filter :load_requested_or_users_startup, :only => :index
-  load_and_authorize_resource, :except => :index
+  load_and_authorize_resource :except => :index
 
   def index
     if current_user.mentor?
@@ -11,7 +11,10 @@ class RelationshipsController < ApplicationController
       @entity = @startup
       @current_checkin = @entity.current_checkin
     end
-    authorize! :read, Relationship.new(:entity => @entity)
+    unless can? :read, Relationship.new(:entity => @entity)
+      redirect_to current_user
+      return
+    end
     @startups = @entity.connected_to
     @pending_relationships = @entity.pending_relationships
     if current_user.mentor?
@@ -50,7 +53,7 @@ class RelationshipsController < ApplicationController
   end
 
   def create
-    if !@relationship.errors.blank? # TODO: NOT REALLY THE CORRECT CONCLUSION
+    if !@relationship.save
       flash[:alert] = @relationship.errors.full_messages.join(', ') + '.'
     elsif @relationship.pending?
       flash[:notice] = "Your connection has been requested with #{@relationship.connected_with.name}."
@@ -59,6 +62,7 @@ class RelationshipsController < ApplicationController
     elsif @relationship.rejected?
       flash[:alert] = "Sorry, but #{@relationship.connected_with.name} has ignored your connection request."
     end
+    logger.info flash.inspect
     respond_to do |format|
       format.html { redirect_to '/' }
       format.js

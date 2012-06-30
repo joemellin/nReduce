@@ -9,8 +9,11 @@ class Invite < ActiveRecord::Base
   validates_presence_of :email
   validates_presence_of :from_id
   validates_presence_of :invite_type
+  validate :recipient_can_be_invited
 
-  attr_accessible :from_id, :to_id, :email, :msg, :startup_id, :invite_type
+  after_create :notify_recipient
+
+  attr_accessible :from_id, :to_id, :email, :msg, :startup, :startup_id, :invite_type
 
   @queue = :invites
 
@@ -21,26 +24,6 @@ class Invite < ActiveRecord::Base
 
   def self.types
     {TEAM_MEMBER => 'team member', MENTOR => 'mentor'}
-  end
-
-  def self.invite_by_email(prms)
-    i = Invite.new(prms)
-    user_with_email = User.where(:email => prms[:email]).first
-    if Invite.where(:email => prms[:email]).count > 0
-      i.errors.add(:email, 'has already been invited')
-    elsif user_with_email and !user_with_email.startup_id.blank?
-      if user_with_email.startup_id == prms[:startup_id].to_i
-        i.errors.add(:email, 'is already a team member on that startup')
-      else
-        i.errors.add(:email, 'is already a team member on another startup')
-      end
-    else
-      i.invite_type = prms[:invite_type]
-      i.to = user_with_email unless user_with_email.blank?
-      i.expires_at = Time.now + 30.days
-      Resque.enqueue(Invite, i.id.to_s) if i.save # queue to send email
-    end
-    i
   end
   
   def active? # not expired, and not accepted yet
@@ -89,7 +72,27 @@ class Invite < ActiveRecord::Base
   
   protected
 
+  def recipient_can_be_invited
+    user_with_email = User.where(:email => self.email).first
+    if Invite.where(:email => self.email).not_accepted.count > 0
+      self.errors.add(:email, 'has already been invited')
+    elsif !user_with_email.blank? and !user_with_email.startup_id.blank?
+      if user_with_email.startup_id == self.startup_id.to_i
+        self.errors.add(:email, 'is already a team member on that startup')
+      else
+        self.errors.add(:email, 'is already a team member on another startup')
+      end
+    else
+      self.to = user_with_email unless user_with_email.blank?
+      self.expires_at = Time.now + 30.days
+    end
+  end 
+
   def generate_code
     self.code = NreduceUtil.friendly_token(20) if self.code.blank?
+  end
+
+  def notify_recipient
+    Resque.enqueue(Invite, self.id.to_s) # queue to send email
   end
 end

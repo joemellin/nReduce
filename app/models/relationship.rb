@@ -135,8 +135,8 @@ class Relationship < ActiveRecord::Base
 
     # Returns boolean true if entity is involved in this relationship - checks without db query
   def is_involved?(entity)
-    return true if relationship.entity_type == entity.class.to_s and relationship.entity_id == entity.id
-    return true if relationship.connected_with_type == entity.class.to_s and relationship.connected_with_id == entity.id
+    return true if entity_type == entity.class.to_s and entity_id == entity.id
+    return true if connected_with_type == entity.class.to_s and connected_with_id == entity.id
     false
   end
 
@@ -147,13 +147,17 @@ class Relationship < ActiveRecord::Base
   end
 
   def entities_are_connectable
-    self.errors.add(:entity_type, "can't be connected") if !entity.connectable? or !Relationship.valid_classes.include?(entity_type)
-    self.errors.add(:connected_with_type, "can't be connected") if !connected_with.connectable? or !Relationship.valid_classes.include?(connected_with_type)
-    self.errors.add(:entity_type, "can't be connected to itself") if entity == connected_with
+    self.errors.add(:entity, "can't be connected") if !entity.connectable? or !Relationship.valid_classes.include?(entity_type)
+    self.errors.add(:connected_with, "can't be connected") if !connected_with.connectable? or !Relationship.valid_classes.include?(connected_with_type)
+    self.errors.add(:entity, "can't be connected to itself") if entity == connected_with
     
     # Check if there is already a connection
     existing = Relationship.between(entity, connected_with)
-    self.errors.add(:entity_id, "is already connected to #{connected_with.name}") unless existing.blank?
+    unless existing.blank?
+      self.errors.add(:connected_with, "hasn't approved your request yet") if existing.pending?
+      self.errors.add(:entity, "is already connected to #{connected_with.name}") if existing.approved?
+      self.errors.add(:connected_with, "has ignored your request") if existing.rejected?
+    end
 
     # Now check if these two types can be connected
     if entity.is_a?(Startup) and connected_with.is_a?(Startup)
@@ -163,7 +167,7 @@ class Relationship < ActiveRecord::Base
     elsif connected_with.is_a?(Startup) and (entity.is_a?(User) and entity.mentor?)
       return true
     else
-      self.errors.add(:entity_type, "can't be connected to a #{connected_with_type.downcase}")
+      self.errors.add(:entity, "can't be connected to a #{connected_with_type.downcase}")
     end
   end
 
