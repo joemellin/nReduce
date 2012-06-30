@@ -15,11 +15,14 @@ class Invite < ActiveRecord::Base
 
   scope :not_accepted, where(:accepted_at => nil)
 
+  TEAM_MEMBER = 1
+  MENTOR = 2
+
   def self.types
-    {'team member' => 1, 'mentor' => 2}
+    {TEAM_MEMBER => 'team member', MENTOR => 'mentor'}
   end
 
-  def self.invite_team_member(prms)
+  def self.invite_by_email(prms)
     i = Invite.new(prms)
     user_with_email = User.where(:email => prms[:email]).first
     if Invite.where(:email => prms[:email]).count > 0
@@ -31,7 +34,7 @@ class Invite < ActiveRecord::Base
         i.errors.add(:email, 'is already a team member on another startup')
       end
     else
-      i.invite_type = Invite.types['team member']
+      i.invite_type = prms[:invite_type]
       i.to = user_with_email unless user_with_email.blank?
       i.expires_at = Time.now + 30.days
       Resque.enqueue(Invite, i.id.to_s) if i.save # queue to send email
@@ -52,7 +55,17 @@ class Invite < ActiveRecord::Base
   def accepted_by(user)
     return false unless self.active?
     # assign user to startup unless they are already part of a startup
-    user.startup_id = self.startup_id if !self.startup_id.blank? or !user.startup_id.blank?
+    if self.invite_type == TEAM_MEMBER  
+      user.startup_id = self.startup_id if !self.startup_id.blank? or !user.startup_id.blank?
+    # Add user as mentor to startup
+    elsif self.invite_type == MENTOR
+      r = Relationship.start_between(self.user, self.startup, true)
+      if r.blank?
+        self.errors.add(:user_id, 'could not be added to team')
+      else
+        self.errors.add(:user_id, 'could not be added to team') unless r.approve!
+      end
+    end
     if user.save
       self.to = user
       self.accepted_at = Time.now

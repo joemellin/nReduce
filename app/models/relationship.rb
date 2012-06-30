@@ -5,9 +5,11 @@ class Relationship < ActiveRecord::Base
   has_many :notifications, :as => :attachable
   has_many :user_actions, :as => :attachable
 
-  attr_accessible :entity, :entity_id, :entity_type, :connected_with, :connected_with_id, :connected_with_type, :status, :approved_at, :rejected_at
+  attr_accessible :entity, :entity_id, :entity_type, :connected_with, :connected_with_id, :connected_with_type, :status, :approved_at, :rejected_at, :silent
 
-  after_create :notify_users
+  attr_accessor :silent
+
+  after_create :notify_users, :unless => lambda{|r| !r.silent.blank? and r.silent? }
 
   # Statuses
   PENDING = 1
@@ -44,13 +46,13 @@ class Relationship < ActiveRecord::Base
   end
 
   # Start a relationship between two entities
-  def self.start_between(entity, connected_with)
+  def self.start_between(entity, connected_with, silent = false)
     return nil if entity == connected_with
     # Check if a relationship already exists
     existing = Relationship.between(entity, connected_with)
     return existing unless existing.blank?
     # Create new pending relationship
-    Relationship.create(:entity => entity, :connected_with => connected_with, :status => Relationship::PENDING)
+    Relationship.create(:entity => entity, :connected_with => connected_with, :status => Relationship::PENDING, :silent => silent)
   end
 
     # Finds relationship between two entities

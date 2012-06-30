@@ -185,6 +185,8 @@ class StartupsController < ApplicationController
     if user_signed_in?
       # Admin or this is the user's startup
       return true if current_user.admin? or current_user.startup_id == startup.id
+      # They are a mentor
+      return true if current_user.mentor? and current_user.connected_to?(startup)
       # They are connected or the other startup has requested to be connected
       return true if current_user.startup.connected_or_pending_to?(startup)
     end
