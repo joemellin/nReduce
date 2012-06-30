@@ -13,9 +13,9 @@ class UserMailer < ActionMailer::Base
   def relationship_request(notification)
     setup_email
     @relationship = notification.attachable
-    @requesting_startup = @relationship.startup
+    @requesting_entity = @relationship.entity
     @user = notification.user
-    mail(:to => @user.email, :subject => "#{@requesting_startup.name} wants to connect with you")
+    mail(:to => @user.email, :subject => "#{@entity.name} wants to connect with you")
   end
 
   def relationship_approved(notification)

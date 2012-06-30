@@ -8,11 +8,9 @@
   .span4{:align => 'right'}
     - if @owner
       = link_to "Edit Startup", "/startup/edit", :class => "btn"
-    - else
-      - if @relationship && @relationship.approved?
-        = link_to '<i class="icon icon-remove"></i> Remove from Group'.html_safe, reject_relationship_path(:id => @relationship.id), :method => :destroy, :class => 'btn', :confirm => "Are you sure you want to remove #{@startup.name} from your group?"
-      - elsif user_signed_in?
-        = button_to 'Invite to Group', relationships_path(:startup_id => @startup.id), :class => 'btn btn-info'
+    - elsif user_signed_in?
+      = relationship_button_for(@current_startup, @startup, @relationship)
+
 %hr/
 %br/
 .row

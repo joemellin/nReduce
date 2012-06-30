@@ -1,4 +1,5 @@
 class Startup < ActiveRecord::Base
+  include Connectable # methods for relationships
   has_many :team_members, :class_name => 'User'
   has_many :checkins
   belongs_to :main_contact, :class_name => 'User'
@@ -70,39 +71,6 @@ class Startup < ActiveRecord::Base
     # uses cache
   def connected_to
     Relationship.all_connections_for(self, 'Startup')
-  end
-
-    # Relationships this startup has requested with others
-    # not cached
-  def requested_relationships
-    Relationship.all_requested_relationships_for(self)
-  end
-
-    # relationships that other entities have requested with this startup
-    # not cached
-  def pending_relationships
-    Relationship.all_pending_relationships_for(self)
-  end
-
-    # Returns true if these two startups are connected in an approved relationship
-    # uses cache
-  def connected_to?(entity)
-    self.connected_to_id?(entity)
-  end
-
-  def connected_to_id?(entity_class_string, entity_id)
-    ids = Relationship.all_connection_ids_for(self)
-    return ids[entity_class_string].include?(entity_id) if !ids.blank? and !ids[entity_class_string].blank?
-    return false
-  end
-
-    # Returns true if these two starts are connected, or if the provided startup requested to be connected to this startup
-    # not cached
-  def connected_or_pending_to?(entity)
-    # check reverse direction because we need to see if pending request is coming from other startup
-    r = Relationship.between(entity, self)
-    return true if r and (r.pending? or r.approved?)
-    false
   end
 
    # Returns the checkin for this week (or if Sun/Mon, it checks for last week's checkin)

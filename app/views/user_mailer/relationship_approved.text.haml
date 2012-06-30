@@ -1,10 +1,13 @@
 Congratulations!
 \n
-\nTeam #{@connected_with.name} is now a part of your group.
+- if @connected_with.is_a?(Startup)
+	Team #{@connected_with.name} is now a part of your group.\n
+- else
+	You are now connected to #{@connected_with.name}.\n
 \n
 \nYou will now be able to share your progress with each other an support each other in this crazy life of changing the world! 
 \n
-\nView their profile: #{startup_url(@connected_with)}
+\nView their profile: #{url_for(@connected_with)}
 \n
 \nThanks,
 \nnReduce
