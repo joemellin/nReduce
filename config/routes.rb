@@ -46,10 +46,15 @@ Nreduce::Application.routes.draw do
     collection do
       get 'chat'
       post 'reset_hipchat_account'
+      get 'onboard'
     end
-    match 'complete_account', :on => :member
+    member do
+      match 'complete_account'
+      match 'onboard'
+    end
     resources :notifications
   end
+  match '/users/:id/onboard/:step' => "users#onboard"
 
   resources :comments do
     member do

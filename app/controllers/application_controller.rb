@@ -118,7 +118,6 @@ class ApplicationController < ActionController::Base
     end
     true
   end
-
   
   def meeting_organizer_required
     @meeting = Meeting.find(params[:meeting_id]) unless params[:meeting_id].blank?

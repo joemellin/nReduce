@@ -5,7 +5,7 @@ class RelationshipsPolymorphic < ActiveRecord::Migration
   	add_column :relationships, :connected_with_type, :string, :length => 10
 
   	remove_index :relationships, :name => 'relationship_index'
-  	add_index :relationships, [:entity_id, :entity_type, :status], :name => 'relationship_index', :unique => true
+  	add_index :relationships, [:entity_id, :entity_type, :status], :name => 'relationship_index'
   	Relationship.all.each do |r|
   		r.entity_type = 'Startup'
   		r.connected_with_type = 'Startup'

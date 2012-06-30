@@ -35,6 +35,10 @@ class UsersController < ApplicationController
     end
   end
 
+  def onboard
+    render :action => "onboard/#{params[:step]}"
+  end
+
   before_filter :current_startup_and_checkin_required, :only => [:chat, :reset_hipchat_account]
 
   def chat

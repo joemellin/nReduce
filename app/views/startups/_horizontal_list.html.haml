@@ -1,0 +1,12 @@
+- startups.each do |startup|
+  .left
+    .span1{:align => 'right', :style => 'margin-left: 0'}= link_to(image_tag(startup.logo_url(:small)), startup)
+    .span2
+      %h4= link_to startup.name, startup
+      %p
+        %small
+          Industry: #{startup.industry_list}
+          %br/
+          - unless startup.location.blank?
+            Located: #{startup.location}
+.clear

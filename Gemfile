@@ -35,10 +35,12 @@ gem 'carrierwave' # file/image attachments
 gem 'rmagick' # image resizing
 gem 'mime-types' # for assigning mime type on upload
 gem 'fog' # S3 upload for carrierwave
+gem 'cancan'
 
 gem 'sunspot_rails' # for use with solr
 gem 'sunspot_solr' # pre-packaged solr distro for use in dev
 gem 'progress_bar' # shows solr indexing progress
+
 
 group :test, :development do
   # Pretty printed test output
