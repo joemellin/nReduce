@@ -4,7 +4,6 @@ class Startup < ActiveRecord::Base
   has_many :checkins
   belongs_to :main_contact, :class_name => 'User'
   belongs_to :meeting
-  has_many :relationships, :as => :entity
   has_many :awesomes, :through => :checkins
   has_many :invites
   has_many :nudges
@@ -65,12 +64,6 @@ class Startup < ActiveRecord::Base
     Cache.get('nreduce_id', nil, true){
       Startup.named('nreduce').id
     }
-  end
-
-    # Startups this one is connected to (approved status)
-    # uses cache
-  def connected_to
-    Relationship.all_connections_for(self, 'Startup')
   end
 
    # Returns the checkin for this week (or if Sun/Mon, it checks for last week's checkin)

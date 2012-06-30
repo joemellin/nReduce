@@ -1,4 +1,17 @@
 module Connectable
+	def self.included(base)
+		# Adding relationships here so it doesn't complain that active_record isn't avail
+		base.class_eval do
+			has_many :relationships, :as => :entity
+		end
+	end
+
+    # Entities this one is connected to, of a specific class
+    # uses cache
+  def connected_to(class_name_string = 'Startup')
+    Relationship.all_connections_for(self, class_name_string)
+  end
+
 	  # Relationships this entity as requested with others
     # not cached
   def requested_relationships
