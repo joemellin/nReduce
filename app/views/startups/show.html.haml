@@ -58,7 +58,7 @@
 .row
   .span12
     %h4
-      %small Team #{h(@startup.name)}:
+      %small Team #{h(@startup.name)}
     %hr
     %br
 .row
@@ -66,6 +66,22 @@
     = render 'startups/team_members', :team_members => @startup.team_members, :add_team_member => (@startup.id == current_user.startup_id ? true : false)
     %hr
     %br
+- mentors = @startup.connected_to('User')
+- if mentors.size > 0
+  .row
+    .span12
+      %hr
+      %br
+      %h4
+        %small #{h(@startup.name).possessive} Mentors
+      %br/
+      %hr
+      %br/
+  .row
+    .span12
+      = render 'startups/horizontal_list', :startups => @startup.connected_to('User')
+      %hr
+      %br
 - if !@can_view_checkin_details
   .row{:id => "startup_#{@startup.id}"}
     .span12

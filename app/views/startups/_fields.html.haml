@@ -19,6 +19,18 @@
         &nbsp;
         = link_to '<i class="icon icon-remove"></i>'.html_safe, remove_team_member_startup_path(:user_id => u.id), :method => :post, :confirm => "Are you sure you want to remove #{u.name}?"
 
+.control-group
+  %label.control-label Mentors
+  .controls
+    - mentors = @startup.mentors
+    - if mentors.size == 0
+      None
+    - else
+      %ul
+      - mentors.each do |u|
+        %li
+          = link_to u.name, u
+
 .control-group{error_css(@startup, :main_contact_id)}
   = f.label :main_contact_id, "Main Contact", :class => 'control-label'
   .controls

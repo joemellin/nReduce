@@ -4,7 +4,7 @@ class InvitesController < ApplicationController
   before_filter :current_startup_required, :except => [:accept, :destroy]
 
   def create
-    i = Invite.invite_team_member(params[:invite])
+    i = Invite.invite_by_email(params[:invite])
     if !i.new_record?
       flash[:notice] = "Your invite has been sent to #{i.email}"
     else

@@ -66,6 +66,10 @@ class Startup < ActiveRecord::Base
     }
   end
 
+  def mentors
+    self.connected_to('User')
+  end
+
    # Returns the checkin for this week (or if Sun/Mon, it checks for last week's checkin)
   def current_checkin
     checkins.ordered.where(['created_at > ?', Time.now - 1.week]).first
