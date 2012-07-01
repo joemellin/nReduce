@@ -13,7 +13,7 @@ Here's how to install from scratch:
     cd ../nreduce
 
 ### MySQL
-Standard MySQL install - nothing special required. Just copy database config and edit:
+Standard MySQL install - nothing special required. Just create the database, and then copy database config and edit:
 
     cp config/database.sample.yml config/database.yml
 
@@ -31,13 +31,10 @@ Then install imagemagick using homebrew with these flags:
 
     brew install imagemagick --disable-openmp
 
-### Bundler
-Don't forget to install all the gems:
-    
+### Install gems, migrate, start server
+
     bundle install
-
-### Start rails server
-
+    bundle exec rake db:migrate
     bundle exec rails s
 
 ## Testing
