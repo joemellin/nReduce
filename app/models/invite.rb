@@ -9,7 +9,7 @@ class Invite < ActiveRecord::Base
   validates_presence_of :email
   validates_presence_of :from_id
   validates_presence_of :invite_type
-  validate :recipient_can_be_invited
+  validate :recipient_can_be_invited, :if => :new_record?
 
   after_create :notify_recipient
 
