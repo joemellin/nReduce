@@ -1,5 +1,6 @@
 class Startup < ActiveRecord::Base
   include Connectable # methods for relationships
+  include Onboardable
   has_many :team_members, :class_name => 'User'
   has_many :checkins
   belongs_to :main_contact, :class_name => 'User'
@@ -25,7 +26,6 @@ class Startup < ActiveRecord::Base
   scope :is_public, where(:public => true)
   scope :launched, where('launched_at IS NOT NULL')
   scope :with_intro_video, where('intro_video_url IS NOT NULL')
-  scope :onboarded, lambda { where(:onboarding_step => Startup.num_onboarding_steps) }
 
   # Uses Sunspot gem with Solr backend. Docs: http://outoftime.github.com/sunspot/docs/index.html
   # searchable do
@@ -77,19 +77,6 @@ class Startup < ActiveRecord::Base
    # Returns the checkin for this week (or if Sun/Mon, it checks for last week's checkin)
   def current_checkin
     checkins.ordered.where(['created_at > ?', Time.now - 1.week]).first
-  end
-
-  def onboarding_step_increment!
-    self.update_attribute('onboarding_step', self.onboarding_step + 1) unless self.onboarding_complete?
-  end
-
-    # Onboarding steps - hardcoded here at 9
-  def onboarding_complete?
-    self.onboarding_step == Startup.num_onboarding_steps
-  end
-
-  def self.num_onboarding_steps
-    9
   end
 
   def self.stages

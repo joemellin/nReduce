@@ -4,14 +4,20 @@
 .row
   .span3
     %h2
-      %small Your Alliance / Group
+      - if current_user.mentor?
+        %small Your Teams
+      - else
+        %small Your Alliance / Group
 
   .span6.countdown_and_checkin{:align => 'center'}
     - nc = Checkin.next_checkin_type_and_time
     - left = distance_until_time_from_now_arr(nc[:time])
     - left = left.map{|d| "%02d" % d }
     %div{:align => 'center', :style => 'width: 320px; overflow: hidden;'}
-      %h4 Your #{nc[:type]} video is due in
+      - if current_user.mentor?
+        %h4 After videos are due in
+      - else
+        %h4 Your #{nc[:type]} video is due in
       #countdown
         .left.number_block
           .numbers.days
@@ -97,13 +103,19 @@
     - c += 1
     - if c != 0 and c % 4 == 0
       .clear
-  - if @startups.size < 8
-    - 1.upto(8 - @startups.size) do
-      .checkin.span3{:align => 'center', :onclick => "window.location = '#{search_startups_url}';"}
-        .top{:style => "background-image: url('#{image_path('addteam.png')}'); cursor: pointer;"}
-          .background &nbsp;
-        .bottom
-          %h3= link_to '+ Add Team', search_startups_path
+  - if @startups.size < @num_blank_spots
+    - if current_user.mentor?
+      - 1.upto(@num_blank_spots - @startups.size) do
+        .checkin.span3{:align => 'center'}
+          .top{:style => "background-image: url('#{image_path('pendingteam.png')}');"}
+            .background &nbsp;
+    - else
+      - 1.upto(@num_blank_spots - @startups.size) do
+        .checkin.span3{:align => 'center', :onclick => "window.location = '#{search_startups_url}';"}
+          .top{:style => "background-image: url('#{image_path('addteam.png')}'); cursor: pointer;"}
+            .background &nbsp;
+          .bottom
+            %h3= link_to '+ Add Team', search_startups_path
 
 - if @pending_relationships.size > 0
   .row{:style => 'margin-top: 20px'}
@@ -123,6 +135,6 @@
       .clear
 
 - nreduce_id = Startup.nreduce_id
-- unless nreduce_id.blank?
+- if !current_user.startup_id.blank? and !nreduce_id.blank?
   %hr
   %h3= link_to 'View nReduce\'s latest checkin', latest_startup_checkins_path(:startup_id => nreduce_id)

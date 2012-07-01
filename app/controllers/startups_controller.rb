@@ -138,8 +138,8 @@ class StartupsController < ApplicationController
         render :action => :onboard
         return
       end
-    elsif params[:startup] and params[:startup][:youtube_intro_url]
-      if !params[:startup][:youtube_intro_url].blank? and @startup.update_attribute('intro_video_url', params[:startup][:intro_video_url])
+    elsif params[:startup] and params[:startup][:intro_video_url]
+      if !params[:startup][:intro_video_url].blank? and @startup.update_attribute('intro_video_url', params[:startup][:intro_video_url])
         @startup.onboarding_step_increment!
       else
         flash[:alert] = "Looks like you forgot to paste in your Youtube URL"

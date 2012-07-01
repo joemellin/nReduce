@@ -50,6 +50,8 @@ class RelationshipsController < ApplicationController
       @startups = [@startup] + @startups.reverse
     end
     @commented_on_checkin_ids = current_user.commented_on_checkin_ids
+
+    @num_blank_spots = current_user.mentor? ? 4 : 8
   end
 
   def create
