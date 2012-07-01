@@ -79,17 +79,17 @@
       %br/
   .row
     .span12
-      = render 'startups/horizontal_list', :startups => @startup.connected_to('User')
+      = render 'startups/team_members', :team_members => mentors
       %hr
       %br
-- if !@can_view_checkin_details
+- if !@can_view_checkin_details and !@entity.blank?
   .row{:id => "startup_#{@startup.id}"}
     .span12
       %br/
-      .relationship{:align => 'center'}
+      %div{:align => 'center'}
         %h3 #{h(@startup.name.possessive)} check-ins are private. To get permission to see them:
         %br/
-        = button_to 'Ask to join their group', relationships_path(:startup_id => @startup.id), :class => 'btn btn-large btn-info', :remote => true
+        = relationship_button_for(@entity, @startup)
 - else
   .row
     .span12{:align => 'center'}

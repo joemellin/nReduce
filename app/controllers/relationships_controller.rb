@@ -81,8 +81,15 @@ class RelationshipsController < ApplicationController
   end
 
   def reject
+    prev_status_pending = @relationship.pending?
     if @relationship.reject!
-      flash[:notice] = "You have removed #{@relationship.connected_with.name} from your group."
+      removed = @relationship.entity if (@relationship.connected_with == current_user) or (!current_user.startup.blank? and (@relationship.connected_with == current_user.startup))
+      removed ||= @relationship.connected_with
+      if prev_status_pending
+        flash[:notice] = "You have ignored the connection request from #{removed.name}."
+      else
+        flash[:notice] = "You have removed #{removed.name} from your group."
+      end
     else
       flash[:alert] = "Sorry but the relationship couldn't be removed at this time."
     end

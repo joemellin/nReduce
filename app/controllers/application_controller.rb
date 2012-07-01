@@ -76,7 +76,7 @@ class ApplicationController < ActionController::Base
 
   def load_requested_or_users_startup
     @startup = Startup.find(params[:startup_id]) unless params[:startup_id].blank?
-    @startup = current_user.startup if params[:id].blank? and !current_user.startup_id.blank?
+    @startup ||= current_user.startup if params[:id].blank? and !current_user.startup_id.blank?
   end
 
   def login_required

@@ -11,6 +11,7 @@ class Relationship < ActiveRecord::Base
 
   before_create :set_pending_status
   after_create :notify_users, :unless => lambda{|r| !r.silent.blank? and r.silent? }
+  after_destroy :destroy_inverse_relationship
 
   # Statuses
   PENDING = 1
@@ -21,7 +22,7 @@ class Relationship < ActiveRecord::Base
   validates_presence_of :entity_type
   validates_presence_of :connected_with_id
   validates_presence_of :connected_with_type
-  validate :entities_are_connectable
+  validate :entities_are_connectable, :if => lambda{|r| r.new_record? }
 
   scope :pending, where(:status => Relationship::PENDING)
   scope :approved, where(:status => Relationship::APPROVED)
@@ -140,10 +141,19 @@ class Relationship < ActiveRecord::Base
     false
   end
 
+  def reset_cache_for_entities_involved
+    Cache.delete(['connections', "#{entity_type.downcase}_#{entity_id}"])
+    Cache.delete(['connections', "#{connected_with_type.downcase}_#{connected_with_id}"])
+  end
+
   protected
 
+  def destroy_inverse_relationship
+    self.inverse_relationship.destroy unless self.inverse_relationship.blank?
+  end
+
   def set_pending_status
-    self.status = Relationship::PENDING
+    self.status ||= Relationship::PENDING
   end
 
   def entities_are_connectable
@@ -152,6 +162,7 @@ class Relationship < ActiveRecord::Base
     self.errors.add(:entity, "can't be connected to itself") if entity == connected_with
     
     # Check if there is already a connection
+ 
     existing = Relationship.between(entity, connected_with)
     unless existing.blank?
       self.errors.add(:connected_with, "hasn't approved your request yet") if existing.pending?
@@ -169,11 +180,6 @@ class Relationship < ActiveRecord::Base
     else
       self.errors.add(:entity, "can't be connected to a #{connected_with_type.downcase}")
     end
-  end
-
-  def reset_cache_for_entities_involved
-    Cache.delete(['connections', "#{entity_type.downcase}_#{entity_id}"])
-    Cache.delete(['connections', "#{connected_with_type.downcase}_#{connected_with_id}"])
   end
 
   def notify_users

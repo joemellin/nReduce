@@ -63,7 +63,7 @@ class InvitesController < ApplicationController
       end
       @ua = {:attachable => @invite}
     else
-      if @invite.to_id == current_user.id
+      if !current_user.blank? and @invite.to_id == current_user.id
         flash[:notice] = "You have already accepted that invite."
       else
         flash[:alert] = "Sorry, that is not a valid invite.  Please make sure you copy the full url."

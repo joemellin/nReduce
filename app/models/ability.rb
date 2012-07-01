@@ -87,7 +87,7 @@ class Ability
       can :reject, Relationship do |relationship|
         if user.mentor? and relationship.is_involved?(user)
           true
-        elsif user.startup.blank? and relationship.is_involved?(user.startup)
+        elsif !user.startup.blank? and relationship.is_involved?(user.startup)
           true
         else
           false
