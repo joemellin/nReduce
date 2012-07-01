@@ -85,7 +85,7 @@ Nreduce::Application.routes.draw do
   end
 
   delete '/invites/:id' => "invites#destroy", :as => :destroy_invite
-  get '/invites/:id/accept' => "invites#accept"
+  get '/invites/:id/accept' => "invites#accept", :as => :accept_invite
 
     # Your startup - singular resource
   resource :startup do
