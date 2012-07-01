@@ -26,7 +26,7 @@ Backup::Storage::S3.defaults do |s3|
 end
 
 Backup::Encryptor::OpenSSL.defaults do |encryption|
-  encryption.password = 'ENCRYPTION_PASSWORD'
+  encryption.password_file = '/path/to/password_file'
   encryption.base64   = true
   encryption.salt     = true
 end
