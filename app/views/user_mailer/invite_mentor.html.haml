@@ -1,0 +1,11 @@
+= render :partial => 'header'
+%h1.h1 Welcome to nReduce
+%br/
+%h4.h4 Thank you so much for your interest in mentoring!
+%br
+%p To learn more about the mentorship process, please click the link below. 
+%br/
+%br/
+%br/
+%h3= link_to "Get Started", url_for(new_registration_url(:user))
+= render :partial => 'footer'

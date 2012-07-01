@@ -16,7 +16,7 @@ class Notification < ActiveRecord::Base
 
     # Remember to update method in helpers/application_helper.rb with new object types if they are added for correct messaging
   def self.actions
-    [:new_checkin, :relationship_request, :relationship_approved, :new_comment, :new_nudge]
+    [:new_checkin, :relationship_request, :relationship_approved, :mentorship_approved, :new_comment, :new_nudge]
   end
 
    # Pass in a user to notify, related object (ex: a relationship) and the action performed, and this will:
@@ -66,8 +66,8 @@ class Notification < ActiveRecord::Base
       entity.team_members.each do |u|
         Notification.create_and_send(u, relationship, :relationship_approved)
       end
-    elsif entity.is_a?(User)
-      Notification.create_and_send(entity, relationship, :relationship_approved)
+    elsif entity.is_a?(User) and entity.mentor?
+      Notification.create_and_send(entity, relationship, :mentorship_approved)
     else
       raise "Relationship type not added to notifications"
     end
