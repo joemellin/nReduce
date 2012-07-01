@@ -23,7 +23,11 @@ Used as in-memory cache, as well as by Resque (background job queue)
     brew install redis
 
 ### Rmagick
-Used for image resizing. To install on OS X, first make sure you have the latest version of Xcode (free download from App Store). Uninstall imagemagick if it was installed (brew uninstall imagemagick) Then install imagemagick using homebrew with these flags:
+Used for image resizing. To install on OS X, first make sure you have the latest version of Xcode (free download from App Store). Uninstall imagemagick if it was installed:
+
+    brew uninstall imagemagick
+
+Then install imagemagick using homebrew with these flags:
 
     brew install imagemagick --disable-openmp
 
