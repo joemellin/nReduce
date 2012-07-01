@@ -39,8 +39,9 @@ class Notification < ActiveRecord::Base
 
   # Notifies all connected startup team members of new checkin
   def self.create_for_new_checkin(checkin)
-    startups_to_notify = checkin.startup.connected_to
+    startups_to_notify = checkin.startup.connected_to('Startup')
     users_to_notify = User.where(:startup_id => startups_to_notify.map{|s| s.id }).all
+    users_to_notify += checkin.startup.connected_to('User')
     users_to_notify.each do |u|
       Notification.create_and_send(u, checkin, :new_checkin)
     end
