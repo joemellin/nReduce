@@ -1,0 +1,12 @@
+= render :partial => 'header'
+%h1.h1 Congratulations!
+%br/
+%h4.h4 You have a new team:
+%br
+%h1.h1= @connected_with.name
+%p To learn more about them, please view the team's profile. 
+%br/
+%br/
+%br/
+%h3= link_to "View #{@connected_with.name.possessive} profile", url_for(@connected_with)
+= render :partial => 'footer'

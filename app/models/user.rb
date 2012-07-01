@@ -57,7 +57,7 @@ class User < ActiveRecord::Base
   end
 
   def self.force_email_on
-    ['nudge']
+    ['nudge', 'user'] # user is new mentor
   end
 
   def num_onboarding_steps # needs to be one more than actual steps

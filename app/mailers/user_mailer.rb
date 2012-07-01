@@ -26,6 +26,14 @@ class UserMailer < ActionMailer::Base
     mail(:to => @user.email, :subject => "#{@connected_with.name} approved your connection request")
   end
 
+  def mentorship_approved(notification)
+    setup_email
+    @relationship = notification.attachable
+    @connected_with = @relationship.connected_with
+    @user = notification.user
+    mail(:to => @user.email, :subject => "You have a new team!")
+  end
+
   def new_comment(notification)
     setup_email
     @comment = notification.attachable
@@ -62,6 +70,12 @@ class UserMailer < ActionMailer::Base
     setup_email
     @invite = invite
     mail(:to => invite.email, :subject => "#{invite.startup.name} wants to add you to their team on nReduce")
+  end
+
+  def invite_mentor(invite)
+    setup_email
+    @invite = invite
+    mail(:to => @invite.email, :subject => "Welcome to nReduce")
   end
 
   # Nudges startup to do check-in
