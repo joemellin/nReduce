@@ -7,5 +7,5 @@
 %br/
 %br/
 %br/
-%h3= link_to "Get Started", url_for(new_registration_url(:user))
+%h3= link_to "Get Started", accept_invite_url(:id => @invite.code)
 = render :partial => 'footer'
