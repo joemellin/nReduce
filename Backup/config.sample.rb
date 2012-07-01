@@ -14,21 +14,33 @@
 # Global Configuration
 # Add more (or remove) global configuration below
 
-Backup::Configuration::Database::MySQL.defaults do |database|
+Backup::Database::MySQL.defaults do |database|
   database.username           = 'DATABASE_USERNAME'
   database.password           = 'DATABASE_PASSWORD'
 end
 
-Backup::Configuration::Storage::S3.defaults do |s3|
+Backup::Storage::S3.defaults do |s3|
   s3.access_key_id      = Settings.aws.s3.access_key_id
   s3.secret_access_key  = Settings.aws.s3.secret_access_key
   s3.region             = 'us-east-1'
 end
 
-Backup::Configuration::Encryptor::OpenSSL.defaults do |encryption|
+Backup::Encryptor::OpenSSL.defaults do |encryption|
   encryption.password = 'ENCRYPTION_PASSWORD'
   encryption.base64   = true
   encryption.salt     = true
+end
+
+Backup::Notifier::Mail.defaults do |mail|
+  mail.from                 = 'notifiations@nreduce.com'
+  mail.to                   = 'josh@nreduce.com'
+  mail.address              = 'smtp.gmail.com'
+  mail.port                 = 587
+  mail.domain               = 'mydomain.com'
+  mail.user_name            = 'donotreply@mydomain.com'
+  mail.password             = 'password'
+  mail.authentication       = 'plain'
+  mail.enable_starttls_auto = true
 end
 
 ##
