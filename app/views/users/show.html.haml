@@ -85,5 +85,5 @@
   = link_to "Join #{h(@current_invite.startup.name)}", accept_invite_path(:id => @current_invite.code), :class => "btn btn-large btn-primary"
   &nbsp;&nbsp;
   = link_to "Decline Invite", @current_invite, :method => :delete, :class => "btn btn-large", :confirm => "Are you sure you want to decline it?"
-- elsif @user.startup_id.blank?
+- elsif @user.startup_id.blank? and !@user.mentor?
   = link_to "Register Startup", new_startup_path, :class => "btn btn-large"
