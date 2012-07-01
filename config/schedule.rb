@@ -19,9 +19,9 @@
 
 # Learn more: http://github.com/javan/whenever
 
-#every 12.hours do
-#  command "backup perform --trigger db_backup"
-#end
+every 12.hours do
+  command "cd ~/Backup && bundle exec backup perform --triggers db_backup"
+end
 
 # Send 'after' video reminder on Monday at 4pm (24 hours before due)
 every :monday, :at => '4pm' do
