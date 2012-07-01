@@ -317,7 +317,7 @@ DEPENDENCIES
   airbrake
   ancestry
   backup (~> 3.0.24)
-  cancan
+  cancan (~> 1.6.8)
   capistrano
   carrierwave
   coffee-rails (~> 3.2.1)

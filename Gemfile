@@ -35,7 +35,7 @@ gem 'carrierwave' # file/image attachments
 gem 'rmagick' # image resizing
 gem 'mime-types' # for assigning mime type on upload
 gem 'fog' # S3 upload for carrierwave
-gem 'cancan'
+gem 'cancan', '~> 1.6.8'
 
 gem 'sunspot_rails' # for use with solr
 gem 'sunspot_solr' # pre-packaged solr distro for use in dev
