@@ -50,12 +50,13 @@ Nreduce::Application.routes.draw do
     end
     member do
       match 'complete_account'
-      match 'onboard'
+      get 'onboard'
+      post 'onboard_next'
     end
     resources :notifications
   end
   match '/users/:id/onboard/:step' => "users#onboard"
-  
+
   resources :comments do
     member do
       get 'reply_to'

@@ -138,7 +138,7 @@ class Ability
     end
 
     # User can only manage their own account
-    can :manage, User, :id => user.id
+    can [:manage, :onboard, :onboard_next], User, :id => user.id
 
     # Everyone can see users
     can :read, User

@@ -5,7 +5,7 @@
       - if user_signed_in?
         - unless hide_nav
           %li.padding{:class => is_controller_action?('relationships', 'index') ? 'active' : ''}= link_to "Home", '/'
-          - unless current_user.startup_id.blank?
+          - if !current_user.mentor? and !current_user.startup_id.blank?
             %li.padding{:class => is_controller_action?('users', 'chat') ? 'active' : ''}= link_to "Chat", chat_users_path
           %li.dropdown
             %a.dropdown-toggle.btn{:href => '#', 'data-toggle' => 'dropdown'}
@@ -24,11 +24,12 @@
                   %a{:href => user_notifications_path(current_user)}
                     Notifications
                     %span.badge{:class => current_user.unread_nc > 0 ? 'badge-info' : ''}= current_user.unread_nc
-              %li.divider
-              - if current_user.meeting_id.blank?
-                %li= link_to 'Local Meetings', meetings_path
-              - else
-                %li= link_to "My Meeting", meeting_path(:id => current_user.meeting_id)
+              - unless current_user.mentor?
+                %li.divider
+                - if current_user.meeting_id.blank?
+                  %li= link_to 'Local Meetings', meetings_path
+                - else
+                  %li= link_to "My Meeting", meeting_path(:id => current_user.meeting_id)
               - if current_user.admin?
                 %li= link_to "Admin Tools", "/admin"
                 %li= link_to "Jobs", "/resque"

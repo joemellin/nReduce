@@ -54,26 +54,28 @@
     = f.text_field :location, :class => 'span2', :placeholder => 'Zip/Postal Code or City/State'
     = f.semantic_errors :location
 
-.control-group{error_css(@user, :meeting_id)}
-  = f.label :meeting_id, "Your Meeting", :class => 'control-label'
-  .controls
-    = f.select :meeting_id, options_for_select(Meeting.select_options, @user.meeting_id), :include_blank => true, :class => 'span2'
-    = f.semantic_errors :meeting_id
-    %span.help-inline= link_to 'Show Meetings', meetings_path
-    %p.help-block
-      Optional - if you want to attend a local meeting set it here.
-      %br
-      Update this if you change so that the organizer can message you in case of any venue details or changes.
+- unless @user.mentor?
+  .control-group{error_css(@user, :meeting_id)}
+    = f.label :meeting_id, "Your Meeting", :class => 'control-label'
+    .controls
+      = f.select :meeting_id, options_for_select(Meeting.select_options, @user.meeting_id), :include_blank => true, :class => 'span2'
+      = f.semantic_errors :meeting_id
+      %span.help-inline= link_to 'Show Meetings', meetings_path
+      %p.help-block
+        Optional - if you want to attend a local meeting set it here.
+        %br
+        Update this if you change so that the organizer can message you in case of any venue details or changes.
 
-.control-group{error_css(@user, :settings)}
-  = f.label :settings, 'Email me', :class => 'control-label'
-  .controls
-    - User.settings_labels['email_on'].each do |id, action|
-      %label{:class => 'checkbox inline'}
-        = check_box_tag "user[settings][email_on][]", id, @user.settings['email_on'].include?(id.to_s)
-        = action
-      &nbsp;&nbsp;
-    = f.semantic_errors :settings
+- unless @user.mentor?
+  .control-group{error_css(@user, :settings)}
+    = f.label :settings, 'Email me', :class => 'control-label'
+    .controls
+      - User.settings_labels['email_on'].each do |id, action|
+        %label{:class => 'checkbox inline'}
+          = check_box_tag "user[settings][email_on][]", id, @user.settings['email_on'].include?(id.to_s)
+          = action
+        &nbsp;&nbsp;
+      = f.semantic_errors :settings
 %hr
 .control-group
   .controls

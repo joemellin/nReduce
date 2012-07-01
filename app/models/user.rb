@@ -1,5 +1,6 @@
 class User < ActiveRecord::Base
   include Connectable # methods for relationships
+  include Onboardable
   acts_as_mappable
   belongs_to :startup
   belongs_to :meeting
@@ -24,11 +25,12 @@ class User < ActiveRecord::Base
          :recoverable, :rememberable, :trackable, :validatable #, :confirmable #, :omniauthable
 
   # Setup accessible (or protected) attributes for your model
-  attr_accessible :email, :password, :password_confirmation, :remember_me, :name, :skill_list, :startup, :mentor, :investor, :location, :phone, :startup_id, :settings, :meeting_id, :one_liner, :bio, :facebook_url, :linkedin_url, :github_url, :dribbble_url, :blog_url, :pic, :remote_pic_url, :pic_cache, :remove_pic
+  attr_accessible :email, :password, :password_confirmation, :remember_me, :name, :skill_list, :startup, :mentor, :investor, :location, :phone, :startup_id, :settings, :meeting_id, :one_liner, :bio, :facebook_url, :linkedin_url, :github_url, :dribbble_url, :blog_url, :pic, :remote_pic_url, :pic_cache, :remove_pic, :intro_video_url
 
   serialize :settings, Hash
 
   validate :email_is_not_nreduce
+  validate :check_video_urls_are_valid
 
   before_create :set_default_settings
   before_save :geocode_location
@@ -56,6 +58,10 @@ class User < ActiveRecord::Base
 
   def self.force_email_on
     ['nudge']
+  end
+
+  def num_onboarding_steps # needs to be one more than actual steps
+    8
   end
 
   def has_startup_or_is_mentor?
@@ -365,5 +371,14 @@ class User < ActiveRecord::Base
     rescue
       self.errors.add(:location, "could not be geocoded")
     end
+  end
+
+  def check_video_urls_are_valid
+    err = false
+    if !intro_video_url.blank? and !Youtube.valid_url?(intro_video_url)
+      self.errors.add(:intro_video_url, 'invalid Youtube URL')
+      err = true
+    end
+    err
   end
 end

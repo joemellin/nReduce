@@ -1,5 +1,4 @@
 class SignupController < ApplicationController
-
   # post signups from the static web app
   def create
     # for duplicate emails, just return success

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120629004814) do
+ActiveRecord::Schema.define(:version => 20120630233808) do
 
   create_table "authentications", :force => true do |t|
     t.string   "provider"
@@ -277,6 +277,7 @@ ActiveRecord::Schema.define(:version => 20120629004814) do
     t.string   "blog_url"
     t.string   "pic"
     t.float    "rating"
+    t.integer  "onboarding_step",        :default => 0
   end
 
   add_index "users", ["reset_password_token"], :name => "index_users_on_reset_password_token", :unique => true
