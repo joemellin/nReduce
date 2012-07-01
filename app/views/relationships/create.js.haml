@@ -1,6 +1,5 @@
 
 :plain
-  console.log("##{@relationship.connected_with_type}_#{@relationship.connected_with_id}_relationship");
-  $("##{@relationship.connected_with_type}_#{@relationship.connected_with_id}_relationship").html('#{escape_javascript(render('layouts/flash_messages'))}');
+  $(".#{@relationship.connected_with_type}_#{@relationship.connected_with_id}_relationship").html('#{escape_javascript(render('layouts/flash_messages'))}');
 
 - flash.discard

@@ -5,9 +5,11 @@ class CheckinsController < ApplicationController
   load_and_authorize_resource :startup
   before_filter :load_latest_checkin, :only => :show
   before_filter :load_current_checkin, :only => :new
-  load_and_authorize_resource :checkin, :through => :startup
+  load_and_authorize_resource :checkin
 
   def index
+    @checkins ||= @startup.checkins
+    authorize! :read, Checkin.new(:startup => @startup)
     @checkins = @checkins.ordered
   end
 
@@ -57,7 +59,7 @@ class CheckinsController < ApplicationController
   protected
 
   def load_latest_checkin
-    if params[:id] == 'latest' and !@startup.blank?
+    if params[:checkin_id] == 'latest' and !@startup.blank?
       @checkin = @startup.checkins.completed.ordered.first
       if @checkin.blank?
         flash[:alert] = "#{@startup.name} hasn't completed any check-ins yet."

@@ -10,10 +10,11 @@ en:
   unauthorized:
     manage:
       all: "Not authorized to %{action} %{subject}."
-      user: "Not allowed to manage other user accounts."
+      user: "You're not allowed to edit other user accounts."
     new:
       startup: "Sorry but registration is closed for the current nReduce class. Email Joe if you have any questions: joe@nReduce.com"
       checkin: "Sorry you've missed the check-in times."
+      meeting_message: "Only the organizer is allowed to message the attendees."
     create:
       startup: "Sorry but registration is closed for the current nReduce class. Email Joe if you have any questions: joe@nReduce.com"
     update:

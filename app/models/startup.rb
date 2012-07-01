@@ -52,6 +52,10 @@ class Startup < ActiveRecord::Base
   #   end
   # end
 
+  def self.num_onboarding_steps
+    Startup.new.num_onboarding_steps
+  end
+
   def self.registration_open?
     false
   end
