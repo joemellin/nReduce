@@ -10,7 +10,7 @@ class Relationship < ActiveRecord::Base
   attr_accessor :silent
 
   before_create :set_pending_status
-  after_create :notify_users, :unless => lambda{|r| !r.silent.blank? and r.silent? }
+  after_create :notify_users, :unless => lambda{|r| r.silent == true }
   after_destroy :destroy_inverse_relationship
 
   # Statuses
