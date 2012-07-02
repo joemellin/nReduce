@@ -10,7 +10,7 @@ class ApplicationController < ActionController::Base
 
   # User will always be able to see their account so redirect them here
   rescue_from CanCan::AccessDenied do |exception|
-    redirect_to current_user, :alert => exception.message
+    redirect_to (user_signed_in? ? current_user : '/'), :alert => exception.message
   end
 
     # Override sign in path so we can accept invite if they have one
