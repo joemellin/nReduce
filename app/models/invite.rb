@@ -39,16 +39,19 @@ class Invite < ActiveRecord::Base
   def accepted_by(user)
     return false unless self.active?
     # assign user to startup unless they are already part of a startup
-    if self.invite_type == TEAM_MEMBER  
+    if self.invite_type == TEAM_MEMBER
       user.startup_id = self.startup_id if !self.startup_id.blank? or !user.startup_id.blank?
     # Add user as mentor to startup
     elsif self.invite_type == MENTOR
       user.mentor = true
-      r = Relationship.start_between(user, self.startup, true)
-      if r.blank?
-        self.errors.add(:user_id, 'could not be added to team')
-      else
-        self.errors.add(:user_id, 'could not be added to team') unless r.approve!
+      # Add mentor to startup if invite came from startup
+      unless self.startup.blank?
+        r = Relationship.start_between(user, self.startup, true)
+        if r.blank?
+          self.errors.add(:user_id, 'could not be added to team')
+        else
+          self.errors.add(:user_id, 'could not be added to team') unless r.approve!
+        end
       end
     end
     if user.save
