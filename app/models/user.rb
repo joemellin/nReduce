@@ -194,8 +194,11 @@ class User < ActiveRecord::Base
       checkins_by_this_startup = Hash.by_key(checkins_by_startup[startup.id], :id)
 
       # How many checkins did your connected startups make?
-      Relationship.all_connection_ids_for(startup)['Startup'].map do |startup_id|
-        num_checkins += checkins_by_startup[startup_id].size unless checkins_by_startup[startup_id].blank?
+      startup_ids = Relationship.all_connection_ids_for(startup)['Startup']
+      unless ids.blank?
+        startup_ids.map do |startup_id|
+          num_checkins += checkins_by_startup[startup_id].size unless checkins_by_startup[startup_id].blank?
+        end
       end
 
       startup.team_members.each do |user|
