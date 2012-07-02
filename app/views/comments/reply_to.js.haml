@@ -5,8 +5,6 @@
   parent.append("<div class='nested_comments'>#{escape_javascript(render(:partial => 'form', :object => @comment, :locals => {:cancel_link => true}))}</div>");
 
   /* Place focus on textarea */
-  parent.find('.new_comment textarea').first().focus().autoResize({
-    extraSpace: 3
-  });
+  parent.find('.new_comment textarea').first().focus().autosize();
 
 - flash.discard

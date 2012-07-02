@@ -64,7 +64,6 @@ class Relationship < ActiveRecord::Base
 
     # Returns hash with all classes/ids this entity is connected to {'Startup' => [id, id], 'User' => [id, id]}
   def self.all_connection_ids_for(entity)
-    # Cache doesn't work for hash
     Cache.get(['connections', entity]){
       ret = {}
       entity.relationships.approved.each{|r| ret[r.connected_with_type] ||= []; ret[r.connected_with_type] << r.connected_with_id }

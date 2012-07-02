@@ -12,6 +12,8 @@ $ ->
     $('.sign_in_toggle, #sign_up').show()
     $('#sign_in').hide()
 
+  $('.profile_completeness .well').tooltip({placement: 'left'})
+
   # much grateful thanks to the countdown code from http://mahamusicfestival.com/wp-content/themes/maha2012/js/maha.js
   oxide_countdown = ->
     d = new Array()
