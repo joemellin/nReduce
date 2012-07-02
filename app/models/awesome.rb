@@ -9,10 +9,10 @@ class Awesome < ActiveRecord::Base
   after_destroy :update_awesome_count
   after_create :notify_users
 
-  validate :check_user_doesnt_own_object
   validates_presence_of :awsm_id
   validates_presence_of :awsm_type
   validates_presence_of :user_id
+  validate :check_user_doesnt_own_object
 
   def self.user_awesomed_object?(object, user_id)
     object.awesomes.where(:user_id => user_id).count
@@ -33,7 +33,7 @@ class Awesome < ActiveRecord::Base
   protected
 
   def check_user_doesnt_own_object
-    if awsm.user_id == self.user_id
+    if !awsm.blank? and (awsm.user_id == self.user_id)
       self.errors.add :awsm, "can't awesome your own #{awsm.class.to_s.downcase}"
       false
     else
@@ -42,7 +42,6 @@ class Awesome < ActiveRecord::Base
   end
 
   def update_awesome_count
-    logger.info "UPDATE AWESOME COUNT"
     obj = self.awsm
     obj.awesome_count = obj.awesomes.count
     obj.save(:validate => false)

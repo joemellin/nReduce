@@ -98,7 +98,15 @@ class Ability
       
       can [:manage, :cancel_edit], Comment, :user_id => user.id
 
+      # Can comment on any checkin they are allowed to read
+      # TODO: anyone with startup or mentor can comment on anything (if they can somehow construct the form)
+      can [:read, :create, :reply_to], Comment
+
       can :manage, Awesome, :user_id => user.id
+
+      # TODO: anyone with startup or mentor can awesome anything (if they can somehow construct the form)
+      can [:read, :create], Awesome
+
       can :manage, Notification, :user_id => user.id
       can :manage, Nudge, :from_id => user.id
 
