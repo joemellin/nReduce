@@ -123,4 +123,21 @@ module ApplicationHelper
     html += '</h1><br />'
     html
   end
+
+  def format_profile_elements(elements)
+    elements.map{|name, is_complete|
+      ret = ''
+      # if team then the value is an integer of % completeness
+      if is_complete.is_a?(Float)
+        if is_complete == 1.0
+          ret += "&#x2713; #{name.to_s.titleize}"
+        else
+          ret += "#{name.to_s.titleize} #{(is_complete * 100).round}%"
+        end
+      # otherwise boolean
+      else
+        ret += (is_complete ? '&#x2713; ' : '') + name.to_s.titleize
+      end
+    }.join('<br />')
+  end
 end

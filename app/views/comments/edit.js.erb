@@ -4,8 +4,6 @@ $('#comment_<%= @comment.id -%>').replaceWith("<%= escape_javascript(render(:par
 /* Place focus on textarea */
 $('#edit_comment_<%= @comment.id -%> textarea').first().focus();
 
-$('#edit_comment_<%= @comment.id -%> textarea').autoResize({
-  extraSpace: 3
-});
+$('#edit_comment_<%= @comment.id -%> textarea').autosize();
 
 <% flash.discard %>

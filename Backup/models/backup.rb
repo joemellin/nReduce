@@ -9,7 +9,7 @@ Backup::Model.new(:db_backup, 'MySQL database backup') do
   end
 
   compress_with Gzip do |compression|
-    compression.best = true
+    compression.level = 9
   end
 
   encrypt_with OpenSSL

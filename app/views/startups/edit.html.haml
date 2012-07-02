@@ -1,17 +1,17 @@
 - content_for :subtitle do
   Edit your startup
 
-%h2 Edit your Startup
-
 .row
   .span8
+    %h2 Edit your Startup
+
     = semantic_form_for @startup, :url => '/startup/', :html => {:class => "form-horizontal", :multipart => true} do |f|
-
       = render "startups/fields", :f => f
-
       .form-actions
         = f.submit "Save", :class => "btn btn-primary btn-large"
+
   .span4
+    = render 'users/profile_completeness', :title => 'Startup Profile'
     - if can? :manage, Invite.new(:startup => @startup)
       %h4 Add Team Member or Mentor
       %p{:style => 'margin: 5px 0 10px 0;'} Team members will get full access to post and view checkins, and participate in nReduce. Mentors will be able to view and comment on all of your checkins.

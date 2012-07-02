@@ -3,6 +3,4 @@
 # You can use CoffeeScript in this file: http://jashkenas.github.com/coffee-script/
 
 $ ->
-  $('form.meeting_message textarea, form.meeting textarea').autoResize(
-    extraSpace: 4
-  )
+  $('form.meeting_message textarea, form.meeting textarea').autosize()

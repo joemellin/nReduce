@@ -60,6 +60,27 @@ class User < ActiveRecord::Base
     ['nudge', 'user'] # user is new mentor
   end
 
+    # Calculates profile completeness for all factors
+    # Returns total percent out of 1 (eg: 0.25 for 25% completeness)
+  def profile_completeness_percent
+    total = completed = 0.0
+    self.profile_elements.each do |element, is_completed|
+      total += 1.0
+      completed += 1.0 if is_completed
+    end
+    (completed / total).round(2)
+  end
+
+  def profile_elements
+    {
+      :email => !self.email.blank?, 
+      :picture => self.pic?, 
+      :bio => (!self.bio.blank? and (self.bio.size > 40)), 
+      :linked_in => !self.linkedin_url.blank?,
+      :skills => !self.skill_list.blank?
+    }
+  end
+
   def num_onboarding_steps # needs to be one more than actual steps
     8
   end
@@ -173,7 +194,7 @@ class User < ActiveRecord::Base
       checkins_by_this_startup = Hash.by_key(checkins_by_startup[startup.id], :id)
 
       # How many checkins did your connected startups make?
-      Relationship.all_connection_ids_for(startup).map do |startup_id|
+      Relationship.all_connection_ids_for(startup)['Startup'].map do |startup_id|
         num_checkins += checkins_by_startup[startup_id].size unless checkins_by_startup[startup_id].blank?
       end
 

@@ -90,6 +90,8 @@ class StartupsController < ApplicationController
   end
 
   def edit
+    @profile_elements = @startup.profile_elements
+    @profile_completeness_percent = (@startup.profile_completeness_percent * 100).round
   end
 
   def update

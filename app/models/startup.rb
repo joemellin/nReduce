@@ -79,6 +79,36 @@ class Startup < ActiveRecord::Base
     checkins.ordered.where(['created_at > ?', Time.now - 1.week]).first
   end
 
+    # Calculates profile completeness for all factors
+    # Returns total percent out of 1 (eg: 0.25 for 25% completeness)
+  def profile_completeness_percent
+    total = completed = 0.0
+    self.profile_elements.each do |element, is_completed|
+      total += 1.0
+      # Team member completeness %
+      if is_completed.is_a? Float
+        completed += is_completed
+      # Boolean completeness
+      else
+        completed += 1.0 if is_completed
+      end
+    end
+    (completed / total).round(2)
+  end
+
+    # Returns hash of all elements + each team member's completeness as 
+  def profile_elements
+    elements = {
+      :intro_video => !self.intro_video_url.blank?, 
+      :elevator_pitch => (!self.elevator_pitch.blank? and (self.elevator_pitch.size > 10)), 
+      :industry => !self.industry_list.blank?,
+    }
+    self.team_members.each do |tm|
+      elements[tm.name.to_url.to_sym] = tm.profile_completeness_percent
+    end
+    elements
+  end
+
   def self.stages
     {1 => "Idea", 
     2 => "Prototype",

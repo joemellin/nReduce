@@ -15,7 +15,7 @@
     %ul
     - @startup.team_members.order(:name).each do |u|
       %li
-        = u.name
+        = link_to u.name, u
         &nbsp;
         = link_to '<i class="icon icon-remove"></i>'.html_safe, remove_team_member_startup_path(:user_id => u.id), :method => :post, :confirm => "Are you sure you want to remove #{u.name}?"
 
@@ -97,10 +97,9 @@
 .control-group{error_css(@startup, :industry_list)}
   = f.label :industry_list, "Market(s)", :class => 'control-label'
   .controls
-    = @startup.industry_list
-    =# f.text_field :industry_list, :class => 'span3'
+    = f.text_field :industry_list, :class => 'span3 industry_list'
     = f.semantic_errors :industry_list
-    -# %p.help-block Are you in 
+    %p.help-block Are you in 
 
 .control-group{error_css(@startup, :growth_model)}
   = f.label :growth_model, "Growth Model", :class => 'control-label'

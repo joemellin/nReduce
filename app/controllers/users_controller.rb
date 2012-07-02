@@ -15,6 +15,8 @@ class UsersController < ApplicationController
   end
 
   def edit
+    @profile_elements = @user.profile_elements
+    @profile_completeness_percent = (@user.profile_completeness_percent * 100).round
   end
 
   def update
