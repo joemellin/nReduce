@@ -195,7 +195,7 @@ class User < ActiveRecord::Base
 
       # How many checkins did your connected startups make?
       startup_ids = Relationship.all_connection_ids_for(startup)['Startup']
-      unless ids.blank?
+      unless startup_ids.blank?
         startup_ids.map do |startup_id|
           num_checkins += checkins_by_startup[startup_id].size unless checkins_by_startup[startup_id].blank?
         end
