@@ -84,7 +84,7 @@ class User < ActiveRecord::Base
   end
 
   def num_onboarding_steps # needs to be one more than actual steps
-    8
+    7
   end
 
   def has_startup_or_is_mentor?
