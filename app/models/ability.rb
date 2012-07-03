@@ -17,7 +17,9 @@ class Ability
         can [:manage, :dashboard, :onboard, :onboard_next, :remove_team_member], Startup, :id => user.startup_id
         
         # Can manage checkin if in before or after time window and their startup owns checkin
-        can [:new, :edit, :update], Checkin do |checkin|
+        can :new, Checkin if Checkin.in_after_time_window? or Checkin.in_before_time_window?
+
+        can [:edit, :update], Checkin do |checkin|
           (Checkin.in_after_time_window? or Checkin.in_before_time_window?) and (checkin.startup_id == user.startup_id)
         end
 
