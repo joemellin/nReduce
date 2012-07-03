@@ -33,7 +33,7 @@
 .control-group{error_css(@user, :skill_list)}
   = f.label :skill_list, "Your Skills", :class => 'control-label'
   .controls
-    = f.text_field :skill_list, :placeholder => 'comma, separated', :maxlength => 45, :class => "span4"
+    = text_field_tag 'user[skill_list]', @user.skill_list.map{|i| i.titleize }.join(', '), :maxlength => 45, :placeholder => 'comma, separated', :class => 'span4 skills_list_autocomplete'
     = f.semantic_errors :skill_list
 
 .control-group{error_css(@user, :one_liner)}

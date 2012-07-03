@@ -11,7 +11,7 @@ class User < ActiveRecord::Base
   has_many :comments
   has_many :notifications, :dependent => :destroy
   has_many :meeting_messages
-  has_many :invites, :foreign_key => 'to_id'
+  has_many :invites, :foreign_key => 'to_id', :dependent => :destroy
   has_many :awesomes
   has_many :sent_nudges, :class_name => 'Nudge', :foreign_key => 'from_id'
   has_many :user_actions, :as => :attachable

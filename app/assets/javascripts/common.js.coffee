@@ -14,6 +14,45 @@ $ ->
 
   $('.profile_completeness .well').tooltip({placement: 'left'})
 
+  split = (val) ->
+    return val.split( /,\s*/ )
+
+  extractLast = (term) ->
+    return split( term ).pop()
+
+  initializeTagAutocomplete = (tag_context) ->
+    $(".#{tag_context}_list_autocomplete")
+      # don't navigate away from the field on tab when selecting an item
+      .bind("keydown", (event) ->
+        if (event.keyCode == $.ui.keyCode.TAB && $(this).data("autocomplete").menu.active)
+          event.preventDefault()
+      )
+      .autocomplete(
+        minLength: 0,
+        source: (request, response) ->
+          $.getJSON("/tags/#{tag_context}/", {term: extractLast(request.term)}, response)
+        ,
+        focus: () ->
+          # prevent value inserted on focus
+          false
+        ,
+        select: (event, ui) ->
+          terms = split(this.value)
+          # remove the current input
+          terms.pop()
+          # add the selected item
+          terms.push(ui.item.value)
+          # add placeholder to get the comma-and-space at the end
+          terms.push("")
+          this.value = terms.join(", ")
+          false
+      )
+
+  # Autocomplete for tag fields
+  for tag_context in ['industries', 'skills']
+    initializeTagAutocomplete(tag_context)
+
+  # Countdown code
   # much grateful thanks to the countdown code from http://mahamusicfestival.com/wp-content/themes/maha2012/js/maha.js
   oxide_countdown = ->
     d = new Array()
