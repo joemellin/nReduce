@@ -37,6 +37,8 @@ class User < ActiveRecord::Base
 
   acts_as_taggable_on :skills
 
+  scope :mentor, where(:mentor => true)
+
   mount_uploader :pic, PicUploader # carrierwave file uploads
 
   def self.settings_labels

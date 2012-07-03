@@ -4,7 +4,7 @@ class AuthenticationsController < ApplicationController
   load_and_authorize_resource :only => [:index, :destroy]
 
   def index
-   @authentications = current_user.authentications if current_user
+    redirect_to user_signed_in? ? current_user : '/'
   end
 
   def create

@@ -1,5 +1,6 @@
 class UsersController < ApplicationController
   around_filter :record_user_action, :except => [:reset_hipchat_account]
+  before_filter :login_required
   before_filter :load_user_if_me_or_current
   load_and_authorize_resource
 
