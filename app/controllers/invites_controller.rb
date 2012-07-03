@@ -53,7 +53,11 @@ class InvitesController < ApplicationController
         else # they are signed in as correct user
           session[:invite_id] = @invite.id
           if accept_invite_for_user(current_user)
-            flash[:notice] = "You have been added to the #{@invite.startup.name} team!"
+            if @invite.startup.blank?
+              flash[:notice] = "Thanks for joining, we'll be adding your startups shortly..."
+            else
+              flash[:notice] = "Thanks for joining - you have been added to the #{@invite.startup.name} team!"
+            end
             redirect_to startup_path(@invite.startup)
           else
             flash[:alert] = "Oops you couldn't be added to that team..."
