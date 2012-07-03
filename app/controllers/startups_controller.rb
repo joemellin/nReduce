@@ -33,8 +33,8 @@ class StartupsController < ApplicationController
     @relationship = Relationship.between(current_user.startup, @startup) unless current_user.startup.blank?
     if current_user.mentor?
       @entity = current_user
-    elsif !@startup.blank?
-      @entity = @startup
+    elsif !current_user.startup.blank?
+      @entity = current_user.startup
     end
   end
 
@@ -75,8 +75,8 @@ class StartupsController < ApplicationController
 
     if current_user.mentor?
       @entity = current_user
-    elsif !@startup.blank?
-      @entity = @startup
+    elsif !current_user.startup.blank?
+      @entity = current_user.startup
     end
   end
 
