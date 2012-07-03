@@ -51,14 +51,14 @@
             = link_to 'This Week\'s Check-in', (Checkin.in_after_time_window? ? edit_checkin_path(@current_checkin) : @current_checkin), :class => 'btn btn-primary'
           - elsif @current_checkin.submitted?
             - if Checkin.in_after_time_window?
-              = link_to "Complete 'After' Check-in", edit_checkin_path(@current_checkin), :class => 'btn btn-danger'
+              = link_to "Submit 'After' Video", edit_checkin_path(@current_checkin), :class => 'btn btn-danger'
             - else
               - showed_before = true
-              %p Keep workin! (#{link_to("'before' checkin", @current_checkin)} was submitted)
+              %p Keep workin! (#{link_to("'before' video", @current_checkin)} was submitted)
         - if Checkin.in_after_time_window? and @current_checkin.blank?
-          = link_to "Start 'After' Check-in", new_checkin_path, :class => 'btn btn-success'
+          = link_to "Submit 'After' Video", new_checkin_path, :class => 'btn btn-success'
         - elsif Checkin.in_before_time_window? and !showed_before
-          = link_to "Start 'Before' Check-in", new_checkin_path, :class => 'btn btn-success'
+          = link_to "Submit 'Before' Video", new_checkin_path, :class => 'btn btn-success'
         / - else
         /   Come back to start your checkin by Wednesday at 4pm PST
 %hr
