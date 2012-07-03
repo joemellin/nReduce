@@ -1,5 +1,5 @@
 class TagsController < ApplicationController
-  before_filter :login_required
+  before_filter :authenticate_user!
 
   def search
     if !params[:context].blank? and !params[:term].blank?
