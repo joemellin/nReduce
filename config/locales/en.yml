@@ -12,11 +12,11 @@ en:
       all: "Not authorized to %{action} %{subject}."
       user: "You're not allowed to edit other user accounts."
     new:
-      startup: "Sorry but registration is closed for the current nReduce class. Email Joe if you have any questions: joe@nReduce.com"
+      startup: "Sorry but registration is closed. Email Joe if you're interested in joining: joe@nReduce.com"
       checkin: "Sorry you've missed the check-in times."
       meeting_message: "Only the organizer is allowed to message the attendees."
     create:
-      startup: "Sorry but registration is closed for the current nReduce class. Email Joe if you have any questions: joe@nReduce.com"
+      startup: "Sorry but registration is closed. Email Joe if you're interested in joining: joe@nReduce.com"
     update:
       project: "Not allowed to update this project."
     accept:
