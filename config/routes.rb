@@ -63,6 +63,8 @@ Nreduce::Application.routes.draw do
       get 'cancel_edit'
     end
   end
+
+  get '/tags/:context(/:term)' => "tags#search"
   
   resources :relationships, :only => [:create, :index] do
     member do
@@ -81,7 +83,7 @@ Nreduce::Application.routes.draw do
     resources :checkins do
       get 'latest' => "checkins#show", :checkin_id => 'latest', :on => :collection
     end
-    resources :invites, :only => :create
+    resources :invites, :only => [:create, :destroy, :show]
   end
 
   delete '/invites/:id' => "invites#destroy", :as => :destroy_invite

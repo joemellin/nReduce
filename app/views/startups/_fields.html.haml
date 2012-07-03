@@ -97,9 +97,8 @@
 .control-group{error_css(@startup, :industry_list)}
   = f.label :industry_list, "Market(s)", :class => 'control-label'
   .controls
-    = f.text_field :industry_list, :class => 'span3 industry_list'
+    = text_field_tag 'startup[industry_list]', @startup.industry_list.map{|i| i.titleize }.join(', '), :class => 'span5 industries_list_autocomplete'
     = f.semantic_errors :industry_list
-    %p.help-block Are you in 
 
 .control-group{error_css(@startup, :growth_model)}
   = f.label :growth_model, "Growth Model", :class => 'control-label'
