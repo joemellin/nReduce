@@ -67,7 +67,7 @@
     - current_checkin = @checkins_by_startup[s.id]
     - this_startup_url = (current_checkin and current_checkin.completed?) ? latest_startup_checkins_url(s) : startup_url(s)
     - logo_path = s.logo_url(:square)
-    - owner = (s.id == (@startup && @startup.id))
+    - owner = (@startup && (s.id == @startup.id))
     .checkin.span3{:align => 'center'}
       .top{:align => 'center', :onclick => "window.location = '#{this_startup_url}';"}
         .background{:style => "background-image: url('#{logo_path}'); cursor: pointer;"} &nbsp;
