@@ -55,10 +55,11 @@ class InvitesController < ApplicationController
           if accept_invite_for_user(current_user)
             if @invite.startup.blank?
               flash[:notice] = "Thanks for joining, we'll be adding your startups shortly..."
+              redirect_to startup_path(@invite.startup)
             else
               flash[:notice] = "Thanks for joining - you have been added to the #{@invite.startup.name} team!"
+              redirect_to '/'
             end
-            redirect_to startup_path(@invite.startup)
           else
             flash[:alert] = "Oops you couldn't be added to that team..."
             redirect_to root_path
