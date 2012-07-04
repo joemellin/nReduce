@@ -18,18 +18,21 @@
             %ul.dropdown-menu
               - unless current_user.startup_id.blank?
                 %li= link_to 'My Startup', startup_path(:id => current_user.startup_id)
-              %li= link_to 'My Account', user_path(current_user)
+              %li= link_to 'My Profile', user_path(current_user)
+              - unless current_user.mentor?
+                - if current_user.meeting_id.blank?
+                  %li= link_to 'Local Meetings', meetings_path
+                - else
+                  %li= link_to "My Meeting", meeting_path(:id => current_user.meeting_id)
               - if 1 == 2
                 %li
                   %a{:href => user_notifications_path(current_user)}
                     Notifications
                     %span.badge{:class => current_user.unread_nc > 0 ? 'badge-info' : ''}= current_user.unread_nc
-              - unless current_user.mentor?
-                %li.divider
-                - if current_user.meeting_id.blank?
-                  %li= link_to 'Local Meetings', meetings_path
-                - else
-                  %li= link_to "My Meeting", meeting_path(:id => current_user.meeting_id)
+              %li.divider
+              - unless current_user.startup_id.blank?
+                %li= link_to 'Edit Startup', edit_startup_path
+              %li= link_to 'Edit Profile', edit_user_path(:id => current_user.id)
               - if current_user.admin?
                 %li= link_to "Admin Tools", "/admin"
                 %li= link_to "Jobs", "/resque"

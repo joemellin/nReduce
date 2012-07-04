@@ -233,7 +233,7 @@ class User < ActiveRecord::Base
 
       # calculate after for startup
       rating = nil
-      rating = (num_for_startup.to_f / startup.team_members.size.to_f).round(3) unless num_checkins == 0
+      rating = num_for_startup.to_f.round(3) unless num_checkins == 0
       startup.rating = rating
       startup.save(:validate => false) unless dont_save
       results[startup.id][:total] = rating

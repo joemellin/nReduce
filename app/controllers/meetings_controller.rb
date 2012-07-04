@@ -9,10 +9,12 @@ class MeetingsController < ApplicationController
   end
 
   def show
+    @attendee = current_user.meeting_id == @meeting.id
+    @attendees = @meeting.attendees.order(:name).includes(:startup)
     if can? :edit, @meeting
       @can_edit = true
       @meeting_messages = @meeting.meeting_messages.ordered.limit(5)
-      @attendees = @meeting.attendees.order(:name).includes(:startup)
+      @organizer == true
     end
   end
 
