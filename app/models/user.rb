@@ -41,6 +41,10 @@ class User < ActiveRecord::Base
 
   mount_uploader :pic, PicUploader # carrierwave file uploads
 
+  # important that you keep the order the same on this array - uses bitmask_attributes gem
+  # adds methods and scopes: https://github.com/joelmoss/bitmask_attributes
+  bitmask :roles, :as => [:admin, :entrepreneur, :mentor, :investor, :nreduce_mentor]
+
   def self.settings_labels
     {
       'email_on' =>
@@ -85,6 +89,11 @@ class User < ActiveRecord::Base
 
   def num_onboarding_steps # needs to be one more than actual steps
     7
+  end
+
+    # Skip step 4 and 5 if user is not an nreduce mentor
+  def skip_onboarding_step?(step)
+    self.mentor? and !self.roles?(:nreduce_mentor) and [4,5].include?(step)
   end
 
   def has_startup_or_is_mentor?

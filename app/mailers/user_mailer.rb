@@ -15,7 +15,12 @@ class UserMailer < ActionMailer::Base
     @relationship = notification.attachable
     @requesting_entity = @relationship.entity
     @user = notification.user
-    mail(:to => @user.email, :subject => "#{@entity.name} wants to connect with you")
+    if @requesting_entity.roles?(:mentor)
+      subject = "#{@requesting_entity.name} wants to be your mentor"
+    else
+      subject = "#{@requesting_entity.name} wants to connect with you"
+    end
+    mail(:to => @user.email, :subject => subject)
   end
 
   def relationship_approved(notification)

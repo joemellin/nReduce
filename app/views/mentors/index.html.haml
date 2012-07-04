@@ -1,0 +1,5 @@
+%h2 Mentors
+
+%ul
+  - @mentors.each do |m|
+    %li= link_to m.name, mentor_path(m.id)

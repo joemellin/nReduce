@@ -9,12 +9,11 @@ class MeetingsController < ApplicationController
   end
 
   def show
-    @attendee = current_user.meeting_id == @meeting.id
-    @attendees = @meeting.attendees.order(:name).includes(:startup)
     if can? :edit, @meeting
-      @can_edit = true
+      @attendees = @meeting.attendees.order(:name).includes(:startup)
+      @attendees = @attendees.sort{|a,b| (a.startup.blank? ? '' : a.startup.name) <=> (b.startup.blank? ? '' : b.startup.name) }.reverse
       @meeting_messages = @meeting.meeting_messages.ordered.limit(5)
-      @organizer == true
+      @can_edit = true
     end
   end
 

@@ -1,0 +1,22 @@
+%h2 #{@mentor.name.possessive} Teams
+
+%p
+  Select all the startups that you'd like the mentor to be connected to.
+  %strong It doesn't work to remove startups yet.
+%br/
+= form_tag mentor_path(@mentor), :method => :put do
+  = submit_tag 'Save Changes', :class => 'btn btn-primary btn-large'
+  %table.table
+    %thead
+      %th Add?
+      %th Startup
+      %th Community Rating
+      %th # of Awesomes
+    %tbody
+      - @startups.each do |s|
+        %tr
+          %td= check_box_tag "startup_ids[]", s.id, @currently_mentoring_ids.include?(s.id)
+          %td= link_to s.name, s
+          %td= s.rating
+          %td= @awesome_count
+  = submit_tag 'Save Changes', :class => 'btn btn-primary btn-large'

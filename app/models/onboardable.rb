@@ -13,7 +13,12 @@ module Onboardable
   end
 
   def onboarding_step_increment!
-    self.update_attribute('onboarding_step', self.onboarding_step + 1) unless self.onboarding_complete?
+    next_step = self.onboarding_step + 1
+    # Logic is added for people in certain conditions to skip the next step
+    while(self.skip_onboarding_step?(next_step))
+      next_step += 1
+    end
+    self.update_attribute('onboarding_step', next_step) unless self.onboarding_complete?
   end
 
     # Onboarding steps - hardcoded here at 9
@@ -23,5 +28,9 @@ module Onboardable
 
   def num_onboarding_steps
     9
+  end
+
+  def skip_onboarding_step?(step)
+    false
   end
 end
