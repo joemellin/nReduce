@@ -25,6 +25,7 @@ class UserAction < ActiveRecord::Base
       'relationships_reject' => 4,
       'checkins_index' => 5,
       'checkins_show' => 6,
+      'checkins_create' => 44,
       'checkins_edit' => 7,
       'checkins_update' => 8,
       'checkins_delete' => 9,
@@ -62,6 +63,7 @@ class UserAction < ActiveRecord::Base
       'invites_accept' => 41,
       'nudges_create' => 42,
       'nudges_show' => 43
+      # ^^ checkins show is #44
     }
   end
 

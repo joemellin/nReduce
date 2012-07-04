@@ -74,9 +74,9 @@ class Startup < ActiveRecord::Base
     self.connected_to('User')
   end
 
-   # Returns the checkin for this week (or if Sun/Mon, it checks for last week's checkin)
+   # Returns the checkin for this nReduce week (Tue 4pm - next Tue 4pm)
   def current_checkin
-    checkins.ordered.where(['created_at > ?', Time.now - 1.week]).first
+    checkins.ordered.where(['created_at > ?', Checkin.prev_after_checkin]).first
   end
 
     # Calculates profile completeness for all factors
