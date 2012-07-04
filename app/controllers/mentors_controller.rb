@@ -7,7 +7,7 @@ class MentorsController < ApplicationController
 
   def show
     @mentor = User.find(params[:id])
-    @awesome_count_by_startup = Checkin.select('SUM(awesome_count), checkins.*').group('startup_id').inject({}){|res, c| res[c.startup_id] = c.awesome_count; res }
+    @awesome_count_by_startup = Checkin.select('SUM(awesome_count) as total_awesomes, checkins.*').group('startup_id').inject({}){|res, c| res[c.startup_id] = c.total_awesomes.to_i; res }
     @currently_mentoring_ids = @mentor.pending_or_approved_relationships.map{|r| r.connected_with_id }
     @startups = Startup.onboarded.order('rating DESC').all.sort{|a,b| (@currently_mentoring_ids.include?(a.id) ? 0 : 1) <=> (@currently_mentoring_ids.include?(b.id) ? 0 : 1) }
   end
