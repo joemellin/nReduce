@@ -18,5 +18,5 @@
           %td= check_box_tag "startup_ids[]", s.id, @currently_mentoring_ids.include?(s.id)
           %td= link_to s.name, s
           %td= s.rating
-          %td= @awesome_count
+          %td= @awesome_count_by_startup[s.id]
   = submit_tag 'Save Changes', :class => 'btn btn-primary btn-large'
