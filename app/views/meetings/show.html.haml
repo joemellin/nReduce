@@ -24,25 +24,29 @@
         Organizer: #{@meeting.organizer.name}
         - unless @meeting.organizer.phone.blank?
           (#{@meeting.organizer.phone})
-- if @can_edit
+- if @attendee == true or @organizer == true
   %hr{:style => 'margin: 20px 0 20px 0'}
   .row
     .span12
       - if @attendees.size == 0
         %h4 There aren't any attendees registered for this meeting.
       - else
-        %h4 All Attendees (#{@attendees.size})
+        %h4 All Attendees
         %table.table
           %thead
             %tr
-              %th Name
+              %th Person
               %th Startup
-              %th Twitter
-              %th Phone
+              - if @organizer == true
+                %th Twitter
+                %th Phone
           %tbody
             - @attendees.each do |u|
               %tr
-                %td= u.name
+                %td
+                  = link_to image_tag(user_avatar_url(u)), u
+                  = link_to u.name, u
                 %td= u.startup.blank? ? '' : link_to(u.startup.name, u.startup)
-                %td= u.twitter.blank? ? '' : link_to_twitter(u.twitter)
-                %td= u.phone
+                - if @organizer == true
+                  %td= u.twitter.blank? ? '' : link_to_twitter(u.twitter)
+                  %td= u.phone
