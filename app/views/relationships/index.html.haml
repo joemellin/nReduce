@@ -54,7 +54,8 @@
               = link_to "Submit 'After' Video", edit_checkin_path(@current_checkin), :class => 'btn btn-danger'
             - else
               - showed_before = true
-              %p Keep workin! (#{link_to("'before' video", @current_checkin)} was submitted)
+              #{link_to("'Before' video", (Checkin.in_before_time_window? ? edit_checkin_path(@current_checkin) : @current_checkin), :class => 'btn btn-success')} was submitted
+              %p Keep workin!
         - if Checkin.in_after_time_window? and @current_checkin.blank?
           = link_to "Submit 'After' Video", new_checkin_path, :class => 'btn btn-success'
         - elsif Checkin.in_before_time_window? and !showed_before
