@@ -42,6 +42,8 @@ Nreduce::Application.routes.draw do
 
   get "/contact_joe" => "pages#contact_joe"
 
+  resources :mentors, :only => [:index, :show, :update]
+
   resources :users do
     collection do
       get 'chat'

@@ -9,33 +9,39 @@
 /   .controls
 /     %p.help-block
 /       Enter in email addresses of team members
-.control-group
-  = f.label :team_size, "Team Members", :class => 'control-label'
-  .controls
-    %ul
-    - @startup.team_members.order(:name).each do |u|
-      %li
-        = link_to u.name, u
-        &nbsp;
-        = link_to '<i class="icon icon-remove"></i>'.html_safe, remove_team_member_startup_path(:user_id => u.id), :method => :post, :confirm => "Are you sure you want to remove #{u.name}?"
-
-.control-group
-  %label.control-label Mentors
-  .controls
-    - mentors = @startup.mentors
-    - if mentors.size == 0
-      None
-    - else
+- if @startup.new_record?
+  .control-group
+    .controls
+      %p (You can add your team after you've saved your profile)
+- else
+  .control-group
+    = f.label :team_size, "Team Members", :class => 'control-label'
+    .controls
       %ul
-      - mentors.each do |u|
+      - @startup.team_members.order(:name).each do |u|
         %li
           = link_to u.name, u
+          &nbsp;
+          = link_to '<i class="icon icon-remove"></i>'.html_safe, remove_team_member_startup_path(:user_id => u.id), :method => :post, :confirm => "Are you sure you want to remove #{u.name}?"
 
-.control-group{error_css(@startup, :main_contact_id)}
-  = f.label :main_contact_id, "Main Contact", :class => 'control-label'
-  .controls
-    = f.select :main_contact_id, options_for_select(@startup.team_members.map{|tm| [tm.name, tm.id] }, @startup.main_contact_id), :include_blank => true
-    = f.semantic_errors :main_contact_id
+  .control-group
+    %label.control-label Mentors
+    .controls
+      - mentors = @startup.mentors
+      - if mentors.size == 0
+        None
+      - else
+        %ul
+        - mentors.each do |u|
+          %li
+            = link_to u.name, u
+
+
+  .control-group{error_css(@startup, :main_contact_id)}
+    = f.label :main_contact_id, "Main Contact", :class => 'control-label'
+    .controls
+      = f.select :main_contact_id, options_for_select(@startup.team_members.map{|tm| [tm.name, tm.id] }, @startup.main_contact_id), :include_blank => true
+      = f.semantic_errors :main_contact_id
 
 .control-group{error_css(@startup, :team_size)}
   = f.label :team_size, "# of Team Members", :class => 'control-label'

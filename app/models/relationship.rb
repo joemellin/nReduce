@@ -76,6 +76,10 @@ class Relationship < ActiveRecord::Base
     Relationship.where(:connected_with_id => entity.id, :connected_with_type => entity.class).pending
   end
 
+  def self.all_pending_or_approved_relationships_for(entity)
+    Relationship.all_requested_relationships_for(entity) + entity.relationships.approved.all
+  end
+
     # Returns all pending relationships that other startups have initiated with this startup
   def self.all_requested_relationships_for(entity)
     entity.relationships.pending

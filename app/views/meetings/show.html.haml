@@ -24,7 +24,7 @@
         Organizer: #{@meeting.organizer.name}
         - unless @meeting.organizer.phone.blank?
           (#{@meeting.organizer.phone})
-- if @attendee == true or @organizer == true
+- if @organizer == true
   %hr{:style => 'margin: 20px 0 20px 0'}
   .row
     .span12
@@ -37,9 +37,8 @@
             %tr
               %th Person
               %th Startup
-              - if @organizer == true
-                %th Twitter
-                %th Phone
+              %th Twitter
+              %th Phone
           %tbody
             - @attendees.each do |u|
               %tr
@@ -47,6 +46,5 @@
                   = link_to image_tag(user_avatar_url(u)), u
                   = link_to u.name, u
                 %td= u.startup.blank? ? '' : link_to(u.startup.name, u.startup)
-                - if @organizer == true
-                  %td= u.twitter.blank? ? '' : link_to_twitter(u.twitter)
-                  %td= u.phone
+                %td= u.twitter.blank? ? '' : link_to_twitter(u.twitter)
+                %td= u.phone

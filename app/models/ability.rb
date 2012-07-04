@@ -125,10 +125,6 @@ class Ability
       # User can only manage their own authentications
       can [:read, :destroy], Authentication, :user_id => user.id
 
-      # Can only create a startup if registration is open and they don't have a current startup
-      can [:new, :create], Startup do |startup|
-        Startup.registration_open? and user.startup_id.blank?
-      end
 
       # Startup can view relationships they are involved in
       if !user.startup_id.blank?
@@ -146,6 +142,11 @@ class Ability
 
       # All users with startup/mentor can view a startup if onboarding is complete
       can :read, Startup, :onboarding_complete? => true
+    end
+
+    # Can only create a startup if registration is open and they don't have a current startup
+    can [:new, :create], Startup do |startup|
+      Startup.registration_open? and user.startup_id.blank?
     end
 
     # User can only manage their own account

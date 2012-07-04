@@ -59,7 +59,7 @@ class ApplicationController < ActionController::Base
     if current_user.email.blank? or current_user.email.match(/\@users.nreduce.com/) != nil or current_user.encrypted_password.blank? or current_user.name.blank?
       redirect_to complete_account_user_path(current_user)
       return false
-    elsif current_user.mentor? and !current_user.onboarding_complete? and !['onboard', 'onboard_next'].include?(action_name)
+    elsif (current_user.mentor? or current_user.roles?(:mentor)) and !current_user.onboarding_complete? and !['onboard', 'onboard_next'].include?(action_name)
       redirect_to onboard_user_path(current_user)
       return false
     else

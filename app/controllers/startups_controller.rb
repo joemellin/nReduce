@@ -1,13 +1,16 @@
 class StartupsController < ApplicationController
   around_filter :record_user_action, :except => [:onboard_next, :stats]
   before_filter :login_required
+  before_filter :load_requested_or_users_startup, :except => [:index, :stats]
+  load_and_authorize_resource :except => [:index, :stats]
+  before_filter :redirect_if_no_startup, :except => [:index]
 
   def index
     redirect_to :action => :search
   end
 
   def new
-    @startup = Startup.new(:website_url => 'http://')
+    redirect_to :action => :edit unless @startup.new_record?
   end
 
   def create
@@ -20,9 +23,6 @@ class StartupsController < ApplicationController
       render :new
     end
   end
-
-  before_filter :load_requested_or_users_startup, :except => [:index, :stats]
-  load_and_authorize_resource :except => [:index, :stats]
 
   def show
     @owner = true if user_signed_in? and (@startup.id == current_user.startup_id)
@@ -166,5 +166,15 @@ class StartupsController < ApplicationController
                  }
       format.html { render :nothing => true }
     end
+  end
+
+  protected
+
+  def redirect_if_no_startup
+    if @startup.blank?
+      redirect_to current_user
+      return false
+    end
+    true
   end
 end

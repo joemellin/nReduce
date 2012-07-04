@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120630233808) do
+ActiveRecord::Schema.define(:version => 20120704194213) do
 
   create_table "authentications", :force => true do |t|
     t.string   "provider"
@@ -176,7 +176,7 @@ ActiveRecord::Schema.define(:version => 20120630233808) do
     t.string   "connected_with_type"
   end
 
-  add_index "relationships", ["entity_id", "entity_type", "connected_with_id", "connected_with_type", "status"], :name => "relationship_index", :unique => true
+  add_index "relationships", ["entity_id", "entity_type", "status"], :name => "relationship_index"
 
   create_table "startups", :force => true do |t|
     t.string   "name"
@@ -277,9 +277,13 @@ ActiveRecord::Schema.define(:version => 20120630233808) do
     t.string   "blog_url"
     t.string   "pic"
     t.float    "rating"
-    t.integer  "onboarding_step",        :default => 0
+    t.integer  "onboarding_step",        :default => 1
+    t.string   "intro_video_url"
+    t.integer  "roles"
   end
 
   add_index "users", ["reset_password_token"], :name => "index_users_on_reset_password_token", :unique => true
+  add_index "users", ["roles"], :name => "index_users_on_roles"
+  add_index "users", ["startup_id"], :name => "index_users_on_startup_id"
 
 end

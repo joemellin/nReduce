@@ -43,6 +43,7 @@ class Invite < ActiveRecord::Base
       user.startup_id = self.startup_id if !self.startup_id.blank? or !user.startup_id.blank?
     # Add user as mentor to startup
     elsif self.invite_type == MENTOR
+      user.roles << :mentor
       user.mentor = true
       # Add mentor to startup if invite came from startup
       unless self.startup.blank?

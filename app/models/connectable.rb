@@ -12,6 +12,13 @@ module Connectable
     Relationship.all_connections_for(self, class_name_string)
   end
 
+    # Entity ids for a specific class that this entity is connected to
+  def connected_to_ids(class_name_string = 'Startup')
+    ids = Relationship.all_connection_ids_for(self)
+    return ids[class_name_string] if !ids.blank? and !ids[class_name_string].blank?
+    return []
+  end
+
 	  # Relationships this entity as requested with others
     # not cached
   def requested_relationships
@@ -22,6 +29,10 @@ module Connectable
     # not cached
   def pending_relationships
     Relationship.all_pending_relationships_for(self)
+  end
+
+  def pending_or_approved_relationships
+    Relationship.all_pending_or_approved_relationships_for(self)
   end
 
     # Returns true if this entity is connected in an approved relationship
