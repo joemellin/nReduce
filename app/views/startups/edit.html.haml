@@ -33,5 +33,5 @@
         - @startup.invites.not_accepted.each do |i|
           %li
             = "#{i.email} (#{Invite.types[i.invite_type].titleize})"
-            = link_to '<i class="icon icon-remove"></i>'.html_safe, destroy_invite_path(i), :method => :delete, :confirm => "Are you sure you want to cancel the invite to #{i.email}?"
+            = link_to '<i class="icon icon-remove"></i>'.html_safe, invite_path(i), :method => :delete, :confirm => "Are you sure you want to cancel the invite to #{i.email}?"
 
