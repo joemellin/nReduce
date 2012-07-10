@@ -186,6 +186,7 @@ class Checkin < ActiveRecord::Base
     # uses created at date, or if not yet saved, current time
   def assign_week
     self.week = Checkin.week_start_for_time(self.created_at || Time.now).strftime("%Y%W").to_i
+    true
   end
 
   protected
