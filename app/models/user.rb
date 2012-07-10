@@ -432,6 +432,7 @@ class User < ActiveRecord::Base
 
   def assign_as_mentor
     self.mentor = roles?(:mentor) or roles?(:nreduce_mentor)
+    true
   end
 
   def geocode_location
