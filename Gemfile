@@ -59,6 +59,7 @@ group :test, :development do
   gem 'guard-livereload'
   gem 'spork'
   gem 'guard-spork'
+  gem 'debugger'
   #gem 'jasmine-rails' # also need to do: brew install qt
 end
 

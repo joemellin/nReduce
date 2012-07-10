@@ -28,29 +28,32 @@ class Startup < ActiveRecord::Base
   scope :with_intro_video, where('intro_video_url IS NOT NULL')
 
   # Uses Sunspot gem with Solr backend. Docs: http://outoftime.github.com/sunspot/docs/index.html
-  # searchable do
-  #   # full-text search fields - can add :stored => true if you don't want to hit db
-  #   text :name, :boost => 4.0
-  #   text :location do
-  #     team_members.map{|tm| tm.location }.delete_if{|l| l.blank? }
-  #   end
-  #   text :industries  do
-  #     self.industries.map{|t| t.name }.join(' ')
-  #   end
-  #   text :website_url, :one_liner
+  # https://github.com/outoftime/sunspot
+  searchable do
+    # full-text search fields - can add :stored => true if you don't want to hit db
+    text :name, :boost => 4.0
+    text :location do
+      team_members.map{|tm| tm.location }.delete_if{|l| l.blank? }
+    end
+    text :industries_cached, :stored => true do
+      self.industries.map{|t| t.name.titleize }.join(', ')
+    end
+    text :website_url
+    text :one_liner
 
-  #   # filterable fields
-  #   integer :stage
-  #   integer :company_goal
-  #   integer :onboarding_step
-  #   boolean :public
-  #   integer :industry_tag_ids, :multiple => true, :stored => true do
-  #     self.industries.map{|t| t.id }
-  #   end
-  #   string :sort_name do
-  #     name.downcase.gsub(/^(an?|the)/, '')
-  #   end
-  # end
+    # filterable fields
+    integer :stage
+    integer :company_goal
+    integer :onboarding_step
+    double  :rating
+    boolean :public
+    integer :industry_tag_ids, :multiple => true, :stored => true do
+      self.industries.map{|t| t.id }
+    end
+    string :sort_name do
+      name.downcase.gsub(/^(an?|the)/, '')
+    end
+  end
 
   def self.registration_open?
     false
