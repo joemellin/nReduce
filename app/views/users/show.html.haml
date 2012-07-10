@@ -43,7 +43,7 @@
           = link_to image_tag('facebook_32.png'), @user.facebook_url, :target => '_blank'
       .span3
         != rating_link(@user)
-        %br
+        %br/
         %p
           %small About #{h(@user.name)}
         %p= simple_format(h(@user.bio))

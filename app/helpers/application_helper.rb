@@ -109,18 +109,22 @@ module ApplicationHelper
     tag(:iframe, {:width => width, :height => height, :src => embed_url, :frameborder => 0, :allowfullscreen => true})
   end
 
-  def rating_link(obj)
-    return '' if !obj.respond_to?(:rating) or obj.rating.nil?
-    html = "<p><small>#{obj.name.possessive} Community Status</small></p>"
-    html += "<h1>#{obj.rating.round(2)} "
+  def rating_link(obj, compact = false)
+    html = ''
+    return html if !obj.respond_to?(:rating)
+    # Set as 0 if nil
+    obj.rating ||= 0
+    html += "<p><small>#{obj.name.possessive} Community Status</small></p>"
+    html += compact ? '<h3>' : '<h1>'
+    html += "#{obj.rating.round(2)} "
     if obj.rating < 0.25
-      html += link_to(Startup.community_status[0], community_guidelines_path, :class => "btn btn-large") 
+      html += link_to(Startup.community_status[0], community_guidelines_path, :class => "btn #{compact ? '' : 'btn-large'}") 
     elsif obj.rating >= 0.25 and obj.rating < 1
-      html += link_to(Startup.community_status[1], community_guidelines_path, :class => "btn btn-large btn-warning") 
+      html += link_to(Startup.community_status[1], community_guidelines_path, :class => "btn btn-warning #{compact ? '' : 'btn-large'}") 
     elsif obj.rating >= 1
-      html += link_to(Startup.community_status[2], community_guidelines_path, :class => "btn btn-large btn-success") 
+      html += link_to(Startup.community_status[2], community_guidelines_path, :class => "btn btn-success #{compact ? '' : 'btn-large'}") 
     end
-    html += '</h1><br />'
+    html += compact ? '</h3>' : '</h1>'
     html
   end
 
