@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120710223417) do
+ActiveRecord::Schema.define(:version => 20120710231800) do
 
   create_table "authentications", :force => true do |t|
     t.string   "provider"
@@ -51,6 +51,7 @@ ActiveRecord::Schema.define(:version => 20120710223417) do
     t.text     "before_comments"
     t.text     "start_comments"
     t.integer  "comment_count",   :default => 0
+    t.integer  "week"
   end
 
   add_index "checkins", ["startup_id", "created_at"], :name => "index_checkins_on_startup_id_and_created_at"
@@ -177,7 +178,7 @@ ActiveRecord::Schema.define(:version => 20120710223417) do
     t.text     "message"
   end
 
-  add_index "relationships", ["entity_id", "entity_type", "connected_with_id", "connected_with_type", "status"], :name => "relationship_index", :unique => true
+  add_index "relationships", ["entity_id", "entity_type", "status"], :name => "relationship_index"
 
   create_table "startups", :force => true do |t|
     t.string   "name"
@@ -278,7 +279,8 @@ ActiveRecord::Schema.define(:version => 20120710223417) do
     t.string   "blog_url"
     t.string   "pic"
     t.float    "rating"
-    t.integer  "onboarding_step",        :default => 0
+    t.integer  "onboarding_step",        :default => 1
+    t.string   "intro_video_url"
     t.integer  "roles"
   end
 

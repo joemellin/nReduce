@@ -10,6 +10,7 @@ class Checkin < ActiveRecord::Base
 
   after_validation :check_submitted_completed_times
   before_save :notify_user
+  before_create :assign_week
 
   validates_presence_of :startup_id
   validates_presence_of :start_focus, :message => "can't be blank", :if => lambda { Checkin.in_before_time_window? }
@@ -99,9 +100,8 @@ class Checkin < ActiveRecord::Base
     end
   end
 
-  # Pass in a timestamp and this will return the current week description for that timestamp
-  # ex: Jul 5 to Jul 12
-  def self.week_for_time(time)
+  # Pass in a timestamp and this will return the start (4pm on Tue) of that checkin's week
+  def self.week_start_for_time(time)
     # reset to tuesday
     if time.sunday? or time.monday? or (time.tuesday? and time.hour < 16)
       time = time.beginning_of_week - 5.days
@@ -109,8 +109,16 @@ class Checkin < ActiveRecord::Base
       time = time.beginning_of_day - time.days_to_week_start.days + 2.days
     end
     time += 16.hours # set it at 4pm
-    week_end = time + 6.days
-    "#{time.strftime('%b %-d')}-#{week_end.strftime('%b %-d')}"
+    time
+  end
+
+  # Pass in a timestamp and this will return the current week description for that timestamp
+  # ex: Jul 5 to Jul 12
+  def self.week_for_time(time)
+    # reset to tuesday
+    beginning = Checkin.week_start_for_time(time)
+    week_end = beginning + 6.days
+    "#{beginning.strftime('%b %-d')}-#{week_end.strftime('%b %-d')}"
   end
 
   # Queues up 'before' email to be sent to all active users
@@ -172,6 +180,12 @@ class Checkin < ActiveRecord::Base
   def self.video_url_is_unique?(url)
     cs = Checkin.where(:start_video_url => url).or(:end_video_url => url)
     return cs.map{|c| c.id }.delete_if{|id| id == self.id }.count > 0
+  end
+
+    # Assigns week for this checkin, ex: 20125 is week 5 of 2012
+    # uses created at date, or if not yet saved, current time
+  def assign_week
+    self.week = Checkin.week_start_for_time(self.created_at || Time.now).strftime("%Y%W").to_i
   end
 
   protected

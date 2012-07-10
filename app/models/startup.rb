@@ -84,7 +84,24 @@ class Startup < ActiveRecord::Base
 
     # Returns hash of all requirements to be allowed to search for a mentor - and whether this startup has met them
   def mentor_elements
-    consecutive_checkins = 3
+    consecutive_checkins = 0
+    prev_week = nil
+    self.checkins.order('week').each do |checkin|
+      # Start with one if it's the first one
+      next unless checkin.submitted? and checkin.completed?
+      if prev_week.blank?
+        consecutive_checkins += 1
+      # Check if year is the same
+      else
+        if prev_week.to_s.first(4) == checkin.week.to_s.first(4)
+          consecutive_checkins += 1 if prev_week == (checkin.week - 1)
+        # if prev year, check if prev week is 53 and current week is 0
+        elsif (prev_week.to_s.first(4).to_i + 1).to_s == checkin.week.to_s.first(4)
+          consecutive_checkins += 1 if prev_week.to_s.last(2) == '53' and checkin.week.to_s.last(1) == '0'
+        end
+      end
+      prev_week = checkin.week
+    end
     num_awesomes = self.awesomes.count
     my_rating = self.rating.blank? ? 0 : self.rating
     profile_completeness = self.profile_completeness_percent
