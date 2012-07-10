@@ -16,25 +16,25 @@
       = select_tag 'search[meeting_id]', options_for_select(@meetings_by_id.map{|id, name| [name, id] }, @search[:meeting_id].to_i), :class => 'input-large', :include_blank => true
     .span3
       %p
-        %small Markets (coming soon)
-      = select_tag 'search[industry]', options_for_select([], @search[:industry]), :class => 'input-large', :include_blank => true
+        %small Industries
+      = text_field_tag 'search[industries]', @search[:industries], :class => 'input-large industries_list_autocomplete'
     .span1
       %p &nbsp;
       = submit_tag 'Search', :class => 'btn'
 
-- if @startups.size > 0
+- if @search_results.hits.size > 0
   .row
     .span1
       %p &nbsp;
     .span11
       .right
-        - if @startups.total_pages > 1
-          %h3{:style => 'color: #ccc'} Page #{@startups.current_page} of #{@startups.total_pages}
+        - if @search_results.results.total_pages > 1
+          %h3{:style => 'color: #ccc'} Page #{@search_results.results.current_page} of #{@search_results.results.total_pages}
       .left
-        %h2 #{pluralize(@startups.total_entries, 'startup')}:
+        %h2 #{pluralize(@search_results.total, 'startup')}:
       .clear
 
-  - @startups.each do |s|
+  - @search_results.each_hit_with_result do |hit, s|
     .row{:id => "startup_#{s.id}"}
       .span1
         %p &nbsp;
@@ -70,16 +70,22 @@
               %p Idea Stage: #{Startup.stages[s.stage.to_i]}
             %p
               Industry:
-              - if @tags_by_startup_id[s.id].blank?
+              - if hit.stored(:industries_cached).blank?
                 none
               - else
-                = @tags_by_startup_id[s.id].map{|t| t.name }.join(', ')
+                = hit.stored(:industries_cached).join(', ')
       .span3
         - unless @entity.blank?
           = relationship_button_for(@entity, s)
+        %p
+          %small
+            Community status:
+            %strong= s.rating.blank? ? '0' : s.rating.round(2)
+            
+        
     %hr
     %br
 
-  = will_paginate @startups
+  = will_paginate @search_results.results
 - else
   %h4 No startups matched your search

@@ -82,6 +82,7 @@ Nreduce::Application.routes.draw do
       post 'search'
       get 'stats'
     end
+    get 'mentor_checklist', :on => :member
     resources :checkins do
       get 'latest' => "checkins#show", :checkin_id => 'latest', :on => :collection
     end
