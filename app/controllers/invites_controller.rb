@@ -10,7 +10,7 @@ class InvitesController < ApplicationController
     if @invite.new_record?
       flash[:alert] = @invite.errors.full_messages.join(', ') + '.'
     else
-      flash[:notice] = "Your invite has been sent to #{@invite.email}"
+      flash[:notice] = "Your invite has been sent to #{@invite.to_name}"
     end
     redirect_to edit_startup_path(@startup)
   end
@@ -18,7 +18,7 @@ class InvitesController < ApplicationController
   def destroy
     if @invite.destroy
       if @invite.to_id == current_user.id
-        flash[:notice] = "The invite has been declined."
+        flash[:notice] = "The invite has been removed."
       else
         flash[:notice] = "#{@invite.email} is no longer invited to join your team."
         end

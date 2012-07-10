@@ -1,11 +1,11 @@
 .control-group{error_css(@user, :name)}
-  = f.label :name, "Your Name", :class => 'control-label'
+  = f.label :name, "Name", :class => 'control-label'
   .controls
     = f.text_field :name, :class => "span4"
     = f.semantic_errors :name
 
 .control-group{error_css(@user, :email)}
-  = f.label :email, "Your Email", :class => 'control-label'
+  = f.label :email, "Email", :class => 'control-label'
   .controls
     = f.text_field :email, :class => "span4"
     = f.semantic_errors :email
@@ -17,7 +17,7 @@
     = f.semantic_errors :phone
 
 .control-group{error_css(@user, :pic)}
-  = f.label :pic, 'Your Picture', :class => 'control-label'
+  = f.label :pic, 'Picture', :class => 'control-label'
   .controls
     = f.file_field :pic
     = f.hidden_field :pic_cache
@@ -30,11 +30,27 @@
       = f.check_box :remove_pic
       Remove pic
 
+.control-group{error_css(@user, :location)}
+  = f.label :location, "Location", :class => 'control-label'
+  .controls
+    = f.text_field :location, :class => 'span2', :placeholder => 'Zip/Postal Code or City/State'
+    = f.semantic_errors :location
+
+%hr/
+%br/
+
 .control-group{error_css(@user, :skill_list)}
-  = f.label :skill_list, "Your Skills", :class => 'control-label'
+  = f.label :skill_list, "Skills", :class => 'control-label'
   .controls
     = text_field_tag 'user[skill_list]', @user.skill_list.map{|i| i.titleize }.join(', '), :maxlength => 45, :placeholder => 'comma, separated', :class => 'span4 skills_list_autocomplete'
     = f.semantic_errors :skill_list
+
+- if @user.mentor?
+  .control-group{error_css(@user, :industry_list)}
+    = f.label :industry_list, "Industries", :class => 'control-label'
+    .controls
+      = text_field_tag 'user[industry_list]', @user.industry_list.map{|i| i.titleize }.join(', '), :placeholder => 'comma, separated', :class => 'span4 industries_list_autocomplete'
+      = f.semantic_errors :industry_list
 
 .control-group{error_css(@user, :one_liner)}
   = f.label :one_liner, :class => 'control-label'
@@ -47,12 +63,6 @@
   .controls
     = f.text_area :bio, :size => '80x4', :class => "span4"
     = f.semantic_errors :bio
-
-.control-group{error_css(@user, :location)}
-  = f.label :location, "Your Location", :class => 'control-label'
-  .controls
-    = f.text_field :location, :class => 'span2', :placeholder => 'Zip/Postal Code or City/State'
-    = f.semantic_errors :location
 
 - unless @user.mentor?
   .control-group{error_css(@user, :meeting_id)}
@@ -76,7 +86,7 @@
           = action
         &nbsp;&nbsp;
       = f.semantic_errors :settings
-%hr
+%hr/
 .control-group
   .controls
     %h4

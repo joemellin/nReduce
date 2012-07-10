@@ -6,7 +6,7 @@ class Invite < ActiveRecord::Base
   has_many :notifications, :as => :attachable
   has_many :user_actions, :as => :attachable
 
-  validates_presence_of :email
+  validates_presence_of :email, :if => :to_isnt_assigned?
   validates_presence_of :from_id
   validates_presence_of :invite_type
   validate :recipient_can_be_invited, :if => :new_record?
@@ -18,12 +18,26 @@ class Invite < ActiveRecord::Base
   @queue = :invites
 
   scope :not_accepted, where(:accepted_at => nil)
+  scope :to_mentors, lambda{ where(:invite_type => Invite::MENTOR) }
+  scope :to_nreduce_mentors, lambda { where(:invite_type => Invite::NREDUCE_MENTOR) }
 
   TEAM_MEMBER = 1
   MENTOR = 2
+  NREDUCE_MENTOR = 3
+
+  # Not adding nReduce types because it isn't allowed in user-selectable options
+  def self.available_types
+    {TEAM_MEMBER => 'Team Member', MENTOR => 'Mentor'}
+  end
 
   def self.types
-    {TEAM_MEMBER => 'team member', MENTOR => 'mentor'}
+    {TEAM_MEMBER => 'Team Member', MENTOR => 'Mentor', NREDUCE_MENTOR => 'nReduce Mentor'}
+  end
+
+  def to_name 
+    return self.email unless self.email.blank?
+    return self.to.name unless self.to.blank?
+    return ''
   end
   
   def active? # not expired, and not accepted yet
@@ -42,7 +56,7 @@ class Invite < ActiveRecord::Base
     if self.invite_type == TEAM_MEMBER
       user.startup_id = self.startup_id if !self.startup_id.blank? or !user.startup_id.blank?
     # Add user as mentor to startup
-    elsif self.invite_type == MENTOR
+    elsif self.invite_type == MENTOR or self.invite_type == NREDUCE_MENTOR
       user.roles << :mentor
       user.mentor = true
       # Add mentor to startup if invite came from startup
@@ -55,6 +69,7 @@ class Invite < ActiveRecord::Base
         end
       end
     end
+    user.roles << :nreduce_mentor if self.invite_type == NREDUCE_MENTOR
     if user.save
       self.to = user
       self.accepted_at = Time.now
@@ -80,6 +95,11 @@ class Invite < ActiveRecord::Base
   end
   
   protected
+
+    # Checks if the "to" user is assigned
+  def to_isnt_assigned?
+    self.to_id.blank?
+  end
 
   def recipient_can_be_invited
     user_with_email = User.where(:email => self.email).first

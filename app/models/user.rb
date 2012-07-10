@@ -25,7 +25,7 @@ class User < ActiveRecord::Base
          :recoverable, :rememberable, :trackable, :validatable #, :confirmable #, :omniauthable
 
   # Setup accessible (or protected) attributes for your model
-  attr_accessible :email, :password, :password_confirmation, :remember_me, :name, :skill_list, :startup, :mentor, :investor, :location, :phone, :startup_id, :settings, :meeting_id, :one_liner, :bio, :facebook_url, :linkedin_url, :github_url, :dribbble_url, :blog_url, :pic, :remote_pic_url, :pic_cache, :remove_pic, :intro_video_url
+  attr_accessible :email, :password, :password_confirmation, :remember_me, :name, :skill_list, :industry_list, :startup, :mentor, :investor, :location, :phone, :startup_id, :settings, :meeting_id, :one_liner, :bio, :facebook_url, :linkedin_url, :github_url, :dribbble_url, :blog_url, :pic, :remote_pic_url, :pic_cache, :remove_pic, :intro_video_url
 
   serialize :settings, Hash
 
@@ -34,8 +34,9 @@ class User < ActiveRecord::Base
 
   before_create :set_default_settings
   before_save :geocode_location
+  before_save :assign_as_mentor
 
-  acts_as_taggable_on :skills
+  acts_as_taggable_on :skills, :industries
 
   scope :mentor, where(:mentor => true)
 
@@ -44,6 +45,37 @@ class User < ActiveRecord::Base
   # important that you keep the order the same on this array - uses bitmask_attributes gem
   # adds methods and scopes: https://github.com/joelmoss/bitmask_attributes
   bitmask :roles, :as => [:admin, :entrepreneur, :mentor, :investor, :nreduce_mentor]
+
+  searchable do
+    # full-text search fields - can add :stored => true if you don't want to hit db
+    text :name
+    text :location
+    text :skills_cached, :stored => true do
+      self.skills.map{|t| t.name.titleize }.join(', ')
+    end
+    text :industries_cached, :stored => true do
+      self.industries.map{|t| t.name.titleize }.join(', ')
+    end
+
+    # filterable fields
+    double  :rating
+    integer :meeting_id
+    boolean :is_mentor do
+      roles? :mentor
+    end
+    boolean :nreduce_mentor do
+      roles? :nreduce_mentor
+    end
+    integer :skill_tag_ids, :multiple => true, :stored => true do
+      self.skills.map{|t| t.id }
+    end
+    integer :industry_tag_ids, :multiple => true, :stored => true do
+      self.industries.map{|t| t.id }
+    end
+    string :sort_name do
+      name.blank? ? '' : name.downcase.gsub(/^(an?|the)/, '')
+    end
+  end
 
   def self.settings_labels
     {
@@ -396,6 +428,10 @@ class User < ActiveRecord::Base
 
   def set_default_settings
     self.settings = User.default_settings if self.settings.blank?
+  end
+
+  def assign_as_mentor
+    self.mentor = roles?(:mentor) or roles?(:nreduce_mentor)
   end
 
   def geocode_location

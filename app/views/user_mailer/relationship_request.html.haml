@@ -4,13 +4,17 @@
 - else
 	%h1.h1 #{@requesting_entity.name}
 %br
-- if @requesting_entity.roles?(:mentor)
+- if @requesting_entity.is_a?(Startup) and (@connected_with.roles?(:nreduce_mentor) or @connected_with.roles?(:mentor))
+  %h4.h4 Would like you to be their mentor.
+- elsif @requesting_entity.roles?(:mentor)
   %h4.h4 Would like to be your mentor.
   %p If accepted they will see your weekly progress will give you feedback and help you succeed.
 - else
   %h4.h4 Would like to join your group.
   %p If accepted you will see each other's weekly progress and be able to help each other succeed.  It is important to build trusted relationships.
 %br
+- unless @relationship.message.blank?
+  %p "#{simple_format(h(@relationship.message))}"
 %br
 %br
 %h3= link_to 'View Request', relationships_url
