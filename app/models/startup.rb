@@ -97,7 +97,6 @@ class Startup < ActiveRecord::Base
     }
     elements.each{|name, e| passed += 1 if e[:passed] == true }
     elements[:total] = {:value => "#{passed} of #{elements.size}", :passed => passed == elements.size}
-    elements[:total][:passed] = true
     elements
   end
 
