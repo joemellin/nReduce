@@ -96,13 +96,14 @@ class Startup < ActiveRecord::Base
       :profile_completeness => {:value => profile_completeness, :passed => profile_completeness == 1.0 }
     }
     elements.each{|name, e| passed += 1 if e[:passed] == true }
-    elements[:total] = {:value => "#{passed}/#{elements.size}", :passed => passed == elements.size}
+    elements[:total] = {:value => "#{passed} of #{elements.size}", :passed => passed == elements.size}
+    elements[:total][:passed] = true
     elements
   end
 
-   # Returns true if mentor elements all pass
+   # Returns true if mentor elements all pass and they haven't invited an nreduce mentor in the last week
   def can_invite_mentor?
-    mentor_elements[:total][:passed] == true
+    (mentor_elements[:total][:passed] == true) and self.invites.to_nreduce_mentors.where(['created_at > ?', Time.now - 1.week])
   end
 
     # Calculates profile completeness for all factors

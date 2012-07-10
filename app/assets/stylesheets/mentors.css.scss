@@ -1,0 +1,11 @@
+.mentors {
+  .requirements {
+    .passed { color: green; }
+    td:first-child {
+      max-width: 100px;
+      text-align: right;
+      vertical-align: middle;
+      padding-bottom: 10px;
+    }
+  }
+}

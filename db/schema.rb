@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120704194213) do
+ActiveRecord::Schema.define(:version => 20120710223417) do
 
   create_table "authentications", :force => true do |t|
     t.string   "provider"
@@ -174,9 +174,10 @@ ActiveRecord::Schema.define(:version => 20120704194213) do
     t.datetime "rejected_at"
     t.string   "entity_type"
     t.string   "connected_with_type"
+    t.text     "message"
   end
 
-  add_index "relationships", ["entity_id", "entity_type", "status"], :name => "relationship_index"
+  add_index "relationships", ["entity_id", "entity_type", "connected_with_id", "connected_with_type", "status"], :name => "relationship_index", :unique => true
 
   create_table "startups", :force => true do |t|
     t.string   "name"
@@ -277,8 +278,7 @@ ActiveRecord::Schema.define(:version => 20120704194213) do
     t.string   "blog_url"
     t.string   "pic"
     t.float    "rating"
-    t.integer  "onboarding_step",        :default => 1
-    t.string   "intro_video_url"
+    t.integer  "onboarding_step",        :default => 0
     t.integer  "roles"
   end
 

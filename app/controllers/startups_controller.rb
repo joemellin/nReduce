@@ -59,9 +59,7 @@ class StartupsController < ApplicationController
       s.with :onboarding_step, Startup.num_onboarding_steps
       s.with :meeting_id, @search[:meeting_id] unless @search[:meeting_id].blank?
       unless @search[:industries].blank?
-        # split tags by comma and find tag ids
-        tag_search = @search[:industries].split(',').map{|s| s.strip.downcase.gsub(/\s+/, '-') }.delete_if{|t| t.blank? }
-        tag_ids = ActsAsTaggableOn::Tag.named_any(tag_search).map{|t| t.id }
+        tag_ids = ActsAsTaggableOn::Tag.named_like_any_from_string(str).map{|t| t.id }
         # finds 
         s.with :industry_tag_ids, tag_ids unless tag_ids.blank?
       end

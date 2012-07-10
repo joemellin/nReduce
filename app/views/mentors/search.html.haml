@@ -1,0 +1,96 @@
+- content_for :subtitle do
+  Discover Mentors
+
+.mentors.search
+  = form_tag search_mentors_path, :method => :post, :class => 'form-inline'  do
+    .row
+      .span2{:align => 'right'}
+        %p &nbsp;
+        %h4 Find a Mentor
+      .span3
+        %p
+          %small Industries
+        = text_field_tag 'search[industries]', @search[:industries], :class => 'input-large industries_list_autocomplete'
+      .span3
+        %p
+          %small Skills
+        = text_field_tag 'search[skills]', @search[:skills], :class => 'input-large skills_list_autocomplete'
+      .span4
+        %p &nbsp;
+        = submit_tag 'Search', :class => 'btn btn-large'
+        &nbsp;&nbsp;
+        = link_to 'Reset', search_mentors_path
+  %hr/
+
+  - if @search_results.hits.size > 0
+    .row
+      .span1
+        %p &nbsp;
+      .span11
+        - if @search_results.results.total_pages > 1
+          %h3{:style => 'color: #ccc'} Page #{@search_results.results.current_page} of #{@search_results.results.total_pages}
+
+    - @search_results.each_hit_with_result do |hit, user|
+      .row{:id => "user_#{user.id}"}
+        .span1
+          %p &nbsp;
+        .span3= image_tag user.pic_url(:medium)
+        .span5
+          %h2= h(user.name)
+          %h3= h(user.one_liner)
+          %p
+            %small
+              Skills:
+              - unless hit.stored(:skills_cached).blank?
+                = hit.stored(:skills_cached).join(', ')
+          %p
+            %small
+              Industries:
+              - unless hit.stored(:industries_cached).blank?
+                = hit.stored(:industries_cached).join(', ')
+          %p
+            %small Located: #{h(user.location)}
+          %br
+          - unless user.linkedin_url.blank?
+            = link_to image_tag('linkedin_32.png'), user.linkedin_url, :target => '_blank'
+          - unless user.twitter.blank?
+            = link_to image_tag('twitter_32.png'), "https://twitter.com/#!/#{user.twitter.sub('@', '')}", :target => '_blank'
+          - unless user.github_url.blank?
+            = link_to image_tag('github_32.png'), user.github_url, :target => '_blank'
+          - unless user.dribbble_url.blank?
+            = link_to image_tag('dribbble_32.png'), user.dribbble_url, :target => '_blank'
+          - unless user.blog_url.blank?
+            = link_to image_tag('blog_32.png'), user.blog_url, :target => '_blank'
+          - unless user.facebook_url.blank?
+            = link_to image_tag('facebook_32.png'), user.facebook_url, :target => '_blank'
+        .span3
+          = link_to 'Ask to Mentor', '#', :class => 'btn btn-large', :onclick => "$('#user_#{user.id}_invite').modal(); return false;"
+          .modal.hide.invite_mentor{:id => "user_#{user.id}_invite"}
+            = form_for Relationship.new(:entity => @startup, :connected_with => user), :html => {:class => 'form-inline'} do |f|
+              .modal-header
+                %button.close{:type => 'button', 'data-dismiss' => 'modal'} x
+                %h3 Ask #{user.name} to Mentor Your Startup
+              .modal-body
+                = f.hidden_field :entity_id
+                = f.hidden_field :entity_type
+                = f.hidden_field :connected_with_id
+                = f.hidden_field :connected_with_type
+                Write one to two paragraphs about why you think they are a good mentor for you:
+                %br/
+                = f.text_area :message, :style => 'width: 400px; height: 100px'
+              .modal-footer.center
+                = link_to 'Close', '#', :class => 'btn', 'data-dismiss' => 'modal'
+                = f.submit 'Send Request', :class => 'btn btn-primary'
+                %br/
+                %i Limit one per week
+          != rating_link(user, true)
+          %br/
+          %p
+            %small Bio: #{simple_format(h(user.bio))}
+      %hr
+      %br
+
+
+    = will_paginate @search_results.results
+  - else
+    %h4 No mentors matched your search

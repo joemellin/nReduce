@@ -19,9 +19,9 @@
         = f.hidden_field :startup_id
         = f.hidden_field :from_id
         %div{:style => 'margin-bottom: 5px'}
-          - Invite.types.each do |id, name|
+          - Invite.available_types.each do |id, name|
             = f.radio_button :invite_type, id
-            = label_tag name.titleize
+            = label_tag name
             &nbsp;
         = f.text_field :email, :placeholder => 'email address', :class => 'span3'
         = submit_tag 'Invite', :class => 'btn'
@@ -32,6 +32,6 @@
         %ul
         - @startup.invites.not_accepted.each do |i|
           %li
-            = "#{i.email} (#{Invite.types[i.invite_type].titleize})"
-            = link_to '<i class="icon icon-remove"></i>'.html_safe, invite_path(i), :method => :delete, :confirm => "Are you sure you want to cancel the invite to #{i.email}?"
+            = "#{i.to_name} (#{Invite.types[i.invite_type].titleize})"
+            = link_to '<i class="icon icon-remove"></i>'.html_safe, invite_path(i), :method => :delete, :confirm => "Are you sure you want to cancel the invite to #{i.to_name}?"
 

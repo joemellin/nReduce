@@ -74,4 +74,4 @@ module Nreduce
   end
 end
 
-ActsAsTaggableOn.force_parameterize = true
+ActsAsTaggableOn.force_lowercase = true
