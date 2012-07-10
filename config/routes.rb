@@ -4,13 +4,17 @@ Nreduce::Application.routes.draw do
     request.env['warden'].authenticate? and request.env['warden'].user.admin?
   end
 
-  # Main Admin - has logic built-in to restrict to admins
-  mount RailsAdmin::Engine => '/admin', :as => 'rails_admin'
   
-  # Resque Admin
-  constraints admin_constraint do
-    require 'resque/server'
-    mount Resque::Server.new, :at => "/resque"
+
+  namespace 'admin' do
+    resources :mentors, :only => [:index, :show, :update]
+    # Resque Admin
+    constraints admin_constraint do
+      require 'resque/server'
+      mount Resque::Server.new, :at => "/resque"
+    end
+    # Main Admin - has logic built-in to restrict to admins
+    mount RailsAdmin::Engine => '/db', :as => 'rails_admin'
   end
 
   devise_for :users, :controllers => {:registrations => 'registrations', :sessions => 'sessions'}
@@ -42,7 +46,7 @@ Nreduce::Application.routes.draw do
 
   get "/contact_joe" => "pages#contact_joe"
 
-  resources :mentors, :only => [:index, :show, :update]
+  resources :mentors, :only => :index
 
   resources :users do
     collection do

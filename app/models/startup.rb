@@ -82,6 +82,29 @@ class Startup < ActiveRecord::Base
     checkins.ordered.where(['created_at > ?', Checkin.prev_after_checkin]).first
   end
 
+    # Returns hash of all requirements to be allowed to search for a mentor - and whether this startup has met them
+  def mentor_elements
+    consecutive_checkins = 3
+    num_awesomes = self.awesomes.count
+    my_rating = self.rating.blank? ? 0 : self.rating
+    profile_completeness = self.profile_completeness_percent
+    passed = 0
+    elements = {
+      :consecutive_checkins => { :value => consecutive_checkins, :passed => consecutive_checkins >= 4 },
+      :num_awesomes => {:value => num_awesomes, :passed => num_awesomes >= 10 },
+      :community_status => {:value => my_rating, :passed => my_rating >= 1.0 },
+      :profile_completeness => {:value => profile_completeness, :passed => profile_completeness == 1.0 }
+    }
+    elements.each{|name, e| passed += 1 if e[:passed] == true }
+    elements[:total] = {:value => "#{passed}/#{elements.size}", :passed => passed == elements.size}
+    elements
+  end
+
+   # Returns true if mentor elements all pass
+  def can_invite_mentor?
+    mentor_elements[:total][:passed] == true
+  end
+
     # Calculates profile completeness for all factors
     # Returns total percent out of 1 (eg: 0.25 for 25% completeness)
   def profile_completeness_percent

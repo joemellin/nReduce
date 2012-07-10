@@ -128,4 +128,15 @@ class ApplicationController < ActionController::Base
     session[:invite_id] = nil
     res
   end
+
+  protected
+
+  
+  def redirect_if_no_startup
+    if @startup.blank?
+      redirect_to current_user
+      return false
+    end
+    true
+  end
 end

@@ -1,5 +1,81 @@
-%h2 Mentors
+.row
+  .span8
+    %h1
+      %small Connect with great mentors
+  .span4{:align => 'right'}
+    - if @mentor_elements[:total][:passed] == true
+      = link_to "Find a Mentor", search_mentors_path, :class => "btn btn-success"
+    - else
+      = link_to "Find a Mentor", '#', :class => "btn disabled"
 
-%ul
-  - @mentors.each do |m|
-    %li= link_to m.name, mentor_path(m.id)
+%hr/
+%br/
+%p
+  To access the nReduce mentor network, you must meet all requirements:
+.row
+  .span3
+    &nbsp;
+  .span3 Your Startup
+  .span3 Requirement
+  .span3 Met Requirement?
+.row
+  .span3{:align => 'right'} Consecutive Completed Checkins
+  .span3
+    %h2= @mentor_elements[:consecutive_checkins][:value]
+  .span3
+    %h2 4+
+  .span3
+    %h2 #{@mentor_elements[:consecutive_checkins][:passed] ? 'Yes' : 'No'}
+
+.row
+  .span3{:align => 'right'} # of Awesomes
+  .span3
+    %h2 #{@mentor_elements[:num_awesomes][:value]}
+  .span3
+    %h2 10+
+  .span3
+    %h2 #{@mentor_elements[:num_awesomes][:passed] ? 'Yes' : 'No'}
+.row
+  .span3{:align => 'right'} Team Community Rating
+  .span3
+    %h2 #{@mentor_elements[:community_status][:value].round(2)}
+  .span3
+    %h2 1.00+
+  .span3
+    %h2 #{@mentor_elements[:community_status][:passed] ? 'Yes' : 'No'}
+.row
+  .span3{:align => 'right'} Team Profile Completeness
+  .span3
+    %h2 #{(@mentor_elements[:profile_completeness][:value] * 100).to_i}%
+  .span3
+    %h2 100%
+  .span3
+    %h2 #{@mentor_elements[:profile_completeness][:passed] ? 'Yes' : 'No'}
+.row
+  .span6
+  .span6{:align => 'right'}
+    Total
+    - if @mentor_elements[:total][:passed] == true
+      = link_to "Find a Mentor", search_mentors_path, :class => "btn btn-success"
+    - else
+      = link_to "Find a Mentor", '#', :class => "btn disabled"
+    %h2 1 of 4
+
+
+- mentors = @startup.connected_to('User')
+- if mentors.size > 0
+  .row
+    .span12
+      %hr
+      %br
+      %h4
+        %small #{h(@startup.name).possessive} Mentors
+      %br/
+      %hr
+      %br/
+  .row
+    .span12
+      = render 'startups/team_members', :team_members => mentors
+      %hr
+      %br
+= link_to '+ Invite Current Mentor', edit_startup_path

@@ -188,14 +188,4 @@ class StartupsController < ApplicationController
       format.html { render :nothing => true }
     end
   end
-
-  protected
-
-  def redirect_if_no_startup
-    if @startup.blank?
-      redirect_to current_user
-      return false
-    end
-    true
-  end
 end
