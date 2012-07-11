@@ -12,10 +12,11 @@ class UserMailer < ActionMailer::Base
 
   def relationship_request(notification)
     setup_email
+    @user = notification.user
+    return false if @user.blank? # can't send if no one to send to
     @relationship = notification.attachable
     @requesting_entity = @relationship.entity
     @connected_with = @relationship.connected_with
-    @user = notification.user
     if @requesting_entity.is_a?(User) and @requesting_entity.roles?(:mentor)
       subject = "#{@requesting_entity.name} wants to be your mentor"
     else

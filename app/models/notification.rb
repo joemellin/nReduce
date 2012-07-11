@@ -111,6 +111,10 @@ class Notification < ActiveRecord::Base
       # Somehow it got queued again - but was already emailed
       logger.info "Notification #{n.id}: Email already delivered to #{n.user.email}"
       return true
+    elsif n.attachable.blank?
+      # Object got deleted (ie comment)
+      logger.info "Notification #{n.id}: Attached object no longer exists - #{n.attachable_type} #{n.attachable_id}"
+      return n.update_attribute('emailed', true)
     else
       # Make sure it responds to action
       if UserMailer.respond_to?(n.action.to_sym)
