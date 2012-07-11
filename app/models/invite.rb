@@ -24,6 +24,7 @@ class Invite < ActiveRecord::Base
   TEAM_MEMBER = 1
   MENTOR = 2
   NREDUCE_MENTOR = 3
+  # Make sure to add to perform method
 
   # Not adding nReduce types because it isn't allowed in user-selectable options
   def self.available_types
@@ -87,7 +88,7 @@ class Invite < ActiveRecord::Base
     # Updates all people on shared trip of updates
   def self.perform(invite_id)
     i = Invite.find(invite_id)
-    if i.invite_type == MENTOR
+    if i.invite_type == MENTOR or i.invite_type == NREDUCE_MENTOR
       UserMailer.invite_mentor(i).deliver
     elsif i.invite_type == TEAM_MEMBER
       UserMailer.invite_team_member(i).deliver
