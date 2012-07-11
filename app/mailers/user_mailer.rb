@@ -18,10 +18,13 @@ class UserMailer < ActionMailer::Base
     @user = notification.user
     if @requesting_entity.roles?(:mentor)
       subject = "#{@requesting_entity.name} wants to be your mentor"
+
     else
       subject = "#{@requesting_entity.name} wants to connect with you"
     end
-    mail(:to => @user.email, :subject => subject)
+    params = {:to => @user.email, :subject => subject}
+    params[:bcc] = 'joe@nReduce.com' if @connected_with.roles?(:mentor)
+    mail(params)
   end
 
   def relationship_approved(notification)
