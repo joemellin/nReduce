@@ -1,83 +1,98 @@
 .mentors
-  .row
-    .span8
-      %h1
-        %small Connect with great mentors
-    .span4{:align => 'right'}
-      - if can? :invite_mentor, @startup
-        = link_to "Find a Mentor", search_mentors_path, :class => "btn btn-success"
-      - else
-        = link_to "Find a Mentor", '#', :class => "btn disabled"
+  - if current_user.mentor? and !current_user.roles?(:nreduce_mentor)
+    .row
+      .span6
+        %h1
+          %small nReduce Mentors
 
-  %hr/
-  %br/
-  %p
-    %strong To access the nReduce mentor network, you must meet all requirements:
-  %table.table.requirements
-    %thead
-      %th &nbsp;
-      %th Your Startup
-      %th Requirement
-      %th Met Requirement?
-    %tbody
-      %tr{:class => @mentor_elements[:consecutive_checkins][:passed] ? 'passed' : ''}
-        %td Consecutive Completed Checkins
-        %td
-          %h2= @mentor_elements[:consecutive_checkins][:value]
-        %td
-          %h2 4+
-        %td
-          %h2 #{@mentor_elements[:consecutive_checkins][:passed] ? 'Yes' : 'No'}
-      %tr{:class => @mentor_elements[:num_awesomes][:passed] ? 'passed' : ''}
-        %td # of Awesomes
-        %td
-          %h2 #{@mentor_elements[:num_awesomes][:value]}
-        %td
-          %h2 10+
-        %td
-          %h2 #{@mentor_elements[:num_awesomes][:passed] ? 'Yes' : 'No'}
-      %tr{:class => @mentor_elements[:community_status][:passed] ? 'passed' : ''}
-        %td Team Community Rating
-        %td
-          %h2 #{@mentor_elements[:community_status][:value].round(2)}
-        %td
-          %h2 1.00+
-        %td
-          %h2 #{@mentor_elements[:community_status][:passed] ? 'Yes' : 'No'}
-      %tr{:class => @mentor_elements[:profile_completeness][:passed] ? 'passed' : ''}
-        %td Team Profile Completeness
-        %td
-          %h2 #{(@mentor_elements[:profile_completeness][:value] * 100).to_i}%
-        %td
-          %h2 100%
-        %td
-          %h2 #{@mentor_elements[:profile_completeness][:passed] ? 'Yes' : 'No'}
-      %tr{:class => @mentor_elements[:total][:passed] ? 'passed' : ''}
-        %td &nbsp;
-        %td &nbsp;
-        %td &nbsp;
-        %td
-          %h2 #{@mentor_elements[:total][:value]} passed
+        = form_tag change_status_mentors_path, :class => 'well form-inline' do
+          %p Are you interested in mentoring other companies on nReduce? We'd love to have you join our mentor network. Once you join, qualified startups will be able to contact you and ask if you're interested in mentoring them.
 
+          %label.checkbox
+            = check_box_tag 'nreduce_mentor', 1
+            Yes I'm interested in mentoring other nReduce companies &nbsp;
+        
+          = submit_tag 'Save', :class => 'btn btn-primary'
+  - else
+    .row
+      .span8
+        %h1
+          %small Connect with great mentors
+      .span4{:align => 'right'}
+        - if can? :invite_mentor, @startup
+          = link_to "Find a Mentor", search_mentors_path, :class => "btn btn-success"
+        - else
+          = link_to "Find a Mentor", '#', :class => "btn disabled"
 
-  - mentors = @startup.connected_to('User')
-  .row
-    .span12
-      %hr
-      %br
-      %h2
-        %small Your Mentors
-      %hr
-      %br/
-  .row
-    .span12
-      = render 'startups/team_members', :team_members => mentors
-      .left
-        .span1{:align => 'right', :style => 'margin-left: 0'}= link_to image_tag('adduser.png'), edit_startup_path(@startup)
-        .span2
-          %h4= link_to 'Invite Current Mentor', edit_startup_path(@startup)
-          %p
-            %small Add a mentor you already have
-      .clear
     %hr/
     %br/
+    %p
+      %strong To access the nReduce mentor network, you must meet all requirements:
+    %table.table.requirements
+      %thead
+        %th &nbsp;
+        %th Your Startup
+        %th Requirement
+        %th Met Requirement?
+      %tbody
+        %tr{:class => @mentor_elements[:consecutive_checkins][:passed] ? 'passed' : ''}
+          %td Consecutive Completed Checkins
+          %td
+            %h2= @mentor_elements[:consecutive_checkins][:value]
+          %td
+            %h2 4+
+          %td
+            %h2 #{@mentor_elements[:consecutive_checkins][:passed] ? 'Yes' : 'No'}
+        %tr{:class => @mentor_elements[:num_awesomes][:passed] ? 'passed' : ''}
+          %td # of Awesomes
+          %td
+            %h2 #{@mentor_elements[:num_awesomes][:value]}
+          %td
+            %h2 10+
+          %td
+            %h2 #{@mentor_elements[:num_awesomes][:passed] ? 'Yes' : 'No'}
+        %tr{:class => @mentor_elements[:community_status][:passed] ? 'passed' : ''}
+          %td Team Community Rating
+          %td
+            %h2 #{@mentor_elements[:community_status][:value].round(2)}
+          %td
+            %h2 1.00+
+          %td
+            %h2 #{@mentor_elements[:community_status][:passed] ? 'Yes' : 'No'}
+        %tr{:class => @mentor_elements[:profile_completeness][:passed] ? 'passed' : ''}
+          %td Team Profile Completeness
+          %td
+            %h2 #{(@mentor_elements[:profile_completeness][:value] * 100).to_i}%
+          %td
+            %h2 100%
+          %td
+            %h2 #{@mentor_elements[:profile_completeness][:passed] ? 'Yes' : 'No'}
+        %tr{:class => @mentor_elements[:total][:passed] ? 'passed' : ''}
+          %td &nbsp;
+          %td &nbsp;
+          %td &nbsp;
+          %td
+            %h2 #{@mentor_elements[:total][:value]} passed
+
+
+    - mentors = @startup.connected_to('User')
+    .row
+      .span12
+        %hr
+        %br
+        %h2
+          %small Your Mentors
+        %hr
+        %br/
+    .row
+      .span12
+        = render 'startups/team_members', :team_members => mentors
+        .left
+          .span1{:align => 'right', :style => 'margin-left: 0'}= link_to image_tag('adduser.png'), edit_startup_path(@startup)
+          .span2
+            %h4= link_to 'Invite Current Mentor', edit_startup_path(@startup)
+            %p
+              %small Add a mentor you already have
+        .clear
+      %hr/
+      %br/

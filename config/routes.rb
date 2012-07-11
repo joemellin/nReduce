@@ -47,7 +47,10 @@ Nreduce::Application.routes.draw do
   get "/contact_joe" => "pages#contact_joe"
 
   resources :mentors, :only => [:index] do
-    match 'search', :on => :collection
+    collection do
+      post 'change_status'
+      match 'search'
+    end
   end
 
   resources :users do

@@ -16,9 +16,12 @@
         %br
         %h1= h(@user.name)
         %h3= h(@user.one_liner)
-        - if @user.mentor?
+        - if @user.roles?(:nreduce_mentor)
           %h2
             %small nReduce Mentor
+        - elsif @user.roles?(:mentor)
+          %h2
+            %small Mentor
         - unless @user.startup.blank?
           %h3
             %small Team :

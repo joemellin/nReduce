@@ -2,16 +2,20 @@ class MentorsController < ApplicationController
   around_filter :record_user_action
   before_filter :login_required
   before_filter :load_requested_or_users_startup
-  authorize_resource :startup
-  before_filter :redirect_if_no_startup
 
   def index
-    authorize! :see_mentor_page, current_user
-    @mentor_elements = @startup.mentor_elements
+    # Just redirect current nreduce mentors to see list of mentors
+    if current_user.roles?(:nreduce_mentor)
+      redirect_to :action => :search
+    else
+      authorize! :see_mentor_page, current_user
+      @mentor_elements = @startup.mentor_elements unless @startup.blank?
+    end
   end
 
   def search
-    authorize! :invite_mentor, @startup
+    authorize! :search_mentors, User
+    @can_invite = @startup.blank? ? false : (can? :invite_mentor, @startup)
     if !params[:search].blank?
       # sanitize search params
       params[:search].select{|k,v| [:name, :meeting_id, :industries].include?(k) }
@@ -42,5 +46,17 @@ class MentorsController < ApplicationController
       s.paginate :page => @search[:page], :per_page => 10
     end
     @ua = {:data => @search}
+  end
+
+  def change_status
+    authorize! :change_mentor_status, User
+    current_user.roles << :nreduce_mentor if !params[:nreduce_mentor].blank?
+    if current_user.save
+      flash[:notice] = "Thank you! Your profile will now be public and other nReduce startups will be able to contact you to become their mentor. Here is the list of other nReduce mentors:"
+      redirect_to :action => :search
+    else
+      flash[:error] = "Your account couldn't be updated: #{current_user.errors.full_messages.join(', ')}."
+      redirect_to :action => :index
+    end
   end
 end
