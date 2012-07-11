@@ -8,7 +8,9 @@
     %div= link_to image_tag(user_avatar_url(comment.user), :style => 'width: 50px; height: 50px;', :title => title), user_path(:id => comment.user_id)
   .left
     = link_to "#{is_owner ? 'You' : truncate(comment.user.name, :length => 20)}", user_path(:id => comment.user)
-    - unless comment.user.startup_id.blank?
+    - if comment.user.roles?(:mentor) or comment.user.roles?(:nreduce_mentor)
+      &nbsp;•&nbsp;Mentor
+    - elsif !comment.user.startup_id.blank?
       &nbsp;•&nbsp;
       = link_to comment.user.startup.name, startup_path(:id => comment.user.startup.id)
     %span.time= "• #{time_ago_in_words(comment.created_at)} ago"
