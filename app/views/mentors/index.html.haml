@@ -4,7 +4,7 @@
       %h1
         %small Connect with great mentors
     .span4{:align => 'right'}
-      - if @startup.can_invite_mentor?
+      - if can? :invite_mentor, @startup
         = link_to "Find a Mentor", search_mentors_path, :class => "btn btn-success"
       - else
         = link_to "Find a Mentor", '#', :class => "btn disabled"

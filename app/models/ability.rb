@@ -30,6 +30,10 @@ class Ability
         can :manage, Invite, :startup_id => user.startup_id
 
         can :manage, Nudge, :startup_id => user.startup_id
+
+        can :invite_mentor, Startup do |startup|
+          startup.can_invite_mentor?
+        end
       end
 
       # Can destroy if they were assigned as receiver or created it

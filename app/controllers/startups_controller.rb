@@ -59,8 +59,7 @@ class StartupsController < ApplicationController
       s.with :onboarding_step, Startup.num_onboarding_steps
       s.with :meeting_id, @search[:meeting_id] unless @search[:meeting_id].blank?
       unless @search[:industries].blank?
-        tag_ids = ActsAsTaggableOn::Tag.named_like_any_from_string(str).map{|t| t.id }
-        # finds 
+        tag_ids = ActsAsTaggableOn::Tag.named_like_any_from_string(@search[:industries]).map{|t| t.id }
         s.with :industry_tag_ids, tag_ids unless tag_ids.blank?
       end
       if @search[:sort] == 'rating'
