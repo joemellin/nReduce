@@ -27,6 +27,7 @@ class Relationship < ActiveRecord::Base
   scope :pending, where(:status => Relationship::PENDING)
   scope :approved, where(:status => Relationship::APPROVED)
   scope :rejected, where(:status => Relationship::REJECTED)
+  scope :startup_to_user, where(:entity_type => 'Startup', :connected_with_type => 'User')
 
     # Classes that can be added to a relationship
     # When adding new ones make sure to also edit notifications and mailers
