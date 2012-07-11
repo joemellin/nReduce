@@ -2,7 +2,7 @@
   Discover Mentors
 
 .mentors.search
-  = form_tag search_mentors_path, :method => :post, :class => 'form-inline'  do
+  = form_tag search_mentors_path, :method => :post, :class => 'form-inline' do
     .row
       .span2{:align => 'right'}
         %p &nbsp;
@@ -64,25 +64,26 @@
           - unless user.facebook_url.blank?
             = link_to image_tag('facebook_32.png'), user.facebook_url, :target => '_blank'
         .span3
-          = link_to 'Ask to Mentor', '#', :class => 'btn btn-large', :onclick => "$('#user_#{user.id}_invite').modal(); return false;"
-          .modal.hide.invite_mentor{:id => "user_#{user.id}_invite"}
-            = form_for Relationship.new(:entity => @startup, :connected_with => user), :html => {:class => 'form-inline'} do |f|
-              .modal-header
-                %button.close{:type => 'button', 'data-dismiss' => 'modal'} x
-                %h3 Ask #{user.name} to Mentor Your Startup
-              .modal-body
-                = f.hidden_field :entity_id
-                = f.hidden_field :entity_type
-                = f.hidden_field :connected_with_id
-                = f.hidden_field :connected_with_type
-                Write one to two paragraphs about why you think they are a good mentor for you:
-                %br/
-                = f.text_area :message, :style => 'width: 400px; height: 100px'
-              .modal-footer.center
-                = link_to 'Close', '#', :class => 'btn', 'data-dismiss' => 'modal'
-                = f.submit 'Send Request', :class => 'btn btn-primary'
-                %br/
-                %i Limit one per week
+          - if @can_invite
+            = link_to 'Ask to Mentor', '#', :class => 'btn btn-large', :onclick => "$('#user_#{user.id}_invite').modal(); return false;"
+            .modal.hide.invite_mentor{:id => "user_#{user.id}_invite"}
+              = form_for Relationship.new(:entity => @startup, :connected_with => user), :html => {:class => 'form-inline'} do |f|
+                .modal-header
+                  %button.close{:type => 'button', 'data-dismiss' => 'modal'} x
+                  %h3 Ask #{user.name} to Mentor Your Startup
+                .modal-body
+                  = f.hidden_field :entity_id
+                  = f.hidden_field :entity_type
+                  = f.hidden_field :connected_with_id
+                  = f.hidden_field :connected_with_type
+                  Write one to two paragraphs about why you think they are a good mentor for you:
+                  %br/
+                  = f.text_area :message, :style => 'width: 400px; height: 100px'
+                .modal-footer.center
+                  = link_to 'Close', '#', :class => 'btn', 'data-dismiss' => 'modal'
+                  = f.submit 'Send Request', :class => 'btn btn-primary'
+                  %br/
+                  %i Limit one per week
           != rating_link(user, true)
           %br/
           %p

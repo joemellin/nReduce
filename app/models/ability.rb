@@ -141,17 +141,13 @@ class Ability
 
       cannot :see_mentor_page, User
       cannot :search_mentors, User
+      cannot :change_mentor_status, User
 
       # Mentor can view relationships they are involved in (index)
       if user.mentor?
         can :read, Relationship do |relationship|
           relationship.is_involved?(user)
         end
-
-        # If they are a mentor of any kind they can see the mentors page
-        can :see_mentor_page, User if user.roles?(:mentor) or user.roles?(:nreduce_mentor)
-        # If they are an nreduce mentor they can see other mentors
-        can :search_mentors, User if user.roles?(:nreduce_mentor)
       end
 
       # All users with startup/mentor can view a startup if onboarding is complete
@@ -165,6 +161,28 @@ class Ability
 
     # User can only manage their own account
     can [:manage, :onboard, :onboard_next], User, :id => user.id
+
+    # Have to override manage roles on user for mentors
+    cannot :change_mentor_status, User
+    cannot :see_mentor_page, User
+    cannot :search_mentors, User
+    
+    if user.mentor?
+      can :change_mentor_status, User
+      # If they are a mentor of any kind they can see the mentors page
+      can :see_mentor_page, User if user.roles?(:mentor) or user.roles?(:nreduce_mentor)
+      # If they are an nreduce mentor they can see other mentors
+      can :search_mentors, User if user.roles?(:nreduce_mentor)
+    elsif !user.startup_id.blank?
+
+      # Any user with a startup can see the basic req's for a mentor
+      can :see_mentor_page, User
+
+      # A user with a startup can search mentors if they are able to invite them
+      can :search_mentors, Startup do |startup|
+        startup.can_invite_mentor?
+      end
+    end
 
     # Everyone can see users
     can :read, User
