@@ -2,17 +2,28 @@ class InvitesController < ApplicationController
   around_filter :record_user_action
   before_filter :login_required, :except => :accept
   load_and_authorize_resource :startup, :only => :create
-  load_and_authorize_resource :invite, :through => :startup, :only => :create
+  #load_and_authorize_resource :invite, :through => :startup, :only => :create
   load_and_authorize_resource :only => :destroy
 
   def create
+    if @startup
+      @invite = Invite.new(:startup_id => @startup.id)
+    elsif current_user.admin?
+      @invite = Invite.new
+    end
+    authorize! :create, @invite
+    @invite.attributes = params[:invite]
     @invite.save
     if @invite.new_record?
       flash[:alert] = @invite.errors.full_messages.join(', ') + '.'
     else
       flash[:notice] = "Your invite has been sent to #{@invite.to_name}"
     end
-    redirect_to edit_startup_path(@startup)
+    if @startup.blank? and current_user.admin?
+      redirect_to admin_mentors_path
+    else
+      redirect_to edit_startup_path(@startup)
+    end
   end
 
   def destroy

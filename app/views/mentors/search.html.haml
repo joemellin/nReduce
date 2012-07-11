@@ -36,7 +36,7 @@
           %p &nbsp;
         .span3= image_tag user.pic_url(:medium)
         .span5
-          %h2= h(user.name)
+          %h2= link_to h(user.name), user
           %h3= h(user.one_liner)
           %p
             %small
@@ -87,7 +87,8 @@
           != rating_link(user, true)
           %br/
           %p
-            %small Bio: #{simple_format(h(user.bio))}
+            %small Mentoring
+          %h3= pluralize(hit.stored(:num_mentoring), 'startup')
       %hr
       %br
 
