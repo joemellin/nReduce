@@ -29,6 +29,11 @@ class MentorsController < ApplicationController
     @search ||= {}
     @search[:page] = params[:page] || 1
 
+    # Cache number of startups they are connected to  - just grab all relationships startup to user
+    @startups_per_user = Cache.get('startups_by_mentor', 1.hour){
+      Relationship.startup_to_user.approved.group('connected_with_id').count
+    }
+
     # Have to pass context for block or else you can't access @search instance variable
     @search_results = User.search do |s|
       s.with :nreduce_mentor, true
@@ -42,6 +47,7 @@ class MentorsController < ApplicationController
         # finds 
         s.with :skill_tag_ids, tag_ids unless tag_ids.blank?
       end
+      s.order_by :num_mentoring, :desc
       s.order_by :rating, :desc
       s.paginate :page => @search[:page], :per_page => 10
     end

@@ -17,6 +17,7 @@ class User < ActiveRecord::Base
   has_many :sent_nudges, :class_name => 'Nudge', :foreign_key => 'from_id'
   has_many :user_actions, :as => :attachable
   has_many :relationships, :as => :entity
+  has_many :connected_with_relationships, :as => :connected_with, :class_name => 'Relationship'
 
 
   # Include default devise modules. Others available are:
@@ -63,6 +64,13 @@ class User < ActiveRecord::Base
     integer :meeting_id
     boolean :is_mentor do
       roles? :mentor
+    end
+    integer :num_mentoring, :stored => true do
+      if self.mentor?
+        connected_with_relationships.startup_to_user.approved.count
+      else
+        0
+      end
     end
     boolean :nreduce_mentor do
       roles? :nreduce_mentor

@@ -1,5 +1,16 @@
-%h2 Mentors
+.row
+  .span3
+    %h2 Mentors
+  .span9{:align => 'right'}
+    = form_for Invite.new(:invite_type => Invite::NREDUCE_MENTOR, :from_id => current_user.id), :html => {:class => 'form-inline'} do |f|
+      Invite an nReduce Mentor:
+      &nbsp; 
+      = f.hidden_field :invite_type
+      = f.hidden_field :from_id
+      = f.text_field :email, :placeholder => 'email address'
+      = f.submit 'Invite', :class => 'btn'
+    
 
 %ul
   - @mentors.each do |m|
-    %li= link_to m.name, mentor_path(m.id)
+    %li= link_to m.name, admin_mentor_path(m.id)

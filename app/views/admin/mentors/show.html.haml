@@ -4,7 +4,7 @@
   Select all the startups that you'd like the mentor to be connected to.
   %strong It doesn't work to remove startups yet.
 %br/
-= form_tag mentor_path(@mentor), :method => :put do
+= form_tag admin_mentor_path(@mentor), :method => :put do
   = submit_tag 'Save Changes', :class => 'btn btn-primary btn-large'
   %table.table
     %thead
