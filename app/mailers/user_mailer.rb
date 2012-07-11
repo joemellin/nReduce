@@ -16,9 +16,8 @@ class UserMailer < ActionMailer::Base
     @requesting_entity = @relationship.entity
     @connected_with = @relationship.connected_with
     @user = notification.user
-    if @requesting_entity.roles?(:mentor)
+    if @requesting_entity.is_a?(User) and @requesting_entity.roles?(:mentor)
       subject = "#{@requesting_entity.name} wants to be your mentor"
-
     else
       subject = "#{@requesting_entity.name} wants to connect with you"
     end
