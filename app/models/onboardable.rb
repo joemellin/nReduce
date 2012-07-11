@@ -23,7 +23,7 @@ module Onboardable
 
     # Onboarding steps - hardcoded here at 9
   def onboarding_complete?
-    self.onboarding_step == self.num_onboarding_steps
+    self.onboarding_step >= self.num_onboarding_steps
   end
 
   def num_onboarding_steps

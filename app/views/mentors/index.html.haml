@@ -1,18 +1,42 @@
 .mentors
   - if current_user.mentor? and !current_user.roles?(:nreduce_mentor)
     .row
-      .span6
+      .span12
         %h1
           %small nReduce Mentors
+        %hr/
+        %br/
+        %br/
+        %br/
+        %div{:align => 'center'}
+          %h1 Are you interested in helping other startups?
 
-        = form_tag change_status_mentors_path, :class => 'well form-inline' do
-          %p Are you interested in mentoring other companies on nReduce? We'd love to have you join our mentor network. Once you join, qualified startups will be able to contact you and ask if you're interested in mentoring them.
+    .row
+      .span3
+        &nbsp;
+      .span6{:align => 'center', :style => 'margin: 50px 0 150px 0;'}
+        Because you are already mentoring a startup, we invite you to join the nReduce mentor network.
 
-          %label.checkbox
-            = check_box_tag 'nreduce_mentor', 1
-            Yes I'm interested in mentoring other nReduce companies &nbsp;
+        Once you join, qualified startups will be able to contact you and ask if you're interested in mentoring them.
+        %br/
+        %br/
+        %br/
+        %br/
         
-          = submit_tag 'Save', :class => 'btn btn-primary'
+        - if current_user.profile_completeness_percent < 1.0
+          - btn_class = ' disabled'
+          %br/
+          %h4 #{link_to('Complete your profile', edit_user_path(current_user))} in order to be listed as a mentor.
+          %br/
+          = link_to 'Join Mentor Network', '#', :class => 'btn btn-large disabled', :style => 'padding: 10px; font-size: 22px;'
+          %br/
+          %br/
+        - else
+          = form_tag change_status_mentors_path, :class => 'form-inline' do
+            = hidden_field_tag 'nreduce_mentor', 1
+            = submit_tag 'Join Mentor Network', :class => 'btn btn-large btn-primary', :style => 'padding: 10px; font-size: 22px;'
+      .span3
+        &nbsp;
   - else
     .row
       .span8
