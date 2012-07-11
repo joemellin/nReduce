@@ -139,10 +139,6 @@ class Ability
         end
       end
 
-      cannot :see_mentor_page, User
-      cannot :search_mentors, User
-      cannot :change_mentor_status, User
-
       # Mentor can view relationships they are involved in (index)
       if user.mentor?
         can :read, Relationship do |relationship|
@@ -163,9 +159,11 @@ class Ability
     can [:manage, :onboard, :onboard_next], User, :id => user.id
 
     # Have to override manage roles on user for mentors
-    cannot :change_mentor_status, User
-    cannot :see_mentor_page, User
-    cannot :search_mentors, User
+    unless user.admin?
+      cannot :change_mentor_status, User
+      cannot :see_mentor_page, User
+      cannot :search_mentors, User
+    end
     
     if user.mentor?
       can :change_mentor_status, User
