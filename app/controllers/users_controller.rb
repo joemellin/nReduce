@@ -32,11 +32,7 @@ class UsersController < ApplicationController
       end
     end
   end
-
-  def onboard
-    render :action => "onboard/step_#{params[:step]}"
-  end
-
+  
   def chat
     @user.generate_hipchat! unless @user.hipchat?
   end
@@ -50,7 +46,7 @@ class UsersController < ApplicationController
     redirect_to :action => :chat
   end
 
-    # multi-page process that any new startup has to go through
+    # multi-page process that any new mentor has to go through
   def onboard
     if @user.onboarding_complete?
       redirect_to '/'

@@ -1,8 +1,7 @@
 - title ||= 'Profile'
-- progress_details = format_profile_elements(@profile_elements)
 .profile_completeness{:align => 'right'}
   %br/
-  .right.well{:rel => 'tooltip', :title => progress_details.html_safe}
+  .right.well
     .left
       %h3
         %small #{title} #{@profile_completeness_percent}% Complete
@@ -10,4 +9,6 @@
     
     .progress{:align => 'left'}
       .bar{:style => "width: #{@profile_completeness_percent}%"}
+    %div{:align => 'left'}!= format_profile_elements(@profile_elements)
   .clear
+  

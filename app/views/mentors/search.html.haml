@@ -84,11 +84,13 @@
                   = f.submit 'Send Request', :class => 'btn btn-primary'
                   %br/
                   %i Limit one per week
-          != rating_link(user, true)
-          %br/
-          %p
-            %small Mentoring
-          %h3= pluralize(hit.stored(:num_mentoring), 'startup')
+          - unless user.rating.blank? or user.rating == 0
+            != rating_link(user, true)
+          - unless hit.stored(:num_mentoring) == 0
+            %br/
+            %p
+              %small Mentoring
+            %h3= pluralize(hit.stored(:num_mentoring), 'startup')
       %hr
       %br
 

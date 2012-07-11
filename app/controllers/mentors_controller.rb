@@ -11,6 +11,7 @@ class MentorsController < ApplicationController
       authorize! :see_mentor_page, current_user
       @mentor_elements = @startup.mentor_elements unless @startup.blank?
     end
+    @mentors = User.with_roles(:nreduce_mentor)
   end
 
   def search
@@ -58,7 +59,7 @@ class MentorsController < ApplicationController
     authorize! :change_mentor_status, User
     current_user.roles << :nreduce_mentor if !params[:nreduce_mentor].blank?
     if current_user.save
-      flash[:notice] = "Thank you! Your profile will now be public and other nReduce startups will be able to contact you to become their mentor. Here is the list of other nReduce mentors:"
+      flash[:notice] = "Thank you! You are now listed as an nReduce mentor. Startups will contact you when they think there is a fit."
       redirect_to :action => :search
     else
       flash[:error] = "Your account couldn't be updated: #{current_user.errors.full_messages.join(', ')}."

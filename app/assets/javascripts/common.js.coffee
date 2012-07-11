@@ -12,7 +12,7 @@ $ ->
     $('.sign_in_toggle, #sign_up').show()
     $('#sign_in').hide()
 
-  $('.profile_completeness .well').tooltip({placement: 'left'})
+  #$('.profile_completeness .well').tooltip({placement: 'left'})
 
   split = (val) ->
     return val.split( /,\s*/ )
