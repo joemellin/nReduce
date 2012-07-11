@@ -6,6 +6,8 @@ class Ability
   def initialize(user, params)
     user ||= User.new
 
+    cannot :invite_mentor, Startup
+    
     if user.admin?
       can :manage, :all
       can :stats, Startup

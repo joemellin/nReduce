@@ -119,7 +119,12 @@ class Startup < ActiveRecord::Base
 
    # Returns true if mentor elements all pass and they haven't invited an nreduce mentor in the last week
   def can_invite_mentor?
-    (mentor_elements[:total][:passed] == true) and self.invites.to_nreduce_mentors.where(['created_at > ?', Time.now - 1.week])
+    can_invite = true
+    relationships = self.relationships.startup_to_user.approved.where(['created_at > ?', Time.now - 1.week]).includes(:connected_with)
+    relationships.each do |r|
+      can_invite = false if r.connected_with.roles?(:nreduce_mentor)
+    end
+    (mentor_elements[:total][:passed] == true) and can_invite
   end
 
     # Calculates profile completeness for all factors

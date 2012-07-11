@@ -8,7 +8,7 @@ class CheckinsController < ApplicationController
   load_and_authorize_resource :checkin
 
   def index
-    @checkins ||= @startup.checkins
+    @checkins = @startup.checkins
     authorize! :read, Checkin.new(:startup => @startup)
     @checkins = @checkins.ordered
   end
