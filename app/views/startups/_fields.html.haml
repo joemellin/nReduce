@@ -105,6 +105,7 @@
   .controls
     = text_field_tag 'startup[industry_list]', @startup.industry_list.map{|i| i.titleize }.join(', '), :class => 'span5 industries_list_autocomplete'
     = f.semantic_errors :industry_list
+    %p.help-block List at least one market that your startup is in (ex: mobile games, education)
 
 .control-group{error_css(@startup, :growth_model)}
   = f.label :growth_model, "Growth Model", :class => 'control-label'

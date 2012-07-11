@@ -41,6 +41,7 @@ gem 'sunspot_rails' # for use with solr
 gem 'sunspot_solr' # pre-packaged solr distro for use in dev
 gem 'progress_bar' # shows solr indexing progress
 gem 'bitmask_attributes'
+gem 'paper_trail', '~> 2.6.3'
 
 
 group :test, :development do

@@ -2,6 +2,7 @@ class User < ActiveRecord::Base
   include Connectable # methods for relationships
   include Onboardable
   acts_as_mappable
+  has_paper_trail
   belongs_to :startup
   belongs_to :meeting
   has_many :authentications, :dependent => :destroy

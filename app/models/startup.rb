@@ -1,6 +1,7 @@
 class Startup < ActiveRecord::Base
   include Connectable # methods for relationships
   include Onboardable
+  has_paper_trail
   has_many :team_members, :class_name => 'User'
   has_many :checkins
   belongs_to :main_contact, :class_name => 'User'
