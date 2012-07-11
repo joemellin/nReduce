@@ -23,5 +23,9 @@ en:
       invite: "Sorry, that is not a valid invite."
     invite_mentor:
       startup: "Sorry but you must pass all requirements, and are limited to invite one mentor per week."
+    see_mentors:
+      user: "Sorry but you can't see the mentor area as you don't have a startup or aren't a mentor."
+    search_mentors:
+      user: "Sorry but you need to be an nReduce mentor to see other nReduce mentors. If you're interested in mentoring other startups on nReduce please set your mentor profile to be public."
 
 

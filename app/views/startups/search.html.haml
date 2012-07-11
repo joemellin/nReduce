@@ -17,7 +17,7 @@
       /   = select_tag 'search[meeting_id]', options_for_select(@meetings_by_id.map{|id, name| [name, id] }, @search[:meeting_id].to_i), :class => 'input-large', :include_blank => true
       .span3
         %p
-          %small Industries
+          %small Market(s)
         = text_field_tag 'search[industries]', @search[:industries], :class => 'input-large industries_list_autocomplete'
       .span4
         %p &nbsp;

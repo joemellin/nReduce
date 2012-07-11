@@ -17,7 +17,7 @@ class Ability
         can [:manage, :dashboard, :onboard, :onboard_next, :remove_team_member], Startup, :id => user.startup_id
 
         cannot :invite_mentor, Startup # have to remove this ability since we just assigned manage
-        
+
         can :invite_mentor, Startup do |startup|
           startup.can_invite_mentor?
         end
@@ -139,11 +139,19 @@ class Ability
         end
       end
 
+      cannot :see_mentor_page, User
+      cannot :search_mentors, User
+
       # Mentor can view relationships they are involved in (index)
       if user.mentor?
         can :read, Relationship do |relationship|
           relationship.is_involved?(user)
         end
+
+        # If they are a mentor of any kind they can see the mentors page
+        can :see_mentor_page, User if user.roles?(:mentor) or user.roles?(:nreduce_mentor)
+        # If they are an nreduce mentor they can see other mentors
+        can :search_mentors, User if user.roles?(:nreduce_mentor)
       end
 
       # All users with startup/mentor can view a startup if onboarding is complete

@@ -42,7 +42,7 @@
   .span5{:align => 'right'}
     %p{:style => 'margin-bottom: 0'}
       %small Why?
-    %h4= simple_format(h(@checkin.start_why))
+    %h4= simple_format(h(@checkin.start_comments))
   .span2{:align => 'center', :style => 'padding-top: 8px'}
     - if current_user.startup_id == @checkin.startup_id
       / - if @checkin.awesome_count > 0

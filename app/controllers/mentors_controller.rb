@@ -6,6 +6,7 @@ class MentorsController < ApplicationController
   before_filter :redirect_if_no_startup
 
   def index
+    authorize! :see_mentor_page, current_user
     @mentor_elements = @startup.mentor_elements
   end
 
@@ -41,6 +42,5 @@ class MentorsController < ApplicationController
       s.paginate :page => @search[:page], :per_page => 10
     end
     @ua = {:data => @search}
-
   end
 end

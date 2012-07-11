@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120710231800) do
+ActiveRecord::Schema.define(:version => 20120711184848) do
 
   create_table "authentications", :force => true do |t|
     t.string   "provider"
@@ -178,7 +178,7 @@ ActiveRecord::Schema.define(:version => 20120710231800) do
     t.text     "message"
   end
 
-  add_index "relationships", ["entity_id", "entity_type", "status"], :name => "relationship_index"
+  add_index "relationships", ["entity_id", "entity_type", "connected_with_id", "connected_with_type", "status"], :name => "relationship_index", :unique => true
 
   create_table "startups", :force => true do |t|
     t.string   "name"
@@ -279,13 +279,23 @@ ActiveRecord::Schema.define(:version => 20120710231800) do
     t.string   "blog_url"
     t.string   "pic"
     t.float    "rating"
-    t.integer  "onboarding_step",        :default => 1
-    t.string   "intro_video_url"
+    t.integer  "onboarding_step",        :default => 0
     t.integer  "roles"
   end
 
   add_index "users", ["reset_password_token"], :name => "index_users_on_reset_password_token", :unique => true
   add_index "users", ["roles"], :name => "index_users_on_roles"
   add_index "users", ["startup_id"], :name => "index_users_on_startup_id"
+
+  create_table "versions", :force => true do |t|
+    t.string   "item_type",  :null => false
+    t.integer  "item_id",    :null => false
+    t.string   "event",      :null => false
+    t.string   "whodunnit"
+    t.text     "object"
+    t.datetime "created_at"
+  end
+
+  add_index "versions", ["item_type", "item_id"], :name => "index_versions_on_item_type_and_item_id"
 
 end
