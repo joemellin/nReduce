@@ -21,5 +21,7 @@ en:
       project: "Not allowed to update this project."
     accept:
       invite: "Sorry, that is not a valid invite."
+    can_invite_mentor:
+      startup: "Sorry but you must pass all requirements, and are limited to invite one mentor per week."
 
 
