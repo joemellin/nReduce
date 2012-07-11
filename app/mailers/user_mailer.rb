@@ -23,7 +23,7 @@ class UserMailer < ActionMailer::Base
       subject = "#{@requesting_entity.name} wants to connect with you"
     end
     params = {:to => @user.email, :subject => subject}
-    params[:bcc] = 'joe@nReduce.com' if @connected_with.roles?(:mentor)
+    params[:bcc] = 'joe@nReduce.com' if @connected_with.is_a?(User) and @connected_with.roles?(:mentor)
     mail(params)
   end
 
