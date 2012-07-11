@@ -6,8 +6,6 @@ class Ability
   def initialize(user, params)
     user ||= User.new
 
-    cannot :invite_mentor, Startup
-    
     if user.admin?
       can :manage, :all
       can :stats, Startup
@@ -17,6 +15,12 @@ class Ability
       # Abilities if user has a startup
       if !user.startup_id.blank?
         can [:manage, :dashboard, :onboard, :onboard_next, :remove_team_member], Startup, :id => user.startup_id
+
+        cannot :invite_mentor, Startup # have to remove this ability since we just assigned manage
+        
+        can :invite_mentor, Startup do |startup|
+          startup.can_invite_mentor?
+        end
         
         # Can start a checkin if in before or after time window and their startup owns checkin
         can [:new, :create], Checkin if Checkin.in_after_time_window? or Checkin.in_before_time_window?
@@ -32,10 +36,6 @@ class Ability
         can :manage, Invite, :startup_id => user.startup_id
 
         can :manage, Nudge, :startup_id => user.startup_id
-
-        can :invite_mentor, Startup do |startup|
-          startup.can_invite_mentor?
-        end
       end
 
       # Can destroy if they were assigned as receiver or created it
