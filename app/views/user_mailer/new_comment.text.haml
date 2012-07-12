@@ -4,7 +4,11 @@
   #{@comment.user.name} responded to you!\n
 \n
 - if @owner
-  #{@comment.user.name} of Team #{@comment.user.startup.name} wrote on your #{@checkin.time_label} check-in:\n
+  - if @comment.user.roles?(:mentor)
+    #{@comment.user.name} (your mentor)
+  - elsif !@comment.user.startup_id.blank?
+    #{@comment.user.name} of Team #{@comment.user.startup.name}
+  wrote on your #{@checkin.time_label} check-in:\n
 - elsif !@comment.parent.blank?
   They wrote in response to your comment "#{truncate(@comment.parent.content, :length => 30)}":\n
 - else
