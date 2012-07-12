@@ -12,7 +12,7 @@ class Startup < ActiveRecord::Base
   has_many :notifications, :as => :attachable
   has_many :user_actions, :as => :attachable
 
-  attr_accessible :name, :team_size, :website_url, :main_contact_id, :phone, :growth_model, :stage, :company_goal, :meeting_id, :one_liner, :active, :launched_at, :industry_list, :technology_list, :ideology_list, :industry, :intro_video_url, :elevator_pitch, :logo, :remote_logo_url, :logo_cache, :remove_logo, :checkins_public
+  attr_accessible :name, :team_size, :website_url, :main_contact_id, :phone, :growth_model, :stage, :company_goal, :meeting_id, :one_liner, :active, :launched_at, :industry_list, :technology_list, :ideology_list, :industry, :intro_video_url, :elevator_pitch, :logo, :remote_logo_url, :logo_cache, :remove_logo, :checkins_public, :pitch_video_url
 
   validates_presence_of :intro_video_url, :if => lambda {|startup| startup.onboarding_complete? }
   validates_presence_of :name
