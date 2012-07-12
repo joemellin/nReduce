@@ -5,7 +5,7 @@ rails_env = ENV['RAILS_ENV'] || 'production'
 # 16 workers and 1 master
 worker_processes (rails_env == 'production' ? 4 : 1)
 
-working_directory = rails_env == 'production' ? '/var/www/nreduce.com' : '/Users/josh/Projects/nreduce'
+working_directory = rails_env == 'production' ? '/var/www/nreduce' : '/Users/josh/Projects/nreduce'
 
 # Load rails+github.git into the master before forking workers
 # for super-fast worker spawn times
