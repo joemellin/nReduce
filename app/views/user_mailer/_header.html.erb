@@ -1,10 +1,6 @@
 <html>
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        
-    <!-- Facebook sharing information tags -->
-    <meta property="og:title" content="*|MC:SUBJECT|*" />
-
     <title><%= @subject -%></title>
     <style type="text/css">
       #outlook a{padding:0;} /* Force Outlook to provide a "view in browser" button. */
@@ -214,7 +210,7 @@
                           <td class="headerContent">
                           <!-- // Begin Module: Standard Header Image \\ -->
                           <br />
-                          <%= image_tag attachments['emailheader.jpg'].url, :alt => 'nReduce' %>
+                          <%= image_tag 'http://assets.nreduce.com/images/emailheader.jpg', :alt => 'nReduce', :width => 600, :height => 150 %>
                           <!-- // End Module: Standard Header Image \\ -->
                           </td>
                         </tr>
