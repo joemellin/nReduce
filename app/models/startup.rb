@@ -83,8 +83,7 @@ class Startup < ActiveRecord::Base
     checkins.ordered.where(['created_at > ?', Checkin.prev_after_checkin]).first
   end
 
-    # Returns hash of all requirements to be allowed to search for a mentor - and whether this startup has met them
-  def mentor_elements
+  def number_of_consecutive_checkins
     consecutive_checkins = 0
     longest_streak = 0
     prev_week = nil
@@ -108,12 +107,18 @@ class Startup < ActiveRecord::Base
         consecutive_checkins = 0
       end
     end
+    longest_streak
+  end
+
+    # Returns hash of all requirements to be allowed to search for a mentor - and whether this startup has met them
+  def mentor_elements
+    consecutive_checkins = self.number_of_consecutive_checkins
     num_awesomes = self.awesomes.count
     my_rating = self.rating.blank? ? 0 : self.rating
     profile_completeness = self.profile_completeness_percent
     passed = 0
     elements = {
-      :consecutive_checkins => { :value => longest_streak, :passed => longest_streak >= 4 },
+      :consecutive_checkins => { :value => consecutive_checkins, :passed => consecutive_checkins >= 4 },
       :num_awesomes => {:value => num_awesomes, :passed => num_awesomes >= 10 },
       :community_status => {:value => my_rating, :passed => my_rating >= 1.0 },
       :profile_completeness => {:value => profile_completeness, :passed => profile_completeness == 1.0 }
