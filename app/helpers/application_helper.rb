@@ -129,6 +129,7 @@ module ApplicationHelper
   end
 
   def format_profile_elements(elements)
+    return '' if elements.blank?
     elements.map{|name, is_complete|
       ret = ''
       # if team then the value is an integer of % completeness

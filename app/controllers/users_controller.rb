@@ -23,7 +23,7 @@ class UsersController < ApplicationController
   def update
     if @user.update_attributes(params[:user])
       flash[:notice] = "Your account has been updated!"
-      render :action => :show
+      redirect_to :action => :show
     else
       if params[:complete_account].to_s == 'true'
         render :action => :complete_account
