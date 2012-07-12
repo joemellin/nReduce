@@ -34,7 +34,7 @@
       .row{:id => "user_#{user.id}"}
         .span1
           %p &nbsp;
-        .span3= image_tag user.pic_url(:square), :width => 200, :height => 200
+        .span3{:style => 'margin-bottom: 20px'}= image_tag user.pic_url(:square), :width => 200, :height => 200
         .span5
           %h2= link_to h(user.name), user
           %h3= h(user.one_liner)
@@ -50,7 +50,6 @@
                 = hit.stored(:industries_cached).join(', ')
           %p
             %small Located: #{h(user.location)}
-          %br
           - unless user.linkedin_url.blank?
             = link_to image_tag('linkedin_32.png'), user.linkedin_url, :target => '_blank'
           - unless user.twitter.blank?
