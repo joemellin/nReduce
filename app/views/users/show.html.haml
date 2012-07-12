@@ -13,7 +13,7 @@
 .row
   .span12.well
     .row
-      .span3= image_tag @user.pic_url(:medium)
+      .span3= image_tag @user.pic_url(:square), :width => 200, :height => 200
       .span5
         %br
         %h1= h(@user.name)
