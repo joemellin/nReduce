@@ -31,6 +31,7 @@ class User < ActiveRecord::Base
 
   serialize :settings, Hash
 
+  validate_presence_of :name
   validate :email_is_not_nreduce
   validate :check_video_urls_are_valid
   validates_length_of :bio, :minimum => 100, :too_short => "needs to be at least 100 characters", :allow_blank => true
