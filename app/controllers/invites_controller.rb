@@ -61,7 +61,7 @@ class InvitesController < ApplicationController
           session[:sign_in_up_email] = @invite.email
           session[:invite_id] = @invite.id # make sure it's set
           redirect_to new_session_path(:user)
-        else # they are signed in as correct user
+        else # they are signed in - assign invite to this account (don't check email)
           session[:invite_id] = @invite.id
           if accept_invite_for_user(current_user)
             if @invite.startup.blank?
