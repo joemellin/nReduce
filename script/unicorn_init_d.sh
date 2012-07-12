@@ -12,23 +12,19 @@
 
 USER=josh
 DIR=/var/www/nreduce
-PATH=/home/$USER/.rbenv/bin:/home/$USER/.rbenv/shims:$PATH
-DAEMON=unicorn
-DAEMON_OPTS="-c $DIR/config/unicorn.rb -E production -D"
 NAME=unicorn
+CMD="bundle exec unicorn_rails -c $DIR/config/unicorn.rb -E production -D"
 DESC="Unicorn app for $USER - nReduce"
 PID=$DIR/tmp/pids/unicorn.pid
+CD_TO_APP_DIR="cd $DIR"
 
 case "$1" in
   start)
-        CD_TO_APP_DIR="cd $DIR"
-        START_DAEMON_PROCESS="bundle exec $DAEMON $DAEMON_OPTS"
-
         echo -n "Starting $DESC: "
         if [ `whoami` = root ]; then
-          su - $USER -c "$CD_TO_APP_DIR > /dev/null 2>&1 && $START_DAEMON_PROCESS"
+          su - $USER -c "$CD_TO_APP_DIR > /dev/null 2>&1 && $CMD"
         else
-          $CD_TO_APP_DIR > /dev/null 2>&1 && $START_DAEMON_PROCESS
+          $CD_TO_APP_DIR > /dev/null 2>&1 && $CMD
         fi
         echo "$NAME."
         ;;
@@ -41,6 +37,11 @@ case "$1" in
         echo -n "Restarting $DESC: "
         kill -USR2 `cat $PID`
         echo "$NAME."
+        if [ `whoami` = root ]; then
+          su - $USER -c "$CD_TO_APP_DIR > /dev/null 2>&1 && $CMD"
+        else
+          $CD_TO_APP_DIR > /dev/null 2>&1 && $CMD
+        fi
         ;;
   reload)
         echo -n "Reloading $DESC configuration: "
