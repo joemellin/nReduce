@@ -35,7 +35,7 @@
         .span1
           %p &nbsp;
         .span3{:style => 'margin-bottom: 20px'}= image_tag user.pic_url(:square), :width => 200, :height => 200
-        .span5
+        .span5{:style => 'margin-bottom: 20px'}
           %h2= link_to h(user.name), user
           %h3= h(user.one_liner)
           %p
@@ -61,7 +61,7 @@
           - unless user.blog_url.blank?
             = link_to image_tag('blog_32.png'), user.blog_url, :target => '_blank'
           - unless user.facebook_url.blank?
-            = link_to image_tag('facebook_32.png'), user.facebook_url, :target => '_blank'
+            = link_to image_tag('facebook_32.png'), user.facebook_url, :target => '_blank'\
         .span3
           - if @can_invite
             = link_to 'Ask to Mentor', '#', :class => 'btn btn-large', :onclick => "$('#user_#{user.id}_invite').modal(); return false;"
