@@ -21,5 +21,6 @@ class RegistrationsController < Devise::RegistrationsController
     end
     @user.email = session[:sign_in_up_email] unless @user.blank? or session[:sign_in_up_email].blank?
     @user.geocode_from_ip(request.remote_ip) if @user.location.blank?
+    @hide_twitter = true if !session[:invite_id].blank?
   end
 end

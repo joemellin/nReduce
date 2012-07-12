@@ -6,7 +6,7 @@
     %br/
     %p
       %strong An alliance of creators built on accountability and community
-    - unless @omniauth
+    - if !@omniauth or !@hide_twitter
       %br/
       %a.btn.btn-large{:href => '/auth/twitter'}
         = image_tag('twitter_32.png')
