@@ -1,8 +1,14 @@
+#!/bin/bash
+
 git checkout master
 git pull
 git checkout server
 git merge master
 bundle install --deployment
-bundle exec rake assets:precompile RAILS_ENV=production
-#bundle exec unicorn_rails -c config/unicorn.rb -E production -D
+if [$2 -eq "assets" ]; then
+  bundle exec rake assets:precompile RAILS_ENV=production
+else
+  echo "not compiling assets"
+fi
+/etc/init.d/unicorn restart
 tail -f log/production.log
