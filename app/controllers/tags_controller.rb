@@ -1,5 +1,5 @@
 class TagsController < ApplicationController
-  before_filter :authenticate_user!
+  # For now remove authentication so people can use this without being logged in.
 
   def search
     if !params[:context].blank? and !params[:term].blank?
