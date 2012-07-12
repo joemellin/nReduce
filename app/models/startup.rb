@@ -86,6 +86,7 @@ class Startup < ActiveRecord::Base
     # Returns hash of all requirements to be allowed to search for a mentor - and whether this startup has met them
   def mentor_elements
     consecutive_checkins = 0
+    longest_streak = 0
     prev_week = nil
     self.checkins.order('week').each do |checkin|
       # If the checkin has a before and after video count it
@@ -103,6 +104,7 @@ class Startup < ActiveRecord::Base
         end
         prev_week = checkin.week
       else # otherwise reset consecutive checkins
+        longest_streak = consecutive_checkins if consecutive_checkins > longest streak
         consecutive_checkins = 0
       end
     end
@@ -111,7 +113,7 @@ class Startup < ActiveRecord::Base
     profile_completeness = self.profile_completeness_percent
     passed = 0
     elements = {
-      :consecutive_checkins => { :value => consecutive_checkins, :passed => consecutive_checkins >= 4 },
+      :consecutive_checkins => { :value => longest_streak, :passed => longest_streak >= 4 },
       :num_awesomes => {:value => num_awesomes, :passed => num_awesomes >= 10 },
       :community_status => {:value => my_rating, :passed => my_rating >= 1.0 },
       :profile_completeness => {:value => profile_completeness, :passed => profile_completeness == 1.0 }
