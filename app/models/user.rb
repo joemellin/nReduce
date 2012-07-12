@@ -441,7 +441,7 @@ class User < ActiveRecord::Base
   end
 
   def assign_as_mentor
-    self.mentor = roles?(:mentor) or roles?(:nreduce_mentor)
+    self.mentor = (roles?(:mentor) or roles?(:nreduce_mentor))
     true
   end
 

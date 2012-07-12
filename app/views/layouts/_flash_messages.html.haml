@@ -1,9 +1,9 @@
 - if flash[:notice].present?
   .alert.alert-success
     %a{:class => "close", :href => "#", "data-dismiss" => "alert"} x
-    %p= raw h(flash[:notice])
+    %p= raw flash[:notice].html_safe
 
 - if flash[:alert].present?
   .alert.alert-error
     %a{:class => "close", :href => "#", "data-dismiss" => "alert"} x
-    %p= raw h(flash[:alert])
+    %p= raw flash[:alert].html_safe

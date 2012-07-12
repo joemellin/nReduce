@@ -103,7 +103,7 @@ class Startup < ActiveRecord::Base
         end
         prev_week = checkin.week
       else # otherwise reset consecutive checkins
-        longest_streak = consecutive_checkins if consecutive_checkins > longest streak
+        longest_streak = consecutive_checkins if consecutive_checkins > longest_streak
         consecutive_checkins = 0
       end
     end
