@@ -4,9 +4,9 @@
 - else
   %h1.h1 #{@requesting_entity.name}
 %br
-- if @requesting_entity.is_a?(Startup) and (@connected_with.roles?(:nreduce_mentor) or @connected_with.roles?(:mentor))
+- if @requesting_entity.is_a?(Startup) and @connected_with.is_a?(User) and (@connected_with.roles?(:nreduce_mentor) or @connected_with.roles?(:mentor))
   %h4.h4 Would like you to be their mentor.
-- elsif @requesting_entity.roles?(:mentor)
+- elsif @requesting_entity.is_a?(User) and @requesting_entity.roles?(:mentor)
   %h4.h4 Would like to be your mentor.
   %p If accepted they will see your weekly progress will give you feedback and help you succeed.
 - else
