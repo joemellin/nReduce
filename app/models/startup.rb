@@ -89,7 +89,7 @@ class Startup < ActiveRecord::Base
     prev_week = nil
     self.checkins.order('week').each do |checkin|
       # Start with one if it's the first one
-      next unless checkin.submitted? and checkin.completed?
+      next unless checkin.before_completed? and checkin.after_completed?
       if prev_week.blank?
         consecutive_checkins += 1
       # Check if year is the same
