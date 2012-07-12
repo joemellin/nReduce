@@ -25,4 +25,5 @@
 public/assets/*
 public/uploads/*
 
-solr/*
+solr/data/*
+solr/pids/*
