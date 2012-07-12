@@ -52,6 +52,13 @@ class RelationshipsController < ApplicationController
     @commented_on_checkin_ids = current_user.commented_on_checkin_ids
 
     @num_blank_spots = current_user.mentor? ? 4 : 8
+
+    if current_user.roles?(:nreduce_mentor) and @startups.size == 0
+      flash[:notice] = 'Congratulations, you are now an nReduce mentor. Click on the "mentor" 
+      link in the menu bar to see the other mentors.<br /><br />Qualified startups can now contact you, 
+      and you will receive an email notifying you of mentorship requests. 
+      If you have any questions please email joe@nReduce.com'
+    end
   end
 
   def create
