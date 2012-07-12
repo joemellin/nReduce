@@ -73,6 +73,9 @@ class User < ActiveRecord::Base
         0
       end
     end
+    boolean :onboarding_complete do
+      self.onboarding_complete?
+    end
     boolean :nreduce_mentor do
       roles? :nreduce_mentor
     end
