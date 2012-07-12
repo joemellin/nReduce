@@ -4,10 +4,12 @@
 .row
   .span8
     %h1
-      %small You!
+      %small User Profile
   .span4{:align => 'right'}
     - if user_signed_in? and current_user.id == @user.id
       = link_to "Edit Account", edit_user_path(@user), :class => "btn"
+    - if current_user.admin? and current_user.id != @user.id
+      = link_to "Sign in As User", sign_in_as_admin_user_path(@user), :class => 'btn'
 .row
   .span12.well
     .row
