@@ -34,6 +34,11 @@ class BaseUploader < CarrierWave::Uploader::Base
     process :quality => 70
   end
 
+  version :square do
+    process :resize_to_fill => [200, 200]
+    process :quality => 70
+  end
+
   version :small do
     process :resize_to_fill => [50, 50]
     process :quality => 80
