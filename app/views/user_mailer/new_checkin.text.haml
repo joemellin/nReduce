@@ -1,7 +1,3 @@
 Team #{@checkin.startup.name} has posted their 'after' video for #{@checkin.time_label}!\n
 \n
 Give Feedback & Support: #{startup_checkin_url(:startup_id => @checkin.startup_id, :id => @checkin.id)}
-/ - if !@current_checkin.blank? and @current_checkin.completed?
-/   Give Feedback & Support: #{startup_checkin_url(:startup_id => @checkin.startup_id, :id => @checkin.id)}
-/ - else
-/   Post Your Team's "After" Video: #{@current_checkin.new_record? ? new_checkin_url : edit_checkin_url(@current_checkin)}
