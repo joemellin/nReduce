@@ -85,8 +85,13 @@
       %br
 
 - if !@current_invite.blank?
-  %p #{@current_invite.from.name} has invited you to join Team #{h(@current_invite.startup.name)}:
-  = link_to "Join #{h(@current_invite.startup.name)}", accept_invite_path(:id => @current_invite.code), :class => "btn btn-large btn-primary"
+  - if @current_invite.invite_type == Invite::MENTOR || @current_invite.invite_type == Invite::NREDUCE_MENTOR
+    You have been invited to be a mentor!
+  - if !@current_invite.startup.blank?
+    %p #{@current_invite.from.name} has invited you to join Team #{h(@current_invite.startup.name)}:
+    = link_to "Join #{h(@current_invite.startup.name)}", accept_invite_path(:id => @current_invite.code), :class => "btn btn-large btn-primary"
+  - else
+    = link_to "Accept Invite", accept_invite_path(:id => @current_invite.code), :class => "btn btn-large btn-primary"
   &nbsp;&nbsp;
   = link_to "Decline Invite", @current_invite, :method => :delete, :class => "btn btn-large", :confirm => "Are you sure you want to decline it?"
 - elsif @user.startup_id.blank? and !@user.mentor?
