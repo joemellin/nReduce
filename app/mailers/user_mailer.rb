@@ -12,9 +12,9 @@ class UserMailer < ActionMailer::Base
   def relationship_request(notification)
     setup_email
     @user = notification.user
+    @relationship = notification.attachable
     @requesting_entity = @relationship.entity
     @connected_with = @relationship.connected_with
-    @relationship = notification.attachable
     return false if @user.blank? or @requesting_entity.blank? or @connected_with.blank? or @relationship.blank?
     if @requesting_entity.is_a?(User) and @requesting_entity.roles?(:mentor)
       subject = "#{@requesting_entity.name} wants to be your mentor"
