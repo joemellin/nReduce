@@ -1,8 +1,8 @@
 = render :partial => 'header'
 - if @requesting_entity.is_a?(Startup)
-	%h1.h1 Team #{@requesting_entity.name}
+  %h1.h1 Team #{@requesting_entity.name}
 - else
-	%h1.h1 #{@requesting_entity.name}
+  %h1.h1 #{@requesting_entity.name}
 %br
 - if @requesting_entity.is_a?(Startup) and (@connected_with.roles?(:nreduce_mentor) or @connected_with.roles?(:mentor))
   %h4.h4 Would like you to be their mentor.
