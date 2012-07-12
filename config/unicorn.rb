@@ -14,8 +14,11 @@ preload_app true
 # Restart any workers that haven't responded in 30 seconds
 timeout 30
 
+# Can't use unix socket with lighttpd so for now listen on port
+listen "127.0.0.1:8985"
+
 # Listen on a Unix data socket
-listen working_directory + '/tmp/sockets/unicorn.sock', :backlog => 2048
+#listen working_directory + '/tmp/sockets/unicorn.sock', :backlog => 2048
 
 pid working_directory + '/tmp/pids/unicorn.pid'
 
