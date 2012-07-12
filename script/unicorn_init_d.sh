@@ -11,7 +11,7 @@
 ### END INIT INFO
 
 USER=josh
-DIR=/var/www/nreduce.com
+DIR=/var/www/nreduce
 PATH=/home/$USER/.rbenv/bin:/home/$USER/.rbenv/shims:$PATH
 DAEMON=unicorn
 DAEMON_OPTS="-c $DIR/config/unicorn.rb -E production -D"
