@@ -19,7 +19,6 @@ class User < ActiveRecord::Base
   has_many :relationships, :as => :entity
   has_many :connected_with_relationships, :as => :connected_with, :class_name => 'Relationship'
 
-
   # Include default devise modules. Others available are:
   # :token_authenticatable, :confirmable,
   # :lockable, :timeoutable and :omniauthable
