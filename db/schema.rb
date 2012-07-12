@@ -178,7 +178,7 @@ ActiveRecord::Schema.define(:version => 20120712151647) do
     t.text     "message"
   end
 
-  add_index "relationships", ["entity_id", "entity_type", "status"], :name => "relationship_index"
+  add_index "relationships", ["entity_id", "entity_type", "connected_with_id", "connected_with_type", "status"], :name => "relationship_index", :unique => true
 
   create_table "startups", :force => true do |t|
     t.string   "name"
@@ -280,8 +280,7 @@ ActiveRecord::Schema.define(:version => 20120712151647) do
     t.string   "blog_url"
     t.string   "pic"
     t.float    "rating"
-    t.integer  "onboarding_step",        :default => 1
-    t.string   "intro_video_url"
+    t.integer  "onboarding_step",        :default => 0
     t.integer  "roles"
   end
 
