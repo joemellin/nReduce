@@ -4,6 +4,10 @@ class UsersController < ApplicationController
   before_filter :load_user_if_me_or_current
   load_and_authorize_resource
 
+  def index
+    redirect_to '/'
+  end
+
   def complete_account
   end
 
