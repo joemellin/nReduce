@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120711184848) do
+ActiveRecord::Schema.define(:version => 20120712151647) do
 
   create_table "authentications", :force => true do |t|
     t.string   "provider"
@@ -178,7 +178,7 @@ ActiveRecord::Schema.define(:version => 20120711184848) do
     t.text     "message"
   end
 
-  add_index "relationships", ["entity_id", "entity_type", "connected_with_id", "connected_with_type", "status"], :name => "relationship_index", :unique => true
+  add_index "relationships", ["entity_id", "entity_type", "status"], :name => "relationship_index"
 
   create_table "startups", :force => true do |t|
     t.string   "name"
@@ -186,9 +186,9 @@ ActiveRecord::Schema.define(:version => 20120711184848) do
     t.string   "one_liner"
     t.string   "phone"
     t.string   "website_url"
-    t.string   "stage"
-    t.string   "growth_model"
-    t.string   "company_goal"
+    t.integer  "stage"
+    t.integer  "growth_model"
+    t.integer  "company_goal"
     t.string   "intro_video_url"
     t.integer  "onboarding_step", :default => 1
     t.integer  "team_size",       :default => 1
@@ -203,6 +203,7 @@ ActiveRecord::Schema.define(:version => 20120711184848) do
     t.string   "logo"
     t.float    "rating"
     t.boolean  "checkins_public", :default => false
+    t.string   "pitch_video_url"
   end
 
   add_index "startups", ["public"], :name => "index_startups_on_public"
@@ -279,7 +280,8 @@ ActiveRecord::Schema.define(:version => 20120711184848) do
     t.string   "blog_url"
     t.string   "pic"
     t.float    "rating"
-    t.integer  "onboarding_step",        :default => 0
+    t.integer  "onboarding_step",        :default => 1
+    t.string   "intro_video_url"
     t.integer  "roles"
   end
 

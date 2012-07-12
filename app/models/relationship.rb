@@ -32,7 +32,7 @@ class Relationship < ActiveRecord::Base
     # Classes that can be added to a relationship
     # When adding new ones make sure to also edit notifications and mailers
   def self.valid_classes
-    ['Startup', 'User']
+    %w(Startup User)
   end
 
   # Start a relationship between two entities - same as calling create

@@ -10,12 +10,6 @@
     = f.text_field :email, :class => "span4"
     = f.semantic_errors :email
 
-.control-group{error_css(@user, :phone)}
-  = f.label :phone, "Phone Number", :class => 'control-label'
-  .controls
-    = f.text_field :phone, :class => "span2"
-    = f.semantic_errors :phone
-
 .control-group{error_css(@user, :pic)}
   = f.label :pic, 'Picture', :class => 'control-label'
   .controls
