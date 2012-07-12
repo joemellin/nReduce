@@ -55,8 +55,8 @@ class InvitesController < ApplicationController
         redirect_to new_registration_path(:user)
       else # they have an account
         # get them to login if not signed in or email doesn't match current user
-        if !user_signed_in? or (user_signed_in? and current_user.email != @invite.email)
-          sign_out(current_user) if user_signed_in?
+        if !user_signed_in?
+          sign_out(current_user)
           flash[:alert] = "That invite is for #{@invite.email} - please sign in with that account." if user_signed_in? and current_user.email != u.email
           session[:sign_in_up_email] = @invite.email
           session[:invite_id] = @invite.id # make sure it's set
