@@ -276,6 +276,10 @@ class Startup < ActiveRecord::Base
       self.errors.add(:intro_video_url, 'invalid Youtube URL')
       err = true
     end
+    if !pitch_video_url.blank? and !Youtube.valid_url?(pitch_video_url)
+      self.errors.add(:pitch_video_url, 'invalid Youtube URL')
+      err = true
+    end
     err
   end
 end
