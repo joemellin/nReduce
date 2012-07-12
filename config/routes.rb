@@ -8,6 +8,9 @@ Nreduce::Application.routes.draw do
 
   namespace 'admin' do
     resources :mentors, :only => [:index, :show, :update]
+    resources :users, :only => :show do
+      get 'sign_in_as', :on => :member
+    end
     # Resque Admin
     constraints admin_constraint do
       require 'resque/server'
