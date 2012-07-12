@@ -43,6 +43,12 @@
       = f.select :main_contact_id, options_for_select(@startup.team_members.map{|tm| [tm.name, tm.id] }, @startup.main_contact_id), :include_blank => true
       = f.semantic_errors :main_contact_id
 
+.control-group{error_css(@startup, :phone)}
+  = f.label :phone, "Phone Number", :class => 'control-label'
+  .controls
+    = f.text_field :phone, :class => 'span3'
+    = f.semantic_errors :phone
+
 .control-group{error_css(@startup, :team_size)}
   = f.label :team_size, "# of Team Members", :class => 'control-label'
   .controls
@@ -82,12 +88,6 @@
       = f.check_box :remove_logo
       Remove logo
 
-.control-group{error_css(@startup, :phone)}
-  = f.label :phone, "Phone Number", :class => 'control-label'
-  .controls
-    = f.text_field :phone, :class => 'span3'
-    = f.semantic_errors :phone
-
 .control-group{error_css(@startup, :intro_video_url)}
   = f.label :intro_video_url, "Intro Video Url", :class => 'control-label'
   .controls
@@ -95,6 +95,16 @@
     = f.semantic_errors :intro_video_url
     %span.help-inline.help-danger
       Upload a 30 second video to Youtube that introduces your team so that everyone can "meet" you.
+      %br/
+      Set it as unlisted but allow it to be embedded.
+
+.control-group{error_css(@startup, :pitch_video_url)}
+  = f.label :pitch_video_url, "2 Minute Pitch Video Url", :class => 'control-label'
+  .controls
+    = f.text_field :pitch_video_url, :class => 'span3 with-placeholder'
+    = f.semantic_errors :pitch_video_url
+    %span.help-inline.help-danger
+      Upload a 2 minute video to Youtube of your startup's pitch.
       %br/
       Set it as unlisted but allow it to be embedded.
     
