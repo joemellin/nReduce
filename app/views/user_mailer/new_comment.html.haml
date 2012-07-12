@@ -6,8 +6,11 @@
 %br/
 %br/
 %strong #{@comment.user.name}
-of
-%strong Team #{@comment.user.startup.name}
+- if @comment.user.roles?(:mentor)
+  (your mentor)
+- elsif !@comment.user.startup_id.blank?
+  of
+  %strong Team #{@comment.user.startup.name}
 - if @owner
   wrote on your #{@checkin.time_label} check-in:
 - elsif @comment.parent.blank?
