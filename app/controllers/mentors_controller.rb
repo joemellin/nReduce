@@ -48,6 +48,7 @@ class MentorsController < ApplicationController
         # finds 
         s.with :skill_tag_ids, tag_ids unless tag_ids.blank?
       end
+      s.order_by :has_pic, :desc
       s.order_by :num_mentoring, :desc
       s.order_by :rating, :desc
       s.paginate :page => @search[:page], :per_page => 10

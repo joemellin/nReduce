@@ -1,6 +1,5 @@
 class Startup < ActiveRecord::Base
   include Connectable # methods for relationships
-  include Onboardable
   has_paper_trail
   has_many :team_members, :class_name => 'User'
   has_many :checkins
@@ -287,13 +286,13 @@ class Startup < ActiveRecord::Base
     setup?(:profile, :invite_team_members, :before_video)
   end
 
-  # Returns the current account stage - to see if they need to set anything up
+  # Returns the current controller / action for setup - to see if they need to set anything up
   # first checks setup field so we don't have to perform db queries if they've completed that step
-  def account_setup_stage
+  def account_setup_action
     return [:complete] if account_setup?
-    return [:profile, :startup] unless setup?(:profile) # don't check for completeness yet because that'll force team member stuff
-    return [:invite_startup_team_members, :startup] unless setup?(:invite_team_members)
-    return [:before_video, :startup] if !setup?(:before_video) and self.startup.checkins.count == 0
+    return [:startup, :edit] unless setup?(:profile) # don't check for completeness yet because that'll force team member stuff
+    return [:startup, :invite_team_members] unless setup?(:invite_team_members)
+    return [:startup, :before_video] if !setup?(:before_video) and self.startup.checkins.count == 0
     return nil
   end
 

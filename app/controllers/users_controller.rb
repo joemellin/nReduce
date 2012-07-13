@@ -21,6 +21,9 @@ class UsersController < ApplicationController
     end
   end
 
+  def account_type
+  end
+
   def edit
     @profile_elements = @user.profile_elements
     @profile_completeness_percent = (@user.profile_completeness_percent * 100).round
@@ -50,43 +53,6 @@ class UsersController < ApplicationController
       flash[:alert] = "Sorry but your HipChat account could not be reset. Please contact josh@nreduce.com"
     end
     redirect_to :action => :chat
-  end
-
-    # multi-page process that any new mentor has to go through
-  def setup
-    if @user.account_setup?
-      redirect_to '/'
-    else
-      @step = @user.account_step
-    end
-  end
-
-    # did this as a separate POST / redirect action so that 
-    # if you refresh the onboard page it doesn't go to the next step
-  def setup_next
-    # Check if we have any form data - Startup form or  Youtube url or 
-    if !params[:user_form].blank? and !params[:user].blank?
-      if @user.update_attributes(params[:user])
-        @user.onboarding_step_increment! 
-      else
-        flash.now[:alert] = "Hm, we had some problems updating your account."
-        @step = @user.onboarding_step
-        render "users/onboard/step_#{@step}"
-        return
-      end
-    elsif params[:user]
-      if !params[:user][:intro_video_url].blank? and @user.update_attributes(params[:user])
-        @user.onboarding_step_increment!
-      else
-        flash[:alert] = "Looks like you forgot to paste in your Youtube URL"
-        @step = @user.onboarding_step
-        render "users/onboard/step_#{@step}"
-        return
-      end
-    else
-      @user.onboarding_step_increment!
-    end
-    redirect_to :action => :onboard
   end
 
   protected

@@ -4,8 +4,6 @@ Nreduce::Application.routes.draw do
     request.env['warden'].authenticate? and request.env['warden'].user.admin?
   end
 
-  
-
   namespace 'admin' do
     resources :mentors, :only => [:index, :show, :update]
     resources :users, :only => :show do
@@ -60,15 +58,14 @@ Nreduce::Application.routes.draw do
     collection do
       get 'chat'
       post 'reset_hipchat_account'
-      get 'onboard'
     end
     member do
+      get 'account_type'
       match 'complete_account'
-      get 'setup'
-      post 'setup_next'
     end
     resources :notifications
   end
+
   match '/users/:id/onboard/:step' => "users#onboard"
 
   resources :comments do
@@ -102,9 +99,9 @@ Nreduce::Application.routes.draw do
   end
 
   # onboarding
-  get '/onboard/:type/start/', :as => :onboard_start
+  get '/onboard/start(/:type)' => "onboard#start", :as => :onboard_start
   get '/onboard/' => "onboard#current_step", :as => :onboard
-  post '/onboard/next' => "onboard#next_step", :as => :onboard_next
+  post '/onboard/next' => "onboard#next", :as => :onboard_next
 
   resources :invites, :only => [:create, :destroy, :show] do
     get 'accept', :on => :member
@@ -113,8 +110,6 @@ Nreduce::Application.routes.draw do
     # Your startup - singular resource
   resource :startup do
     member do
-      get 'onboard'
-      post 'onboard_next'
       get 'dashboard'
       post 'remove_team_member'
     end
