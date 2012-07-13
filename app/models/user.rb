@@ -37,7 +37,6 @@ class User < ActiveRecord::Base
 
   before_create :set_default_settings
   before_save :geocode_location
-  before_save :assign_as_mentor
 
   acts_as_taggable_on :skills, :industries
 
@@ -49,6 +48,8 @@ class User < ActiveRecord::Base
   # adds methods and scopes: https://github.com/joelmoss/bitmask_attributes
   bitmask :roles, :as => [:admin, :entrepreneur, :mentor, :investor, :nreduce_mentor]
   bitmask :onboarded, :as => [:startup, :mentor, :nreduce_mentor, :investor]
+  bitmask :email_on, :as => [:docheckin, :comment, :meeting, :checkin, :relationship]
+  bitmask :setup, :as => [:account_type, :onboarding, :profile, :invite_startups]
 
   searchable do
     # full-text search fields - can add :stored => true if you don't want to hit db
@@ -65,7 +66,7 @@ class User < ActiveRecord::Base
     double  :rating
     integer :meeting_id
     boolean :is_mentor do
-      roles? :mentor
+      self.mentor?
     end
     integer :num_mentoring, :stored => true do
       if self.mentor?
@@ -104,12 +105,12 @@ class User < ActiveRecord::Base
     }
   end
 
-  def self.default_settings
-    {'email_on' => User.settings_labels['email_on'].keys}
+  def self.default_email_on
+    [:docheckin, :comment, :meeting, :checkin, :relationship]
   end
 
   def self.force_email_on
-    ['nudge', 'user'] # user is new mentor
+    [:nudge, :user] # user is new mentor
   end
 
     # Calculates profile completeness for all factors
@@ -131,6 +132,18 @@ class User < ActiveRecord::Base
       :linked_in => !self.linkedin_url.blank?,
       :skills => !self.skill_list.blank?
     }
+  end
+
+  def mentor?
+    roles?(:mentor) or roles?(:nreduce_mentor)
+  end
+
+  def investor?
+    roles?(:investor)
+  end
+
+  def entrepreneur?
+    roles?(:entrepreneur)
   end
 
   def num_onboarding_steps # needs to be one more than actual steps
@@ -171,7 +184,7 @@ class User < ActiveRecord::Base
     # Returns boolean if user should be emailed for a specific action (action being the object class)
   def email_for?(class_name)
     begin
-      return true if User.force_email_on.include?(class_name)
+      return true if User.force_email_on.include?(class_name.to_sym)
       !self.email.blank? and self.settings['email_on'].include?(class_name)
     rescue # in case array isn't set
       false
@@ -294,6 +307,26 @@ class User < ActiveRecord::Base
       results[startup.id][:total] = rating
     end
     results
+  end
+
+  # Returns true if the user has set everything up for the account (otherwise forces user to go through flow)
+  def account_setup?
+    if setup?(:account_type, :onboarding, :profile)
+      return true if roles?(:entrepreneur) and !self.startup.blank? and self.startup.account_setup?
+      return true if roles?(:mentor) or self.roles(:investor) and setup?(:invite_startups)
+    end
+    false
+  end
+
+  # Returns the current account stage - to see if they need to set anything up
+  # first checks setup field so we don't have to perform db queries if they've completed that step
+  def account_setup_stage
+    return :complete if account_setup?
+    return :account_type if !self.setup?(:account_type) and self.roles.blank?
+    return :onboarding if !self.setup?(:onboarding) and self.onboarded.blank?
+    return :profile if !self.setup?(:profile) and self.profile_completeness_percent < 1.0
+    return :invite_startups if (self.roles?(:mentor) or self.roles?(:investor)) and !self.setup?(:invite_startups)
+    return nil
   end
 
   #
@@ -441,12 +474,7 @@ class User < ActiveRecord::Base
   end
 
   def set_default_settings
-    self.settings = User.default_settings if self.settings.blank?
-  end
-
-  def assign_as_mentor
-    self.mentor = (roles?(:mentor) or roles?(:nreduce_mentor))
-    true
+    self.email_on = self.default_email_on
   end
 
   def geocode_location

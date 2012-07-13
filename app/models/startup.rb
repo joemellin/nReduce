@@ -28,6 +28,8 @@ class Startup < ActiveRecord::Base
   scope :launched, where('launched_at IS NOT NULL')
   scope :with_intro_video, where('intro_video_url IS NOT NULL')
 
+  bitmask :setup, :as => [:profile, :invite_team_members, :before_video]
+
   # Uses Sunspot gem with Solr backend. Docs: http://outoftime.github.com/sunspot/docs/index.html
   # https://github.com/outoftime/sunspot
   searchable do
@@ -278,6 +280,21 @@ class Startup < ActiveRecord::Base
       self.website_url = "http://#{website_url}"
     end
     true
+  end
+
+    # Returns true if the user has set everything up for the account (otherwise forces user to go through flow)
+  def account_setup?
+    setup?(:profile, :invite_team_members, :before_video)
+  end
+
+  # Returns the current account stage - to see if they need to set anything up
+  # first checks setup field so we don't have to perform db queries if they've completed that step
+  def account_setup_stage
+    return :complete if account_setup?
+    return :startup unless setup?(:profile) # don't check for completeness yet because that'll force team member stuff
+    return :invite_startup_team_members unless setup?(:invite_team_members)
+    return :before_video if !setup?(:before_video) and self.startup.checkins.count == 0
+    return nil
   end
 
   protected
