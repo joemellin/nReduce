@@ -5,7 +5,7 @@ class Relationship < ActiveRecord::Base
   has_many :notifications, :as => :attachable
   has_many :user_actions, :as => :attachable
 
-  attr_accessible :entity, :entity_id, :entity_type, :connected_with, :connected_with_id, :connected_with_type, :status, :approved_at, :rejected_at, :silent, :message
+  attr_accessible :context, :entity, :entity_id, :entity_type, :connected_with, :connected_with_id, :connected_with_type, :status, :approved_at, :rejected_at, :silent, :message
 
   attr_accessor :silent
 
@@ -29,6 +29,9 @@ class Relationship < ActiveRecord::Base
   scope :rejected, where(:status => Relationship::REJECTED)
   scope :startup_to_user, where(:entity_type => 'Startup', :connected_with_type => 'User')
 
+  # Context of the relationship
+  bitmask :context, :as => [:startup_startup, :startup_mentor, :startup_investor]
+
     # Classes that can be added to a relationship
     # When adding new ones make sure to also edit notifications and mailers
   def self.valid_classes
@@ -37,7 +40,7 @@ class Relationship < ActiveRecord::Base
 
   # Start a relationship between two entities - same as calling create
   # @silent when set to true doesn't notify user of connection
-  def self.start_between(entity, connected_with, silent = false)
+  def self.start_between(entity, connected_with, context = :startup_startup, silent = false)
     Relationship.create(:entity => entity, :connected_with => connected_with, :status => Relationship::PENDING, :silent => silent)
   end
 
@@ -150,16 +153,6 @@ class Relationship < ActiveRecord::Base
     Cache.delete(['connections', "#{connected_with_type.downcase}_#{connected_with_id}"])
   end
 
-  protected
-
-  def destroy_inverse_relationship
-    self.inverse_relationship.destroy unless self.inverse_relationship.blank?
-  end
-
-  def set_pending_status
-    self.status ||= Relationship::PENDING
-  end
-
   def entities_are_connectable
     self.errors.add(:entity, "can't be connected") if !entity.connectable? or !Relationship.valid_classes.include?(entity_type)
     self.errors.add(:connected_with, "can't be connected") if !connected_with.connectable? or !Relationship.valid_classes.include?(connected_with_type)
@@ -176,14 +169,27 @@ class Relationship < ActiveRecord::Base
 
     # Now check if these two types can be connected
     if entity.is_a?(Startup) and connected_with.is_a?(Startup)
+      self.context = :startup_startup
       return true
     elsif entity.is_a?(Startup) and (connected_with.is_a?(User) and connected_with.mentor?)
+      self.context = :startup_mentor
       return true
     elsif connected_with.is_a?(Startup) and (entity.is_a?(User) and entity.mentor?)
+      self.context = :startup_mentor
       return true
     else
       self.errors.add(:entity, "can't be connected to a #{connected_with_type.downcase}")
     end
+  end
+
+  protected
+
+  def destroy_inverse_relationship
+    self.inverse_relationship.destroy unless self.inverse_relationship.blank?
+  end
+
+  def set_pending_status
+    self.status ||= Relationship::PENDING
   end
 
   def notify_users

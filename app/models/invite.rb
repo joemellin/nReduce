@@ -62,7 +62,7 @@ class Invite < ActiveRecord::Base
       user.mentor = true
       # Add mentor to startup if invite came from startup
       unless self.startup.blank?
-        r = Relationship.start_between(user, self.startup, true)
+        r = Relationship.start_between(user, self.startup, :startup_mentor, true)
         if r.blank?
           self.errors.add(:user_id, 'could not be added to team')
         else

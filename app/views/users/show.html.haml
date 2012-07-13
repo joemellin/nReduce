@@ -10,6 +10,27 @@
       = link_to "Edit Account", edit_user_path(@user), :class => "btn"
     - if current_user.admin? and current_user.id != @user.id
       = link_to "Sign in As User", sign_in_as_admin_user_path(@user), :class => 'btn'
+    - if @can_invite_as_mentor == true
+      = link_to 'Ask to Mentor', '#', :class => 'btn btn-large', :onclick => "$('#user_#{@user.id}_invite').modal(); return false;"
+      .modal.hide.invite_mentor{:id => "user_#{@user.id}_invite"}
+        = form_for Relationship.new(:entity => @startup, :connected_with => @user, :context => :startup_mentor), :html => {:class => 'form-inline'} do |f|
+          .modal-header
+            %button.close{:type => 'button', 'data-dismiss' => 'modal'} x
+            %h3 Ask #{@user.name} to Mentor Your Startup
+          .modal-body
+            = f.hidden_field :context
+            = f.hidden_field :entity_id
+            = f.hidden_field :entity_type
+            = f.hidden_field :connected_with_id
+            = f.hidden_field :connected_with_type
+            Write one to two paragraphs about why you think they are a good mentor for you:
+            %br/
+            = f.text_area :message, :style => 'width: 400px; height: 100px'
+          .modal-footer.center
+            = link_to 'Close', '#', :class => 'btn', 'data-dismiss' => 'modal'
+            = f.submit 'Send Request', :class => 'btn btn-primary'
+            %br/
+            %i Limit one per week
 .row
   .span12.well
     .row

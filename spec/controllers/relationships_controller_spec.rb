@@ -14,21 +14,21 @@ describe RelationshipsController do
   end
 
   it "should allow a startup to approve a friendship" do
-    r = Relationship.start_between(@startup2, @startup)
+    r = Relationship.start_between(@startup2, @startup, :startup_startup)
     post :approve, {:id => r.id}
     flash[:notice].should == "You are now connected to #{r.startup.name}."
     response.should redirect_to(relationships_path)
   end
 
   it "should allow a startup to reject a pending friendship" do
-    r = Relationship.start_between(@startup2, @startup)
+    r = Relationship.start_between(@startup2, @startup, :startup_startup)
     post :reject, {:id => r.id}
     response.should redirect_to(relationships_path)
     flash[:notice].should == "You have rejected a connection with #{r.startup.name}."
   end
 
   it "should allow a startup to reject an approved friendship" do
-    r = Relationship.start_between(@startup2, @startup)
+    r = Relationship.start_between(@startup2, @startup, :startup_startup)
     r.approve!.should be_true
     post :reject, {:id => r.id}
     response.should redirect_to(relationships_path)
