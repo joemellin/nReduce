@@ -1,6 +1,5 @@
 class User < ActiveRecord::Base
   include Connectable # methods for relationships
-  include Onboardable
   acts_as_mappable
   has_paper_trail
   belongs_to :startup
@@ -77,9 +76,6 @@ class User < ActiveRecord::Base
       else
         0
       end
-    end
-    boolean :onboarding_complete do
-      self.onboarding_complete?
     end
     boolean :nreduce_mentor do
       roles? :nreduce_mentor
@@ -250,22 +246,31 @@ class User < ActiveRecord::Base
     false
   end
 
-  # Returns the current account stage as an array of [:stage, :object] - ex: [:onboarding, :user], or [:profile, :startup]
+  # Returns the current controller / action name as an array of [:controller, :action] - ex: [:onboarding, :user], or [:profile, :startup]
   # first checks setup field so we don't have to perform db queries if they've completed that step
-  def account_setup_stage
+  def account_setup_action
     return [:complete] if account_setup?
-    return [:account_type, :user] if !setup?(:account_type) and self.roles.blank?
-    return [:onboarding, :user] if !setup?(:onboarding) and self.onboarded.blank?
-    return [:profile, :user] if !setup?(:profile) and self.profile_completeness_percent < 1.0
+    return [:users, :account_type] if !setup?(:account_type) and self.roles.blank?
+    return [:onboard, :start] if !setup?(:onboarding) and self.onboarded.blank?
+    return [:users, :edit] if !setup?(:profile) and self.profile_completeness_percent < 1.0
     if roles?(:entrepreneur)
       if startup_id.blank?
         return Startup.new.account_setup_page
       else
-        stage = self.startup.account_stage
+        stage = self.startup.account_step
         return stage unless stage.first == :complete # return startup stage unless complete
       end
     end
-    return :invite_startups if (roles?(:mentor) or roles?(:investor)) and !setup?(:invite_startups)
+    return [:users, :invite_startups] if (roles?(:mentor) or roles?(:investor)) and !setup?(:invite_startups)
+    return nil
+  end
+
+  # Returns symbol for current onboarding type if user hasn't set up account yet
+  # If they've already set up 
+  def onboarding_type
+    return :startup if entrepreneur?
+    return :mentor if mentor?
+    return :investor if investor?
     return nil
   end
 
@@ -414,7 +419,7 @@ class User < ActiveRecord::Base
   end
 
   def set_default_settings
-    self.email_on = self.default_email_on
+    self.email_on = User.default_email_on
   end
 
   def geocode_location
