@@ -53,18 +53,17 @@ class UsersController < ApplicationController
   end
 
     # multi-page process that any new mentor has to go through
-  def onboard
-    if @user.onboarding_complete?
+  def setup
+    if @user.account_setup?
       redirect_to '/'
     else
-      @step = @user.onboarding_step
-      render "users/onboard/step_#{@step}"
+      @step = @user.account_step
     end
   end
 
     # did this as a separate POST / redirect action so that 
     # if you refresh the onboard page it doesn't go to the next step
-  def onboard_next
+  def setup_next
     # Check if we have any form data - Startup form or  Youtube url or 
     if !params[:user_form].blank? and !params[:user].blank?
       if @user.update_attributes(params[:user])

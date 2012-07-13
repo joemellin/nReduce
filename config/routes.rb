@@ -64,8 +64,8 @@ Nreduce::Application.routes.draw do
     end
     member do
       match 'complete_account'
-      get 'onboard'
-      post 'onboard_next'
+      get 'setup'
+      post 'setup_next'
     end
     resources :notifications
   end
@@ -100,6 +100,11 @@ Nreduce::Application.routes.draw do
     end
     resources :invites, :only => [:create, :destroy, :show]
   end
+
+  # onboarding
+  get '/onboard/:type/start/', :as => :onboard_start
+  get '/onboard/' => "onboard#current_step", :as => :onboard
+  post '/onboard/next' => "onboard#next_step", :as => :onboard_next
 
   resources :invites, :only => [:create, :destroy, :show] do
     get 'accept', :on => :member
