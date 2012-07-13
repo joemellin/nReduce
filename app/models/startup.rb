@@ -290,10 +290,10 @@ class Startup < ActiveRecord::Base
   # Returns the current account stage - to see if they need to set anything up
   # first checks setup field so we don't have to perform db queries if they've completed that step
   def account_setup_stage
-    return :complete if account_setup?
-    return :startup unless setup?(:profile) # don't check for completeness yet because that'll force team member stuff
-    return :invite_startup_team_members unless setup?(:invite_team_members)
-    return :before_video if !setup?(:before_video) and self.startup.checkins.count == 0
+    return [:complete] if account_setup?
+    return [:profile, :startup] unless setup?(:profile) # don't check for completeness yet because that'll force team member stuff
+    return [:invite_startup_team_members, :startup] unless setup?(:invite_team_members)
+    return [:before_video, :startup] if !setup?(:before_video) and self.startup.checkins.count == 0
     return nil
   end
 
