@@ -50,7 +50,8 @@ class StartupsController < ApplicationController
     end
 
     @search ||= {}
-    @search[:page] = params[:page] || 1
+    @search[:page] = 1 # Force one page
+    @search[:per_page] = 20
     @search[:sort] ||= 'rating'
 
     # Have to pass context for block or else you can't access @search instance variable
@@ -67,7 +68,7 @@ class StartupsController < ApplicationController
       else
         s.order_by @search[:sort]
       end
-      s.paginate :page => @search[:page], :per_page => 10
+      s.paginate :page => @search[:page], :per_page => @search[:per_page]
     end
 
     # # Establish basic query to find public startups

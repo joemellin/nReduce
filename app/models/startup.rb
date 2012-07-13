@@ -61,7 +61,7 @@ class Startup < ActiveRecord::Base
   end
 
   def self.community_status
-    {0 => 'Inactive', 1 => 'Helpful', 2 => 'Very Helpful'}
+    {0 => 'Quiet', 1 => 'Helpful', 2 => 'Very Helpful'}
   end
 
   def self.named(name)
@@ -87,7 +87,7 @@ class Startup < ActiveRecord::Base
     consecutive_checkins = 0
     longest_streak = 0
     prev_week = nil
-    self.checkins.order('week').each do |checkin|
+    self.checkins.order('week ASC').each do |checkin|
       # If the checkin has a before and after video count it
       if checkin.before_completed? and checkin.after_completed?
         if prev_week.blank?
@@ -107,6 +107,8 @@ class Startup < ActiveRecord::Base
         consecutive_checkins = 0
       end
     end
+    # If streak was never broken need to populate longest streak
+    longest_streak = consecutive_checkins if consecutive_checkins > longest_streak
     longest_streak
   end
 
@@ -115,14 +117,14 @@ class Startup < ActiveRecord::Base
     consecutive_checkins = self.number_of_consecutive_checkins
     num_awesomes = self.awesomes.count
     my_rating = self.rating.blank? ? 0 : self.rating
-    profile_completeness = self.profile_completeness_percent
-    passed = 0
+    profile_completeness = self.profile_completeness_percent8
     elements = {
       :consecutive_checkins => { :value => consecutive_checkins, :passed => consecutive_checkins >= 4 },
       :num_awesomes => {:value => num_awesomes, :passed => num_awesomes >= 10 },
       :community_status => {:value => my_rating, :passed => my_rating >= 1.0 },
       :profile_completeness => {:value => profile_completeness, :passed => profile_completeness == 1.0 }
     }
+    passed = 0
     elements.each{|name, e| passed += 1 if e[:passed] == true }
     elements[:total] = {:value => "#{passed} of #{elements.size}", :passed => passed == elements.size}
     elements

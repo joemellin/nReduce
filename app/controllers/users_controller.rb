@@ -16,6 +16,8 @@ class UsersController < ApplicationController
     if @user.id == current_user.id
       @current_invite = Invite.not_accepted.where(:to_id => current_user.id).first
       @current_invite = nil if @current_invite and !@current_invite.active?
+    elsif @user.roles?(:nreduce_mentor)
+      @can_invite_as_mentor = (can? :invite_mentor, current_user.startup) unless current_user.startup_id.blank?
     end
   end
 

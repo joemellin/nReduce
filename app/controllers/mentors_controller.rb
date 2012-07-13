@@ -16,7 +16,6 @@ class MentorsController < ApplicationController
 
   def search
     authorize! :search_mentors, User
-    @can_invite = @startup.blank? ? false : (can? :invite_mentor, @startup)
     if !params[:search].blank?
       # sanitize search params
       params[:search].select{|k,v| [:name, :meeting_id, :industries].include?(k) }

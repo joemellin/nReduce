@@ -20,7 +20,7 @@ class Admin::MentorsController < ApplicationController
     num_added = 0
     startups.each do |s|
       unless currently_mentoring_ids.include?(s.id)
-        num_added += 1 if Relationship.start_between(@mentor, s) # don't notify mentor
+        num_added += 1 if Relationship.start_between(@mentor, s, :startup_mentor)
       end
     end
     flash[:notice] = "#{num_added} new startups added for mentor."

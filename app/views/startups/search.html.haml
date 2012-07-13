@@ -27,17 +27,17 @@
   %hr/
 
   - if @search_results.hits.size > 0
-    .row
-      .span1
-        %p &nbsp;
-      .span11
-        .right
-          - if @search_results.results.total_pages > 1
-            %h3{:style => 'color: #ccc'} Page #{@search_results.results.current_page} of #{@search_results.results.total_pages}
-        .left
-          %h2 #{pluralize(@search_results.total, 'startup')}:
-        .clear
-
+    / .row
+    /   .span1
+    /     %p &nbsp;
+    /   .span11
+    /     .right
+    /       - if @search_results.results.total_pages > 1
+    /         %h3{:style => 'color: #ccc'} Page #{@search_results.results.current_page} of #{@search_results.results.total_pages}
+    /     .left
+    /       %h2 #{pluralize(@search_results.total, 'startup')}:
+    /     .clear
+    %br/
     - @search_results.each_hit_with_result do |hit, s|
       .row{:id => "startup_#{s.id}"}
         .span1
@@ -87,7 +87,8 @@
           
       %hr
       %br
-
-  = will_paginate @search_results.results
-- else
-  %h4 No startups matched your search
+    %center
+      %p (end of visible results)
+    =# will_paginate @search_results.results
+  - else
+    %h4 No startups matched your search

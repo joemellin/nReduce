@@ -4,7 +4,7 @@ describe Relationship do
   before :each do
     @startup1 = FactoryGirl.create(:startup)
     @startup2 = FactoryGirl.create(:startup, :name => 'Facebook for Ferrets')
-    @relationship = Relationship.start_between(@startup1, @startup2)
+    @relationship = Relationship.start_between(@startup1, @startup2, :startup_startup)
   end
 
   it "should add a startup in a relationship" do
@@ -24,7 +24,7 @@ describe Relationship do
 
   it "should add a mentor to a startup" do
     mentor = FactoryGirl.create(:mentor)
-    relationship = Relationship.start_between(@startup1, mentor)
+    relationship = Relationship.start_between(@startup1, mentor, :startup_mentor)
     relationship.approve!.should be_true
     Relationship.between(@startup1, mentor).approved?.should be_true
     @startup1.connected_to?(mentor).should be_true

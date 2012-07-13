@@ -48,6 +48,7 @@ class User < ActiveRecord::Base
   # important that you keep the order the same on this array - uses bitmask_attributes gem
   # adds methods and scopes: https://github.com/joelmoss/bitmask_attributes
   bitmask :roles, :as => [:admin, :entrepreneur, :mentor, :investor, :nreduce_mentor]
+  bitmask :onboarded, :as => [:startup, :mentor, :nreduce_mentor, :investor]
 
   searchable do
     # full-text search fields - can add :stored => true if you don't want to hit db
