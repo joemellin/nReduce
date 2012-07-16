@@ -4,12 +4,11 @@ class CleanupUserTable < ActiveRecord::Migration
 
     User.all.each do |u|
       u.roles << :entrepreneur unless u.startup_id.blank?
-      u.email_on = u.settings['email_on']
+      u.email_on = u.settings['email_on'] unless u.settings.blank?
       u.onboarded << :mentor if u.onboarding_complete?
       u.save
     end
 
-    remove_column :users, :admin
     remove_column :users, :mentor
     remove_column :users, :investor
     remove_column :users, :onboarding_step
@@ -21,7 +20,6 @@ class CleanupUserTable < ActiveRecord::Migration
   end
 
   def down
-    add_column :users, :admin, :boolean
     add_column :users, :mentor, :boolean
     add_column :users, :investor, :boolean
     add_column :users, :onboarding_step, :integer, :length => 11

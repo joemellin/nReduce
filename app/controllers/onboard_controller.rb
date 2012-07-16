@@ -11,39 +11,41 @@ class OnboardController < ApplicationController
   end
 
   def current_step
+    @user = current_user
     # Check if user has completed
     if current_onboarding_step == Onboarding.num_onboarding_steps
+      @user.onboarding_completed!(current_onboarding_type)
       redirect_to '/'
     else
-      render "onboarding/step_#{current_onboarding_step}"
+      render "step_#{current_onboarding_step}"
     end
   end
 
     # User just completed a step
     # Collect and update data, and redirect to next step if they have succesfully completed step
   def next
-    # Check if we have any form data - Startup form or  Youtube url or 
+    # Check if we have any form data - Startup form or  Youtube url or
+    @user = current_user
     if !params[:user_form].blank? and !params[:user].blank?
       if @user.update_attributes(params[:user])
         onboarding_step_increment!
       else
         flash.now[:alert] = "Hm, we had some problems updating your account."
-        render "users/step_#{current_onboarding_step}"
-        return
+        render "step_#{current_onboarding_step}" && return
       end
     elsif params[:user]
       if !params[:user][:intro_video_url].blank? and @user.update_attributes(params[:user])
         onboarding_step_increment!
       else
         flash[:alert] = "Looks like you forgot to paste in your Youtube URL"
-        render "users/step_#{current_onboarding_step}" && return
+        render "step_#{current_onboarding_step}" && return
       end
     elsif params[:startup]
       if @startup.update_attributes(params[:startup])
         onboarding_step_increment!
       else
         flash.now[:alert] = "Hm, we had some problems updating your account."
-        render "users/step_#{current_onboarding_step}" && return
+        render "step_#{current_onboarding_step}" && return
       end
     else
       onboarding_step_increment!
@@ -55,7 +57,7 @@ class OnboardController < ApplicationController
 
   # Validate current onboarding process type, save in session, and redirect to start it
   def redirect_to_onboarding_start(type = nil)
-    if !type.blank? and Onboardable.onboarding_types.include?(type.to_sym)
+    if !type.blank? and Onboarding.onboarding_types.include?(type.to_sym)
       session[:onboarding_type] = type.to_sym
       session[:onboarding_step] = 1
       redirect_to :action => :current_step

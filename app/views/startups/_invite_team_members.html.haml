@@ -1,0 +1,22 @@
+- if can? :manage, Invite.new(:startup => @startup)
+  %h4 Add Team Member or Mentor
+  %p{:style => 'margin: 5px 0 10px 0;'} Team members will get full access to post and view checkins, and participate in nReduce. Mentors will be able to view and comment on all of your checkins.
+  = form_for Invite.new(:startup_id => @startup.id, :from_id => current_user.id), :url => startup_invites_path(:startup_id => @startup.id), :html => {:class => 'form-inline'} do |f|
+    = f.hidden_field :startup_id
+    = f.hidden_field :from_id
+    %div{:style => 'margin-bottom: 5px'}
+      - Invite.available_types.each do |id, name|
+        = f.radio_button :invite_type, id
+        = label_tag name
+        &nbsp;
+    = f.text_field :email, :placeholder => 'email address', :class => 'span3'
+    = submit_tag 'Invite', :class => 'btn'
+  - pending_invites = @startup.invites.not_accepted.all
+  - if pending_invites.size > 0
+    %br/
+    %h4 Pending invites
+    %ul
+    - @startup.invites.not_accepted.each do |i|
+      %li
+        = "#{i.to_name} (#{Invite.types[i.invite_type].titleize})"
+        = link_to '<i class="icon icon-remove"></i>'.html_safe, invite_path(i), :method => :delete, :confirm => "Are you sure you want to cancel the invite to #{i.to_name}?"

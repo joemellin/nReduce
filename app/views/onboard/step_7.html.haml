@@ -1,0 +1,35 @@
+.row.onboard
+  .span3
+    &nbsp;
+  .span6
+    %br
+    %h1 Last Step! 
+    %h3 Record a 30 second intro video!  
+    %p We ask everyone in the community to introduce themselves.  We find it helps create community and helps us better understand who we are working with.  This video will be private to the nReduce community.
+    %br
+    %h3 1) Record a 30 second introduction video including:
+    %h3
+      %small - A quick introduction.
+    %h3
+      %small - Why do you like helping startups?
+    %br
+    %h3 2) Post to #{link_to('Youtube', 'http://www.youtube.com/my_videos_upload', :target => '_blank')} and set the video's sharing settings to "unlisted".
+    %br/
+    = image_tag '/images/direct.png'
+    %br/
+    %br/
+    %h3 3) Paste the URL below:
+    = semantic_form_for @user, :url => onboard_next_path, :html => {:class => "form-horizontal", :method => :post } do |f|
+      .control-group{error_css(@user, :intro_video_url)}
+        = f.label :intro_video_url, 'Youtube URL', :class => 'control-label'
+        .controls
+          = f.text_field :intro_video_url, :class => "span3"
+          = f.semantic_errors :intro_video_url
+      %br
+      %center
+        %br
+        %h2 Ready to go?
+        .buttons
+          = f.submit 'Join nReduce!', :class => 'btn btn-success btn-large'
+  .span3
+    &nbsp;

@@ -61,13 +61,25 @@ class ApplicationController < ActionController::Base
     else
       @setup = true
       current_action = current_user.account_setup_action
-      controller_name = controller_name.to_sym
+      if current_action.first == :complete
+        flash[:notice] = "Thanks for setting up your account!"
+        redirect_to '/'
+        return
+      end
       # if we're in the right place, don't do anything
-      return true if [controller_name, action_name.to_sym] == current_action
+      return true if [controller_name.to_sym, action_name.to_sym] == current_action
+      # Allow create/update actions
+      if controller_name.to_sym == current_action.first
+        return true if current_action.last == :edit and action_name.to_sym == :update
+        return true if current_action.last == :new and [:create, :edit].include?(action_name.to_sym)
+      end
       # onboarding has a few actions involved, so if they're in onboarding don't change action
-      return true if [controller_name, current_action.first] == [:onboard, :onboard]
+      return true if [controller_name.to_sym, current_action.first] == [:onboard, :onboard]
       # otherwise redirect to correct controller/action
-      redirect_to :controller => current_action.first, :action => current_action.last
+      prms = {:controller => current_action.first, :action => current_action.last}
+      prms[:id] = current_user.id if prms[:controller] == :users
+      prms[:id] = current_user.startup_id if prms[:controller] == :startups
+      redirect_to prms
     end
     false
   end

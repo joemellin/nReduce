@@ -60,7 +60,7 @@ Nreduce::Application.routes.draw do
       post 'reset_hipchat_account'
     end
     member do
-      get 'account_type'
+      match 'account_type'
       match 'complete_account'
     end
     resources :notifications
@@ -91,7 +91,11 @@ Nreduce::Application.routes.draw do
       post 'search'
       get 'stats'
     end
-    get 'mentor_checklist', :on => :member
+    member do
+      match 'before_video'
+      get 'mentor_checklist'
+      match 'invite_team_members'
+    end
     resources :checkins do
       get 'latest' => "checkins#show", :checkin_id => 'latest', :on => :collection
     end
@@ -110,7 +114,6 @@ Nreduce::Application.routes.draw do
     # Your startup - singular resource
   resource :startup do
     member do
-      get 'dashboard'
       post 'remove_team_member'
     end
   end

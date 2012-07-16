@@ -1,24 +1,24 @@
 %h2 Account Type
 
-= form_for current_user, :html => {:class => 'form-horizontal'} do |f|
+= form_for current_user, :url => account_type_user_path(current_user), :html => {:method => :post, :class => 'form-horizontal'} do |f|
   %p
     %h2
-      = f.radio_field :roles, :entrepreneur
+      = f.radio_button :roles, :entrepreneur
       = f.label :roles, 'Entrepreneur'
   %br/
   %p
     %h2
-      = f.radio_field :roles, :mentor
+      = f.radio_button :roles, :mentor
       = f.label :roles, 'Mentor'
   %br/
   %p
     %h2
-      = f.radio_field :roles, :investor
+      = f.radio_button :roles, :investor
       = f.label :roles, 'Investor'
   %br/
   %p
     %h2
-      = f.radio_field :roles, :spectator
+      = f.radio_button :roles, :spectator
       = f.label :roles, 'Spectator'
   %br/
   = f.submit 'Continue', :class => 'btn btn-large btn-primary'

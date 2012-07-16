@@ -2,8 +2,9 @@
   - if @checkin.submitted?
     %h4 'Before' Submitted #{@checkin.submitted_at.to_s(:short)}
 - else
-  .control-group
-    %strong You have #{verbose_distance_until_time_from_now(Checkin.next_before_checkin)} to make any changes
+  - unless @hide_time
+    .control-group
+      %strong You have #{verbose_distance_until_time_from_now(Checkin.next_before_checkin)} to make any changes
   .control-group{error_css(@checkin, :start_focus)}
     = f.label :start_focus, "This week's focus", :maxlength => 255, :class => 'control-label'
     .controls
@@ -27,8 +28,9 @@
   - if @checkin.completed?
     %h4 'After' Submitted #{@checkin.completed_at.to_s(:short)}
 - else
-  .control-group
-    %strong You have #{verbose_distance_until_time_from_now(Checkin.next_after_checkin)} to make any changes
+  - unless @hide_time
+    .control-group
+      %strong You have #{verbose_distance_until_time_from_now(Checkin.next_after_checkin)} to make any changes
   .control-group{error_css(@checkin, :end_video_url)}
     = f.label :end_video_url, "'After' Video URL", :class => 'control-label'
     .controls
