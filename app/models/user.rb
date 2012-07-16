@@ -25,7 +25,7 @@ class User < ActiveRecord::Base
          :recoverable, :rememberable, :trackable, :validatable #, :confirmable #, :omniauthable
 
   # Setup accessible (or protected) attributes for your model
-  attr_accessible :email, :password, :password_confirmation, :remember_me, :name, :skill_list, :industry_list, :startup, :mentor, :investor, :location, :phone, :startup_id, :settings, :meeting_id, :one_liner, :bio, :facebook_url, :linkedin_url, :github_url, :dribbble_url, :blog_url, :pic, :remote_pic_url, :pic_cache, :remove_pic, :intro_video_url
+  attr_accessible :email, :email_on, :password, :password_confirmation, :remember_me, :name, :skill_list, :industry_list, :startup, :mentor, :investor, :location, :phone, :startup_id, :settings, :meeting_id, :one_liner, :bio, :facebook_url, :linkedin_url, :github_url, :dribbble_url, :blog_url, :pic, :remote_pic_url, :pic_cache, :remove_pic, :intro_video_url
 
   serialize :settings, Hash
 
@@ -91,21 +91,18 @@ class User < ActiveRecord::Base
     end
   end
 
-  def self.settings_labels
+  def self.email_on_options
     {
-      'email_on' =>
-        {
-        'docheckin' => 'Reminder to Check-in',
-        'comment' => 'New Comment', 
-        'meeting' => 'Meeting Reminder', 
-        'checkin' => 'New Checkin', 
-        'relationship' => 'Relationships',
-        }
+      :docheckin => 'Reminder to Check-in',
+      :comment => 'New Comment',
+      :meeting => 'Meeting Reminder',
+      :checkin => 'New Checkin',
+      :relationship => 'Relationships'
     }
   end
 
   def self.default_email_on
-    [:docheckin, :comment, :meeting, :checkin, :relationship]
+    self.email_on_options.keys
   end
 
   def self.force_email_on
@@ -145,9 +142,15 @@ class User < ActiveRecord::Base
     roles?(:entrepreneur)
   end
 
+  # LEGACY METHODS
   def num_onboarding_steps # needs to be one more than actual steps
     7
   end
+
+  def onboarding_complete?
+    self.onboarding_step >= self.num_onboarding_steps
+  end
+  # END LEGACY METHODS
 
     # Skip step 4 and 5 if user is not an nreduce mentor
   def skip_onboarding_step?(step)
@@ -241,28 +244,59 @@ class User < ActiveRecord::Base
   def account_setup?
     if setup?(:account_type, :onboarding, :profile)
       return true if roles?(:entrepreneur) and !self.startup.blank? and self.startup.account_setup?
-      return true if roles?(:mentor) or self.roles(:investor) and setup?(:invite_startups)
+      return true if (roles?(:mentor) or roles?(:investor)) and setup?(:invite_startups)
     end
     false
   end
 
   # Returns the current controller / action name as an array of [:controller, :action] - ex: [:onboarding, :user], or [:profile, :startup]
+  # Will test various conditions to see if it is complete
   # first checks setup field so we don't have to perform db queries if they've completed that step
   def account_setup_action
     return [:complete] if account_setup?
-    return [:users, :account_type] if !setup?(:account_type) and self.roles.blank?
-    return [:onboard, :start] if !setup?(:onboarding) and self.onboarded.blank?
-    return [:users, :edit] if !setup?(:profile) and self.profile_completeness_percent < 1.0
-    if roles?(:entrepreneur)
-      if startup_id.blank?
-        return Startup.new.account_setup_page
+    if !setup?(:account_type)
+      if self.roles.blank?
+        return [:users, :account_type]
       else
-        stage = self.startup.account_step
-        return stage unless stage.first == :complete # return startup stage unless complete
+        self.setup << :account_type
+        self.save
       end
     end
+    if !setup?(:onboarding)
+      if self.onboarded.blank?
+        return [:onboard, :start]
+      else
+        self.setup << :onboarding
+        self.save
+      end
+    end
+    if !setup?(:profile)
+      if self.profile_completeness_percent < 1.0
+        return [:users, :edit]
+      else
+        self.setup << :profile
+        self.save
+      end
+    end
+    if roles?(:entrepreneur)
+      self.startup = Startup.new if startup_id.blank?
+      stage = self.startup.account_setup_action
+      return stage unless stage.first == :complete # return startup stage unless complete
+    end
     return [:users, :invite_startups] if (roles?(:mentor) or roles?(:investor)) and !setup?(:invite_startups)
-    return nil
+    # If we just completed everything pass that back
+    return [:complete] if account_setup?
+    nil
+  end
+
+  def onboarding_completed!(onboarding_type)
+    self.onboarded << onboarding_type.to_sym
+    save!
+  end
+
+  def invited_startups!
+    self.setup << :invite_startups
+    save!
   end
 
   # Returns symbol for current onboarding type if user hasn't set up account yet

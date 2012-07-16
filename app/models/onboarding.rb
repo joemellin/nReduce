@@ -5,7 +5,7 @@ class Onboarding
 
   # total number of possible onboarding steps
   def self.num_onboarding_steps
-    10
+    7
   end
 
   # depending on the onboarding type some pages are skipped

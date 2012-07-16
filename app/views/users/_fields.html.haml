@@ -74,10 +74,10 @@
   .control-group{error_css(@user, :settings)}
     = f.label :settings, 'Email me', :class => 'control-label'
     .controls
-      - User.settings_labels['email_on'].each do |id, action|
+      - User.default_email_on.each do |action|
         %label{:class => 'checkbox inline'}
-          = check_box_tag "user[settings][email_on][]", id, @user.settings['email_on'].include?(id.to_s)
-          = action
+          = check_box_tag "user[email_on][]", action, @user.email_on?(action)
+          = User.email_on_options[action]
         &nbsp;&nbsp;
       = f.semantic_errors :settings
 %hr/
