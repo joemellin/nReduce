@@ -23,9 +23,17 @@ class UsersController < ApplicationController
 
   def account_type
     # Save account type if post
-    if request.post? and !params[:user].blank? and !params[:user][:roles].blank?
-      current_user.roles << params[:user][:roles].to_sym
-      redirect_to '/' && return if current_user.save
+    if request.post?
+      if params[:reset]
+        current_user.roles -= [:spectator]
+        current_user.setup -= [:account_type]
+      elsif !params[:roles].blank?
+        current_user.roles << params[:roles].to_sym
+      end
+      if current_user.save
+        redirect_to '/'
+        return
+      end
     end
   end
 

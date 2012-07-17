@@ -118,7 +118,7 @@ class Startup < ActiveRecord::Base
     consecutive_checkins = self.number_of_consecutive_checkins
     num_awesomes = self.awesomes.count
     my_rating = self.rating.blank? ? 0 : self.rating
-    profile_completeness = self.profile_completeness_percent8
+    profile_completeness = self.profile_completeness_percent
     elements = {
       :consecutive_checkins => { :value => consecutive_checkins, :passed => consecutive_checkins >= 4 },
       :num_awesomes => {:value => num_awesomes, :passed => num_awesomes >= 10 },

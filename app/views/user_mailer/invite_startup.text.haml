@@ -1,0 +1,9 @@
+#{@invite.user.name} wants you to join nReduce!\n
+\n
+- unless @invite.msg.blank?
+  #{h(@invite.msg)}\n
+  \n
+Once you accept their invite you can be a part of the nReduce entrepreneurial community of founders who hold each other accountable and provide feedback.\n
+\n
+\n
+Get Started: #{accept_invite_url(:id => @invite.code)}

@@ -7,7 +7,7 @@
           %li.padding{:class => is_controller_action?('relationships', 'index') ? 'active' : ''}= link_to "Home", '/'
           - if can? :see_mentor_page, current_user
             %li.padding{:class => is_controller_action?('mentors', 'index') ? 'active' : ''}= link_to "Mentors", mentors_path
-          - if !current_user.mentor? and !current_user.startup_id.blank?
+          - if current_user.entrepreneur? and !current_user.startup_id.blank?
             %li.padding{:class => is_controller_action?('users', 'chat') ? 'active' : ''}= link_to "Chat", chat_users_path
           %li.dropdown
             %a.dropdown-toggle.btn{:href => '#', 'data-toggle' => 'dropdown'}
@@ -21,7 +21,7 @@
               - unless current_user.startup_id.blank?
                 %li= link_to 'My Startup', startup_path(:id => current_user.startup_id)
               %li= link_to 'My Profile', user_path(current_user)
-              - unless current_user.mentor?
+              - if current_user.entrepreneur?
                 - if current_user.meeting_id.blank?
                   %li= link_to 'Local Meetings', meetings_path
                 - else

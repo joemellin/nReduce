@@ -190,16 +190,16 @@ class Checkin < ActiveRecord::Base
   end
 
   def check_video_urls_are_valid
-    err = false
+    success = true
     if !start_video_url.blank? and !Youtube.valid_url?(start_video_url)
       self.errors.add(:start_video_url, 'invalid Youtube URL')
-      err = true
+      success = false
     end
     if !end_video_url.blank? and !Youtube.valid_url?(end_video_url)
       self.errors.add(:end_video_url, 'invalid Youtube URL')
-      err = true
+      success = false
     end
-    err
+    success
   end
 
   protected
