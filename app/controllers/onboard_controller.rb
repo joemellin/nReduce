@@ -7,7 +7,11 @@ class OnboardController < ApplicationController
   def start
     # if no type passed, get from user
     params[:type] = current_user.onboarding_type if params[:type].blank?
-    redirect_to_onboarding_start(params[:type])
+    if params[:type].blank? # if still no onboarding type
+      redirect_to current_user
+    else
+      redirect_to_onboarding_start(params[:type])
+    end
   end
 
   def current_step

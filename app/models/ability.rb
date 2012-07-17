@@ -153,7 +153,9 @@ class Ability
       end
 
       # All users with startup/mentor can view a startup if onboarding is complete
-      can :read, Startup, :onboarding_complete? => true
+      can :read, Startup do |s|
+        s.account_setup?
+      end 
     end
 
     #
