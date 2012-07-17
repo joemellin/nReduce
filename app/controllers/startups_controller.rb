@@ -16,9 +16,13 @@ class StartupsController < ApplicationController
   def create
     @startup = Startup.new(params[:startup])
     if @startup.save
-      current_user.update_attribute('startup_id', @startup.id)
-      flash[:notice] = "Startup information has been saved. Thanks!"
-      redirect_to "/startup"
+      current_user.startup = @startup
+      if current_user.save
+        flash[:notice] = "Startup profile has been saved."
+        redirect_to :action => :edit
+      else
+        render :new
+      end
     else
       render :new
     end
@@ -103,11 +107,6 @@ class StartupsController < ApplicationController
   # Actions for user's startup
   #
 
-  def dashboard
-    @step = @startup.onboarding_step
-    render :action => :onboard
-  end
-
   def edit
     @profile_elements = @startup.profile_elements
     @profile_completeness_percent = (@startup.profile_completeness_percent * 100).round
@@ -120,6 +119,26 @@ class StartupsController < ApplicationController
       redirect_to '/startup'
     else
       render :edit
+    end
+  end
+
+  def invite_team_members
+    if request.post?
+      @startup.invited_team_members!
+      redirect_to '/' && return
+    end
+  end
+
+   # Start of setup flow - to get startup to post initial before video
+  def before_video
+    @before_disabled = false
+    @after_disabled = true
+    @hide_time = true
+    @checkin = Checkin.new
+    unless params[:checkin].blank?
+      @checkin.attributes = params[:checkin]
+      @checkin.startup = @startup
+      (redirect_to '/' && return) if @checkin.valid? and @checkin.before_completed? and @checkin.check_video_urls_are_valid and @checkin.save(:validate => false)
     end
   end
 

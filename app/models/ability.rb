@@ -6,15 +6,17 @@ class Ability
   def initialize(user, params)
     user ||= User.new
 
+    # Admins can do anything
     if user.admin?
       can :manage, :all
       can :stats, Startup
 
+    # Users who have a startup or are a mentor
     elsif !user.new_record? and user.has_startup_or_is_mentor?
 
       # Abilities if user has a startup
       if !user.startup_id.blank?
-        can [:manage, :dashboard, :onboard, :onboard_next, :remove_team_member], Startup, :id => user.startup_id
+        can [:manage, :onboard, :onboard_next, :remove_team_member], Startup, :id => user.startup_id
 
         cannot :invite_mentor, Startup # have to remove this ability since we just assigned manage
 
@@ -131,11 +133,15 @@ class Ability
       # User can only manage their own authentications
       can [:read, :destroy], Authentication, :user_id => user.id
 
+      cannot :before_video, Startup
 
       # Startup can view relationships they are involved in
       if !user.startup_id.blank?
         can :read, Relationship do |relationship|
           relationship.is_involved?(user.startup)
+        end
+        can :before_video, Startup do |s|
+          s.checkins.count == 0
         end
       end
 
@@ -150,9 +156,13 @@ class Ability
       can :read, Startup, :onboarding_complete? => true
     end
 
+    #
+    # All Users
+    #
+
     # Can only create a startup if registration is open and they don't have a current startup
-    can [:new, :create], Startup do |startup|
-      Startup.registration_open? and user.startup_id.blank?
+    can [:new, :create, :edit], Startup do |startup|
+      true #Startup.registration_open? and user.startup_id.blank?
     end
 
     # User can only manage their own account

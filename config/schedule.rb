@@ -34,7 +34,7 @@ every :wednesday, :at => '4am' do
 end
 
 every 24.hours, :at => '1am' do
-	runner "User.calculate_engagement_metrics"
+	runner "Stats.calculate_engagement_metrics"
 end
 
 # Clear out notification older than a week
