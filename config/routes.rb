@@ -64,6 +64,8 @@ Nreduce::Application.routes.draw do
     member do
       match 'account_type'
       match 'complete_account'
+      get 'spectator'
+      post 'account_type'
     end
     resources :notifications
   end
@@ -92,6 +94,7 @@ Nreduce::Application.routes.draw do
       get 'search'
       post 'search'
       get 'stats'
+      match 'invite'
     end
     member do
       match 'before_video'

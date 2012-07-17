@@ -1,9 +1,9 @@
 class StartupsController < ApplicationController
   around_filter :record_user_action, :except => [:onboard_next, :stats]
   before_filter :login_required
-  before_filter :load_requested_or_users_startup, :except => [:index, :stats]
-  load_and_authorize_resource :except => [:index, :stats]
-  before_filter :redirect_if_no_startup, :except => [:index]
+  before_filter :load_requested_or_users_startup, :except => [:index, :invite, :stats]
+  load_and_authorize_resource :except => [:index, :stats, :invite, :before_video]
+  before_filter :redirect_if_no_startup, :except => [:index, :invite]
 
   def index
     redirect_to :action => :search
@@ -11,6 +11,15 @@ class StartupsController < ApplicationController
 
   def new
     redirect_to :action => :edit unless @startup.new_record?
+  end
+
+    # Invite startups
+  def invite
+    if request.post?
+      current_user.invited_startups!
+      redirect_to '/'
+      return
+    end
   end
 
   def create
@@ -125,20 +134,29 @@ class StartupsController < ApplicationController
   def invite_team_members
     if request.post?
       @startup.invited_team_members!
-      redirect_to '/' && return
+      redirect_to '/'
+      return
     end
   end
 
    # Start of setup flow - to get startup to post initial before video
   def before_video
-    @before_disabled = false
-    @after_disabled = true
-    @hide_time = true
-    @checkin = Checkin.new
-    unless params[:checkin].blank?
-      @checkin.attributes = params[:checkin]
-      @checkin.startup = @startup
-      (redirect_to '/' && return) if @checkin.valid? and @checkin.before_completed? and @checkin.check_video_urls_are_valid and @checkin.save(:validate => false)
+    if can? :before_video, @startup
+      @before_disabled = false
+      @after_disabled = true
+      @hide_time = true
+      @checkin = Checkin.new
+      unless params[:checkin].blank?
+        @checkin.attributes = params[:checkin]
+        @checkin.startup = @startup
+        if @checkin.before_completed? and @checkin.check_video_urls_are_valid and @checkin.save(:validate => false)
+          redirect_to '/'
+          return
+        end
+      end
+    else
+      redirect_to '/'
+      return
     end
   end
 
@@ -156,38 +174,6 @@ class StartupsController < ApplicationController
       end
     end
     redirect_to edit_startup_path(@startup)
-  end
-
-    # multi-page process that any new startup has to go through
-  def onboard
-    @step = @startup.onboarding_step
-    @complete = @startup.onboarding_complete?
-    @checkin_total = Checkin.count if @startup.onboarding_complete?
-  end
-
-    # did this as a separate POST / redirect action so that 
-    # if you refresh the onboard page it doesn't go to the next step
-  def onboard_next
-    # Check if we have any form data - Startup form or  Youtube url or 
-    if params[:startup_form] and !params[:startup].blank?
-      if @startup.update_attributes(params[:startup])
-        @startup.onboarding_step_increment! 
-      else
-        flash.now[:alert] = "Hm, we had some problems updating your startup."
-        @step = @startup.onboarding_step
-        render :action => :onboard
-        return
-      end
-    elsif params[:startup] and params[:startup][:intro_video_url]
-      if !params[:startup][:intro_video_url].blank? and @startup.update_attribute('intro_video_url', params[:startup][:intro_video_url])
-        @startup.onboarding_step_increment!
-      else
-        flash[:alert] = "Looks like you forgot to paste in your Youtube URL"
-      end
-    else
-      @startup.onboarding_step_increment!
-    end
-    redirect_to :action => :onboard
   end
 
   #
