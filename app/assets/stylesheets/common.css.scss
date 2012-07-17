@@ -2,7 +2,55 @@ body{
   position: relative;
   background-color: #EAEAEA;
   font-family: Open Sans, sans-serif;
-  p, textarea{ font-family: Open Sans, sans-serif; }
+  h1,h2,h4,h5,p,textarea {font-family: "myriad-pro",sans-serif;
+    font-style: normal;
+    font-weight: 300;}
+
+}
+.btn {
+  font-family: "myriad-pro",sans-serif;
+  font-style: normal;
+  font-weight: 600;
+
+}
+
+h3 {
+  font-family: "myriad-pro",sans-serif;
+  font-style: normal;
+  font-weight: 600;
+  letter-spacing: 3px;
+  color: #B8B8B8;
+  font-size: 16px;
+}
+
+hr {
+  color: #cccccc;
+  height: 2px;
+  background-color: #cccccc;
+}
+
+.myriad_bold {
+  font-family: "myriad-pro",sans-serif;
+  font-style: normal;
+  font-weight: 600;  
+}
+
+.myriad_light {
+  font-family: "myriad-pro",sans-serif;
+  font-style: normal;
+  font-weight: 300;  
+}
+
+.pauline {
+  font-family: "pauline",sans-serif;
+  font-style: normal;
+  font-weight: 400; 
+}
+
+.grandma {
+  font-family: "grandma",sans-serif;
+  font-style: normal;
+  font-weight: 400;
 }
 
 .logo{

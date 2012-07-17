@@ -9,6 +9,8 @@
     -# add some fonts
     :plain
       <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400,300,700,600' rel='stylesheet' type='text/css'>
+      <script type="text/javascript" src="http://use.typekit.com/jlr1ide.js"></script>
+      <script type="text/javascript">try{Typekit.load();}catch(e){}</script>
     -#
     = stylesheet_link_tag(:application, :media => "all")
     = javascript_include_tag(:application)
@@ -21,10 +23,11 @@
   %body{:class => 'apply'}
 
     .container
-      = render 'layouts/nav'
+      .header
+        = render 'layouts/nav'
       = render "layouts/flash_messages"
       = yield
-      
+    
     = content_for :modals
 
     :plain
