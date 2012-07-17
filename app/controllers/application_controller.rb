@@ -68,6 +68,8 @@ class ApplicationController < ActionController::Base
       end
       # if we're in the right place, don't do anything
       return true if [controller_name.to_sym, action_name.to_sym] == current_action
+      # Allow them to choose account type again
+      return true if [controller_name.to_sym, action_name.to_sym] == [:users, :account_type]
       # Allow create/update actions
       if controller_name.to_sym == current_action.first
         return true if current_action.last == :edit and action_name.to_sym == :update

@@ -24,6 +24,7 @@ class Invite < ActiveRecord::Base
   TEAM_MEMBER = 1
   MENTOR = 2
   NREDUCE_MENTOR = 3
+  STARTUP = 4
   # Make sure to add to perform method
 
   # Not adding nReduce types because it isn't allowed in user-selectable options
@@ -32,7 +33,7 @@ class Invite < ActiveRecord::Base
   end
 
   def self.types
-    {TEAM_MEMBER => 'Team Member', MENTOR => 'Mentor', NREDUCE_MENTOR => 'nReduce Mentor'}
+    {TEAM_MEMBER => 'Team Member', MENTOR => 'Mentor', NREDUCE_MENTOR => 'nReduce Mentor', STARTUP => 'Startup'}
   end
 
   def to_name 
@@ -59,6 +60,7 @@ class Invite < ActiveRecord::Base
     # Add user as mentor to startup
     elsif self.invite_type == MENTOR or self.invite_type == NREDUCE_MENTOR
       user.roles << :mentor
+      user.roles << :nreduce_mentor if self.invite_type == NREDUCE_MENTOR
       user.mentor = true
       # Add mentor to startup if invite came from startup
       unless self.startup.blank?
@@ -69,8 +71,11 @@ class Invite < ActiveRecord::Base
           self.errors.add(:user_id, 'could not be added to team') unless r.approve!
         end
       end
+    elsif self.invite_type == STARTUP
+      user.roles << :entrepreneur
+      #TODO: invite startup to connect (need to do after they create it)
+      #r = Relationship.start_between(user, self.startup, :startup_mentor, true) unless self.startup.blank?
     end
-    user.roles << :nreduce_mentor if self.invite_type == NREDUCE_MENTOR
     if user.save
       self.to = user
       self.accepted_at = Time.now
@@ -92,6 +97,8 @@ class Invite < ActiveRecord::Base
       UserMailer.invite_mentor(i).deliver
     elsif i.invite_type == TEAM_MEMBER
       UserMailer.invite_team_member(i).deliver
+    elsif i.invite_type == STARTUP
+      UserMailer.invite_startup(i).deliver
     end
   end
   
