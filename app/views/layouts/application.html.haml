@@ -26,6 +26,11 @@
       .header
         = render 'layouts/nav'
       = render "layouts/flash_messages"
+      / - if @setup
+      /   .left= render 'layouts/left_nav'
+      /   .left= yield
+      /   .clear
+      / - else
       = yield
     
     = content_for :modals
