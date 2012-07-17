@@ -47,6 +47,8 @@ Nreduce::Application.routes.draw do
 
   get "/contact_joe" => "pages#contact_joe"
 
+  get "/home" => "pages#home"
+
   resources :mentors, :only => [:index] do
     collection do
       post 'change_status'
