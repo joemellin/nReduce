@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120712224352) do
+ActiveRecord::Schema.define(:version => 20120713150416) do
 
   create_table "authentications", :force => true do |t|
     t.string   "provider"
@@ -205,6 +205,7 @@ ActiveRecord::Schema.define(:version => 20120712224352) do
     t.float    "rating"
     t.boolean  "checkins_public", :default => false
     t.string   "pitch_video_url"
+    t.integer  "setup"
   end
 
   add_index "startups", ["public"], :name => "index_startups_on_public"
@@ -261,9 +262,6 @@ ActiveRecord::Schema.define(:version => 20120712224352) do
     t.string   "location"
     t.float    "lat"
     t.float    "lng"
-    t.boolean  "admin",                  :default => false
-    t.boolean  "mentor",                 :default => false
-    t.boolean  "investor",               :default => false
     t.boolean  "mailchimped",            :default => false
     t.integer  "startup_id"
     t.datetime "created_at",                                :null => false
@@ -271,7 +269,6 @@ ActiveRecord::Schema.define(:version => 20120712224352) do
     t.string   "phone"
     t.string   "hipchat_username"
     t.string   "hipchat_password"
-    t.string   "settings"
     t.integer  "meeting_id"
     t.integer  "unread_nc",              :default => 0
     t.string   "one_liner"
@@ -281,10 +278,11 @@ ActiveRecord::Schema.define(:version => 20120712224352) do
     t.string   "blog_url"
     t.string   "pic"
     t.float    "rating"
-    t.integer  "onboarding_step",        :default => 1
     t.string   "intro_video_url"
     t.integer  "roles"
     t.integer  "onboarded"
+    t.integer  "email_on"
+    t.integer  "setup"
   end
 
   add_index "users", ["reset_password_token"], :name => "index_users_on_reset_password_token", :unique => true
