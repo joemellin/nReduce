@@ -52,7 +52,8 @@ module ApplicationHelper
     link_to(handle, "https://twitter.com/#!/#{handle.sub('@', '')}", opts)
   end
 
-  def is_controller_action?(controller_name, action_name)
+  def is_controller_action?(controller_name, action_name = nil)
+    return true if controller.controller_name == controller_name and action_name.blank?
     controller.controller_name == controller_name and controller.action_name == action_name
   end
 
@@ -144,5 +145,12 @@ module ApplicationHelper
         ret += (is_complete ? '&#x2713; ' : '') + name.to_s.titleize
       end
     }.join('<br />')
+  end
+
+  # returns boolean whether the field should be showd
+  def show_user_field?(field)
+    return true unless @setup or current_user.blank?
+    return true if @setup and current_user.required_profile_elements.include?(field)
+    return false
   end
 end

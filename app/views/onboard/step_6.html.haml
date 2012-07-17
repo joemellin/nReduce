@@ -1,11 +1,7 @@
 .row.onboard
-  .span3
-    &nbsp;
   .span6
     %h1 Mentor Profile Form
     %h3 Please fill out your profile so that the community can understand your experience and expertise.
     = semantic_form_for @user, :url => onboard_next_path, :html => {:class => "form-horizontal", :method => :post } do |f|
       = hidden_field_tag :user_form, true
       = render 'users/fields', :f => f
-  .span3
-    &nbsp;

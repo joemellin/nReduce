@@ -1,4 +1,37 @@
-.span2.left_nav
-  .right.profile_tab.active_tab Testthetest
-  .right.profile_tab.current_tab Testthetest
-  .right.profile_tab.inactive_tab Testthetest
+.left_nav{:align => 'right'}
+  - css = ['completed']
+  - if @account_setup_action == [:users, :account_type]
+    - css = ['current', 'uncomplete']
+  .profile_tab{:class => css.join(' ')} Account Type
+  - css -= ['current']
+  - if @account_setup_action == [:onboard, :start]
+    - css = ['current', 'uncomplete']
+  .profile_tab{:class => css.join(' ')} Intro to nReduce
+  - css -= ['current']
+  - if @account_setup_action == [:users, :edit]
+    - css = ['current', 'uncomplete']
+  .profile_tab{:class => css.join(' ')} Create Profile
+  - css -= ['current']
+  - if current_user.entrepreneur?
+    - if @account_setup_action == [:startups, :new]
+      - css = ['current', 'uncomplete']
+    .profile_tab{:class => css.join(' ')} Create Startup
+    - css -= ['current']
+    - if @account_setup_action == [:startups, :invite_team_members]
+      - css = ['current', 'uncomplete']
+    .profile_tab{:class => css.join(' ')} Build Team
+    - css -= ['current']
+    - if @account_setup_action == [:startups, :before_video]
+      - css = ['current', 'uncomplete']
+    .profile_tab{:class => css.join(' ')} Post Before Video
+    - css -= ['current']
+  - if current_user.mentor? or current_user.investor?
+    - if @account_setup_action == [:startups, :invite]
+      - css = ['current', 'uncomplete']
+    .profile_tab{:class => css.join(' ')} Invite Startups
+    - css -= ['current']
+  .profile_tab.inactive Enter nReduce  
+  .hide
+    .profile_tab.active Completed
+    .profile_tab.current Current Action
+    .profile_tab.inactive Uncompleted
