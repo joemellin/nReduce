@@ -1,6 +1,5 @@
 class Startup < ActiveRecord::Base
   include Connectable # methods for relationships
-  include Onboardable
   has_paper_trail
   has_many :team_members, :class_name => 'User'
   has_many :checkins
@@ -14,7 +13,7 @@ class Startup < ActiveRecord::Base
 
   attr_accessible :name, :team_size, :website_url, :main_contact_id, :phone, :growth_model, :stage, :company_goal, :meeting_id, :one_liner, :active, :launched_at, :industry_list, :technology_list, :ideology_list, :industry, :intro_video_url, :elevator_pitch, :logo, :remote_logo_url, :logo_cache, :remove_logo, :checkins_public, :pitch_video_url
 
-  validates_presence_of :intro_video_url, :if => lambda {|startup| startup.onboarding_complete? }
+  #validates_presence_of :intro_video_url, :if => lambda {|startup| startup.onboarding_complete? }
   validates_presence_of :name
   validate :check_video_urls_are_valid
 
@@ -59,7 +58,7 @@ class Startup < ActiveRecord::Base
   end
 
   def self.registration_open?
-    false
+    true
   end
 
   def self.community_status
@@ -282,19 +281,43 @@ class Startup < ActiveRecord::Base
     true
   end
 
-    # Returns true if the user has set everything up for the account (otherwise forces user to go through flow)
-  def account_setup?
-    setup?(:profile, :invite_team_members, :before_video)
+  def invited_team_members!
+    self.setup << :invite_team_members
+    save
   end
 
-  # Returns the current account stage - to see if they need to set anything up
+    # Returns true if the user has set everything up for the account (otherwise forces user to go through flow)
+  def account_setup?
+    self.setup?(:profile, :invite_team_members, :before_video)
+  end
+
+  # Returns the current controller / action for setup - to see if they need to set anything up
   # first checks setup field so we don't have to perform db queries if they've completed that step
-  def account_setup_stage
-    return :complete if account_setup?
-    return :startup unless setup?(:profile) # don't check for completeness yet because that'll force team member stuff
-    return :invite_startup_team_members unless setup?(:invite_team_members)
-    return :before_video if !setup?(:before_video) and self.startup.checkins.count == 0
-    return nil
+  def account_setup_action
+    return [:complete] if account_setup?
+    return [:startups, :new] if new_record?
+    if !setup?(:profile)
+      if !valid? # don't check for completeness yet because that'll force team member stuff
+        return [:startups, :edit]
+      else
+        self.setup << :profile
+        self.save
+      end
+    end
+    if !setup?(:invite_team_members)
+      return [:startups, :invite_team_members]
+    end
+    if !setup?(:before_video)
+      if self.checkins.count == 0
+        return [:startups, :before_video]
+      else
+        self.setup << :before_video
+        self.save
+      end
+    end
+    # If we just completed everything pass that back
+    return [:complete] if account_setup?
+    nil
   end
 
   protected

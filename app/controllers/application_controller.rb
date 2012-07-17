@@ -54,17 +54,34 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  def ensure_email_and_password_and_onboarding
-    return true if controller_name == 'users' and ['complete_account', 'update'].include?(action_name)
-    if current_user.email.blank? or current_user.email.match(/\@users.nreduce.com/) != nil or current_user.encrypted_password.blank? or current_user.name.blank?
-      redirect_to complete_account_user_path(current_user)
-      return false
-    elsif (current_user.mentor? or current_user.roles?(:mentor)) and !current_user.onboarding_complete? and !['onboard', 'onboard_next'].include?(action_name)
-      redirect_to onboard_user_path(current_user)
-      return false
-    else
+  # This method ensures that a user's account has been setup. If not, redirects to correct action
+  def redirect_for_setup_and_onboarding
+    if current_user.account_setup?
       return true
+    else
+      @setup = true
+      current_action = current_user.account_setup_action
+      if current_action.first == :complete
+        flash[:notice] = "Thanks for setting up your account!"
+        redirect_to '/'
+        return
+      end
+      # if we're in the right place, don't do anything
+      return true if [controller_name.to_sym, action_name.to_sym] == current_action
+      # Allow create/update actions
+      if controller_name.to_sym == current_action.first
+        return true if current_action.last == :edit and action_name.to_sym == :update
+        return true if current_action.last == :new and [:create, :edit].include?(action_name.to_sym)
+      end
+      # onboarding has a few actions involved, so if they're in onboarding don't change action
+      return true if [controller_name.to_sym, current_action.first] == [:onboard, :onboard]
+      # otherwise redirect to correct controller/action
+      prms = {:controller => current_action.first, :action => current_action.last}
+      prms[:id] = current_user.id if prms[:controller] == :users
+      prms[:id] = current_user.startup_id if prms[:controller] == :startups
+      redirect_to prms
     end
+    false
   end
 
   def block_ips
@@ -81,7 +98,7 @@ class ApplicationController < ActionController::Base
 
   def login_required
     if authenticate_user!
-      return ensure_email_and_password_and_onboarding
+      return redirect_for_setup_and_onboarding
     else
       return false
     end

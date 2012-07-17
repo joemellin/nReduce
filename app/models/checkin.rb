@@ -189,8 +189,6 @@ class Checkin < ActiveRecord::Base
     true
   end
 
-  protected
-
   def check_video_urls_are_valid
     err = false
     if !start_video_url.blank? and !Youtube.valid_url?(start_video_url)
@@ -203,6 +201,8 @@ class Checkin < ActiveRecord::Base
     end
     err
   end
+
+  protected
 
   def check_submitted_completed_times
     if self.errors.blank?

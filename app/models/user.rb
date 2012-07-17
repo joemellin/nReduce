@@ -1,6 +1,5 @@
 class User < ActiveRecord::Base
   include Connectable # methods for relationships
-  include Onboardable
   acts_as_mappable
   has_paper_trail
   belongs_to :startup
@@ -26,7 +25,7 @@ class User < ActiveRecord::Base
          :recoverable, :rememberable, :trackable, :validatable #, :confirmable #, :omniauthable
 
   # Setup accessible (or protected) attributes for your model
-  attr_accessible :email, :password, :password_confirmation, :remember_me, :name, :skill_list, :industry_list, :startup, :mentor, :investor, :location, :phone, :startup_id, :settings, :meeting_id, :one_liner, :bio, :facebook_url, :linkedin_url, :github_url, :dribbble_url, :blog_url, :pic, :remote_pic_url, :pic_cache, :remove_pic, :intro_video_url
+  attr_accessible :email, :email_on, :password, :password_confirmation, :remember_me, :name, :skill_list, :industry_list, :startup, :mentor, :investor, :location, :phone, :startup_id, :settings, :meeting_id, :one_liner, :bio, :facebook_url, :linkedin_url, :github_url, :dribbble_url, :blog_url, :pic, :remote_pic_url, :pic_cache, :remove_pic, :intro_video_url
 
   serialize :settings, Hash
 
@@ -68,15 +67,15 @@ class User < ActiveRecord::Base
     boolean :is_mentor do
       self.mentor?
     end
+    boolean :has_pic do
+      self.pic?
+    end
     integer :num_mentoring, :stored => true do
       if self.mentor?
         connected_with_relationships.startup_to_user.approved.count
       else
         0
       end
-    end
-    boolean :onboarding_complete do
-      self.onboarding_complete?
     end
     boolean :nreduce_mentor do
       roles? :nreduce_mentor
@@ -92,21 +91,18 @@ class User < ActiveRecord::Base
     end
   end
 
-  def self.settings_labels
+  def self.email_on_options
     {
-      'email_on' =>
-        {
-        'docheckin' => 'Reminder to Check-in',
-        'comment' => 'New Comment', 
-        'meeting' => 'Meeting Reminder', 
-        'checkin' => 'New Checkin', 
-        'relationship' => 'Relationships',
-        }
+      :docheckin => 'Reminder to Check-in',
+      :comment => 'New Comment',
+      :meeting => 'Meeting Reminder',
+      :checkin => 'New Checkin',
+      :relationship => 'Relationships'
     }
   end
 
   def self.default_email_on
-    [:docheckin, :comment, :meeting, :checkin, :relationship]
+    self.email_on_options.keys
   end
 
   def self.force_email_on
@@ -146,9 +142,15 @@ class User < ActiveRecord::Base
     roles?(:entrepreneur)
   end
 
+  # LEGACY METHODS
   def num_onboarding_steps # needs to be one more than actual steps
     7
   end
+
+  def onboarding_complete?
+    self.onboarding_step >= self.num_onboarding_steps
+  end
+  # END LEGACY METHODS
 
     # Skip step 4 and 5 if user is not an nreduce mentor
   def skip_onboarding_step?(step)
@@ -237,95 +239,72 @@ class User < ActiveRecord::Base
     Rails.logger.error e
   end
 
-    # Calculate engagement metrics for all users
-    # Simply calculates avg number of comments given per startup per week
-    # @from_time (start metrics on this date)
-    # @to_time (optional - end metrics on this date, defaults to now)
-  def self.calculate_engagement_metrics(from_time = nil, to_time = nil, dont_save = false, max_comments_per_checkin = 2)
-    from_time ||= Time.now - 4.weeks
-    to_time ||= Time.now
-    return 'From time is not after to time' if from_time > to_time
-
-    # Grab all comments that everyone created during the time period
-    comments_by_user = Hash.by_key(Comment.where(['created_at > ? AND created_at < ?', from_time.to_s(:db), to_time.to_s(:db)]).all, :user_id, nil, true)
-
-    # Grab all completed checkins completed during this time period to see how many you did/ didn't comment on
-    checkins_by_startup = Hash.by_key(Checkin.where(['created_at > ? AND created_at < ?', from_time.to_s(:db), to_time.to_s(:db)]).completed.all, :startup_id, nil, true)
-
-    # Looping through all startups
-    #
-    # Cheating a bit here - really should see who you're connected to each week, as it penalizes you for adding new connections after the commenting window is open
-    results = {}
-    Startup.includes(:team_members).onboarded.all.each do |startup|
-      num_for_startup = num_checkins = 0
-      results[startup.id] = {}
-      results[startup.id][:total] = nil
-
-      checkins_by_this_startup = Hash.by_key(checkins_by_startup[startup.id], :id)
-
-      # How many checkins did your connected startups make?
-      startup_ids = Relationship.all_connection_ids_for(startup)['Startup']
-      unless startup_ids.blank?
-        startup_ids.map do |startup_id|
-          num_checkins += checkins_by_startup[startup_id].size unless checkins_by_startup[startup_id].blank?
-        end
-      end
-
-      startup.team_members.each do |user|
-        rating = nil
-
-        # Skip if their connections haven't made any checkins
-        if num_checkins > 0
-          num_comments_by_user = 0
-          # What is total number of comments on these checkins?
-          # - ignore comments on your own checkins
-          # - max 2 comments per checkin are counted
-          unless comments_by_user[user.id].blank?
-            comments_by_checkin_id = Hash.by_key(comments_by_user[user.id], :checkin_id, nil, true)
-            comments_by_checkin_id.each do |checkin_id, comments|
-              # skip if this is one of their checkins
-              next unless checkins_by_this_startup[checkin_id].blank?
-
-              # limit count to max comments per checkin number
-              num_comments_by_user += (comments.size > max_comments_per_checkin ? max_comments_per_checkin : comments.size)
-            end
-          end
-          
-          rating = (num_comments_by_user.to_f / num_checkins.to_f).round(3)
-          num_for_startup += rating
-        end
-        user.rating = rating
-        user.save(:validate => false) unless dont_save
-        results[startup.id][user.id] = rating
-      end
-
-      # calculate after for startup
-      rating = nil
-      rating = num_for_startup.to_f.round(3) unless num_checkins == 0
-      startup.rating = rating
-      startup.save(:validate => false) unless dont_save
-      results[startup.id][:total] = rating
-    end
-    results
-  end
 
   # Returns true if the user has set everything up for the account (otherwise forces user to go through flow)
   def account_setup?
     if setup?(:account_type, :onboarding, :profile)
       return true if roles?(:entrepreneur) and !self.startup.blank? and self.startup.account_setup?
-      return true if roles?(:mentor) or self.roles(:investor) and setup?(:invite_startups)
+      return true if (roles?(:mentor) or roles?(:investor)) and setup?(:invite_startups)
     end
     false
   end
 
-  # Returns the current account stage - to see if they need to set anything up
+  # Returns the current controller / action name as an array of [:controller, :action] - ex: [:onboarding, :user], or [:profile, :startup]
+  # Will test various conditions to see if it is complete
   # first checks setup field so we don't have to perform db queries if they've completed that step
-  def account_setup_stage
-    return :complete if account_setup?
-    return :account_type if !self.setup?(:account_type) and self.roles.blank?
-    return :onboarding if !self.setup?(:onboarding) and self.onboarded.blank?
-    return :profile if !self.setup?(:profile) and self.profile_completeness_percent < 1.0
-    return :invite_startups if (self.roles?(:mentor) or self.roles?(:investor)) and !self.setup?(:invite_startups)
+  def account_setup_action
+    return [:complete] if account_setup?
+    if !setup?(:account_type)
+      if self.roles.blank?
+        return [:users, :account_type]
+      else
+        self.setup << :account_type
+        self.save
+      end
+    end
+    if !setup?(:onboarding)
+      if self.onboarded.blank?
+        return [:onboard, :start]
+      else
+        self.setup << :onboarding
+        self.save
+      end
+    end
+    if !setup?(:profile)
+      if self.profile_completeness_percent < 1.0
+        return [:users, :edit]
+      else
+        self.setup << :profile
+        self.save
+      end
+    end
+    if roles?(:entrepreneur)
+      self.startup = Startup.new if startup_id.blank?
+      stage = self.startup.account_setup_action
+      return stage unless stage.first == :complete # return startup stage unless complete
+    end
+    return [:users, :invite_startups] if (roles?(:mentor) or roles?(:investor)) and !setup?(:invite_startups)
+    # If we just completed everything pass that back
+    return [:complete] if account_setup?
+    nil
+  end
+
+  def onboarding_completed!(onboarding_type)
+    self.onboarded << onboarding_type.to_sym
+    save!
+  end
+
+  def invited_startups!
+    self.setup << :invite_startups
+    save!
+  end
+
+  # Returns symbol for current onboarding type if user hasn't set up account yet
+  # If they've already set up 
+  def onboarding_type
+    return :startup if entrepreneur?
+    return :mentor if mentor?
+    return :investor if investor?
     return nil
   end
 
@@ -474,7 +453,7 @@ class User < ActiveRecord::Base
   end
 
   def set_default_settings
-    self.email_on = self.default_email_on
+    self.email_on = User.default_email_on
   end
 
   def geocode_location
