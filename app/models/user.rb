@@ -120,6 +120,10 @@ class User < ActiveRecord::Base
     (completed / total).round(2)
   end
 
+  def required_profile_elements
+    [:name, :email, :pic, :bio, :linkedin_url, :skill_list, :location]
+  end
+
   def profile_elements
     {
       :email => !self.email.blank?, 

@@ -2,7 +2,7 @@ class StartupsController < ApplicationController
   around_filter :record_user_action, :except => [:onboard_next, :stats]
   before_filter :login_required
   before_filter :load_requested_or_users_startup, :except => [:index, :invite, :stats]
-  load_and_authorize_resource :except => [:index, :stats, :invite, :before_video]
+  load_and_authorize_resource :except => [:index, :stats, :invite]
   before_filter :redirect_if_no_startup, :except => [:index, :invite]
 
   def index
@@ -141,7 +141,7 @@ class StartupsController < ApplicationController
 
    # Start of setup flow - to get startup to post initial before video
   def before_video
-    if can? :before_video, @startup
+    #if can? :before_video, @startup
       @before_disabled = false
       @after_disabled = true
       @hide_time = true
@@ -154,10 +154,10 @@ class StartupsController < ApplicationController
           return
         end
       end
-    else
-      redirect_to '/'
-      return
-    end
+    #else
+    #  redirect_to '/'
+    #  return
+    #end
   end
 
     # Removes a team member

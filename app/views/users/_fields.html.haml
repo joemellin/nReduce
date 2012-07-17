@@ -1,64 +1,72 @@
-.control-group{error_css(@user, :name)}
-  = f.label :name, "Name", :class => 'control-label'
-  .controls
-    = f.text_field :name, :class => "span4"
-    = f.semantic_errors :name
+- if show_user_field?(:name)
+  .control-group{error_css(@user, :name)}
+    = f.label :name, "Name", :class => 'control-label'
+    .controls
+      = f.text_field :name, :class => "span4"
+      = f.semantic_errors :name
 
-.control-group{error_css(@user, :email)}
-  = f.label :email, "Email", :class => 'control-label'
-  .controls
-    = f.text_field :email, :class => "span4"
-    = f.semantic_errors :email
+- if show_user_field?(:email)
+  .control-group{error_css(@user, :email)}
+    = f.label :email, "Email", :class => 'control-label'
+    .controls
+      = f.text_field :email, :class => "span4"
+      = f.semantic_errors :email
 
-.control-group{error_css(@user, :pic)}
-  = f.label :pic, 'Picture', :class => 'control-label'
-  .controls
-    = f.file_field :pic
-    = f.hidden_field :pic_cache
-    = f.semantic_errors :pic
-    - if @user.pic?
-      %br/
-      Current Image:
-      = image_tag(@user.pic_url(:small))
-      &nbsp;
-      = f.check_box :remove_pic
-      Remove pic
+- if show_user_field?(:pic)
+  .control-group{error_css(@user, :pic)}
+    = f.label :pic, 'Picture', :class => 'control-label'
+    .controls
+      = f.file_field :pic
+      = f.hidden_field :pic_cache
+      = f.semantic_errors :pic
+      - if @user.pic?
+        %br/
+        Current Image:
+        = image_tag(@user.pic_url(:small))
+        &nbsp;
+        = f.check_box :remove_pic
+        Remove pic
 
-.control-group{error_css(@user, :location)}
-  = f.label :location, "Location", :class => 'control-label'
-  .controls
-    = f.text_field :location, :class => 'span2', :placeholder => 'City/State'
-    = f.semantic_errors :location
+- if show_user_field?(:location)
+  .control-group{error_css(@user, :location)}
+    = f.label :location, "Location", :class => 'control-label'
+    .controls
+      = f.text_field :location, :class => 'span2', :placeholder => 'City/State'
+      = f.semantic_errors :location
 
-%hr/
-%br/
+  %hr/
+  %br/
 
-.control-group{error_css(@user, :skill_list)}
-  = f.label :skill_list, "Skills", :class => 'control-label'
-  .controls
-    = text_field_tag 'user[skill_list]', @user.skill_list.map{|i| i.titleize }.join(', '), :maxlength => 45, :placeholder => 'comma, separated', :class => 'span4 skills_list_autocomplete'
-    = f.semantic_errors :skill_list
+- if show_user_field?(:skill_list)
+  .control-group{error_css(@user, :skill_list)}
+    = f.label :skill_list, "Skills", :class => 'control-label'
+    .controls
+      = text_field_tag 'user[skill_list]', @user.skill_list.map{|i| i.titleize }.join(', '), :maxlength => 45, :placeholder => 'comma, separated', :class => 'span4 skills_list_autocomplete'
+      = f.semantic_errors :skill_list
 
-- if @user.mentor?
+- if (@user.mentor? or @user.investor?) and show_user_field?(:industry_list)
   .control-group{error_css(@user, :industry_list)}
     = f.label :industry_list, "Industries", :class => 'control-label'
     .controls
       = text_field_tag 'user[industry_list]', @user.industry_list.map{|i| i.titleize }.join(', '), :placeholder => 'comma, separated', :class => 'span4 industries_list_autocomplete'
       = f.semantic_errors :industry_list
 
-.control-group{error_css(@user, :one_liner)}
-  = f.label :one_liner, :class => 'control-label'
-  .controls
-    = f.text_field :one_liner, :class => "span4"
-    = f.semantic_errors :one_liner
+- if show_user_field?(:one_liner)
+  .control-group{error_css(@user, :one_liner)}
+    = f.label :one_liner, :class => 'control-label'
+    .controls
+      = f.text_field :one_liner, :class => "span4"
+      = f.semantic_errors :one_liner
 
-.control-group{error_css(@user, :bio)}
-  = f.label :bio, :class => 'control-label'
-  .controls
-    = f.text_area :bio, :size => '80x4', :class => "span4"
-    = f.semantic_errors :bio
+- if show_user_field?(:bio)
+  .control-group{error_css(@user, :bio)}
+    = f.label :bio, :class => 'control-label'
+    .controls
+      = f.text_area :bio, :size => '80x4', :class => "span4"
+      = f.semantic_errors :bio
+      %p.help-block Minimum 100 characters
 
-- unless @user.mentor?
+- if @user.entrepreneur? and show_user_field?(:meeting_id)
   .control-group{error_css(@user, :meeting_id)}
     = f.label :meeting_id, "Your Meeting", :class => 'control-label'
     .controls
@@ -70,7 +78,7 @@
         %br
         Update this if you change so that the organizer can message you in case of any venue details or changes.
 
-- unless @user.mentor?
+- if @user.entrepreneur? and show_user_field?(:settings)
   .control-group{error_css(@user, :settings)}
     = f.label :settings, 'Email me', :class => 'control-label'
     .controls
@@ -86,36 +94,40 @@
     %h4
       %small Me, elsewhere:
 
-.control-group{error_css(@user, :blog_url)}
-  = f.label :blog_url, :class => 'control-label'
-  .controls
-    = f.text_field :blog_url, :class => "span3"
-    = f.semantic_errors :blog_url
+- if show_user_field?(:blog_url)
+  .control-group{error_css(@user, :blog_url)}
+    = f.label :blog_url, :class => 'control-label'
+    .controls
+      = f.text_field :blog_url, :class => "span3"
+      = f.semantic_errors :blog_url
 
-.control-group{error_css(@user, :facebook_url)}
-  = f.label :facebook_url, :class => 'control-label'
-  .controls
-    = f.text_field :facebook_url, :class => "span3"
-    = f.semantic_errors :facebook_url
+- if show_user_field?(:facebook_url)
+  .control-group{error_css(@user, :facebook_url)}
+    = f.label :facebook_url, :class => 'control-label'
+    .controls
+      = f.text_field :facebook_url, :class => "span3"
+      = f.semantic_errors :facebook_url
 
-.control-group{error_css(@user, :linkedin_url)}
-  = f.label :linkedin_url, :class => 'control-label'
-  .controls
-    = f.text_field :linkedin_url, :class => "span3"
-    = f.semantic_errors :linkedin_url
+- if show_user_field?(:linkedin_url)
+  .control-group{error_css(@user, :linkedin_url)}
+    = f.label :linkedin_url, :class => 'control-label'
+    .controls
+      = f.text_field :linkedin_url, :class => "span3"
+      = f.semantic_errors :linkedin_url
 
-.control-group{error_css(@user, :github_url)}
-  = f.label :github_url, :class => 'control-label'
-  .controls
-    = f.text_field :github_url, :class => "span3"
-    = f.semantic_errors :github_url
+- if show_user_field?(:github_url)
+  .control-group{error_css(@user, :github_url)}
+    = f.label :github_url, :class => 'control-label'
+    .controls
+      = f.text_field :github_url, :class => "span3"
+      = f.semantic_errors :github_url
 
-.control-group{error_css(@user, :dribbble_url)}
-  = f.label :dribbble_url, :class => 'control-label'
-  .controls
-    = f.text_field :dribbble_url, :class => "span3"
-    = f.semantic_errors :dribble_url
-
+- if show_user_field?(:dribbble_url)
+  .control-group{error_css(@user, :dribbble_url)}
+    = f.label :dribbble_url, :class => 'control-label'
+    .controls
+      = f.text_field :dribbble_url, :class => "span3"
+      = f.semantic_errors :dribbble_url
 
 .form-actions
-  = f.submit "Save", :class => "btn btn-primary btn-large"
+  = f.submit(@setup ? 'Continue' : 'Save', :class => "btn btn-primary btn-large")

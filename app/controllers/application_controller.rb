@@ -60,25 +60,25 @@ class ApplicationController < ActionController::Base
       return true
     else
       @setup = true
-      current_action = current_user.account_setup_action
-      if current_action.first == :complete
+      @account_setup_action = current_user.account_setup_action
+      if @account_setup_action.first == :complete
         flash[:notice] = "Thanks for setting up your account!"
         redirect_to '/'
         return
       end
       # if we're in the right place, don't do anything
-      return true if [controller_name.to_sym, action_name.to_sym] == current_action
+      return true if [controller_name.to_sym, action_name.to_sym] == @account_setup_action
       # Allow them to choose account type again
       return true if [controller_name.to_sym, action_name.to_sym] == [:users, :account_type]
       # Allow create/update actions
-      if controller_name.to_sym == current_action.first
-        return true if current_action.last == :edit and action_name.to_sym == :update
-        return true if current_action.last == :new and [:create, :edit].include?(action_name.to_sym)
+      if controller_name.to_sym == @account_setup_action.first
+        return true if @account_setup_action.last == :edit and action_name.to_sym == :update
+        return true if @account_setup_action.last == :new and [:create, :edit].include?(action_name.to_sym)
       end
       # onboarding has a few actions involved, so if they're in onboarding don't change action
-      return true if [controller_name.to_sym, current_action.first] == [:onboard, :onboard]
+      return true if [controller_name.to_sym, @account_setup_action.first] == [:onboard, :onboard]
       # otherwise redirect to correct controller/action
-      prms = {:controller => current_action.first, :action => current_action.last}
+      prms = {:controller => @account_setup_action.first, :action => @account_setup_action.last}
       prms[:id] = current_user.id if prms[:controller] == :users
       prms[:id] = current_user.startup_id if prms[:controller] == :startups
       redirect_to prms
