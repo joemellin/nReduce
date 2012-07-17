@@ -45,7 +45,7 @@ class User < ActiveRecord::Base
 
   # important that you keep the order the same on this array - uses bitmask_attributes gem
   # adds methods and scopes: https://github.com/joelmoss/bitmask_attributes
-  bitmask :roles, :as => [:admin, :entrepreneur, :mentor, :investor, :nreduce_mentor]
+  bitmask :roles, :as => [:admin, :entrepreneur, :mentor, :investor, :nreduce_mentor, :spectator]
   bitmask :onboarded, :as => [:startup, :mentor, :nreduce_mentor, :investor]
   bitmask :email_on, :as => [:docheckin, :comment, :meeting, :checkin, :relationship]
   bitmask :setup, :as => [:account_type, :onboarding, :profile, :invite_startups]
@@ -262,6 +262,9 @@ class User < ActiveRecord::Base
         self.save
       end
     end
+    if roles?(:spectator)
+      return [:users, :spectator]
+    end
     if !setup?(:onboarding)
       if self.onboarded.blank?
         return [:onboard, :start]
@@ -283,7 +286,7 @@ class User < ActiveRecord::Base
       stage = self.startup.account_setup_action
       return stage unless stage.first == :complete # return startup stage unless complete
     end
-    return [:users, :invite_startups] if (roles?(:mentor) or roles?(:investor)) and !setup?(:invite_startups)
+    return [:startups, :invite] if (roles?(:mentor) or roles?(:investor)) and !setup?(:invite_startups)
     # If we just completed everything pass that back
     return [:complete] if account_setup?
     nil

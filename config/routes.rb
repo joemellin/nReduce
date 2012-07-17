@@ -90,6 +90,7 @@ Nreduce::Application.routes.draw do
       get 'search'
       post 'search'
       get 'stats'
+      match 'invite'
     end
     member do
       match 'before_video'
