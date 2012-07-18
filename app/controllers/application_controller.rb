@@ -59,8 +59,8 @@ class ApplicationController < ActionController::Base
     if current_user.account_setup?
       return true
     else
-      @setup = true
       @account_setup_action = current_user.account_setup_action
+      @setup = true unless @account_setup_action.last == :account_type
       if @account_setup_action.first == :complete
         flash[:notice] = "Thanks for setting up your account!"
         redirect_to '/'

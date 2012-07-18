@@ -34,8 +34,9 @@
       = f.text_field :location, :class => 'span2', :placeholder => 'City/State'
       = f.semantic_errors :location
 
-  %hr/
-  %br/
+  - unless @setup
+    %hr/
+    %br/
 
 - if show_user_field?(:skill_list)
   .control-group{error_css(@user, :skill_list)}
@@ -88,11 +89,12 @@
           = User.email_on_options[action]
         &nbsp;&nbsp;
       = f.semantic_errors :settings
-%hr/
-.control-group
-  .controls
-    %h4
-      %small Me, elsewhere:
+- unless @setup
+  %hr/
+  .control-group
+    .controls
+      %h4
+        %small Me, elsewhere:
 
 - if show_user_field?(:blog_url)
   .control-group{error_css(@user, :blog_url)}

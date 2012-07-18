@@ -1,6 +1,6 @@
 %h1 Invite Team Members
 
-= render 'startups/invite_team_members'
+= render 'startups/invite_team_members', :hide_title => true
 
 - if @setup
   = button_to 'Skip', invite_team_members_startup_path(@startup), :method => :post, :class => 'btn btn-large'

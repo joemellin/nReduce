@@ -62,15 +62,15 @@ hr {
 }
 
 .content_right {
-  border-left: 1px solid #cccccc;
-  margin-left: 0px;
-  padding-left: 20px;
-  z-index: 1;
+ border-left: 1px solid #cccccc;
+ padding-left: 20px;
+ min-width: 700px;
 }
 
 .left_nav {
   z-index: 2;
   padding-left: 30px;
+  width: 170px;
 
   .profile_tab {
     padding: 15px 10px 15px 0px;

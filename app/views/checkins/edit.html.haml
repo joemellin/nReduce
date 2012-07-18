@@ -11,19 +11,5 @@
     = semantic_form_for @checkin, :html => {:class => "form-horizontal"} do |f|
       = render 'checkins/fields', :f => f
   .span5
-    %h4 How long of a video?
-    %p Before video: 30 seconds for before video. After video: 30 sec - 2 minutes.
-    %h4 What does the video have to show?
-    %p The video shows the single main focus of your company this week.
-    %p The important thing is to show what you think is the most important aspect of your business at any give time and then how you tackle those problems.
-    %p For web apps, it could be building a new feature. For physical products, it could be getting a first prototype built. For early stage companies it could be testing a hypothesis with users or customer development.
-
-    %h4 Why is there only one focus for the week?
-    %p We have found that most small teams operate in a way where each person is doing their own thing.  That is great in that it avoids confrontation, but can be hurtful to the company in the long term as you end up with a bunch of half baked features.  So we ask you to come to conesnus with your team on what is the one most important thing that your team needs to work on that week.
-
-    %h4 What is the point of the video?
-    %p The goal is to make a record that shows your teams decision making abilities and how fast you execute on an idea.
-    %h4 Example Video:
-    - before_url = 'http://www.youtube.com/embed/-uSPmkoiY9k'
-    - after_url = 'http://www.youtube.com/embed/xreSEO2I5rI'
-    %iframe{:width => '380', :height => '286', :src => @before_disabled ? after_url : before_url, :frameborder => 0, :allowfullscreen => true}
+    = render 'checkins/before_video_faq'
+    

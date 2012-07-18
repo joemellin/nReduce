@@ -3,17 +3,8 @@
   .controls
     = f.text_field :name, :class => "span3"
     = f.semantic_errors :name
-   
-/ .control-group{error_css(@startup, :name)}
-/   -# f.label :team_members, "Founders", :class => 'control-label'
-/   .controls
-/     %p.help-block
-/       Enter in email addresses of team members
-- if @startup.new_record?
-  .control-group
-    .controls
-      %p (You can add your team after you've saved your profile)
-- else
+
+- unless @startup.new_record?
   .control-group
     = f.label :team_size, "Team Members", :class => 'control-label'
     .controls
@@ -42,18 +33,6 @@
     .controls
       = f.select :main_contact_id, options_for_select(@startup.team_members.map{|tm| [tm.name, tm.id] }, @startup.main_contact_id), :include_blank => true
       = f.semantic_errors :main_contact_id
-
-.control-group{error_css(@startup, :phone)}
-  = f.label :phone, "Phone Number", :class => 'control-label'
-  .controls
-    = f.text_field :phone, :class => 'span3'
-    = f.semantic_errors :phone
-
-.control-group{error_css(@startup, :team_size)}
-  = f.label :team_size, "# of Team Members", :class => 'control-label'
-  .controls
-    = f.text_field :team_size, :style => 'width: 30px'
-    = f.semantic_errors :team_size
     
 .control-group{error_css(@startup, :one_liner)}
   = f.label :one_liner, :class => 'control-label'
@@ -88,8 +67,10 @@
       = f.check_box :remove_logo
       Remove logo
 
+%hr/
+
 .control-group{error_css(@startup, :intro_video_url)}
-  = f.label :intro_video_url, "Intro Video Url", :class => 'control-label'
+  = f.label :intro_video_url, "Team Intro Video URL", :class => 'control-label'
   .controls
     = f.text_field :intro_video_url, :class => 'span3 with-placeholder'
     = f.semantic_errors :intro_video_url
@@ -108,7 +89,7 @@
       %br/
       Set it as unlisted but allow it to be embedded.
     
-%hr
+%hr/
 
 .control-group{error_css(@startup, :industry_list)}
   = f.label :industry_list, "Market(s)", :class => 'control-label'
