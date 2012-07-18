@@ -316,6 +316,32 @@ class User < ActiveRecord::Base
   end
 
   #
+  # LINKEDIN
+  #
+
+  def linkedin_authentication=(auth)
+    @linkedin_authentication = auth
+  end
+
+  def linkedin_authentication
+    @linkedin_authentication || self.authentications.provider('linkedin').first
+  end
+
+  def linkedin_client
+    client = LinkedIn::Client.new
+    auth = self.linkedin_authentication
+    return client if !auth.blank? and client.authorize_from_access(auth.token, auth.secret)
+    nil
+  end
+
+  def linkedin_profile
+    client = self.linkedin_client
+    return [] if client.nil?
+    # Profile fields: https://developer.linkedin.com/documents/profile-fields
+    self.linkedin_client.profile(:fields => %w(skills location headline summary picture-url))
+  end
+
+  #
   # OMNIAUTH LOGIC
   #
   
@@ -329,6 +355,8 @@ class User < ActiveRecord::Base
   end
 
   def apply_omniauth(omniauth)
+    auth = Authentication.new(User.auth_params_from_omniauth(omniauth))
+    authentications << auth
     begin
       # TWITTER
       if omniauth['provider'] == 'twitter'
@@ -338,9 +366,18 @@ class User < ActiveRecord::Base
         self.location = omniauth['info']['location'] if !omniauth['info']['location'].blank?
         self.twitter = omniauth['info']['nickname']
       elsif omniauth['provider'] == 'linkedin'
+        self.linkedin_authentication = auth
         self.name = omniauth['info']['name'] if name.blank? and !omniauth['info']['name'].blank?
         self.external_pic_url = omniauth['info']['image'] unless omniauth['info']['image'].blank?
         self.linkedin_url = omniauth['info']['urls']['public_profile'] unless omniauth['info']['urls'].blank? or omniauth['info']['urls']['public_profile'].blank?
+        # Fetch profile from API
+        profile = self.linkedin_profile
+        unless profile.blank?
+          self.skill_list = profile.skills.all.map{|s| s.skill.name } if self.skill_list.blank? and !profile.skills.blank?
+          self.location = "#{profile.location.name}, #{profile.location.country.code}" if self.location.blank? and !profile.location.blank?
+          self.bio = profile.summary if self.bio.blank?
+          self.one_liner = profile.headline if self.one_liner.blank?
+        end
       # FACEBOOK
       elsif omniauth['provider'] == 'facebook'
         self.name = omniauth['user_info']['name'] if name.blank? and !omniauth['user_info']['name'].blank?
@@ -356,7 +393,6 @@ class User < ActiveRecord::Base
     rescue
       logger.warn "ERROR applying omniauth with data: #{omniauth}"
     end
-    authentications.build(User.auth_params_from_omniauth(omniauth))
   end
 
   def password_required?

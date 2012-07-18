@@ -28,8 +28,9 @@
       = render "layouts/flash_messages"
       - if @setup
         .row
-          .span2= render 'layouts/left_nav'
-          .span10.content_right= yield
+          .left= render 'layouts/left_nav'
+          .left.content_right{:style => 'border-left: 1px solid #cccccc;'}= yield
+          .clear
       - else
         = yield
     
