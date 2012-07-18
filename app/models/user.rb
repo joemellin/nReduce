@@ -12,6 +12,7 @@ class User < ActiveRecord::Base
   has_many :notifications, :dependent => :destroy
   has_many :meeting_messages
   has_many :invites, :foreign_key => 'to_id', :dependent => :destroy
+  has_many :sent_invites, :foreign_key => 'from_id', :class_name => 'Invite'
   has_many :awesomes
   has_many :sent_nudges, :class_name => 'Nudge', :foreign_key => 'from_id'
   has_many :user_actions, :as => :attachable
@@ -48,7 +49,7 @@ class User < ActiveRecord::Base
   bitmask :roles, :as => [:admin, :entrepreneur, :mentor, :investor, :nreduce_mentor, :spectator]
   bitmask :onboarded, :as => [:startup, :mentor, :nreduce_mentor, :investor]
   bitmask :email_on, :as => [:docheckin, :comment, :meeting, :checkin, :relationship]
-  bitmask :setup, :as => [:account_type, :onboarding, :profile, :invite_startups]
+  bitmask :setup, :as => [:account_type, :onboarding, :profile, :invite_startups, :welcome]
 
   searchable do
     # full-text search fields - can add :stored => true if you don't want to hit db
@@ -246,7 +247,7 @@ class User < ActiveRecord::Base
 
   # Returns true if the user has set everything up for the account (otherwise forces user to go through flow)
   def account_setup?
-    if setup?(:account_type, :onboarding, :profile)
+    if setup?(:account_type, :onboarding, :profile, :welcome)
       return true if roles?(:entrepreneur) and !self.startup.blank? and self.startup.account_setup?
       return true if (roles?(:mentor) or roles?(:investor)) and setup?(:invite_startups)
     end
@@ -291,6 +292,9 @@ class User < ActiveRecord::Base
       return stage unless stage.first == :complete # return startup stage unless complete
     end
     return [:startups, :invite] if (roles?(:mentor) or roles?(:investor)) and !setup?(:invite_startups)
+    if !setup?(:welcome)
+      return [:users, :welcome]
+    end
     # If we just completed everything pass that back
     return [:complete] if account_setup?
     nil
@@ -303,6 +307,11 @@ class User < ActiveRecord::Base
 
   def invited_startups!
     self.setup << :invite_startups
+    save!
+  end
+
+  def setup_complete!
+    self.setup << :welcome
     save!
   end
 
@@ -362,13 +371,13 @@ class User < ActiveRecord::Base
       if omniauth['provider'] == 'twitter'
         logger.info omniauth['info'].inspect
         self.name = omniauth['info']['name'] if name.blank? and !omniauth['info']['name'].blank?
-        self.external_pic_url = omniauth['info']['image'] unless omniauth['info']['image'].blank?
+        #self.external_pic_url = omniauth['info']['image'] unless omniauth['info']['image'].blank?
         self.location = omniauth['info']['location'] if !omniauth['info']['location'].blank?
         self.twitter = omniauth['info']['nickname']
       elsif omniauth['provider'] == 'linkedin'
         self.linkedin_authentication = auth
         self.name = omniauth['info']['name'] if name.blank? and !omniauth['info']['name'].blank?
-        self.external_pic_url = omniauth['info']['image'] unless omniauth['info']['image'].blank?
+        #self.external_pic_url = omniauth['info']['image'] unless omniauth['info']['image'].blank?
         self.linkedin_url = omniauth['info']['urls']['public_profile'] unless omniauth['info']['urls'].blank? or omniauth['info']['urls']['public_profile'].blank?
         # Fetch profile from API
         profile = self.linkedin_profile

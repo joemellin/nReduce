@@ -30,7 +30,9 @@
       - css = ['current', 'uncomplete']
     .profile_tab{:class => css.join(' ')} Invite Startups
     - css -= ['current']
-  .profile_tab.inactive Enter nReduce  
+  - if @account_setup_action == [:users, :welcome]
+    - css = ['current', 'uncomplete']
+  .profile_tab.inactive{:class => css.join(' ')} Enter nReduce  
   .hide
     .profile_tab.active Completed
     .profile_tab.current Current Action
