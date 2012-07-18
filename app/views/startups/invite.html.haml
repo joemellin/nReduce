@@ -1,27 +1,24 @@
-%h2 Invite Startups to nReduce
+%h1 Invite Your Startups to join nReduce
 
-= form_for current_user, :url => account_type_user_path(current_user), :html => {:method => :post, :class => 'form-horizontal'} do |f|
-  %p
-    %h2
-      = f.radio_button :roles, :entrepreneur
-      = f.label :roles, 'Entrepreneur'
+= form_tag invite_startups_path, :method => :post, :class => 'form-horizontal' do
   %br/
-  %p
-    %h2
-      = f.radio_button :roles, :mentor
-      = f.label :roles, 'Mentor'
+  - if current_user.entrepreneur?
+    %p Do you have any friends that are building startups that you think would benefit from nReduce, or would like to add to your private group? Please invite them here:
+  - elsif current_user.mentor?
+    %p Are you currently mentoring any startups? Invite them to join nReduce so that you can easily give them feedback each week.
+  - elsif current_user.investor?
+    %p Are you currently an investor in any startups? You can invite them to nReduce to easily keep up to date on their weekly progress.
   %br/
-  %p
-    %h2
-      = f.radio_button :roles, :investor
-      = f.label :roles, 'Investor'
-  %br/
-  %p
-    %h2
-      = f.radio_button :roles, :spectator
-      = f.label :roles, 'Spectator'
-  %br/
-  = f.submit 'Continue', :class => 'btn btn-large btn-primary'
+  = text_field_tag :email, '', :placeholder => "Founder's email address", :class => 'span2'
+  = submit_tag 'Invite', :class => 'btn btn-primary btn-large'
+
+- unless @invites.blank?
+  %h4
+    %strong Current Invites
+  - @invites.each do |i|
+    %li= "#{i.to_name} (#{Invite.types[i.invite_type].titleize})"
 
 - if @setup
-  = button_to 'Skip', invite_startups_path, :method => :post, :class => 'btn btn-large'
+  %br/
+  %br/
+  = button_to "I'm done inviting", invite_startups_path(:done => 1), :method => :post, :class => 'btn'

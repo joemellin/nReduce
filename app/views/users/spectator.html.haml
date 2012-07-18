@@ -1,3 +1,24 @@
-%h1 There are no spectators in Startup Land!
-
-%h2= link_to 'Found a startup', account_type_user_path(:id => current_user.id, :reset => true), :method => :post, :class => 'btn btn-large'
+%div{:align => 'center'}
+  %br/
+  %br/
+  %h1{:style => 'font-size: 60px; line-height: 60px; font-weight: 600;'} There is NO spectating in Startup Land!
+  %br/
+  %br/
+  %br/
+  %h2 If you are thinking about starting a company...
+  %br/
+  %br/
+  %br/
+  %h2 Stop thinking about it...
+  %br/
+  %br/
+  %br/
+  %h2{:style => 'font-size: 60px; line-height: 60px; font-weight: 600;'}  DO IT!
+  %br/
+  %br/
+  %h2 All founders have their first day. Is today yours?
+  %br/
+  %br/
+  %h2= link_to 'Found Your Startup', account_type_user_path(:id => current_user.id, :reset => true, :roles => 'entrepreneur'), :method => :post, :class => 'btn btn-large btn-success', :style => 'font-size: 60px;'
+  %br/
+  %br/

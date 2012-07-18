@@ -15,10 +15,29 @@ class StartupsController < ApplicationController
 
     # Invite startups
   def invite
+    @invites = current_user.sent_invites
     if request.post?
-      current_user.invited_startups!
-      redirect_to '/'
-      return
+      unless params[:email].blank?
+        if @startup
+          @invite = Invite.new(:startup_id => @startup.id)
+        else
+          @invite = Invite.new
+        end
+        @invite.from = current_user
+        @invite.invite_type = Invite::STARTUP
+        @invite.email = params[:email]
+        if @invite.save
+          flash[:notice] = "Thanks! #{params[:email]} has been invited."
+        else
+          flash[:alert] = "#{@invite.errors.full_messages.join('. ')}."
+        end
+      end
+      # They're in setup, and said they're done inviting
+      if params[:done]
+        current_user.invited_startups!
+        redirect_to '/'
+        return
+      end
     end
   end
 

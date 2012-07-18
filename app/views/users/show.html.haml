@@ -75,20 +75,22 @@
         %p= simple_format(h(@user.bio))
 
 - if @user.mentor?
-  .row
-    .span12
-      %hr
-      %br
-      %h4
-        %small #{h(@user.name).possessive} Teams
-      %br/
-      %hr
-      %br/
-  .row
-    .span12
-      = render 'startups/horizontal_list', :startups => @user.connected_to('Startup')
-      %hr
-      %br
+  - startups = @user.connected_to('Startup')
+  - unless startups.blank?
+    .row
+      .span12
+        %hr
+        %br
+        %h4
+          %small #{h(@user.name).possessive} Teams
+        %br/
+        %hr
+        %br/
+    .row
+      .span12
+        = render 'startups/horizontal_list', :startups => @user.connected_to('Startup')
+        %hr
+        %br
 - elsif !@user.startup.blank?
   .row
     .span12
