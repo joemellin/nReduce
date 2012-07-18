@@ -189,8 +189,8 @@ class Ability
       can :see_mentor_page, User
 
       # A user with a startup can search mentors if they are able to invite them
-      can :search_mentors, Startup do |startup|
-        startup.can_invite_mentor?
+      can :search_mentors, User do |u|
+        u.startup.can_invite_mentor?
       end
     end
 
