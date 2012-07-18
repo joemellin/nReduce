@@ -1,15 +1,14 @@
-.account_type.myriad_light
-  %h2.myriad_bold Account Type
+.row
+  .span12{:align => 'center'}
+    .account_type.myriad_light
+      %h2.myriad_bold Choose your account type:
 
-  = form_tag account_type_user_path(current_user), :method => :post, :class => 'form-horizontal' do
-    
-    - [:entrepreneur, :mentor, :investor, :spectator].each do |type|  
-      .type
-        = label_tag :roles do
-          .left= radio_button_tag :roles, type, current_user.roles?(type)
-          .left.text= type.to_s.titleize
-          .clear
-    .center= submit_tag 'Continue', :class => 'btn btn-large btn-primary'
-    %br/
-    %hr/
-    %h3 THE MAN IS AWESOME
+      = form_tag account_type_user_path(current_user), :method => :post, :class => 'form-horizontal' do
+        
+        - [:entrepreneur, :mentor, :investor, :spectator].each do |type|  
+          .type
+            = label_tag :roles do
+              .left= radio_button_tag :roles, type, current_user.roles?(type)
+              .left.text= type.to_s.titleize
+              .clear
+        .center= submit_tag 'Continue', :class => 'btn btn-large btn-primary'

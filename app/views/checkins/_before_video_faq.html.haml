@@ -1,0 +1,26 @@
+%h4
+  %strong What is the point of the video?
+%p The goal is to make a record that shows your teams decision making abilities and how fast you execute on an idea.
+
+%h4
+  %strong How long of a video?
+%p
+  Before video: 30 seconds for before video.
+  %br/
+  After video: 30 sec - 2 minutes.
+
+%h4
+  %strong What does the video have to show?
+%p The video shows the single main focus of your company this week.
+%p Show in the before video what you think is the most important aspect of your business this week, and then in the after video how you tackled it.
+%p For web apps, it could be building a new feature. For physical products, it could be getting a first prototype built. For early stage companies it could be testing a hypothesis with users or customer development.
+
+%h4
+  %strong Why is there only one focus for the week?
+%p We have found that communication is one of the most important parts of a team's success. So we ask you to come to consensus with your team on what is the one most important thing that you need to work on that week.
+
+%h4
+  %strong Example Video:
+- before_url = 'http://www.youtube.com/embed/-uSPmkoiY9k'
+- after_url = 'http://www.youtube.com/embed/xreSEO2I5rI'
+%iframe{:width => '380', :height => '286', :src => @before_disabled ? after_url : before_url, :frameborder => 0, :allowfullscreen => true}

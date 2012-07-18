@@ -4,12 +4,26 @@
 
 
 .row{:style => "height:100%"}
-  = render 'layouts/left_nav'
-  .span8.content_right
-    %h2 Edit Your Account
-
+  .span7
+    %h2 Edit Your Profile
     = semantic_form_for @user, :html => {:class => "form-horizontal"} do |f|
+      .control-group{:style => 'padding: 0; margin: 0'}
+        &nbsp;
+        .controls
+          - if @user.linkedin_authentication.blank?
+            %a.btn.btn-large{:href => '/auth/linkedin'}
+              = image_tag('linkedin_32.png')
+              Add LinkedIn
+          - else
+            Authorized with
+            = image_tag('linkedin_32.png', :alt => 'LinkedIn', :title => 'LinkedIn')
+      - if @setup
+        .control-group{:style => 'padding-top: 0'}
+          &nbsp;
+          .controls
+            %strong All fields are required
       = render 'users/fields', :f => f
-  / .span4
-  /   = render 'users/profile_completeness'
-  /   
+  - unless @setup
+    .span4
+      = render 'users/profile_completeness'
+      

@@ -1,0 +1,11 @@
+%div{:align => 'center'}
+  %h1{:style => 'font-size: 90px; line-height: 100px'} Congratulations!
+  %br/
+  %br/
+  %h2
+    You are you now ready to enter the
+    %br/
+    community of people changing the world.
+  %br/
+  %br/
+  = button_to "Enter nReduce", welcome_user_path(current_user), :method => :post, :class => 'btn btn-large btn-success', :style => 'font-size: 60px'

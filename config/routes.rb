@@ -68,6 +68,7 @@ Nreduce::Application.routes.draw do
       match 'complete_account'
       get 'spectator'
       post 'account_type'
+      match 'welcome'
     end
     resources :notifications
   end
