@@ -49,6 +49,8 @@ Nreduce::Application.routes.draw do
 
   get "/home" => "pages#home"
 
+  get "/nstar" => "pages#nstar"
+
   resources :mentors, :only => [:index] do
     collection do
       post 'change_status'
