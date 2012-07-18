@@ -4,10 +4,8 @@
 %h2 Register your Startup for nReduce
 
 .row
-  .span12
+  %div{:class => @setup ? 'span7' : 'span12'}
     = semantic_form_for @startup, :url => '/startup/', :html => {:class => "form-horizontal", :multipart => true} do |f|
-
       = render "startups/fields", :f => f
-
       .form-actions
-        = f.submit "Submit", :class => "btn btn-primary btn-large"
+        = f.submit @setup ? 'Continue' : 'Save', :class => "btn btn-primary btn-large"

@@ -1,17 +1,17 @@
-.row
-  .span3
-    %p &nbsp;
-  .span6.well{:align => 'center', :style => 'padding: 40px 20px 40px 20px'}
-    %h1 nReduce
-    %br/
-    %p
-      %strong An alliance of creators built on accountability and community
-    - if !@omniauth and !@hide_twitter
+- unless @omniauth
+  .row
+    .span3
+      %p &nbsp;
+    .span6.well{:align => 'center', :style => 'padding: 40px 20px 40px 20px'}
+      %h1 nReduce
+      %br/
+      %p
+        %strong An alliance of creators built on accountability and community
       %br/
       %a.btn.btn-large{:href => '/auth/linkedin'}
         = image_tag('linkedin_32.png')
         Sign In With LinkedIn
-  .span3
+    .span3
 
 .row
   .span3

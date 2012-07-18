@@ -3,4 +3,5 @@
 = render 'startups/invite_team_members', :hide_title => true
 
 - if @setup
-  = button_to 'Skip', invite_team_members_startup_path(@startup), :method => :post, :class => 'btn btn-large'
+  .form-actions{:style => 'margin-top: 100px', :align => 'center'}
+    = button_to 'Skip', invite_team_members_startup_path(@startup), :method => :post, :class => 'btn btn-large btn-primary'
