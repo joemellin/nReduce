@@ -17,9 +17,14 @@ class AuthenticationsController < ApplicationController
       remember_me(authentication.user) # set remember me cookie
       sign_in_and_redirect(:user, authentication.user)
     elsif current_user # already a signed in user
-      current_user.authentications.create!(User.auth_params_from_omniauth(omniauth))
-      #flash[:notice] = "Authentication successful."
-      redirect_to authentications_url
+      current_user.apply_omniauth(omniauth)
+      current_user.geocode_from_ip(request.remote_ip) if current_user.location.blank?
+      if current_user.save
+        flash[:notice] = "Authentication successful."
+      else
+        flash[:alert] = "Sorry but you could't be authenticated. Please try again:"
+      end
+      redirect_to current_user
     else
       user = User.new
       user.apply_omniauth(omniauth)

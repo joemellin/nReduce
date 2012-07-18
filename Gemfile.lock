@@ -154,6 +154,10 @@ GEM
       railties (>= 3.0.0)
     kgio (2.7.4)
     libv8 (3.3.10.4)
+    linkedin (0.3.7)
+      hashie (~> 1.2)
+      multi_json (~> 1.0)
+      oauth (~> 0.4)
     listen (0.4.6)
       rb-fchange (~> 0.0.5)
       rb-fsevent (~> 0.9.1)
@@ -357,6 +361,7 @@ DEPENDENCIES
   hominid
   jquery-rails
   json (~> 1.7.3)
+  linkedin (~> 0.3.7)
   mime-types
   mysql2
   omniauth (>= 1.0)

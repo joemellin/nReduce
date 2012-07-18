@@ -27,7 +27,8 @@ class UsersController < ApplicationController
       if params[:reset]
         current_user.roles -= [:spectator]
         current_user.setup -= [:account_type]
-      elsif !params[:roles].blank?
+      end
+      if !params[:roles].blank?
         current_user.roles << params[:roles].to_sym
       end
       if current_user.save
@@ -66,6 +67,14 @@ class UsersController < ApplicationController
       flash[:alert] = "Sorry but your HipChat account could not be reset. Please contact josh@nreduce.com"
     end
     redirect_to :action => :chat
+  end
+
+  def welcome
+    if request.post?
+      current_user.setup_complete!
+      redirect_to '/'
+      return
+    end
   end
 
   protected

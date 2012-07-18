@@ -9,7 +9,7 @@
       = render "startups/fields", :f => f
       .form-actions
         = f.submit "Save", :class => "btn btn-primary btn-large"
-
-  .span4
-    = render 'users/profile_completeness', :title => 'Startup Profile'
-    = render 'startups/invite_team_members'
+  - unless @setup
+    .span4
+      = render 'users/profile_completeness', :title => 'Startup Profile'
+      = render 'startups/invite_team_members'
