@@ -18,6 +18,7 @@ class AuthenticationsController < ApplicationController
       sign_in_and_redirect(:user, authentication.user)
     elsif current_user # already a signed in user
       current_user.apply_omniauth(omniauth)
+      current_user.geocode_from_ip(request.remote_ip) if current_user.location.blank?
       if current_user.save
         flash[:notice] = "Authentication successful."
       else

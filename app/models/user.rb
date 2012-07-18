@@ -374,7 +374,8 @@ class User < ActiveRecord::Base
         profile = self.linkedin_profile
         unless profile.blank?
           self.skill_list = profile.skills.all.map{|s| s.skill.name } if self.skill_list.blank? and !profile.skills.blank?
-          self.location = "#{profile.location.name}, #{profile.location.country.code}" if self.location.blank? and !profile.location.blank?
+          # applying location from IP instead for now
+          #self.location = "#{profile.location.name}, #{profile.location.country.code}" if self.location.blank? and !profile.location.blank?
           self.bio = profile.summary if self.bio.blank?
           self.one_liner = profile.headline if self.one_liner.blank?
         end

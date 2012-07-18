@@ -13,6 +13,7 @@ $ ->
     $('#sign_in').hide()
 
   #$('.profile_completeness .well').tooltip({placement: 'left'})
+  $('form.user textarea').autosize()
 
   split = (val) ->
     return val.split( /,\s*/ )

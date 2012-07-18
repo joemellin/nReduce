@@ -31,7 +31,7 @@
   .control-group{error_css(@user, :location)}
     = f.label :location, "Location", :class => 'control-label'
     .controls
-      = f.text_field :location, :class => 'span2', :placeholder => 'City/State'
+      = f.text_field :location, :class => 'span4', :placeholder => 'City/State'
       = f.semantic_errors :location
 
   - unless @setup

@@ -3,7 +3,6 @@ class RegistrationsController < Devise::RegistrationsController
 
   def new
     super
-    @omniauth = !session[:omniauth].blank?
   end
 
   def create
@@ -18,6 +17,7 @@ class RegistrationsController < Devise::RegistrationsController
     if session[:omniauth]
       @user.apply_omniauth(session[:omniauth])
       @user.valid?
+      @omniauth = true
     end
     @user.email = session[:sign_in_up_email] unless @user.blank? or session[:sign_in_up_email].blank?
     @user.geocode_from_ip(request.remote_ip) if @user.location.blank?
