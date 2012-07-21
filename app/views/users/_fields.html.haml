@@ -63,7 +63,7 @@
   .control-group{error_css(@user, :bio)}
     = f.label :bio, :class => 'control-label'
     .controls
-      = f.text_area :bio, :size => '80x4', :class => "span4"
+      = f.text_area :bio, :size => '80x4', :class => "span4 bio"
       = f.semantic_errors :bio
       %p.help-block Minimum 100 characters
 
