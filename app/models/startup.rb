@@ -10,6 +10,8 @@ class Startup < ActiveRecord::Base
   has_many :nudges
   has_many :notifications, :as => :attachable
   has_many :user_actions, :as => :attachable
+  has_many :initiated_relationships, :as => :entity # relationships this startup began
+  has_many :received_relationships, :as => :connected_with # relationships others began with this startup
 
   attr_accessible :name, :team_size, :website_url, :main_contact_id, :phone, :growth_model, :stage, :company_goal, :meeting_id, :one_liner, :active, :launched_at, :industry_list, :technology_list, :ideology_list, :industry, :intro_video_url, :elevator_pitch, :logo, :remote_logo_url, :logo_cache, :remove_logo, :checkins_public, :pitch_video_url
 
@@ -26,6 +28,7 @@ class Startup < ActiveRecord::Base
   scope :is_public, where(:public => true)
   scope :launched, where('launched_at IS NOT NULL')
   scope :with_intro_video, where('intro_video_url IS NOT NULL')
+  scope :with_logo, where('logo IS NOT NULL')
 
   bitmask :setup, :as => [:profile, :invite_team_members, :before_video]
 
@@ -44,6 +47,7 @@ class Startup < ActiveRecord::Base
     text :one_liner
 
     # filterable fields
+    integer :id
     integer :stage
     integer :company_goal
     integer :onboarding_step
@@ -73,6 +77,52 @@ class Startup < ActiveRecord::Base
     Cache.get('nreduce_id', nil, true){
       Startup.named('nreduce').id
     }
+  end
+
+    # Queries search to get startups that this startup might like to connect to
+  def suggested_connections(limit = 2)
+    startups = []
+    ignore_startup_ids = [self.id]
+    industry_ids = self.industries.map{|t| t.id }
+    # Find startups with same industries, company goal, and sort by best engagement first
+    search = Startup.search do
+      all_of do
+        with :industry_tag_ids, industry_ids
+      end
+      with :company_goal, self.company_goal
+      without :id, ignore_startup_ids
+      order_by :rating, :desc
+      paginate :per_page => limit
+    end
+
+    startups += search.results unless search.results.blank?
+
+    # Find startups just with same industries
+    if startups.blank? or startups.size < limit
+      search = Startup.search do
+        all_of do
+          with :industry_tag_ids, industry_ids
+        end
+        without :id, ignore_startup_ids
+        order_by :rating, :desc
+        paginate :per_page => limit
+      end
+      startups += search.results unless search.results.blank?
+    end
+
+    if startups.blank? or startups.size < limit
+      search = Startup.search do
+        any_of do
+          with :industry_tag_ids, industry_ids
+        end
+        without :id, ignore_startup_ids
+        order_by :rating, :desc
+        paginate :per_page => limit
+      end
+      startups += search.results unless search.results.blank?
+    end
+
+    startups
   end
 
   def mentors

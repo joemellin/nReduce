@@ -28,6 +28,7 @@ class Relationship < ActiveRecord::Base
   scope :approved, where(:status => Relationship::APPROVED)
   scope :rejected, where(:status => Relationship::REJECTED)
   scope :startup_to_user, where(:entity_type => 'Startup', :connected_with_type => 'User')
+  scope :startup_to_startup, where(:entity_type => 'Startup', :connected_with_type => 'Startup')
 
   # Context of the relationship
   bitmask :context, :as => [:startup_startup, :startup_mentor, :startup_investor]
@@ -180,6 +181,24 @@ class Relationship < ActiveRecord::Base
     else
       self.errors.add(:entity, "can't be connected to a #{connected_with_type.downcase}")
     end
+  end
+
+  # Gets connection details and returns a hash organized by class and then id, with an array of dates they were connected from and to
+  # ex: {'Startup' => {1 => [Thu, 19 Jul 2012 14:58:46 PDT -07:00, 2012-07-20 20:59:56 -0700]}}
+  # Can limit to only connections with a certain type of object (ex: Startup)
+  def self.history_for_entity(entity, connected_with_type = nil)
+    relationships = {}
+    rel = Relationship.where(:entity_type => entity.class, :entity_id => entity.id)
+    # only get approved or rejected relationships
+    rel = rel.where(['status = ? OR status = ?', Relationship::APPROVED, Relationship::REJECTED])
+    # limit by connected entity type if provided
+    rel = rel.where(:connected_with_type => connected_with_type) unless connected_with_type.blank?
+    rel.each do |r|
+      next if r.approved_at.blank? # ignore relationships that were rejected without ever being approved
+      relationships[r.connected_with_type] ||= {}
+      relationships[r.connected_with_type][r.connected_with_id] = [r.approved_at, r.rejected_at.blank? ? Time.now : r.rejected_at]
+    end
+    relationships
   end
 
   protected

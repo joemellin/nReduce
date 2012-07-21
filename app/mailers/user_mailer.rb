@@ -73,7 +73,12 @@ class UserMailer < ActionMailer::Base
 
   def invite_mentor(invite)
     @invite = invite
-    mail(:to => @invite.email, :subject => "Welcome to nReduce")
+    mail(:to => @invite.email, :subject => "#{@invite.user.name} invited you to nReduce")
+  end
+
+  def invite_investor(invite)
+    @invite = invite
+    mail(:to => @invite.email, :subject => "#{@invite.user.name} invited you to nReduce")
   end
 
   def invite_startup(invite)
@@ -88,6 +93,12 @@ class UserMailer < ActionMailer::Base
     @to = notification.user
     @to_startup = @nudge.startup
     mail(:to => @to.email, :subject => "#{@from.name} nudged you to complete your check-in")
+  end
+
+  def nudge_for_invite(nudge)
+    @invite = nudge.invite
+    @from = nudge.from
+    mail(:to => @invite.email, :subject => "#{@from.name} nudged you to join nReduce")
   end
 
   def community_status(user)

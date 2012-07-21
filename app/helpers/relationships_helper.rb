@@ -8,6 +8,15 @@ module RelationshipsHelper
 					else
 						link_to 'View Profile', connected_with, :class => 'btn btn-large', :style => 'margin-bottom: 12px'
 					end
+				elsif !relationship.blank? and relationship.pending?
+					# This is the person being requested
+					if relationship.connected_with == entity
+						concat link_to '<i class="icon-ok icon-white"></i> Approve Request'.html_safe, approve_relationship_path(relationship), :class => 'btn btn-success', :method => :post
+						concat '&nbsp;&nbsp;'.html_safe
+						concat link_to '<i class="icon-remove icon-white"></i> Not Now'.html_safe, reject_relationship_path(relationship), :class => 'btn btn-danger', :method => :post
+					else # This is the person who initiated
+						link_to '<i class="icon-remove icon-white"></i> Remove Request'.html_safe, reject_relationship_path(relationship), :class => 'btn btn-danger', :method => :post
+					end
 				elsif user_signed_in? # and Relationship.can_connect?(entity, connected_with)
 					form_for Relationship.new(:entity => entity, :connected_with => connected_with), :remote => true do |f|
 						concat f.hidden_field :entity_id
@@ -21,3 +30,5 @@ module RelationshipsHelper
 		end
 	end
 end
+
+

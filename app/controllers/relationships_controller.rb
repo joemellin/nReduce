@@ -59,6 +59,13 @@ class RelationshipsController < ApplicationController
       and you will receive an email notifying you of mentorship requests.<br /><br />
       If you have any questions please email joe@nReduce.com'
     end
+
+    @startups = Startup.where(:id => Startup.nreduce_id) if !current_user.entrepreneur? and @startups.blank?
+
+    ignore_ids = @startups.map{|s| s.id } + [@startup.id]
+    @suggested_startups = Startup.limit(2).where(['id NOT IN (?)', ignore_ids]).order('RAND()')
+
+    @invited_startups = current_user.sent_invites.to_startups.not_accepted
   end
 
   def create

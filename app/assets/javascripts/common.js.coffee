@@ -15,6 +15,9 @@ $ ->
   #$('.profile_completeness .well').tooltip({placement: 'left'})
   $('form.user textarea').autosize()
 
+  $('.invite_team_modal').click ->
+    $('#invite_team_modal').modal()
+
   split = (val) ->
     return val.split( /,\s*/ )
 

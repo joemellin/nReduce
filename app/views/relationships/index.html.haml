@@ -1,142 +1,192 @@
 - content_for :subtitle do
   Your Alliance / Group
 
-.row
-  .span3
-    %h2
-      - if current_user.mentor?
-        %small Your Teams
-      - else
-        %small Your Alliance / Group
+.relationships
+  .row
+    .span3
+      %h2
+        - if current_user.entrepreneur?
+          %small Your Alliance
+        - else
+          %small Your Teams
 
-  .span6.countdown_and_checkin{:align => 'center'}
-    - nc = Checkin.next_checkin_type_and_time
-    - left = distance_until_time_from_now_arr(nc[:time])
-    - left = left.map{|d| "%02d" % d }
-    %div{:align => 'center', :style => 'width: 320px; overflow: hidden;'}
-      - if current_user.mentor?
-        %h4 After videos are due in
+    .span6.countdown_and_checkin{:align => 'center'}
+      - nc = Checkin.next_checkin_type_and_time
+      - left = distance_until_time_from_now_arr(nc[:time])
+      - left = left.map{|d| "%02d" % d }
+      %div{:align => 'center', :style => 'width: 320px; overflow: hidden;'}
+        - if current_user.mentor?
+          %h4 After videos are due in
+        - else
+          %h4 Your #{nc[:type]} video is due in
+        #countdown
+          .left.number_block
+            .numbers.days
+              %span= left[0][0,1]
+              %span= left[0][1,1]
+            %p Days
+          .left.number_block
+            .numbers.hours
+              %span= left[1][0,1]
+              %span= left[1][1,1]
+            %p Hours
+          .left.number_block
+            .numbers.minutes
+              %span= left[2][0,1]
+              %span= left[2][1,1]
+            %p Minutes
+          .left.number_block
+            .numbers.seconds
+              %span= left[3][0,1]
+              %span= left[3][1,1]
+            %p Seconds
+          %br.clear/
+    .span3
+      - if @startup.blank?
+        &nbsp;
       - else
-        %h4 Your #{nc[:type]} video is due in
-      #countdown
-        .left.number_block
-          .numbers.days
-            %span= left[0][0,1]
-            %span= left[0][1,1]
-          %p Days
-        .left.number_block
-          .numbers.hours
-            %span= left[1][0,1]
-            %span= left[1][1,1]
-          %p Hours
-        .left.number_block
-          .numbers.minutes
-            %span= left[2][0,1]
-            %span= left[2][1,1]
-          %p Minutes
-        .left.number_block
-          .numbers.seconds
-            %span= left[3][0,1]
-            %span= left[3][1,1]
-          %p Seconds
-        %br.clear/
-  .span3
-    - if @startup.blank?
-      &nbsp;
-    - else
-      .checkin_button{:align => 'right'}
-        - showed_before = false
-        - if !@current_checkin.blank?
-          - if @current_checkin.completed?
-            = link_to 'This Week\'s Check-in', (Checkin.in_after_time_window? ? edit_checkin_path(@current_checkin) : @current_checkin), :class => 'btn btn-primary'
-          - elsif @current_checkin.submitted?
-            - if Checkin.in_after_time_window?
-              = link_to "Submit 'After' Video", edit_checkin_path(@current_checkin), :class => 'btn btn-danger'
-            - else
-              - showed_before = true
-              #{link_to("'Before' video", (Checkin.in_before_time_window? ? edit_checkin_path(@current_checkin) : @current_checkin), :class => 'btn btn-success')} was submitted
-              %p Keep workin!
-        - if Checkin.in_after_time_window? and @current_checkin.blank?
-          = link_to "Submit 'After' Video", new_checkin_path, :class => 'btn btn-success'
-        - elsif Checkin.in_before_time_window? and !showed_before
-          = link_to "Submit 'Before' Video", new_checkin_path, :class => 'btn btn-success'
-        / - else
-        /   Come back to start your checkin by Wednesday at 4pm PST
-%hr
-%br
-%br
-.row.checkins
-  - c = 0
-  - @startups.each do |s|
-    - current_checkin = @checkins_by_startup[s.id]
-    - this_startup_url = (current_checkin and current_checkin.completed?) ? latest_startup_checkins_url(s) : startup_url(s)
-    - logo_path = s.logo_url(:square)
-    - owner = (@startup && (s.id == @startup.id))
-    .checkin.span3{:align => 'center'}
-      .top{:align => 'center', :onclick => "window.location = '#{this_startup_url}';"}
-        .background{:style => "background-image: url('#{logo_path}'); cursor: pointer;"} &nbsp;
-        .status.btn-group{:align => 'center', 'data-toggle' => 'buttons-checkbox'}
-          %button.btn{:href => '#', :class => ((current_checkin and current_checkin.submitted?) ? 'btn-success' : 'disabled active')} Before
-          %button.btn{:href => '#', :class => ((current_checkin and current_checkin.completed?) ? 'btn-success' : 'disabled active')} After
-        .team{:align => 'center'}
-          - s.team_members.shuffle.first(3).each do |tm|
-            .inline-block{:style => 'margin-left: 4px'}= image_tag(user_avatar_url(tm), :title => tm.name, :style => 'width: 50px; height: 50px;')
-      .bottom{:align => 'center'}
-        %h3= link_to owner ? 'You' : truncate(s.name, :length => 20), startup_path(s)
-        - if current_checkin and current_checkin.completed?
-          - if owner
-            = link_to 'Respond to Feedback', latest_startup_checkins_path(s), :class => 'btn btn-success'
-          - elsif @commented_on_checkin_ids.include?(current_checkin.id)
-            = link_to '<i class="icon icon-ok"></i> Feedback Given'.html_safe, latest_startup_checkins_path(s), :class => 'btn'
-          - else
-            = link_to 'Give Feedback', latest_startup_checkins_path(s), :class => 'btn btn-success'
-          %p
-            %small
-              &nbsp;
-              - if current_checkin.awesome_count > 0
-                = pluralize(current_checkin.awesome_count, 'awesome')
-              - if current_checkin.awesome_count > 0 and current_checkin.comment_count > 0
-                &nbsp;-&nbsp;
-              - if current_checkin.comment_count > 0
-                = pluralize(current_checkin.comment_count, 'comment')
-              &nbsp;
-        - if !owner and (current_checkin.blank? or (current_checkin and !current_checkin.completed?))
-          = form_for Nudge.new(:startup_id => s.id), :html => {:id => "new_nudge_#{s.id}"} do |f|
-            = f.hidden_field :startup_id
-            = link_to '<i class="icon-hand-left icon"></i> Nudge'.html_safe, '#', :title => "Nudge #{s.name} to complete their check-in with an email!", :onclick => "$('#new_nudge_#{s.id}').submit();", :class => 'btn'
-    - c += 1
-    - if c != 0 and c % 4 == 0
-      .clear
-  - if @startups.size < @num_blank_spots
-    - if current_user.mentor?
-      - 1.upto(@num_blank_spots - @startups.size) do
-        .checkin.span3{:align => 'center'}
-          .top{:style => "background-image: url('#{image_path('pendingteam.png')}');"}
-            .background &nbsp;
-    - else
-      - 1.upto(@num_blank_spots - @startups.size) do
-        .checkin.span3{:align => 'center', :onclick => "window.location = '#{search_startups_url}';"}
-          .top{:style => "background-image: url('#{image_path('addteam.png')}'); cursor: pointer;"}
-            .background &nbsp;
-          .bottom
-            %h3= link_to '+ Add Team', search_startups_path
-
-- if @pending_relationships.size > 0
-  .row{:style => 'margin-top: 20px'}
-    .span12
-      %hr
-      %h3
-        %small #{pluralize(@pending_relationships.size, 'team')} #{@pending_relationships.size == 1 ? 'is' : 'are'} interested in joining your group:
-      %hr
-      %br
-      - @pending_relationships.each do |r|
-        .span3.left{:align => 'center'}
-          %h3= link_to r.entity.name, r.entity
-          = link_to '<i class="icon-ok icon-white"></i> Accept'.html_safe, approve_relationship_path(r), :class => 'btn btn-success', :method => :post
-          = link_to '<i class="icon-remove icon-white"></i> Not Now'.html_safe, reject_relationship_path(r), :class => 'btn btn-danger', :method => :post
-      .clear
-  %br
-- nreduce_id = Startup.nreduce_id
-- if !current_user.startup_id.blank? and !nreduce_id.blank?
+        .checkin_button{:align => 'right'}
+          - showed_before = false
+          - if !@current_checkin.blank?
+            - if @current_checkin.completed?
+              = link_to 'This Week\'s Check-in', (Checkin.in_after_time_window? ? edit_checkin_path(@current_checkin) : @current_checkin), :class => 'btn btn-primary'
+            - elsif @current_checkin.submitted?
+              - if Checkin.in_after_time_window?
+                = link_to "Submit 'After' Video", edit_checkin_path(@current_checkin), :class => 'btn btn-danger'
+              - else
+                - showed_before = true
+                #{link_to("'Before' video", (Checkin.in_before_time_window? ? edit_checkin_path(@current_checkin) : @current_checkin), :class => 'btn btn-success')} was submitted
+                %p Keep workin!
+          - if Checkin.in_after_time_window? and @current_checkin.blank?
+            = link_to "Submit 'After' Video", new_checkin_path, :class => 'btn btn-success'
+          - elsif Checkin.in_before_time_window? and !showed_before
+            = link_to "Submit 'Before' Video", new_checkin_path, :class => 'btn btn-success'
+          / - else
+          /   Come back to start your checkin by Wednesday at 4pm PST
   %hr
-  %h3= link_to 'View nReduce\'s latest checkin', latest_startup_checkins_path(:startup_id => nreduce_id)
+  %br
+  %br
+  .row.teams
+    - c = 0
+    - @startups.each do |s|
+      - current_checkin = @checkins_by_startup[s.id]
+      - this_startup_url = (current_checkin and current_checkin.completed?) ? latest_startup_checkins_url(s) : startup_url(s)
+      - logo_path = s.logo_url(:square)
+      - owner = (@startup && (s.id == @startup.id))
+      .team.span3{:align => 'center'}
+        .top{:align => 'center', :onclick => "window.location = '#{this_startup_url}';"}
+          .background{:style => "background-image: url('#{logo_path}'); cursor: pointer;"} &nbsp;
+          .status.btn-group{:align => 'center', 'data-toggle' => 'buttons-checkbox'}
+            %button.btn{:href => '#', :class => ((current_checkin and current_checkin.submitted?) ? 'btn-success' : 'disabled active')} Before
+            %button.btn{:href => '#', :class => ((current_checkin and current_checkin.completed?) ? 'btn-success' : 'disabled active')} After
+          .members{:align => 'center'}
+            - s.team_members.shuffle.first(3).each do |tm|
+              .inline-block{:style => 'margin-left: 4px'}= image_tag(user_avatar_url(tm), :title => tm.name, :style => 'width: 50px; height: 50px;')
+        .bottom{:align => 'center'}
+          %h3= link_to owner ? 'You' : truncate(s.name, :length => 20), startup_path(s)
+          - if current_checkin and current_checkin.completed?
+            - if owner
+              = link_to 'Respond to Feedback', latest_startup_checkins_path(s), :class => 'btn btn-success'
+            - elsif @commented_on_checkin_ids.include?(current_checkin.id)
+              = link_to '<i class="icon icon-ok"></i> Feedback Given'.html_safe, latest_startup_checkins_path(s), :class => 'btn'
+            - else
+              = link_to 'Give Feedback', latest_startup_checkins_path(s), :class => 'btn btn-success'
+            %p
+              %small
+                &nbsp;
+                - if current_checkin.awesome_count > 0
+                  = pluralize(current_checkin.awesome_count, 'awesome')
+                - if current_checkin.awesome_count > 0 and current_checkin.comment_count > 0
+                  &nbsp;-&nbsp;
+                - if current_checkin.comment_count > 0
+                  = pluralize(current_checkin.comment_count, 'comment')
+                &nbsp;
+          - if !owner and (current_checkin.blank? or (current_checkin and !current_checkin.completed?))
+            = form_for Nudge.new(:startup_id => s.id), :html => {:id => "new_nudge_startup_#{s.id}"} do |f|
+              = f.hidden_field :startup_id
+              = link_to '<i class="icon-hand-left icon"></i> Nudge'.html_safe, '#', :title => "Nudge #{s.name} to complete their check-in with an email!", :onclick => "$('#new_nudge_startup_#{s.id}').submit();", :class => 'btn'
+      - c += 1
+      - if c != 0 and c % 4 == 0
+        .clear
+    
+    / Suggested teams
+    /
+    - if current_user.entrepreneur? and !@suggested_startups.blank?
+      - @suggested_startups.each do |s|
+        .team.span3{:align => 'center'}
+          .top{:align => 'center', :onclick => "window.location = '#{url_for(s)}';"}
+            .background{:style => "background-image: url('#{s.logo_url(:square)}'); cursor: pointer;"} &nbsp;
+            .status.btn-group.glow{:align => 'center'}
+              Suggested Team
+              = link_to '<i class="icon-info-sign"></i>'.html_safe, '#', :title => "Because similar industries and company goals"
+            .members{:align => 'center'}
+              - s.team_members.shuffle.first(3).each do |tm|
+                .inline-block{:style => 'margin-left: 4px'}= image_tag(user_avatar_url(tm), :title => tm.name, :style => 'width: 50px; height: 50px;')
+          .bottom
+            %h3= link_to truncate(s.name, :length => 20), startup_path(s)
+            %h3
+              = link_to '<i class="icon-ok icon-white"></i> Add'.html_safe, '#', :class => 'btn btn-success'
+              &nbsp;
+              = link_to '<i class="icon-refresh icon-white"></i> Pass'.html_safe, '#', :class => 'btn btn-inverse'
+        - c += 1
+        - if c != 0 and c % 4 == 0
+          .clear
+
+    / Relationship Requests
+    /
+    - if @pending_relationships.size > 0
+      - @pending_relationships.each do |r|
+        - s = r.entity
+        .team.span3{:align => 'center'}
+          .top{:align => 'center', :onclick => "window.location = '#{url_for(s)}';"}
+            .background{:style => "background-image: url('#{s.logo_url(:square)}'); cursor: pointer;"} &nbsp;
+            .status.btn-group.glow{:align => 'center'} Relationship Request
+            .members{:align => 'center'}
+              - s.team_members.shuffle.first(3).each do |tm|
+                .inline-block{:style => 'margin-left: 4px'}= image_tag(user_avatar_url(tm), :title => tm.name, :style => 'width: 50px; height: 50px;')
+          .bottom
+            %h3= link_to truncate(s.name, :length => 20), startup_path(s)
+        - c += 1
+        - if c != 0 and c % 4 == 0
+          .clear
+
+    / Invited teams
+    /
+    - if @invited_startups.size > 0
+      - @invited_startups.each do |i|
+        .team.span3{:align => 'center'}
+          .top{:style => "background-image: url('#{image_path('pendingteam.png')}'); cursor: pointer;"}
+            .background &nbsp;
+            .status.btn-group.glow{:align => 'center'} Invited Startup
+          .bottom
+            %h3= i.to_name
+            = form_for Nudge.new(:invite_id => i.id), :html => {:id => "new_nudge_invite_#{i.id}"} do |f|
+              = f.hidden_field :invite_id
+              = link_to '<i class="icon-hand-left icon"></i> Nudge'.html_safe, '#', :title => "Nudge #{i.to_name} to join nReduce", :onclick => "$('#new_nudge_invite_#{i.id}').submit();", :class => 'btn'
+        - c += 1
+        - if c != 0 and c % 4 == 0
+          .clear
+    
+    / Invited teams
+    /
+    .team.span3.invite_team_modal{:align => 'center'}
+      .top{:style => "background-image: url('#{image_path('addteam.png')}'); cursor: pointer;"}
+        .background &nbsp;
+      .bottom
+        %h3= link_to '+ Invite Team', '#', :class => 'invite_team_modal'
+    
+    .clear
+    
+    // END of TEAMS
+
+  - nreduce_id = Startup.nreduce_id
+  - if !current_user.startup_id.blank? and !nreduce_id.blank?
+    %hr
+    %h3= link_to 'View nReduce\'s latest checkin', latest_startup_checkins_path(:startup_id => nreduce_id)
+
+  #invite_team_modal.modal.hide
+    .modal-header
+      %button.close{:type => 'button', 'data-dismiss' => 'modal'} x
+      %h3 Invite a Startup
+    .modal-body
+      = render 'startups/invite'

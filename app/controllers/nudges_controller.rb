@@ -17,9 +17,11 @@ class NudgesController < ApplicationController
   end
 
   def create
+    # odd bug, but when posted with an invite id, a startup is assigned in can can's load_and_authorize_resource
+    @nudge.startup = nil unless params[:nudge] and !params[:nudge][:startup_id].blank?
     @nudge.from = current_user
     if @nudge.save
-      flash[:notice] = "#{@nudge.startup.name} has been nudged with an email!"
+      flash[:notice] = "#{@nudge.to_name} has been nudged with an email!"
     else
       flash[:alert] = "Oops we couldn't nudge them. Try again in a bit..."
     end

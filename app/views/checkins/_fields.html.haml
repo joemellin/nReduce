@@ -8,19 +8,19 @@
   .control-group{error_css(@checkin, :start_focus)}
     = f.label :start_focus, "This week's focus", :maxlength => 255, :class => 'control-label'
     .controls
-      = f.text_field :start_focus, :class => "span4"
+      = f.text_field :start_focus, :class => "span4", :placeholder => "Create a 'mouse' prototype"
       = f.semantic_errors :start_focus
 
   .control-group{error_css(@checkin, :start_comments)}
     = f.label :start_comments, "Why?", :class => 'control-label'
     .controls
-      = f.text_area :start_comments, :size => '120x4', :class => "span4"
+      = f.text_area :start_comments, :size => '120x4', :class => "span4", :placeholder => "Because we want people to have a strong emotional connection with their computers, and we want to test if this device will do so."
       = f.semantic_errors :start_comments
 
   .control-group{error_css(@checkin, :start_video_url)}
     = f.label :start_video_url, "'Before' Video URL", :class => 'control-label'
     .controls
-      = f.text_field :start_video_url, :class => "span4"
+      = f.text_field :start_video_url, :class => "span4", :placeholder => 'http://www.youtube.com/watch?v=088YM4pB9lM'
       %span.help-inline Unlisted Youtube URL
       = f.semantic_errors :start_video_url
 
@@ -34,7 +34,7 @@
   .control-group{error_css(@checkin, :end_video_url)}
     = f.label :end_video_url, "'After' Video URL", :class => 'control-label'
     .controls
-      = f.text_field :end_video_url, :class => "span4"
+      = f.text_field :end_video_url, :class => "span4", :placeholder => 'http://www.youtube.com/watch?v=088YM4pB9lM'
       %span.help-inline Unlisted Youtube URL
       = f.semantic_errors :end_video_url
 
@@ -45,4 +45,4 @@
       = f.semantic_errors :end_comments
 
 .form-actions
-  = f.submit "Submit Check-in", :class => "btn btn-primary"
+  = f.submit "Submit Video", :class => "btn btn-primary btn-large"
