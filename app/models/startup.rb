@@ -20,6 +20,7 @@ class Startup < ActiveRecord::Base
   validate :check_video_urls_are_valid
 
   before_save :format_url
+  after_create :initiate_relationships_from_invites
 
   acts_as_taggable_on :industries, :technologies, :ideologies
 
@@ -371,6 +372,18 @@ class Startup < ActiveRecord::Base
   end
 
   protected
+
+  # If they were invited by another startup, establish a relationship
+  # TODO: Bug: if this user was invited by a startup in the past, this will always connect them to every startup they got invited from
+  # - I just haven't thought of a good solution. session storage of accepted invite isn't robust enough.
+  def initiate_relationships_from_invites
+    Invite.where(:to_id => self.team_members.map{|tm| tm.id }).each do |i|
+      next if i.startup.blank?
+      rel = Relationship.start_between(i.startup, self, :startup_startup, true)
+      rel.approve! unless rel.blank?
+    end
+    true
+  end
 
   def check_video_urls_are_valid
     err = false
