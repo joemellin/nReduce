@@ -24,13 +24,7 @@ class UsersController < ApplicationController
   def account_type
     # Save account type if post
     if request.post?
-      if params[:reset]
-        current_user.roles -= [:spectator]
-        current_user.setup -= [:account_type]
-      end
-      if !params[:roles].blank?
-        current_user.roles << params[:roles].to_sym
-      end
+      current_user.set_account_type(params[:roles], !params[:reset].blank?) unless params[:roles].blank?
       if current_user.save
         redirect_to '/'
         return
@@ -45,7 +39,7 @@ class UsersController < ApplicationController
 
   def update
     if @user.update_attributes(params[:user])
-      flash[:notice] = "Your account has been updated!"
+      #flash[:notice] = "Your account has been updated!"
       redirect_to :action => :show
     else
       if params[:complete_account].to_s == 'true'

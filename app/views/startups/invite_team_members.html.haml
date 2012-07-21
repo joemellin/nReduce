@@ -1,7 +1,10 @@
-%h1 Invite Team Members
+.row
+  .span9
+    %h1 Invite Team Members, Mentors & Investors
 
-= render 'startups/invite_team_members', :hide_title => true
+    = render 'startups/invite_team_members', :hide_title => true
 
-- if @setup
-  .form-actions{:style => 'margin-top: 100px', :align => 'center'}
-    = button_to 'Skip', invite_team_members_startup_path(@startup), :method => :post, :class => 'btn btn-large btn-primary'
+    - if @setup
+      %br/
+      %br/
+      = button_to "Continue", invite_team_members_startup_path(@startup), :method => :post, :class => 'btn'

@@ -299,6 +299,14 @@ class User < ActiveRecord::Base
     return [:complete] if account_setup?
     nil
   end
+  
+  def set_account_type(account_type = nil, reset = false)
+    self.roles = nil if reset
+    unless account_type.blank?
+      self.roles << account_type.to_sym
+      self.setup << :account_type
+    end
+  end
 
   def onboarding_completed!(onboarding_type)
     self.onboarded << onboarding_type.to_sym

@@ -1,8 +1,10 @@
 .row
   .span6
-    %h1 Before Video
+    %h1 Post your first Before Video
+    %br/
+    %br/
 
     = semantic_form_for @checkin, :url => before_video_startup_path(@startup), :html => {:class => "form-horizontal"} do |f|
       = render 'checkins/fields', :f => f
-  .span4
+  .span3
     = render 'checkins/before_video_faq'

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120713150416) do
+ActiveRecord::Schema.define(:version => 20120719213817) do
 
   create_table "authentications", :force => true do |t|
     t.string   "provider"
@@ -89,6 +89,7 @@ ActiveRecord::Schema.define(:version => 20120713150416) do
     t.integer  "startup_id"
     t.datetime "created_at",  :null => false
     t.datetime "updated_at",  :null => false
+    t.string   "name"
   end
 
   add_index "invites", ["code"], :name => "index_invites_on_code"
@@ -151,6 +152,7 @@ ActiveRecord::Schema.define(:version => 20120713150416) do
     t.datetime "seen_at"
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
+    t.integer  "invite_id"
   end
 
   create_table "rails_admin_histories", :force => true do |t|
@@ -283,6 +285,7 @@ ActiveRecord::Schema.define(:version => 20120713150416) do
     t.integer  "onboarded"
     t.integer  "email_on"
     t.integer  "setup"
+    t.boolean  "admin"
   end
 
   add_index "users", ["reset_password_token"], :name => "index_users_on_reset_password_token", :unique => true

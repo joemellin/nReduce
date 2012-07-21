@@ -15,19 +15,14 @@ class StartupsController < ApplicationController
 
     # Invite startups
   def invite
-    @invites = current_user.sent_invites
     if request.post?
-      unless params[:email].blank?
-        if @startup
-          @invite = Invite.new(:startup_id => @startup.id)
-        else
-          @invite = Invite.new
-        end
+      unless params[:invite].blank?
+        @invite = Invite.new(params[:invite])
+        @invite.startup = @startup if @startup
         @invite.from = current_user
         @invite.invite_type = Invite::STARTUP
-        @invite.email = params[:email]
         if @invite.save
-          flash[:notice] = "Thanks! #{params[:email]} has been invited."
+          flash[:notice] = "Thanks! #{@invite.email} has been invited."
         else
           flash[:alert] = "#{@invite.errors.full_messages.join('. ')}."
         end
@@ -39,6 +34,7 @@ class StartupsController < ApplicationController
         return
       end
     end
+    @invites = current_user.sent_invites
   end
 
   def create
@@ -46,7 +42,7 @@ class StartupsController < ApplicationController
     if @startup.save
       current_user.startup = @startup
       if current_user.save
-        flash[:notice] = "Startup profile has been saved."
+        #flash[:notice] = "Startup profile has been saved."
         redirect_to :action => :edit
       else
         render :new
@@ -62,12 +58,12 @@ class StartupsController < ApplicationController
     @num_checkins = @startup.checkins.count
     @num_awesomes = @startup.awesomes.count
     @checkins = @startup.checkins.ordered
-    @relationship = Relationship.between(current_user.startup, @startup) unless current_user.startup.blank?
-    if current_user.mentor?
+    if current_user.entrepreneur?
+      @entity = current_user.startup unless current_user.startup.blank?
+    else
       @entity = current_user
-    elsif !current_user.startup.blank?
-      @entity = current_user.startup
     end
+    @relationship = Relationship.between(@startup, @entity)
   end
 
   def search
@@ -143,7 +139,7 @@ class StartupsController < ApplicationController
   def update
     @startup.attributes = params[:startup]
     if @startup.save
-      flash[:notice] = "Startup information has been saved. Thanks!"
+      #flash[:notice] = "Startup information has been saved. Thanks!"
       redirect_to '/startup'
     else
       render :edit

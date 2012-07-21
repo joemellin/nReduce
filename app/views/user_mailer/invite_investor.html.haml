@@ -1,0 +1,11 @@
+= render :partial => 'header'
+%h1.h1 Welcome to nReduce
+%br/
+%h4.h4 #{@invite.startup.name} has listed you as an investor.
+%br
+%p They would like you to join nReduce to keep you up to date on their progress and get feedback from you.
+%br/
+%br/
+%br/
+%h3= link_to "Get Started", accept_invite_url(:id => @invite.code)
+= render :partial => 'footer'

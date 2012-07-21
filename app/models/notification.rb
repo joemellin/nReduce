@@ -99,8 +99,10 @@ class Notification < ActiveRecord::Base
 
   # Nudges a startup to finish their checkin
   def self.create_for_new_nudge(nudge)
-    nudge.startup.team_members.each do |u|
-       Notification.create_and_send(u, nudge, :new_nudge) unless u.id == nudge.from_id
+    if !nudge.startup.blank?
+      nudge.startup.team_members.each do |u|
+         Notification.create_and_send(u, nudge, :new_nudge) unless u.id == nudge.from_id
+      end
     end
   end
 

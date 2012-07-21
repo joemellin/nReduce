@@ -59,6 +59,7 @@ class ApplicationController < ActionController::Base
     if current_user.account_setup?
       return true
     else
+      @hide_nav = true
       @account_setup_action = current_user.account_setup_action
       @setup = true unless [:account_type, :spectator].include?(@account_setup_action.last)
       if @account_setup_action.first == :complete
@@ -68,8 +69,8 @@ class ApplicationController < ActionController::Base
       end
       # if we're in the right place, don't do anything
       return true if [controller_name.to_sym, action_name.to_sym] == @account_setup_action
-      # Allow them to choose account type again
-      return true if [controller_name.to_sym, action_name.to_sym] == [:users, :account_type]
+      # Allow them to choose account type again / invite team members
+      return true if [[:users, :account_type], [:invites, :create]].include?([controller_name.to_sym, action_name.to_sym])
       # Allow create/update actions
       if controller_name.to_sym == @account_setup_action.first
         return true if @account_setup_action.last == :edit and action_name.to_sym == :update

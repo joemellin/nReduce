@@ -2,10 +2,14 @@ body{
   position: relative;
   background-color: #EAEAEA;
   font-family: Open Sans, sans-serif;
-  h1,h2,h4,h5,p,textarea {font-family: "myriad-pro",sans-serif;
+  h1,h2,h3,h4,h5,p,textarea {
+    font-family: "myriad-pro",sans-serif;
     font-style: normal;
-    font-weight: 300;}
-
+    font-weight: 300;
+  }
+  h3 {
+    font-weight: 600;
+  }
 }
 .btn {
   font-family: "myriad-pro",sans-serif;
@@ -14,11 +18,11 @@ body{
 
 }
 
-h3 {
+.subtitle {
   font-family: "myriad-pro",sans-serif;
   font-style: normal;
   font-weight: 600;
-  letter-spacing: 3px;
+  letter-spacing: 2px;
   color: #B8B8B8;
   font-size: 16px;
 }
@@ -62,9 +66,9 @@ hr {
 }
 
 .content_right {
-  padding-top: 30px;
+  padding-top: 25px;
   border-left: 1px solid #cccccc;
-  padding-left: 50px;
+  padding-left: 30px;
   min-width: 700px;
   min-height: 600px;
 }
@@ -204,3 +208,10 @@ body.apply {
 }
 
 .profile_completeness .progress { width: 250px;}
+
+.glow {
+  -moz-box-shadow: 0 0 2px #fff;
+  -webkit-box-shadow: 0 0 2px #fff;
+  box-shadow: 0 0 2px #fff;
+  filter:progid:DXImageTransform.Microsoft.Glow(color='white', Strength='5');
+}

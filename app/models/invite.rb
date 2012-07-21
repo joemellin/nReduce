@@ -13,30 +13,34 @@ class Invite < ActiveRecord::Base
 
   after_create :notify_recipient
 
-  attr_accessible :from_id, :to_id, :email, :msg, :startup, :startup_id, :invite_type
+  attr_accessible :from_id, :to_id, :email, :msg, :startup, :startup_id, :invite_type, :name
 
   @queue = :invites
 
   scope :not_accepted, where(:accepted_at => nil)
   scope :to_mentors, lambda{ where(:invite_type => Invite::MENTOR) }
   scope :to_nreduce_mentors, lambda { where(:invite_type => Invite::NREDUCE_MENTOR) }
+  scope :to_startups, lambda{ where(:invite_type => Invite::STARTUP) }
+  scope :to_investors, lambda{ where(:invite_type => Invite::INVESTOR) }
 
   TEAM_MEMBER = 1
   MENTOR = 2
   NREDUCE_MENTOR = 3
   STARTUP = 4
+  INVESTOR = 5
   # Make sure to add to perform method
 
   # Not adding nReduce types because it isn't allowed in user-selectable options
   def self.available_types
-    {TEAM_MEMBER => 'Team Member', MENTOR => 'Mentor'}
+    {TEAM_MEMBER => 'Team Member', MENTOR => 'Mentor', INVESTOR => 'Investor'}
   end
 
   def self.types
-    {TEAM_MEMBER => 'Team Member', MENTOR => 'Mentor', NREDUCE_MENTOR => 'nReduce Mentor', STARTUP => 'Startup'}
+    {TEAM_MEMBER => 'Team Member', MENTOR => 'Mentor', NREDUCE_MENTOR => 'nReduce Mentor', STARTUP => 'Startup', INVESTOR => 'Investor'}
   end
 
   def to_name 
+    return self.name unless self.name.blank?
     return self.email unless self.email.blank?
     return self.to.name unless self.to.blank?
     return ''
@@ -55,27 +59,34 @@ class Invite < ActiveRecord::Base
   def accepted_by(user)
     return false unless self.active?
     # assign user to startup unless they are already part of a startup
+    relationship_role = nil
     if self.invite_type == TEAM_MEMBER
       user.startup_id = self.startup_id if !self.startup_id.blank? or !user.startup_id.blank?
     # Add user as mentor to startup
     elsif self.invite_type == MENTOR or self.invite_type == NREDUCE_MENTOR
-      user.roles << :mentor
+      user.set_account_type(:mentor)
       user.roles << :nreduce_mentor if self.invite_type == NREDUCE_MENTOR
-      user.mentor = true
-      # Add mentor to startup if invite came from startup
-      unless self.startup.blank?
-        r = Relationship.start_between(user, self.startup, :startup_mentor, true)
-        if r.blank?
-          self.errors.add(:user_id, 'could not be added to team')
-        else
-          self.errors.add(:user_id, 'could not be added to team') unless r.approve!
-        end
-      end
+      relationship_role = :startup_mentor
     elsif self.invite_type == STARTUP
-      user.roles << :entrepreneur
+      user.set_account_type(:entrepreneur)
+      relationship_role = :startup_startup
       #TODO: invite startup to connect (need to do after they create it)
       #r = Relationship.start_between(user, self.startup, :startup_mentor, true) unless self.startup.blank?
+    elsif self.invite_type == INVESTOR
+      user.set_account_type(:investor)
+      relationship_role = :startup_investor
     end
+
+     # Add user to startup if invite came from startup
+    if !self.startup.blank? and !relationship_role.blank?
+      r = Relationship.start_between(user, self.startup, relationship_role, true)
+      if r.blank?
+        self.errors.add(:user_id, 'could not be added to startup')
+      else
+        self.errors.add(:user_id, 'could not be added to startup') unless r.approve!
+      end
+    end
+
     if user.save
       self.to = user
       self.accepted_at = Time.now
@@ -99,6 +110,8 @@ class Invite < ActiveRecord::Base
       UserMailer.invite_team_member(i).deliver
     elsif i.invite_type == STARTUP
       UserMailer.invite_startup(i).deliver
+    elsif i.invite_type == INVESTOR
+      UserMailer.invite_investor(i).deliver
     end
   end
   

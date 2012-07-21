@@ -1,0 +1,18 @@
+= form_for Invite.new, :url => invite_startups_path, :method => :post, :class => 'form-horizontal' do |f|
+  %br/
+  - if current_user.entrepreneur?
+    %p Do you have any friends that are building startups that you think would benefit from nReduce, and would like to add to your private group? Please invite them here:
+  - elsif current_user.mentor?
+    %p Are you currently mentoring any startups? Invite them to join nReduce so that you can easily give them feedback each week.
+  - elsif current_user.investor?
+    %p Are you currently an investor in any startups? You can invite them to nReduce to easily keep up to date on their weekly progress.
+  %br/
+  = f.text_field :email, :placeholder => "Founder's email address", :class => 'span3'
+  = f.text_field :name, :placeholder => "Startup name", :class => 'span3'
+  = f.submit 'Invite', :class => 'btn btn-primary btn-large'
+
+- unless @invites.blank?
+  %h4
+    %strong Current Invites
+  - @invites.each do |i|
+    %li= "#{i.to_name} (#{Invite.types[i.invite_type].titleize})"

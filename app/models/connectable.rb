@@ -6,6 +6,11 @@ module Connectable
 		end
 	end
 
+    # Returns a string that can be used to represent object
+  def obj_str
+    "#{self.class}_#{self.id}"
+  end
+
     # Entities this one is connected to, of a specific class
     # uses cache
   def connected_to(class_name_string = 'Startup')

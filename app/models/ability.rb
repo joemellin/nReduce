@@ -164,7 +164,7 @@ class Ability
 
     # Can only create a startup if registration is open and they don't have a current startup
     can [:new, :create, :edit], Startup do |startup|
-      true #Startup.registration_open? and user.startup_id.blank?
+      Startup.registration_open? and user.startup_id.blank?
     end
 
     # User can only manage their own account
@@ -196,5 +196,8 @@ class Ability
 
     # Everyone can see users
     can :read, User
+
+    # Everyone can see a startup's profile
+    can :read, Startup
   end
 end
