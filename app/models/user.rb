@@ -110,6 +110,17 @@ class User < ActiveRecord::Base
     [:nudge, :user] # user is new mentor
   end
 
+  def self.user_countries
+    countries = []
+    User.where('lat IS NOT NULL').each do |u|
+      country = nil
+      response = Net::HTTP.get_response(URI.parse('http://ws.geonames.org/countryCode?lat=' + u.lat.to_s + '&lng='  + u.lng.to_s))
+      country = response.body.strip unless response.body.blank?
+      countries << country unless country.blank?
+    end
+    countries
+  end
+
     # Calculates profile completeness for all factors
     # Returns total percent out of 1 (eg: 0.25 for 25% completeness)
   def profile_completeness_percent
