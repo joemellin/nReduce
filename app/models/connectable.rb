@@ -40,6 +40,15 @@ module Connectable
     Relationship.all_pending_or_approved_relationships_for(self)
   end
 
+  def suggested_relationships
+    Relationship.suggested_connections_for(self)
+  end
+
+  # Connections that they were suggested but passed on
+  def passed_relationships(entity_class_string)
+    Relationship.where(:entity_id => self.id, :entity_class => self.class, :connected_with_type => entity_class_string).passed
+  end
+
     # Returns true if this entity is connected in an approved relationship
     # uses cache
   def connected_to?(entity)
