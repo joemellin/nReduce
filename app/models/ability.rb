@@ -199,5 +199,10 @@ class Ability
 
     # Everyone can see a startup's profile
     can :read, Startup
+
+    can [:new, :create], Rsvp
+    can :manage, Rsvp do |r|
+      r.user_id == user.id
+    end
   end
 end

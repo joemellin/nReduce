@@ -20,9 +20,7 @@ Nreduce::Application.routes.draw do
 
   devise_for :users, :controllers => {:registrations => 'registrations', :sessions => 'sessions'}
 
-  resources :authentications, :checkins
-
-  resources :notifications
+  resources :authentications, :checkins, :notifications, :rsvps
 
   resources :nudges, :only => [:create, :show]
 
