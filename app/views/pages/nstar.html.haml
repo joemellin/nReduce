@@ -22,3 +22,12 @@
     #slide_5_bg.slide_bg
     .scroll-content
       %h1 Sign up to reserve a space in our Online Demo Day:
+      %center
+        = form_for @rsvp, :html => {:class => 'form-horizontal'} do |f|
+          = f.hidden_field :demo_day_id
+          - if @rsvp.user.blank?
+            = f.text_field :email, :placeholder => 'Your email address'
+          - else
+            = f.hidden_field :user_id
+
+          = f.submit 'RSVP', :class => 'btn btn-primary btn-large'
