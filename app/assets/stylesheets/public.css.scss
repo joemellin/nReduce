@@ -59,7 +59,51 @@
   }
 }
 .nstar {
-  background-image: image-url("nstarsbkg.jpg");
+  background-image: image-url("nstarsbkg.jpg") no-repeat left;
+
+  .slide {
+    align: center;
+    margin-top: 20px;
+    background-color: #ffffff;
+    height: 400px;
+    margin-left: 200px;
+    width: 800px;
+    border: 1px solid #000000;
+    border-radius: 30px 30px 30px 30px;
+    box-shadow: 2px 2px 5px #ccc;
+  }
+
+  .scrollblock {
+    margin-left: auto;
+    margin-right: auto;
+    left: 0;
+    right: 0;
+    width: 860px;
+    padding: 0;
+    .scroll-content {
+      z-index: 1000;
+      padding: 100px 0px 100px 0px;
+      position: relative;
+      padding: 40px;
+    }
+  }
+
+  .slide_bg{
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    display: none;
+    position: relative;
+    top: 0;
+    left: 0;
+  }
+
+  #slide_1_bg {
+    background: image-url("small-box.png");
+  }
+  #slide_2_bg {
+    background: image-url("small-box-colored.png");
+  }
 
   h1 {
     padding-top:15px;
@@ -79,20 +123,7 @@
     text-align: center;
     
   }
-  .slide {
-    align: center;
-    margin-top: 20px;
-    background-color: #ffffff;
-    height: 400px;
-    margin-left: 200px;
-    padding: 100px 0px 100px 0px;
-    width: 800px;
-    border: 1px solid #000000;
-    border-radius: 30px 30px 30px 30px;
-    box-shadow: 2px 2px 5px #ccc;
-
-
-  }
+  
 
 
 

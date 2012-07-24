@@ -49,6 +49,7 @@ class Stats
         # iterate through checkins and see if they were connected at that time. If so add to num checkins seen
         next if checkins_by_startup[startup_id].blank?
         checkins_by_startup[startup_id].each do |c|
+          # relationships is array of [approved at Time, rejected at Time (or current time if not rejected)]
           if relationships[startup_id].first <= c.completed_at && relationships[startup_id].last >= c.completed_at
             valid_checkin_ids << c.id
           end

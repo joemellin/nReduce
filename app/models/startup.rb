@@ -80,10 +80,10 @@ class Startup < ActiveRecord::Base
     }
   end
 
-    # Queries search to get startups that this startup might like to connect to
-  def suggested_connections(limit = 2)
+    # Generate suggestion connections that this startup might like to connect to - based on similar industries and company goal
+  def generate_suggested_connections(limit = 2)
     startups = []
-    ignore_startup_ids = [self.id]
+    ignore_startup_ids = [self.id] + self.passed_relationships('Startup').map{|r| r.connected_with_id }
     industry_ids = self.industries.map{|t| t.id }
     # Find startups with same industries, company goal, and sort by best engagement first
     search = Startup.search do
@@ -121,6 +121,11 @@ class Startup < ActiveRecord::Base
         paginate :per_page => limit
       end
       startups += search.results unless search.results.blank?
+    end
+
+    # Create suggested relationships
+    startups.each do |s|
+      Relationship.suggest_connection(self, s, :startup_startup, context)
     end
 
     startups
