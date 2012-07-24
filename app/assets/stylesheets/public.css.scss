@@ -65,6 +65,35 @@
     line-height:150%;
     color: #999999;
   }
+  .jobtitle {
+    padding-top:10px;
+    padding-left:10px;
+  }
+}
+.about_page {
+  h2 {
+    padding-top:15px;
+    padding-bottom:0px;
+    padding-left:30px;
+    padding-right:30px;
+    font-size: 35px;
+    color: #00a8ef;
+    line-height:150%;
+    font-weight: 700; 
+
+  }
+  h3 {
+    padding-top:0px;
+    padding-bottom:15px;
+    padding-left:30px;
+    padding-right:30px;
+    font-size: 25px;
+    color: #55B4EF;
+    line-height:150%;
+    font-weight: 300; 
+
+  }
+
 }
 .nstar {
   background-image: image-url("nstarsbkg.jpg") no-repeat left;
