@@ -8,6 +8,13 @@ class PagesController < ApplicationController
   def investor
   end
 
+  def home
+    if user_signed_in?
+      redirect_to relationships_path
+      return
+    end
+  end
+
   def community_guidelines
   end
 

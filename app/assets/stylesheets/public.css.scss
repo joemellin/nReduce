@@ -14,23 +14,31 @@
     color: #999999;
 
   }
+  h3 {
+    font-family: "pauline",sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 25px; 
+    color: #999999;
+
+  }
   .headspacing {
     padding: 25px 0px 0px 50px
   }
   .linkedinbtn {
-    padding: 50px 100px 100px 0px;
+    padding: 20px 0px 20px 0px;
 
   }
   .linkedintxt {
-    color: #ff9900;
-    padding: 63px 20px 50px 50px;
-    font-size: 40px;
+    color: #cccccc;
+    padding: 50px 00px 10px 00px;
+    font-size: 30px;
   }
   .scriptfeature {
     font-style: bold;
     font-weight: 400;
     font-size: 36px;
-    color: #999999;
+    color: #666666;
     line-height:250%;
 
   }
@@ -57,6 +65,35 @@
     line-height:150%;
     color: #999999;
   }
+  .jobtitle {
+    padding-top:10px;
+    padding-left:10px;
+  }
+}
+.about_page {
+  h2 {
+    padding-top:15px;
+    padding-bottom:0px;
+    padding-left:30px;
+    padding-right:30px;
+    font-size: 35px;
+    color: #00a8ef;
+    line-height:150%;
+    font-weight: 700; 
+
+  }
+  h3 {
+    padding-top:0px;
+    padding-bottom:15px;
+    padding-left:30px;
+    padding-right:30px;
+    font-size: 25px;
+    color: #55B4EF;
+    line-height:150%;
+    font-weight: 300; 
+
+  }
+
 }
 .nstar {
   background-image: image-url("nstarsbkg.jpg") no-repeat left;

@@ -33,7 +33,7 @@
           .clear
       - else
         = yield
-    
+      .footer= render "layouts/public_footer"
     = content_for :modals
 
     :plain
