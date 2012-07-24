@@ -1,0 +1,4 @@
+
+:plain
+  $("#relationship_#{@relationship.connected_with.obj_str} .modal-body").html('#{escape_javascript(render('layouts/flash_messages', :no_dismiss => true))}');
+- flash.discard

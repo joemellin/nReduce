@@ -117,17 +117,17 @@
           .top{:align => 'center', :onclick => "window.location = '#{url_for(s)}';"}
             .background{:style => "background-image: url('#{s.logo_url(:square)}'); cursor: pointer;"} &nbsp;
             .status.btn-group.glow{:align => 'center'}
-              Suggested Team
-              = link_to '<i class="icon-info-sign"></i>'.html_safe, '#', :title => "Because similar industries and company goals"
+              %button.btn{:href => '#', :class => 'btn'} Suggested Team
+              /= link_to '<i class="icon-info-sign"></i>'.html_safe, '#', :title => "Because similar industries and company goals"
             .members{:align => 'center'}
               - s.team_members.shuffle.first(3).each do |tm|
                 .inline-block{:style => 'margin-left: 4px'}= image_tag(user_avatar_url(tm), :title => tm.name, :style => 'width: 50px; height: 50px;')
           .bottom
             %h3= link_to truncate(s.name, :length => 20), startup_path(s)
-            %h3
-              = link_to '<i class="icon-ok icon-white"></i> Add'.html_safe, '#', :class => 'btn btn-success'
-              &nbsp;
-              = link_to '<i class="icon-refresh icon-white"></i> Pass'.html_safe, '#', :class => 'btn btn-inverse'
+            - unless s.cached_relationship.blank?
+              = link_to '<i class="icon-refresh"></i> Pass'.html_safe, reject_relationship_path(s.cached_relationship), :class => 'btn', :method => :post
+              &nbsp;&nbsp;
+            = link_to 'View <i class="icon-arrow-right icon-white"></i>'.html_safe, startup_path(s, :suggested => 1), :class => 'btn btn-success'
         - c += 1
         - if c != 0 and c % 4 == 0
           .clear
@@ -140,12 +140,17 @@
         .team.span3{:align => 'center'}
           .top{:align => 'center', :onclick => "window.location = '#{url_for(s)}';"}
             .background{:style => "background-image: url('#{s.logo_url(:square)}'); cursor: pointer;"} &nbsp;
-            .status.btn-group.glow{:align => 'center'} Relationship Request
+            .status.btn-group.glow{:align => 'center'}
+              %button.btn{:href => '#', :class => 'btn'} Connection Request
             .members{:align => 'center'}
               - s.team_members.shuffle.first(3).each do |tm|
                 .inline-block{:style => 'margin-left: 4px'}= image_tag(user_avatar_url(tm), :title => tm.name, :style => 'width: 50px; height: 50px;')
           .bottom
             %h3= link_to truncate(s.name, :length => 20), startup_path(s)
+            
+            = link_to '<i class="icon-remove"></i> Ignore'.html_safe, reject_relationship_path(r), :class => 'btn', :method => :post
+            &nbsp;&nbsp;
+            = link_to 'View <i class="icon-arrow-right icon-white"></i>'.html_safe, s, :class => 'btn btn-success'
         - c += 1
         - if c != 0 and c % 4 == 0
           .clear
@@ -176,7 +181,7 @@
         %h3= link_to '+ Invite Team', '#', :class => 'invite_team_modal'
     
     .clear
-    
+
     // END of TEAMS
 
   - nreduce_id = Startup.nreduce_id
