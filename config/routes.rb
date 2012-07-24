@@ -49,7 +49,11 @@ Nreduce::Application.routes.draw do
 
   get "/home" => "pages#home"
 
-  get "/nstar" => "pages#nstar"
+  get "/nstar" => "pages#nstar", :as => "nstar"
+
+  get "/faq" => "pages#faq", :as => "faq"
+
+  get "/team" => "pages#team", :as => "team"
 
   resources :mentors, :only => [:index] do
     collection do
@@ -131,5 +135,5 @@ Nreduce::Application.routes.draw do
   match '/community_guidelines' => "pages#community_guidelines", :as => :community_guidelines
 
 
-  root :to => 'relationships#index'
+  root :to => 'pages#home'
 end
