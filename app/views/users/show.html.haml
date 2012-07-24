@@ -32,8 +32,8 @@
             %br/
             %i Limit one per week
 .row
-  .span12.well
-    .row
+  .span12.well{:style => 'padding: 0'}
+    .row{:style => 'padding: 19px'}
       .span3= image_tag @user.pic_url(:square), :width => 200, :height => 200
       .span5
         %br
