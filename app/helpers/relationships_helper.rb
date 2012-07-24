@@ -11,19 +11,37 @@ module RelationshipsHelper
 				elsif !relationship.blank? and relationship.pending?
 					# This is the person being requested
 					if relationship.connected_with == entity
-						concat link_to '<i class="icon-ok icon-white"></i> Approve Request'.html_safe, approve_relationship_path(relationship), :class => 'btn btn-success', :method => :post
+						concat link_to '<i class="icon-remove"></i> Ignore'.html_safe, reject_relationship_path(relationship), :class => 'btn btn-large', :method => :post
 						concat '&nbsp;&nbsp;'.html_safe
-						concat link_to '<i class="icon-remove icon-white"></i> Not Now'.html_safe, reject_relationship_path(relationship), :class => 'btn btn-danger', :method => :post
+						concat link_to '<i class="icon-ok icon-white"></i> Approve Request'.html_safe, approve_relationship_path(relationship), :class => 'btn btn-large btn-success', :method => :post
 					else # This is the person who initiated
-						link_to '<i class="icon-remove icon-white"></i> Remove Request'.html_safe, reject_relationship_path(relationship), :class => 'btn btn-danger', :method => :post
+						link_to '<i class="icon-remove icon-white"></i> Remove Request'.html_safe, reject_relationship_path(relationship), :class => 'btn btn-large btn-danger', :method => :post
 					end
+				elsif !relationship.blank? and relationship.suggested?
+					concat link_to '<i class="icon-refresh"></i> Pass'.html_safe, reject_relationship_path(relationship), :class => 'btn btn-large', :method => :post
+					concat '&nbsp;&nbsp;'.html_safe
+					concat link_to '<i class="icon-ok icon-white"></i> Add Team'.html_safe, approve_relationship_path(relationship), :class => 'btn btn-large btn-success', :method => :post
 				elsif user_signed_in? # and Relationship.can_connect?(entity, connected_with)
-					form_for Relationship.new(:entity => entity, :connected_with => connected_with), :remote => true do |f|
-						concat f.hidden_field :entity_id
-						concat f.hidden_field :entity_type
-						concat f.hidden_field :connected_with_id
-						concat f.hidden_field :connected_with_type
-						concat f.submit (connected_with.is_a?(Startup) ? 'Invite to Group' : 'Connect'), :class => 'btn btn-large btn-info'
+					form_id = "new_relationship_#{connected_with.obj_str}"
+					concat link_to((connected_with.is_a?(Startup) ? 'Invite to Group' : 'Connect'), '#', :onclick => "$('##{form_id}').show(); return false;", :class => 'btn btn-large btn-info')
+					concat content_tag(:div, :id => 'invite_team', :class => 'modal hide') do
+						concat content_tag(:div, :class => 'modal-header') do
+							concat content_tag('button', :class => 'close', :type => 'button', 'data-dismiss' => 'modal') do
+								'x'
+							end
+							concat content_tag('h3', 'Invite a Startup')
+						end
+						concat content_tag(:div, :class => 'modal-body') do
+							concat form_for Relationship.new(:entity => entity, :connected_with => connected_with), :remote => true, :html => {:id => form_id} do |f|
+								concat f.hidden_field :entity_id
+								concat f.hidden_field :entity_type
+								concat f.hidden_field :connected_with_id
+								concat f.hidden_field :connected_with_type
+								concat f.label :message, "Why you think they are a good match for your startup?"
+								concat f.text_area :message
+								concat f.submit (connected_with.is_a?(Startup) ? 'Invite to Group' : 'Connect')
+							end
+						end
 					end
 				end
 			end

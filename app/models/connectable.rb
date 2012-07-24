@@ -3,6 +3,7 @@ module Connectable
 		# Adding relationships here so it doesn't complain that active_record isn't avail
 		base.class_eval do
 			has_many :relationships, :as => :entity
+      attr_accessor :cached_relationship
 		end
 	end
 
@@ -40,13 +41,13 @@ module Connectable
     Relationship.all_pending_or_approved_relationships_for(self)
   end
 
-  def suggested_relationships
-    Relationship.suggested_connections_for(self)
+  def suggested_relationships(class_name_string = nil)
+    Relationship.suggested_connections_for(self, class_name_string)
   end
 
   # Connections that they were suggested but passed on
   def passed_relationships(entity_class_string)
-    Relationship.where(:entity_id => self.id, :entity_class => self.class, :connected_with_type => entity_class_string).passed
+    Relationship.where(:entity_id => self.id, :entity_type => self.class, :connected_with_type => entity_class_string).passed
   end
 
     # Returns true if this entity is connected in an approved relationship

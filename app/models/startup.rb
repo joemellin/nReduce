@@ -10,8 +10,8 @@ class Startup < ActiveRecord::Base
   has_many :nudges
   has_many :notifications, :as => :attachable
   has_many :user_actions, :as => :attachable
-  has_many :initiated_relationships, :as => :entity # relationships this startup began
-  has_many :received_relationships, :as => :connected_with # relationships others began with this startup
+  has_many :initiated_relationships, :as => :entity, :class_name => 'Relationship' # relationships this startup began
+  has_many :received_relationships, :as => :connected_with, :class_name => 'Relationship' # relationships others began with this startup
 
   attr_accessible :name, :team_size, :website_url, :main_contact_id, :phone, :growth_model, :stage, :company_goal, :meeting_id, :one_liner, :active, :launched_at, :industry_list, :technology_list, :ideology_list, :industry, :intro_video_url, :elevator_pitch, :logo, :remote_logo_url, :logo_cache, :remove_logo, :checkins_public, :pitch_video_url
 
@@ -80,11 +80,23 @@ class Startup < ActiveRecord::Base
     }
   end
 
+  def suggested_startups(limit = 2)
+    relationships = self.suggested_relationships('Startup')
+    startup_ids = relationships.map{|r| r.connected_with_id }
+    r_by_id = Hash.by_key(relationships, :connected_with_id)
+    Startup.find(startup_ids.first(limit)).map{|s| s.cached_relationship = r_by_id[s.id] unless r_by_id[s.id].blank?; s }
+  end
+
     # Generate suggestion connections that this startup might like to connect to - based on similar industries and company goal
   def generate_suggested_connections(limit = 2)
     startups = []
-    ignore_startup_ids = [self.id] + self.passed_relationships('Startup').map{|r| r.connected_with_id }
+    # Find all startups this person is connected to, has been suggested, and has rejected
+    ignore_startup_ids = (self.received_relationships.where(:entity_type => 'Startup') + self.initiated_relationships.where(:connected_with_type => 'Startup')).map{|r| r.connected_with_id }
+    ignore_startup_ids << self.id
+    ignore_startup_ids.uniq!
+
     industry_ids = self.industries.map{|t| t.id }
+
     # Find startups with same industries, company goal, and sort by best engagement first
     search = Startup.search do
       all_of do
@@ -125,7 +137,8 @@ class Startup < ActiveRecord::Base
 
     # Create suggested relationships
     startups.each do |s|
-      Relationship.suggest_connection(self, s, :startup_startup, context)
+      message = ''
+      Relationship.suggest_connection(self, s, :startup_startup, message)
     end
 
     startups
@@ -232,7 +245,7 @@ class Startup < ActiveRecord::Base
     2 => "Prototype",
     3 => "Private Alpha/Beta",
     4 => "Launched",
-    6 => "Generating Revenue/Scaling"}
+    5 => "Generating Revenue/Scaling"}
   end
 
   def self.growth_models

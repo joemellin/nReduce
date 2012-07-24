@@ -7,9 +7,11 @@
   - elsif current_user.investor?
     %p Are you currently an investor in any startups? You can invite them to nReduce to easily keep up to date on their weekly progress.
   %br/
-  = f.text_field :email, :placeholder => "Founder's email address", :class => 'span3'
-  = f.text_field :name, :placeholder => "Startup name", :class => 'span3'
-  = f.submit 'Invite', :class => 'btn btn-primary btn-large'
+  %center
+    = f.text_field :email, :placeholder => "Founder's email address", :class => 'span2'
+    = f.text_field :name, :placeholder => "Startup name", :class => 'span2'
+    %br/
+    = f.submit 'Invite', :class => 'btn btn-primary btn-large'
 
 - unless @invites.blank?
   %h4

@@ -30,6 +30,7 @@ class Relationship < ActiveRecord::Base
   scope :approved, where(:status => Relationship::APPROVED)
   scope :rejected, where(:status => Relationship::REJECTED)
   scope :suggested, where(:status => Relationship::SUGGESTED)
+  scope :passed, where(:status => Relationship::PASSED)
   scope :startup_to_user, where(:entity_type => 'Startup', :connected_with_type => 'User')
   scope :startup_to_startup, where(:entity_type => 'Startup', :connected_with_type => 'Startup')
 
@@ -43,8 +44,8 @@ class Relationship < ActiveRecord::Base
   end
 
    # Create a suggested connectino for an entity - it is created silently (no notifications)
-  def self.suggest_connection(entity, connected_with, context = :startup_startup, context = nil)
-    Relationship.create(:entity => entity, :connected_with => connected_with, :status => Relationship::SUGGESTED, :silent => true, :context => context)
+  def self.suggest_connection(entity, connected_with, context = :startup_startup, message = nil)
+    Relationship.create(:entity => entity, :connected_with => connected_with, :status => Relationship::SUGGESTED, :silent => true, :context => context, :message => message)
   end
 
   # Start a relationship between two entities - same as calling create
@@ -58,10 +59,9 @@ class Relationship < ActiveRecord::Base
     Relationship.where(:entity_id => entity1.id, :entity_type => entity1.class, :connected_with_id => entity2.id, :connected_with_type => entity2.class).order('created_at DESC').first
   end
 
-  def self.suggested_connections_for(entity)
-    Cache.get(['sugg_connections', entity]){
-      Relationship.where(:entity_id => entity.id, :entity_type => entity.class).suggested
-    }
+  def self.suggested_connections_for(entity, class_name_string)
+    rel = Relationship.where(:entity_id => entity.id, :entity_type => entity.class).suggested
+    rel = rel.where(:connected_with_type => class_name_string) unless class_name_string.blank?
   end
 
     # Returns all entities of a specific class that this entity is connected to (approved status)
@@ -106,23 +106,37 @@ class Relationship < ActiveRecord::Base
 
   # Approve the friendship and create a record in the opposite direction so friendship is easy to query
   def approve!
-    begin
-      Relationship.transaction do
-        self.update_attributes(:status => APPROVED, :approved_at => Time.now) unless self.approved?
-        inv = self.inverse_relationship
-        if !inv.blank?
-          inv.update_attributes(:status => APPROVED, :approved_at => Time.now) unless inv.approved?
-        else
-          Relationship.create(:entity_id => connected_with_id, :entity_type => connected_with_type, :connected_with_id => entity_id, :connected_with_type => entity_type, :status => APPROVED, :approved_at => Time.now)
-          Notification.create_for_relationship_approved(self)
+    # If this is a suggested relationship simply set to pending so the other person sees it
+    if self.suggested?
+      self.status = Relationship::PENDING
+      self.save
+    else
+      begin
+        Relationship.transaction do
+          self.update_attributes(:status => APPROVED, :approved_at => Time.now) unless self.approved?
+          inv = self.inverse_relationship
+          if !inv.blank?
+            inv.update_attributes(:status => APPROVED, :approved_at => Time.now) unless inv.approved?
+          else
+            Relationship.create(
+              :entity_id => self.connected_with_id, 
+              :entity_type => self.connected_with_type, 
+              :connected_with_id => self.entity_id, 
+              :connected_with_type => self.entity_type, 
+              :status => APPROVED,
+              :context => self.context,
+              :approved_at => Time.now
+            )
+            Notification.create_for_relationship_approved(self)
+          end
+          # Reset relationship cache for both startups involved
+          self.reset_cache_for_entities_involved
         end
-        # Reset relationship cache for both startups involved
-        self.reset_cache_for_entities_involved
+      rescue ActiveRecord::RecordNotUnique
+        # Already approved don't need to do anything
       end
-    rescue ActiveRecord::RecordNotUnique
-      # Already approved don't need to do anything
+      true
     end
-    true
   end
 
   # Reject the friendship (or pass on a suggestion), but don't delete records
@@ -142,7 +156,7 @@ class Relationship < ActiveRecord::Base
   end
 
   def inverse_relationship
-    Relationship.where(:entity_id => connected_with_id, :entity_type => connected_with_type, :connected_with_id => entity_id, :connected_with_type => entity_type).first
+    Relationship.where(:entity_id => self.connected_with_id, :entity_type => self.connected_with_type, :connected_with_id => self.entity_id, :connected_with_type => self.entity_type).first
   end
 
   def pending?
