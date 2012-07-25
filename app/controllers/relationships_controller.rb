@@ -62,7 +62,7 @@ class RelationshipsController < ApplicationController
     @startups = Startup.where(:id => Startup.nreduce_id) if !current_user.entrepreneur? and @startups.blank?
 
     # Suggested, pending relationships and invited startups
-    @suggested_startups = @startup.suggested_startups
+    @suggested_startups = @startup.suggested_startups unless @startup.blank?
     @pending_relationships = @entity.pending_relationships
     @invited_startups = current_user.sent_invites.to_startups.not_accepted
   end
