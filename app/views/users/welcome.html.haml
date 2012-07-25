@@ -1,12 +1,17 @@
-%div{:align => 'center'}
+.span1
+  &nbsp;
+.span7
   %h1{:style => 'font-size: 90px; line-height: 100px'} Congratulations!
   %br/
   %br/
-  %h2
-    Awesome!
-    %br/
-    nReduce is a commuity of builders.  As this is the case we are monitoring all new startups to ensure a great user experience.  While you are waiting for the admission email, please take a look at this video and get fired up!
-  %br/
-  <iframe width="420" height="315" src="http://www.youtube.com/embed/UizlkbS61mQ" frameborder="0" allowfullscreen></iframe>
-  %br/
-  = button_to "Enter nReduce", welcome_user_path(current_user), :method => :post, :class => 'btn btn-large btn-success', :style => 'font-size: 60px'
+  %h2 To make nReduce awesome we need to create an amazing community.  
+
+  %h2 It is our goal to create a community of engaged builders working to make a dent in the world.
+
+  %h2 As that is the case, we are currently approving all new startups so that we can ensure that you have an amazing user experience.
+
+  %h2 So sit back and watch some of our favorite startup talks.  You will receive an activation email in a Jiffy!
+
+  
+  / %br/
+  / = button_to "Enter nReduce", welcome_user_path(current_user), :method => :post, :class => 'btn btn-large btn-success', :style => 'font-size: 60px'  

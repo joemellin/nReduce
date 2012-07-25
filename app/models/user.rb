@@ -33,7 +33,11 @@ class User < ActiveRecord::Base
   validates_presence_of :name
   validate :email_is_not_nreduce
   validate :check_video_urls_are_valid
-  validates_length_of :bio, :minimum => 100, :too_short => "needs to be at least 100 characters", :allow_blank => true
+  validates_length_of :bio, :minimum => 100, :too_short => "needs to be at least 100 characters", :unless => :account_setup?
+  validates_presence_of :pic, :unless => :account_setup?
+  validates_presence_of :location, :unless => :account_setup?
+  validates_presence_of :skill_list, :unless => :account_setup?
+  validates_presence_of :linkedin_url, :unless => :account_setup?
 
   before_create :set_default_settings
   before_save :geocode_location

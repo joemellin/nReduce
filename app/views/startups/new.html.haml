@@ -6,6 +6,11 @@
 .row
   %div{:class => @setup ? 'span7' : 'span12'}
     = semantic_form_for @startup, :url => '/startup/', :html => {:class => "form-horizontal", :multipart => true} do |f|
+      - if @setup
+        .control-group{:style => 'padding-top: 0'}
+          &nbsp;
+          .controls
+            %strong All fields are required unless noted
       = render "startups/fields", :f => f
       .form-actions
         = f.submit @setup ? 'Continue' : 'Save', :class => "btn btn-primary btn-large"

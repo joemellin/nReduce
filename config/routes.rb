@@ -7,7 +7,10 @@ Nreduce::Application.routes.draw do
   namespace 'admin' do
     resources :mentors, :only => [:index, :show, :update]
     resources :users, :only => :show do
-      get 'sign_in_as', :on => :member
+      member do
+        get 'sign_in_as'
+        post 'approve'
+      end
     end
     # Resque Admin
     constraints admin_constraint do
@@ -45,12 +48,9 @@ Nreduce::Application.routes.draw do
 
   get "/contact_joe" => "pages#contact_joe"
 
-  get "/home" => "pages#home"
-
+  get "/home" => "pages#home", :as => "home"
   get "/nstar" => "pages#nstar", :as => "nstar"
-
   get "/faq" => "pages#faq", :as => "faq"
-
   get "/team" => "pages#team", :as => "team"
 
   resources :mentors, :only => [:index] do
