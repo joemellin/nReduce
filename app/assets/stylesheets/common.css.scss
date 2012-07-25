@@ -145,9 +145,23 @@ hr {
 .inline-block { display: inline-block; }
 
 body.apply {
+  .nstar_banner {
+    background: image-url('nstar_banner_s.png') no-repeat right top;
+    .clickable {
+      cursor: pointer;
+      width: 100px;
+      height: 80px;
+      position: fixed;
+      top: 0;
+      right: 0;
+    }
+  }
   > .container {
 
+
     .nav {
+      z-index: 10;
+      margin-right: 20px;
       margin-bottom: 10px;
       .padding {
         padding-top: 15px;

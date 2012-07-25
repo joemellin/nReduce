@@ -18,6 +18,9 @@ $ ->
   $('.invite_team_modal').click ->
     $('#invite_team_modal').modal()
 
+  $('.nstar_banner .clickable').click ->
+    window.location = '/nstar';
+
   split = (val) ->
     return val.split( /,\s*/ )
 
