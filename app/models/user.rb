@@ -340,7 +340,9 @@ class User < ActiveRecord::Base
 
   def setup_complete!
     self.setup << :welcome
-    save!
+    if save
+      self.startup.generate_suggested_connections(10) unless self.startup.blank?
+    end
   end
 
   # Returns symbol for current onboarding type if user hasn't set up account yet

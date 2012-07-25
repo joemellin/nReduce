@@ -97,8 +97,13 @@ class Startup < ActiveRecord::Base
   end
 
     # Generate suggestion connections that this startup might like to connect to - based on similar industries and company goal
-  def generate_suggested_connections(limit = 2)
+  def generate_suggested_connections(limit = 10)
     startups = []
+    # See if they are over limit of suggested connections
+    suggested = self.suggested_startups(100)
+    return false if !suggested.blank? and (suggested.size >= limit)
+    num_suggested = suggested.size
+
     # Find all startups this person is connected to, has been suggested, and has rejected
     ignore_startup_ids = (self.received_relationships.where(:entity_type => 'Startup') + self.initiated_relationships.where(:connected_with_type => 'Startup')).map{|r| r.connected_with_id }
     ignore_startup_ids << self.id
@@ -147,7 +152,9 @@ class Startup < ActiveRecord::Base
     # Create suggested relationships
     startups.each do |s|
       message = ''
+      break if num_suggested >= limit
       Relationship.suggest_connection(self, s, :startup_startup, message)
+      num_suggested += 1
     end
 
     startups
