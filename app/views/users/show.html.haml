@@ -14,7 +14,7 @@
       = link_to "Sign in As User", sign_in_as_admin_user_path(@user), :class => 'btn'
     - if @can_invite_as_mentor == true
       = link_to 'Ask to Mentor', '#', :class => 'btn btn-large', :onclick => "$('#user_#{@user.id}_invite').modal(); return false;"
-      .modal.hide.invite_mentor{:id => "user_#{@user.id}_invite"}
+      .modal.hide.invite_mentor{:id => "user_#{@user.id}_invite", :align => 'left'}
         = form_for Relationship.new(:entity => @startup, :connected_with => @user, :context => :startup_mentor), :html => {:class => 'form-inline'} do |f|
           .modal-header
             %button.close{:type => 'button', 'data-dismiss' => 'modal'} x
