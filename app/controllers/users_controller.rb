@@ -38,6 +38,7 @@ class UsersController < ApplicationController
   end
 
   def update
+    @user.profile_fields_required = true
     if @user.update_attributes(params[:user])
       #flash[:notice] = "Your account has been updated!"
       redirect_to :action => :show
