@@ -25,7 +25,7 @@
       %button.close{:type => 'button', 'data-dismiss' => 'modal'} x
       %h3 Connect with #{connected_with.name}
     .modal-body
-      = form_for relationship, :url => (relationship.new_record? ? new_relationship_path : approve_relationship_path(relationship)), :remote => true, :html => {:id => form_id, :class => 'form-horizontal', :method => :post} do |f|
+      = form_for relationship, :url => (relationship.new_record? ? {:controller => :relationships, :action => :create} : approve_relationship_path(relationship)), :remote => true, :html => {:id => form_id, :class => 'form-horizontal', :method => :post} do |f|
         = f.hidden_field :entity_id
         = f.hidden_field :entity_type
         = f.hidden_field :connected_with_id
