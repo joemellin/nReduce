@@ -16,7 +16,6 @@ class RelationshipsController < ApplicationController
       return
     end
     @startups = @entity.connected_to
-    @pending_relationships = @entity.pending_relationships
     if current_user.mentor?
       @checkins_by_startup = Checkin.current_checkin_for_startups(@startups)
     else
@@ -62,9 +61,9 @@ class RelationshipsController < ApplicationController
 
     @startups = Startup.where(:id => Startup.nreduce_id) if !current_user.entrepreneur? and @startups.blank?
 
-    ignore_ids = @startups.map{|s| s.id } + [@startup.id]
-    @suggested_startups = Startup.limit(2).where(['id NOT IN (?)', ignore_ids]).order('RAND()')
-
+    # Suggested, pending relationships and invited startups
+    @suggested_startups = @startup.suggested_startups
+    @pending_relationships = @entity.pending_relationships
     @invited_startups = current_user.sent_invites.to_startups.not_accepted
   end
 
@@ -81,26 +80,41 @@ class RelationshipsController < ApplicationController
     logger.info flash.inspect
     respond_to do |format|
       format.html { redirect_to '/' }
-      format.js
+      format.js { render :action => 'update_modal' }
     end
   end
 
   def approve
+    @relationship.message = params[:relationship][:message] if !params[:relationship].blank? and !params[:relationship][:message].blank?
+    suggested = true if @relationship.suggested?
     if @relationship.approve!
-      flash[:notice] = "You are now connected to #{@relationship.entity.name}."
+      if suggested
+        flash[:notice] = "Your connection has been requested with #{@relationship.connected_with.name}"
+      else
+        flash[:notice] = "You are now connected to #{@relationship.entity.name}."
+      end
     else
       flash[:alert] = "Sorry but the relationship couldn't be approved at this time."
     end
-    redirect_to relationships_path
+    if request.xhr?
+      respond_to do |format|
+        format.js { render :action => 'update_modal' }
+      end
+    else
+      redirect_to relationships_path
+    end
   end
 
   def reject
     prev_status_pending = @relationship.pending?
-    if @relationship.reject!
+    prev_status_suggested = @relationship.suggested?
+    if @relationship.reject_or_pass!
       removed = @relationship.entity if (@relationship.connected_with == current_user) or (!current_user.startup.blank? and (@relationship.connected_with == current_user.startup))
       removed ||= @relationship.connected_with
       if prev_status_pending
         flash[:notice] = "You have ignored the connection request from #{removed.name}."
+      elsif prev_status_suggested
+        flash[:notice] = "You have passed on that suggested connection."
       else
         flash[:notice] = "You have removed #{removed.name} from your group."
       end

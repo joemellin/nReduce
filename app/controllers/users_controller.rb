@@ -64,11 +64,12 @@ class UsersController < ApplicationController
   end
 
   def welcome
-    if request.post?
-      current_user.setup_complete!
-      redirect_to '/'
-      return
-    end
+    # For now require that we manually approve users so don't finish account setup
+    #if request.post?
+    #  current_user.setup_complete!
+    #  redirect_to '/'
+    #  return
+    #end
   end
 
   protected

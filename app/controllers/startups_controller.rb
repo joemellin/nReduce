@@ -63,7 +63,11 @@ class StartupsController < ApplicationController
     else
       @entity = current_user
     end
-    @relationship = Relationship.between(@startup, @entity)
+    if params[:suggested] # we need to look for a relationship in the opposite direction if suggested
+      @relationship = Relationship.between(@entity, @startup)
+    else
+      @relationship = Relationship.between(@startup, @entity)
+    end
   end
 
   def search

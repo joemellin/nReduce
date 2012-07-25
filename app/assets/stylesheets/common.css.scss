@@ -28,9 +28,8 @@ body{
 }
 
 hr {
-  color: #cccccc;
-  height: 2px;
-  background-color: #cccccc;
+  color: #eee;
+  height: 1px;
 }
 
 .myriad_bold {
@@ -220,9 +219,12 @@ body.apply {
 }
 
 .footer {
+  border-top: 1px solid #eee;
+  margin-top: 20px;
+  padding: 20px 0 100px 0;
   a {
     padding: 0px 20px 0px 20px;
-
+    color: #999;
   }
 
 }

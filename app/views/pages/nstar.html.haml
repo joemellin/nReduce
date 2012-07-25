@@ -1,24 +1,51 @@
-#console
 .nstar
+  %h1 On June 4th, 2012:
+  %h2 624 Teams committed to building great products started nReduce.
+  %h2 Some have faltered...
+  %h2 Others have risen to the challenge.
+ 
+  %h1 On September 5, the best 10 will be introduced to the world.
+  %h2 and the nStar will be born!
+  %center= image_tag('nStar.png', :style => 'width: 500px; height: 424px;')
+  %h1{:style => 'margin: 50px 0 0 0; padding-bottom: 0'} Sign up to reserve a space in our Online Demo Day:
+  %center
+    = form_for @rsvp, :html => {:class => 'form-horizontal'} do |f|
+      = f.hidden_field :demo_day_id
+      - if @rsvp.user.blank?
+        = f.text_field :email, :placeholder => 'Your email address', :class => 'email tk-myriad-pro', :style => 'font-size: 22px; height: 30px; line-height: 22px'
+      - else
+        = f.hidden_field :user_id
+      = f.submit 'RSVP', :class => 'btn btn-primary btn-large'
+
+
+.nstarold{:style => 'display: none'}
   #slide_1.slide.scrollblock
-    #slide_1_bg.slide_bg
+    #slide_1_bg.slide_bg{:style => 'display: inline'}
     .scroll-content
       %h1 On June 4th, 2012:
       %h2 624 Teams committed to building great products started nReduce.
-  #slide_2.slide.left.scrollblock
+  #slide_2.slide.scrollblock
     #slide_2_bg.slide_bg
     .scroll-content
       %h2 Some have faltered...
-  #slide_3.slide.left.scrollblock
+  #slide_3.slide.scrollblock
     #slide_3_bg.slide_bg
     .scroll-content
       %h2 Others have risen to the challenge.
-  #slide_4.slide.left.scrollblock
+  #slide_4.slide.scrollblock
     #slide_4_bg.slide_bg
     .scroll-content
       %h1 On September 5, the best 10 will be introduced to the world.
       %h2 and the nStar will be born!
-  #slide_5.slide.left.scrollblock
+  #slide_5.slide.scrollblock
     #slide_5_bg.slide_bg
     .scroll-content
       %h1 Sign up to reserve a space in our Online Demo Day:
+      %center.rsvp
+        = form_for @rsvp, :html => {:class => 'form-horizontal'} do |f|
+          = f.hidden_field :demo_day_id
+          - if @rsvp.user.blank?
+            = f.text_field :email, :placeholder => 'Your email address', :class => 'email tk-myriad-pro'
+          - else
+            = f.hidden_field :user_id
+          = f.submit 'RSVP', :class => 'btn btn-primary btn-large'
