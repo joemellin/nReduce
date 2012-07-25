@@ -3,7 +3,7 @@ class RsvpsController < ApplicationController
 
   def create
     if @rsvp.save
-      flash[:notice] = "Thanks! We'll be in touch as the date nears for the demo day."
+      flash.now[:notice] = "Thanks! We'll be in touch as the date nears for the demo day."
       render :show
     else
       flash[:alert] = @rsvp.errors.full_messages.join(', ') + '.'
