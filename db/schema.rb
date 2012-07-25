@@ -189,7 +189,7 @@ ActiveRecord::Schema.define(:version => 20120724214521) do
     t.integer  "context"
   end
 
-  add_index "relationships", ["entity_id", "entity_type", "connected_with_id", "connected_with_type", "status"], :name => "relationship_index", :unique => true
+  add_index "relationships", ["entity_id", "entity_type", "status"], :name => "relationship_index"
 
   create_table "rsvps", :force => true do |t|
     t.string   "email"
@@ -298,11 +298,12 @@ ActiveRecord::Schema.define(:version => 20120724214521) do
     t.string   "blog_url"
     t.string   "pic"
     t.float    "rating"
+    t.string   "intro_video_url"
     t.integer  "roles"
     t.integer  "onboarded"
+    t.boolean  "admin"
     t.integer  "email_on"
     t.integer  "setup"
-    t.boolean  "admin"
   end
 
   add_index "users", ["reset_password_token"], :name => "index_users_on_reset_password_token", :unique => true
