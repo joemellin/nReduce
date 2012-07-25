@@ -84,7 +84,7 @@ class User < ActiveRecord::Base
       end
     end
     boolean :nreduce_mentor do
-      roles? :nreduce_mentor
+      roles?(:nreduce_mentor) and onboarded?(:nreduce_mentor)
     end
     integer :skill_tag_ids, :multiple => true, :stored => true do
       self.skills.map{|t| t.id }

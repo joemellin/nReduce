@@ -37,7 +37,6 @@ class MentorsController < ApplicationController
     # Have to pass context for block or else you can't access @search instance variable
     @search_results = User.search do |s|
       s.with :nreduce_mentor, true
-      s.with :onboarding_complete, true
       unless @search[:industries].blank?
         tag_ids = ActsAsTaggableOn::Tag.named_like_any_from_string(@search[:industries]).map{|t| t.id }
         # finds 
