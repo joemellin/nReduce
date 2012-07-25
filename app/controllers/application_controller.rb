@@ -1,8 +1,13 @@
 class ApplicationController < ActionController::Base
+  before_filter :show_nstar_banner
   #before_filter :block_ips
   protect_from_forgery
 
   protected
+
+  def show_nstar_banner
+    @show_nstar_banner = (controller_name == 'pages' and action_name != 'community_guidelines')
+  end
 
   def current_ability
     @current_ability ||= Ability.new(current_user, params)
