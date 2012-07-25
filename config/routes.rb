@@ -52,6 +52,7 @@ Nreduce::Application.routes.draw do
   get "/nstar" => "pages#nstar", :as => "nstar"
   get "/faq" => "pages#faq", :as => "faq"
   get "/team" => "pages#team", :as => "team"
+  get "/newmodel" => "pages#newmodel", :as => "newmodel"
 
   resources :mentors, :only => [:index] do
     collection do
