@@ -3,8 +3,8 @@ class RsvpsController < ApplicationController
 
   def create
     if @rsvp.save
-      flash.now[:notice] = "Thanks! We'll be in touch as the date nears for the demo day."
-      render :show
+      flash[:notice] = "Thanks! We'll be in touch as the date nears for demo day."
+      redirect_to home_path
     else
       flash[:alert] = @rsvp.errors.full_messages.join(', ') + '.'
       redirect_to :controller => 'pages', :action => 'nstar'

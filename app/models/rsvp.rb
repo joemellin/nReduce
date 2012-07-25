@@ -3,7 +3,7 @@ class Rsvp < ActiveRecord::Base
   belongs_to :user
   belongs_to :startup
 
-  attr_accessible :demo_day_id, :user_id, :startup_id, :message, :email
+  attr_accessible :demo_day_id, :user_id, :startup_id, :message, :email, :accredited
 
   validates_presence_of :demo_day_id
   validate :user_or_email_present
