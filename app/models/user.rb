@@ -27,17 +27,18 @@ class User < ActiveRecord::Base
 
   # Setup accessible (or protected) attributes for your model
   attr_accessible :email, :email_on, :password, :password_confirmation, :remember_me, :name, :skill_list, :industry_list, :startup, :mentor, :investor, :location, :phone, :startup_id, :settings, :meeting_id, :one_liner, :bio, :facebook_url, :linkedin_url, :github_url, :dribbble_url, :blog_url, :pic, :remote_pic_url, :pic_cache, :remove_pic, :intro_video_url
+  attr_accessor :profile_fields_required
 
   serialize :settings, Hash
 
   validates_presence_of :name
   validate :email_is_not_nreduce
   validate :check_video_urls_are_valid
-  validates_length_of :bio, :minimum => 100, :too_short => "needs to be at least 100 characters", :unless => :account_setup?
-  validates_presence_of :pic, :unless => :account_setup?
-  validates_presence_of :location, :unless => :account_setup?
-  validates_presence_of :skill_list, :unless => :account_setup?
-  validates_presence_of :linkedin_url, :unless => :account_setup?
+  validates_length_of :bio, :minimum => 100, :too_short => "needs to be at least 100 characters", :if => :profile_fields_required?
+  validates_presence_of :pic, :if => :profile_fields_required?
+  validates_presence_of :location, :if => :profile_fields_required?
+  validates_presence_of :skill_list, :if => :profile_fields_required?
+  validates_presence_of :linkedin_url, :if => :profile_fields_required?
 
   before_create :set_default_settings
   before_save :geocode_location
@@ -123,6 +124,10 @@ class User < ActiveRecord::Base
       countries << country unless country.blank?
     end
     countries
+  end
+
+  def profile_fields_required?
+    self.profile_fields_required == true
   end
 
     # Calculates profile completeness for all factors
