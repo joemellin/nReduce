@@ -10,5 +10,5 @@ if [$2 -eq "assets" ]; then
 else
   echo "not compiling assets"
 fi
-/etc/init.d/unicorn restart
+./thin_restart
 tail -f log/production.log
