@@ -10,5 +10,5 @@ if [$2 -eq "assets" ]; then
 else
   echo "not compiling assets"
 fi
-./thin_restart
+./script/thin_restart
 tail -f log/production.log
