@@ -21,6 +21,7 @@ class PagesController < ApplicationController
   def nstar
     @rsvp = Rsvp.new
     @rsvp.demo_day_id = DemoDay.first.id unless DemoDay.first.blank?
+    @rsvp.accredited = false
     @rsvp.user = current_user if user_signed_in?
   end
 end

@@ -9,6 +9,8 @@
     - if user_signed_in? and current_user.id == @user.id
       = link_to "Edit Account", edit_user_path(@user), :class => "btn"
     - if current_user.admin? and current_user.id != @user.id
+      - unless current_user.account_setup?
+        = link_to "Approve User", approve_admin_user_path(@user), :class => 'btn btn-success'
       = link_to "Sign in As User", sign_in_as_admin_user_path(@user), :class => 'btn'
     - if @can_invite_as_mentor == true
       = link_to 'Ask to Mentor', '#', :class => 'btn btn-large', :onclick => "$('#user_#{@user.id}_invite').modal(); return false;"
