@@ -89,7 +89,7 @@ class StartupsController < ApplicationController
     # Have to pass context for block or else you can't access @search instance variable
     @search_results = Startup.search do |s|
       s.fulltext @search[:name] unless @search[:name].blank?
-      s.with :onboarding_step, Startup.num_onboarding_steps
+      s.with :onboarded, true
       s.with :meeting_id, @search[:meeting_id] unless @search[:meeting_id].blank?
       unless @search[:industries].blank?
         tag_ids = ActsAsTaggableOn::Tag.named_like_any_from_string(@search[:industries]).map{|t| t.id }

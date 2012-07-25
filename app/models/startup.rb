@@ -58,7 +58,9 @@ class Startup < ActiveRecord::Base
     integer :id
     integer :stage
     integer :company_goal
-    integer :onboarding_step
+    boolean :onboarded do
+      self.account_setup?
+    end
     double  :rating
     boolean :public
     integer :industry_tag_ids, :multiple => true, :stored => true do
