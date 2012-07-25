@@ -7,16 +7,11 @@
     
   }
   h2 {
-    font-family: "pauline",sans-serif;
-    font-style: normal;
-    font-weight: 400;
     font-size: 40px; 
     color: #999999;
 
   }
   h3 {
-    font-family: "pauline",sans-serif;
-    font-style: normal;
     font-weight: 400;
     font-size: 25px; 
     color: #999999;
@@ -34,12 +29,15 @@
     padding: 50px 00px 10px 00px;
     font-size: 30px;
   }
+
+  // .tk-museo-sans
   .scriptfeature {
-    font-style: bold;
-    font-weight: 400;
+    font-family: "museo-sans",sans-serif;
+    font-style: italic;
+    font-weight: 300;
     font-size: 36px;
     color: #666666;
-    line-height:250%;
+    line-height:200%;
 
   }
   .newslogos {
