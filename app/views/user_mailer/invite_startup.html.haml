@@ -1,5 +1,5 @@
 = render :partial => 'header'
-%h1.h1 #{@invite.user.name} wants you to join nReduce!
+%h1.h1 #{@invite.from.name} wants you to join nReduce!
 %br/
 - unless @invite.msg.blank?
   %p #{h(@invite.msg)}

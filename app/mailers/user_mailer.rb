@@ -73,17 +73,17 @@ class UserMailer < ActionMailer::Base
 
   def invite_mentor(invite)
     @invite = invite
-    mail(:to => @invite.email, :subject => "#{@invite.user.name} invited you to nReduce")
+    mail(:to => @invite.email, :subject => "#{@invite.from.name} invited you to nReduce")
   end
 
   def invite_investor(invite)
     @invite = invite
-    mail(:to => @invite.email, :subject => "#{@invite.user.name} invited you to nReduce")
+    mail(:to => @invite.email, :subject => "#{@invite.from.name} invited you to nReduce")
   end
 
   def invite_startup(invite)
     @invite = invite
-    mail(:to => @invite.email, :subject => "#{@invite.user.name} invited you to join nReduce")
+    mail(:to => @invite.email, :subject => "#{@invite.from.name} invited you to join nReduce")
   end
 
   # Nudges startup to do check-in
