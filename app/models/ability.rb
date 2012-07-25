@@ -155,7 +155,7 @@ class Ability
       # All users with startup/mentor can view a startup if onboarding is complete
       can :read, Startup do |s|
         s.account_setup?
-      end 
+      end
     end
 
     #
@@ -197,8 +197,18 @@ class Ability
     # Everyone can see users
     can :read, User
 
-    # Everyone can see a startup's profile
-    can :read, Startup
+    cannot :read, Startup
+    
+    # Everyone can see a startup's profile unless they are private
+    can :read, Startup do |s|
+      if s.public?
+        true
+      elsif !user.startup_id.blank? and s.id == user.startup_id
+        true
+      else
+        false
+      end
+    end
 
     can [:new, :create], Rsvp
     can :manage, Rsvp do |r|
