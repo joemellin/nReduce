@@ -18,10 +18,8 @@
     = form_for @rsvp, :html => {:class => 'form-horizontal'} do |f|
       = f.hidden_field :demo_day_id
       %br/
-      - if @rsvp.user.blank?
-        = f.text_field :email, :placeholder => 'Your email address', :class => 'email tk-myriad-pro span4', :style => 'font-size: 45px; height: 50px; line-height: 45px; padding: 8px;'
-      - else
-        = f.hidden_field :user_id
+      = f.text_field :email, :placeholder => 'Your email address', :class => 'email tk-myriad-pro span5', :style => 'font-size: 45px; height: 50px; line-height: 45px; padding: 8px;'
+      = f.hidden_field :user_id
       = f.submit 'RSVP', :class => 'btn btn-success btn-large', :style => 'font-size: 45px; line-height: 45px;'
       %div{:style => 'font-size: 1.5em; margin-top: 30px; color: #666; margin-bottom: 150px'}
         = f.radio_button :accredited, false
@@ -98,8 +96,6 @@
       %center.rsvp
         = form_for @rsvp, :html => {:class => 'form-horizontal'} do |f|
           = f.hidden_field :demo_day_id
-          - if @rsvp.user.blank?
-            = f.text_field :email, :placeholder => 'Your email address', :class => 'email tk-myriad-pro'
-          - else
-            = f.hidden_field :user_id
+          = f.text_field :email, :placeholder => 'Your email address', :class => 'email tk-myriad-pro'
+          = f.hidden_field :user_id
           = f.submit 'RSVP', :class => 'btn btn-primary btn-large'

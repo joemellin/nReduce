@@ -22,6 +22,9 @@ class PagesController < ApplicationController
     @rsvp = Rsvp.new
     @rsvp.demo_day_id = DemoDay.first.id unless DemoDay.first.blank?
     @rsvp.accredited = false
-    @rsvp.user = current_user if user_signed_in?
+    if user_signed_in?
+      @rsvp.email = current_user.email 
+      @rsvp.user = current_user
+    end
   end
 end
