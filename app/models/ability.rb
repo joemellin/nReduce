@@ -197,8 +197,10 @@ class Ability
     # Everyone can see users
     can :read, User
 
-    # Everyone can see a startup's profile
-    can :read, Startup
+    # Everyone can see a startup's profile unless they are private
+    can :read, Startup do |s|
+      s.public?
+    end
 
     can [:new, :create], Rsvp
     can :manage, Rsvp do |r|
