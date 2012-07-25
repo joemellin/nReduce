@@ -19,10 +19,11 @@
     = raw content_for(:head)
     = js_settings
     = csrf_meta_tags
-  -# %body{body_attrs}
   %body{:class => 'apply'}
-
     .container
+      /{:class => @show_nstar_banner ? 'nstar_banner' : ''}
+      /- if @show_nstar_banner
+      / .clickable
       .header
         = render 'layouts/nav', :hide_nav => @hide_nav == true
       = render "layouts/flash_messages"

@@ -1,6 +1,10 @@
 class Admin::UsersController < ApplicationController
   before_filter :admin_required
 
+  def index
+    
+  end
+
   # Sign in as a different user
   def sign_in_as
     @user = User.find(params[:id])
