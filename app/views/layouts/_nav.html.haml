@@ -44,6 +44,8 @@
                 %li= link_to "Job Queue", "/admin/resque"
               %li.divider
               %li= link_to "Log out", logout_path, :method => :delete
+      - else
+        %li= link_to "Login", login_path
   .left= link_to image_tag('nreduce_s.png'), "/"
   .clear
   %hr

@@ -80,7 +80,7 @@
                   = hit.stored(:industries_cached).join(', ')
         .span3
           - unless @entity.blank?
-            = relationship_button_for(@entity, s)
+            = render 'relationships/buttons', :entity => @entity, :connected_with => s
           .well.community_status
             != rating_link(s, true)
               

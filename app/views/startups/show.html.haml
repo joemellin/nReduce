@@ -9,13 +9,13 @@
     - if @owner
       = link_to "Edit Startup", "/startup/edit", :class => "btn"
     - elsif !@entity.blank?
-      = relationship_button_for(@entity, @startup, @relationship)
+      = render 'relationships/buttons', :entity => @entity, :connected_with => @startup, :relationship => @relationship
 
 %hr/
 %br/
 .row
-  .span12.well
-    .row
+  .span12.well{:style => 'padding: 0'}
+    .row{:style => 'padding: 19px'}
       .span3
         - vid_url = Youtube.embed_url(@startup.intro_video_url)
         - if vid_url.blank?
@@ -90,7 +90,7 @@
       %div{:align => 'center'}
         %h3 #{h(@startup.name.possessive)} check-ins are private. To get permission to see them:
         %br/
-        = relationship_button_for(@entity, @startup)
+        = render 'relationships/buttons', :entity => @entity, :connected_with => @startup
 - else
   .row
     .span12{:align => 'center'}
