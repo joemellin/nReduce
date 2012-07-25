@@ -70,6 +70,7 @@ class UsersController < ApplicationController
     #  redirect_to '/'
     #  return
     #end
+    @conversion = true
   end
 
   protected

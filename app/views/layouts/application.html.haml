@@ -55,3 +55,23 @@
         })();
 
       </script>
+
+      <!-- kissmetrics  -->
+      <script type="text/javascript">
+        var _kmq = _kmq || [];
+        var _kmk = _kmk || '94690c59b278f36f49760ece78426cf8712f0b0d';
+        function _kms(u){
+          setTimeout(function(){
+            var d = document, f = d.getElementsByTagName('script')[0],
+            s = d.createElement('script');
+            s.type = 'text/javascript'; s.async = true; s.src = u;
+            f.parentNode.insertBefore(s, f);
+          }, 1);
+        }
+        _kms('//i.kissmetrics.com/i.js');
+        _kms('//doug1izaerwt3.cloudfront.net/' + _kmk + '.1.js');
+
+        - if @conversion == true
+          :plain
+            _kmq.push(['record', 'Conversion']);
+      </script>
