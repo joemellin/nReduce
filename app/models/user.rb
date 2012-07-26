@@ -216,7 +216,7 @@ class User < ActiveRecord::Base
   def email_for?(class_name)
     begin
       return true if User.force_email_on.include?(class_name.to_sym)
-      !self.email.blank? and self.settings['email_on'].include?(class_name)
+      !self.email.blank? and self.email_on?(class_name)
     rescue # in case array isn't set
       false
     end

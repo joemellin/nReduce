@@ -40,6 +40,7 @@
               - if current_user.admin?
                 %li.divider
                 %li= link_to "Admin Tools", "/admin/db"
+                %li= link_to "Approve Users", "/admin/users"
                 %li= link_to "Mentors", admin_mentors_path
                 %li= link_to "Job Queue", "/admin/resque"
               %li.divider
