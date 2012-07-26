@@ -15,6 +15,7 @@ class Admin::UsersController < ApplicationController
   end
 
   def approve
+    @user = User.find(params[:id])
     flash[:notice] = "User account has been set up" if @user.setup_complete!
     redirect_to @user
   end
