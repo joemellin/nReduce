@@ -344,7 +344,7 @@ class User < ActiveRecord::Base
 
   def setup_complete!
     self.setup << :welcome
-    if save
+    if self.save
       self.startup.generate_suggested_connections(10) unless self.startup.blank?
     end
   end

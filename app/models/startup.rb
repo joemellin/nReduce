@@ -111,6 +111,15 @@ class Startup < ActiveRecord::Base
 
     industry_ids = self.industries.map{|t| t.id }
 
+    # Create lambda to add startups
+    suggest_startups = Proc.new {|startups, message|
+      startups.each do |s|
+        break if num_suggested >= limit
+        Relationship.suggest_connection(self, s, :startup_startup, message)
+        num_suggested += 1
+      end
+    }
+
     # Find startups with same industries, company goal, and sort by best engagement first
     search = Startup.search do
       all_of do
@@ -121,11 +130,12 @@ class Startup < ActiveRecord::Base
       order_by :rating, :desc
       paginate :per_page => limit
     end
-
     startups += search.results unless search.results.blank?
+    suggest_startups.call(startups, 'same industry & company goal')
+    
 
     # Find startups just with same industries
-    if startups.blank? or startups.size < limit
+    if startups.size < limit
       search = Startup.search do
         all_of do
           with :industry_tag_ids, industry_ids
@@ -135,9 +145,10 @@ class Startup < ActiveRecord::Base
         paginate :per_page => limit
       end
       startups += search.results unless search.results.blank?
+      suggest_startups.call(startups, 'same industry')
     end
 
-    if startups.blank? or startups.size < limit
+    if startups.size < limit
       search = Startup.search do
         any_of do
           with :industry_tag_ids, industry_ids
@@ -147,14 +158,29 @@ class Startup < ActiveRecord::Base
         paginate :per_page => limit
       end
       startups += search.results unless search.results.blank?
+      suggest_startups.call(startups, 'same industry')
     end
 
-    # Create suggested relationships
-    startups.each do |s|
-      message = ''
-      break if num_suggested >= limit
-      Relationship.suggest_connection(self, s, :startup_startup, message)
-      num_suggested += 1
+    if startups.size < limit and !self.stage.blank?
+      search = Startup.search do
+        with :stage, self.stage
+        without :id, ignore_startup_ids
+        order_by :rating, :desc
+        paginate :per_page => 2
+      end
+      startups += search.results unless search.results.blank?
+      suggest_startups.call(startups, "same company stage")
+    end
+
+    if startups.size < limit and !self.company_goal.blank?
+      search = Startup.search do
+        with :company_goal, self.company_goal
+        without :id, ignore_startup_ids
+        order_by :rating, :desc
+        paginate :per_page => 2
+      end
+      startups += search.results unless search.results.blank?
+      suggest_startups.call(startups, "same company goal")
     end
 
     startups
