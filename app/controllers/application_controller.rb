@@ -41,6 +41,7 @@ class ApplicationController < ActionController::Base
     started = Time.now
     yield
     begin
+      return
       @ua ||= {}
       # for user tracking
       elapsed = Time.now - started

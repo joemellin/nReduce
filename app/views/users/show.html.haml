@@ -15,11 +15,13 @@
     - if @can_invite_as_mentor == true
       = link_to 'Ask to Mentor', '#', :class => 'btn btn-large', :onclick => "$('#user_#{@user.id}_invite').modal(); return false;"
       .modal.hide.invite_mentor{:id => "user_#{@user.id}_invite", :align => 'left'}
-        = form_for Relationship.new(:entity => @startup, :connected_with => @user, :context => :startup_mentor), :html => {:class => 'form-inline'} do |f|
+        = form_for Relationship.new(:entity => current_user.startup, :connected_with => @user), :html => {:class => 'form-inline'} do |f|
           .modal-header
             %button.close{:type => 'button', 'data-dismiss' => 'modal'} x
             %h3 Ask #{@user.name} to Mentor Your Startup
           .modal-body
+            / Had to be manual context because when you go to save the model it transmits as an integer and bitmask attributes doesn't know what to do with it
+            = hidden_field_tag 'relationship[context]', 'startup_mentor'
             = f.hidden_field :context
             = f.hidden_field :entity_id
             = f.hidden_field :entity_type
