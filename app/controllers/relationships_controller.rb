@@ -61,7 +61,9 @@ class RelationshipsController < ApplicationController
       and you will receive an email notifying you of mentorship requests.<br /><br />
       If you have any questions please email joe@nReduce.com'
     end
+
     
+
     # Suggested, pending relationships and invited startups
     @suggested_startups = @startup.suggested_startups unless @startup.blank?
     @pending_relationships = @entity.pending_relationships
