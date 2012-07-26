@@ -84,7 +84,7 @@ class User < ActiveRecord::Base
       end
     end
     boolean :nreduce_mentor do
-      roles?(:nreduce_mentor) and onboarded?(:nreduce_mentor)
+      roles?(:nreduce_mentor) && onboarded?(:mentor)
     end
     integer :skill_tag_ids, :multiple => true, :stored => true do
       self.skills.map{|t| t.id }
@@ -124,6 +124,10 @@ class User < ActiveRecord::Base
       countries << country unless country.blank?
     end
     countries
+  end
+
+  def can_access_chat?
+    self.created_at < Time.parse('2012-07-24 00:00:00')
   end
 
   def profile_fields_required?

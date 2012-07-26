@@ -66,11 +66,11 @@ class UsersController < ApplicationController
 
   def welcome
     # For now require that we manually approve users so don't finish account setup
-    #if request.post?
-    #  current_user.setup_complete!
-    #  redirect_to '/'
-    #  return
-    #end
+    if request.post? and params[:i]
+      current_user.setup_complete!
+      redirect_to '/'
+      return
+    end
     @conversion = true
   end
 
