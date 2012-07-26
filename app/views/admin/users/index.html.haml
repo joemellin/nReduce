@@ -5,6 +5,7 @@
     %th Approve
     %th Name
     %th Email
+    %th Roles
     %th Startup
     %th Joined
   %tbody
@@ -12,6 +13,7 @@
       %tr
         %td= link_to 'Approve', approve_admin_user_path(u), :class => 'btn'
         %td= link_to u.name, u
+        %td= u.roles
         %td= u.email
         %td= u.startup_id.blank? ? '--' : link_to(u.startup.name, u.startup)
         %td= distance_of_time_in_words_to_now(u.created_at)
