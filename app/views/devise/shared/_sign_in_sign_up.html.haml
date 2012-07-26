@@ -27,5 +27,6 @@
   .span3
     %p &nbsp;
 
+%p.center= link_to 'Sign in with Twitter', '/auth/twitter'
 %p.center= link_to 'Sign in with your email', '#', :class => "sign_in_toggle #{show_sign_in ? 'hide' : ''}"
 %p.center= link_to 'Join with your email', '#', :class => 'sign_up_toggle'

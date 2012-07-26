@@ -2,7 +2,7 @@ class Admin::UsersController < ApplicationController
   before_filter :admin_required
 
   def index
-    @users = User.with_any_onboarded(:startup, :mentor, :nreduce_mentor).without_setup(:welcome).where('created_at > "2012-07-24"').order('created_at DESC').paginate(:page => params[:page], :per_page => 50)
+    @users = User.with_any_onboarded(:startup, :mentor, :nreduce_mentor).without_setup(:welcome).where('created_at > "2012-07-24"').order('created_at DESC').includes(:startup).paginate(:page => params[:page], :per_page => 50)
   end
 
   # Sign in as a different user
@@ -15,6 +15,7 @@ class Admin::UsersController < ApplicationController
   end
 
   def approve
+    @user = User.find(params[:id])
     flash[:notice] = "User account has been set up" if @user.setup_complete!
     redirect_to @user
   end
