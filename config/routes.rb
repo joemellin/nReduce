@@ -6,7 +6,7 @@ Nreduce::Application.routes.draw do
 
   namespace 'admin' do
     resources :mentors, :only => [:index, :show, :update]
-    resources :users, :only => :show do
+    resources :users, :only => [:show, :index] do
       member do
         get 'sign_in_as'
         post 'approve'

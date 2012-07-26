@@ -17,6 +17,7 @@ class Invite < ActiveRecord::Base
 
   @queue = :invites
 
+  scope :accepted, where('accepted_at IS NOT NULL')
   scope :not_accepted, where(:accepted_at => nil)
   scope :to_mentors, lambda{ where(:invite_type => Invite::MENTOR) }
   scope :to_nreduce_mentors, lambda { where(:invite_type => Invite::NREDUCE_MENTOR) }

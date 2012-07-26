@@ -27,3 +27,5 @@ public/uploads/*
 
 solr/data/*
 solr/pids/*
+
+vendor/bundle*

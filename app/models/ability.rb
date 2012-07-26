@@ -197,8 +197,13 @@ class Ability
     # Everyone can see users
     can :read, User
 
+    cannot [:chat, :reset_hipchat_account], User
+    can [:chat, :reset_hipchat_account], User do |u|
+      u.can_access_chat?
+    end
+
     cannot :read, Startup
-    
+
     # Everyone can see a startup's profile unless they are private
     can :read, Startup do |s|
       if s.public?
