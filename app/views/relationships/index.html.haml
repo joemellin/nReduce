@@ -119,7 +119,8 @@
             .status.btn-group.glow{:align => 'center'}
               %button.btn{:href => '#', :class => 'btn'} Suggested Team
               - if !s.cached_relationship.blank? && !s.cached_relationship.message.blank?
-                %small= s.cached_relationship.message
+                %br/
+                  %small{:color => '#999'} (#{s.cached_relationship.message})
             .members{:align => 'center'}
               - s.team_members.shuffle.first(3).each do |tm|
                 .inline-block{:style => 'margin-left: 4px'}= image_tag(user_avatar_url(tm), :title => tm.name, :style => 'width: 50px; height: 50px;')
