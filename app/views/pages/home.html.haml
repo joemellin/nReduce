@@ -1,62 +1,52 @@
-.home_page.myriad_light
-  %br/
-  %br/
-  %h2.headspacing 
-    An
-    %B Alliance of Founders
-    Providing 
-  %h1.myriad_bold.headspacing Feedback & Accountability
-  %h3.headspacing
-    Join our 
-    %b Free Online Startup Incubator 
-    and 
-    %b Build an Awesome Company!
-  %br/
-  %br/
+.home_page
+  %h1.alliance
+    An <strong>Alliance of Founders</strong> Providing 
+  %h2.feedback
+    Feedback & Accountability
+  
+  .row
+    .span4.offset8
+      .linkedintxt 
+        Startup Founder? 
+        %b Join Us
+        .linkedinbtn= link_to image_tag('linkedinjoin.png'), "/auth/linkedin"
 
-  .center.linkedintxt 
-    %b Startup Founder? 
-    Join Us
-  .center.linkedinbtn= link_to image_tag('linkedinjoin.png'), "/auth/linkedin"
-  %br/
-  .left.share_btns
-    :plain
-      <a href="https://twitter.com/share" class="twitter-share-button" data-url="http://www.nreduce.com" data-text="An alliance of founders working together to build Amazing Companies" data-via="nReduce">Tweet</a>
-      <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
-      <div class="fb-like" data-href="http://www.nreduce.com" data-send="false" data-layout="button_count" data-width="150" data-show-faces="false" data-font="lucida grande"></div>
-  .right.newslogos= image_tag('venturebeat.png')
-  .right.newslogos= image_tag('pando.png')
-  .right.newslogos= image_tag('xoconomy.png')
-  .clear
+  .news
+    .newslogo= image_tag('venturebeat.png')
+    .newslogo= image_tag('pando.png')
+    .newslogo= image_tag('xoconomy.png')
+  
+
   %hr
-  %br/
-  .row
-    .span1
-      %p
-    .span5
-      %h3.exheading Work with other Founders
-      %p.extext Build an amazing community of fellow founders who you collaborate with each week. 
-    .span5
-      %h3.exheading Free and No Equity Taken
-      %p.extext We have designed nReduce to be free to founders and it always will be. 
-  .row
-    .span1
-      %p
-    .span5
-      %h3.exheading Build your Network
-      %p.extext Meet and work with 1000+ other founders in the global nReduce network. 
-    .span5
-      %h3.exheading Keep Mentors and Investors Engaged
-      %p.extext Share your weekly progress with your existing mentors and investors. Enable them to easily give you advice. 
-  .row
-    .span1
-      %p
-    .span5
-      %h3.exheading Earn More Mentors
-      %p.extext If you complete the mentorship requirements you can contact mentors on the nReduce mentor list. 
-    .span5
-      %h3.exheading Become an nStar
-      %p.extext If you meet the requirements you can compete to become an nStar and be featured in our online demo day.
+  
+  .middle_container
+    .row
+      .span4
+        .benefit
+          %h3 Work with other Founders
+          %p Build an amazing community of fellow founders who you collaborate with each week. 
+      .span4
+        .benefit
+          %h3 Free and No Equity Taken
+          %p We have designed nReduce to be free to founders and it always will be. 
+    .row
+      .span4
+        .benefit
+          %h3 Build your Network
+          %p Meet and work with 1000+ other founders in the global nReduce network. 
+      .span4
+        .benefit
+          %h3 Keep Mentors and Investors Engaged
+          %p Share your weekly progress with your existing mentors and investors. Enable them to easily give you advice. 
+    .row
+      .span4
+        .benefit
+          %h3 Earn More Mentors
+          %p If you complete the mentorship requirements you can contact mentors on the nReduce mentor list. 
+      .span4
+        .benefit
+          %h3 Become an nStar
+          %p If you meet the requirements you can compete to become an nStar and be featured in our online demo day.
   %br/
   %br/
   %br/
