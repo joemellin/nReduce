@@ -82,7 +82,7 @@
         _kms('//doug1izaerwt3.cloudfront.net/' + _kmk + '.1.js');
     = "_kmq.push(['record', '#{controller.controller_name}_#{controller.action_name}']);"
     - if user_signed_in?
-      = "_kmq.push(['identify', '#{current_user.email}']);"
+      = "_kmq.push(['identify', '#{current_user.id}']);"
     - if @conversion == true
       _kmq.push(['record', 'Conversion']);
     </script>
