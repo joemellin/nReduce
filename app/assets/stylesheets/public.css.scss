@@ -23,6 +23,13 @@
     color: #999999;
 
   }
+
+  .background-field{
+    background: url(background-pattern.png);
+    min-height: 200px;
+    padding: 30px;
+  }
+
   .headspacing {
     padding: 25px 0px 0px 50px
   }
@@ -145,6 +152,17 @@
   }
 
 }
+
+// nStars
+
+.nstars{
+
+  .banner{
+    background-image: "nstars-banner-left.jpg"
+  }
+
+}
+
 .nstarjoe {
   h3 {
     align: center;
@@ -176,11 +194,10 @@
   }
   .demoday {
     text-align: left;
-    font-size: 16px;
-    color: #999999;
-    line-height:200%;
-    margin: 20px 0px 50px 0px;
-    font-weight: 300;
+    font-size: 18px;
+    color: #777;
+    line-height: 1.4;
+    font-weight: 100;
 
   }
 

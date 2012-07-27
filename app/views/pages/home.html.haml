@@ -1,20 +1,22 @@
 .home_page
-  %h1.alliance
-    An <strong>Alliance of Founders</strong> Providing 
-  %h2.feedback
-    Feedback & Accountability
-  
   .row
-    .span4.offset8
-      .linkedintxt 
-        Startup Founder? 
-        %b Join Us
-        .linkedinbtn= link_to image_tag('linkedinjoin.png'), "/auth/linkedin"
+    .span12.background-field
+      %h1.alliance
+        An <strong>Alliance of Founders</strong> Providing 
+      %h2.feedback
+        Feedback & Accountability
+    
+      .row
+        .span4.offset8
+          .linkedintxt 
+            Startup Founder? 
+            %b Join Us
+            .linkedinbtn= link_to image_tag('linkedinjoin.png'), "/auth/linkedin"
 
-  .news
-    .newslogo= image_tag('venturebeat.png')
-    .newslogo= image_tag('pando.png')
-    .newslogo= image_tag('xoconomy.png')
+      .news
+        .newslogo= image_tag('venturebeat.png')
+        .newslogo= image_tag('pando.png')
+        .newslogo= image_tag('xoconomy.png')
   
 
   %hr
