@@ -58,6 +58,7 @@ GEM
       activemodel (>= 3.2.0)
       activesupport (>= 3.2.0)
     chronic (0.6.7)
+    cocaine (0.2.1)
     coffee-rails (3.2.2)
       coffee-script (>= 2.2.0)
       railties (~> 3.2.0)
@@ -196,6 +197,12 @@ GEM
     paper_trail (2.6.3)
       activerecord (~> 3.0)
       railties (~> 3.0)
+    paperclip (3.0.4)
+      activemodel (>= 3.0.0)
+      activerecord (>= 3.0.0)
+      activesupport (>= 3.0.0)
+      cocaine (>= 0.0.2)
+      mime-types
     polyglot (0.3.3)
     pr_geohash (1.0.0)
     progress_bar (0.4.0)
@@ -368,6 +375,7 @@ DEPENDENCIES
   omniauth-linkedin
   omniauth-twitter
   paper_trail (~> 2.6.3)
+  paperclip (~> 3.0)
   progress_bar
   rails (= 3.2.5)
   rails_admin
