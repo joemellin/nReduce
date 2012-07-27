@@ -1,5 +1,7 @@
 - hide_nav ||= false
 .nav
+  - unless user_signed_in?
+    .right= link_to image_tag('nstarlink_s.png'), nstar_path
   .right
     %ul.nav.nav-pills
       - if user_signed_in?
@@ -47,6 +49,7 @@
               %li= link_to "Log out", logout_path, :method => :delete
       - else
         %li= link_to "Login", login_path
+      
   .left= link_to image_tag('nreduce_s.png'), "/"
   .clear
   %hr
