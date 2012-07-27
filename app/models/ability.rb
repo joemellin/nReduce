@@ -133,14 +133,14 @@ class Ability
       # User can only manage their own authentications
       can [:read, :destroy], Authentication, :user_id => user.id
 
-      cannot :before_video, Startup
+      cannot :intro_video, Startup
 
       # Startup can view relationships they are involved in
       if !user.startup_id.blank?
         can :read, Relationship do |relationship|
           relationship.is_involved?(user.startup)
         end
-        can :before_video, Startup do |s|
+        can :intro_video, Startup do |s|
           s.checkins.count == 0
         end
       end

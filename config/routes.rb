@@ -103,6 +103,7 @@ Nreduce::Application.routes.draw do
       match 'invite'
     end
     member do
+      match 'intro_video'
       match 'before_video'
       get 'mentor_checklist'
       match 'invite_team_members'
