@@ -1,4 +1,10 @@
 .home_page {
+  margin-top: -12px;
+
+  h2 {
+    font-size: 40px;
+    color: #999999;
+  }
   h2.feedback {
     font-size: 45px;
     color: #26A9EB;
@@ -11,6 +17,13 @@
     color: #999;
     margin: 14px 0;
     text-rendering: optimizelegibility;
+  }
+
+  h1.feedback {
+    font-size: 80px;
+    color: #26A9EB;
+    line-height: 70px;
+    padding-left: 50px;
   }
 
   h1.alliance strong{
@@ -27,8 +40,6 @@
 
   .background-field{
     background: url(background-pattern.png);
-    min-height: 200px;
-    padding: 30px;
   }
 
   .headspacing {
