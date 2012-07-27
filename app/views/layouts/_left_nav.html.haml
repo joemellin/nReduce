@@ -21,9 +21,9 @@
       - css = ['current', 'uncomplete']
     .profile_tab{:class => css.join(' ')} Build Team
     - css -= ['current']
-    - if @account_setup_action == [:startups, :before_video]
+    - if @account_setup_action == [:startups, :intro_video]
       - css = ['current', 'uncomplete']
-    .profile_tab{:class => css.join(' ')} Post Before Video
+    .profile_tab{:class => css.join(' ')} Post Team Video
     - css -= ['current']
   - if current_user.mentor? or current_user.investor?
     - if @account_setup_action == [:startups, :invite]
