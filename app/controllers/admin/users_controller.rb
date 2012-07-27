@@ -3,8 +3,6 @@ class Admin::UsersController < ApplicationController
 
   def index
     @users = User.with_any_onboarded(:startup, :mentor, :nreduce_mentor).without_setup(:welcome).where('created_at > "2012-07-24"').order('created_at DESC').includes(:startup).paginate(:page => params[:page], :per_page => 50)
-    startup_ids = @users.map{|u| u.startup_id }.delete_if{|id| id.blank? }
-    @checkins_by_startup = Hash.by_key(Checkin.where(:startup_id => startup_ids), :startup_id)
   end
 
   # Sign in as a different user
