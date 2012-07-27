@@ -7,6 +7,7 @@
     %th Email
     %th Roles
     %th Startup
+    %th Checkin?
     %th Joined
   %tbody
     - @users.each do |u|
@@ -16,5 +17,6 @@
         %td= u.email
         %td= u.roles
         %td= u.startup_id.blank? ? '--' : link_to(u.startup.name, u.startup)
+        %td= !@checkins_by_startup[u.startup_id].blank? ? 'Yes' : '--'
         %td= distance_of_time_in_words_to_now(u.created_at)
 = will_paginate @users
