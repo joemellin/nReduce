@@ -26,7 +26,7 @@ gem "paperclip", "~> 3.0"
 gem 'formtastic'
 gem 'will_paginate', "~> 3.0"
 gem 'rails_admin' # full admin package
-gem 'backup', "~> 3.0.24" # db backup 
+gem 'backup', "~> 3.0.24" # db backup
 gem 'whenever' # cron scheduling
 gem 'resque'
 gem 'exception_notification'
@@ -43,6 +43,7 @@ gem 'sunspot_solr' # pre-packaged solr distro for use in dev
 gem 'progress_bar' # shows solr indexing progress
 gem 'bitmask_attributes'
 gem 'paper_trail', '~> 2.6.3'
+gem 'slope_one'
 
 
 group :test, :development do
