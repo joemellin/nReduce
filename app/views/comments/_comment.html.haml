@@ -13,7 +13,8 @@
     - elsif !comment.user.startup_id.blank?
       &nbsp;•&nbsp;
       = link_to comment.user.startup.name, startup_path(:id => comment.user.startup.id)
-    %span.time= "• #{time_ago_in_words(comment.created_at)} ago"
+    •
+    %span.time= link_to "#{time_ago_in_words(comment.created_at)} ago", "#comment_#{comment.id}"
     - unless comment.awesome_count == 0
       •
       %strong= pluralize(comment.awesome_count, 'awesome')
