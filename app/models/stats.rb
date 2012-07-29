@@ -1,4 +1,19 @@
 class Stats
+
+  # Returns the ids of checkins that this user has seen during the given time period
+  # It will check for direct relationships (mentor -> startup), as well as user's startup -> startups
+  # It will also ignore any checkins created by this user's startup
+  # def self.checkin_ids_seen(from_time, to_time, checkins_by_startup = [])
+  #   # Grab all completed checkins completed during this time period to see how many you did/ didn't comment on
+  #   checkins_by_startup ||= Hash.by_key(Checkin.where(['created_at > ? AND created_at < ?', from_time.to_s(:db), to_time.to_s(:db)]).completed.all, :startup_id, nil, true)
+
+  #   if self.entrepreneur? and !self.startup.blank?
+  #     user_relationship_history = Relationship.history_for_entity(self.startup, 'Startup')
+  #   end
+  #   user_relationship_history
+
+  #   user_relationship_history = Relationship.history_for_entity(self.startup)
+  # end
   
     # Calculate engagement metrics for all users
     # Limitations:

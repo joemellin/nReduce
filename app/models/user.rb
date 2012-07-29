@@ -41,6 +41,7 @@ class User < ActiveRecord::Base
   validates_presence_of :linkedin_url, :if => :profile_fields_required?
 
   before_create :set_default_settings
+  after_create :mailchimp!
   before_save :geocode_location
 
   acts_as_taggable_on :skills, :industries
@@ -256,8 +257,8 @@ class User < ActiveRecord::Base
 
     h = Hominid::API.new(Settings.apis.mailchimp.api_key)
 
-    h.list_subscribe(Settings.apis.mailchimp.startup_list_id, email, {}, "html", false) unless self.startup_id.blank?
-    h.list_subscribe(Settings.apis.mailchimp.mentor_list_id, email, {}, "html", false) if self.mentor?
+    #h.list_subscribe(Settings.apis.mailchimp.startup_list_id, email, {}, "html", false) unless self.startup_id.blank?
+    #h.list_subscribe(Settings.apis.mailchimp.mentor_list_id, email, {}, "html", false) if self.mentor?
     h.list_subscribe(Settings.apis.mailchimp.everyone_list_id, email, {}, "html", false)
 
     self.mailchimped = true
