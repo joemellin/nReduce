@@ -55,15 +55,8 @@ class RelationshipsController < ApplicationController
 
     @num_blank_spots = current_user.mentor? ? 4 : 8
 
-    if current_user.roles?(:nreduce_mentor) and @startups.size == 0
-      flash[:notice] = 'Congratulations, you are now an nReduce mentor. Click on the "mentor" 
-      link in the menu bar to see the other mentors.<br /><br />Qualified startups can now contact you, 
-      and you will receive an email notifying you of mentorship requests.<br /><br />
-      If you have any questions please email joe@nReduce.com'
-    end
-
+    @show_mentor_message = true if current_user.roles?(:nreduce_mentor)
     
-
     # Suggested, pending relationships and invited startups
     @suggested_startups = @startup.suggested_startups unless @startup.blank?
     @pending_relationships = @entity.pending_relationships
