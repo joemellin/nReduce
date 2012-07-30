@@ -18,17 +18,17 @@ class RelationshipsController < ApplicationController
       return
     end
     @startups = @entity.connected_to
+        # Add nreduce to list if they don't have any startups
+    if !current_user.entrepreneur? and @startups.blank?
+      @startups = Startup.where(:id => Startup.nreduce_id)
+      no_startups = true
+    end 
+
     if current_user.mentor?
       @checkins_by_startup = Checkin.current_checkin_for_startups(@startups)
     else
       @checkins_by_startup = Checkin.current_checkin_for_startups(@startups + [@startup])
     end
-
-    # Add nreduce to list if they don't have any startups
-    if !current_user.entrepreneur? and @startups.blank?
-      @startups = Startup.where(:id => Startup.nreduce_id)
-      no_startups = true
-    end 
     
     # Sort by startups who have the most recent completed checkins first
     long_ago = Time.now - 100.years
@@ -60,15 +60,8 @@ class RelationshipsController < ApplicationController
 
     @num_blank_spots = current_user.mentor? ? 4 : 8
 
-    if current_user.roles?(:nreduce_mentor) && no_startups == true
-      flash[:notice] = 'Congratulations, you are now an nReduce mentor. Click on the "mentor" 
-      link in the menu bar to see the other mentors.<br /><br />Qualified startups can now contact you, 
-      and you will receive an email notifying you of mentorship requests.<br /><br />
-      If you have any questions please email joe@nReduce.com'
-    end
-
+    @show_mentor_message = true if current_user.roles?(:nreduce_mentor) && no_startups == true
     
-
     # Suggested, pending relationships and invited startups
     @suggested_startups = @startup.suggested_startups(3) unless @startup.blank?
     @pending_relationships = @entity.pending_relationships
