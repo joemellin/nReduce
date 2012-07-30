@@ -90,7 +90,7 @@
       %div{:align => 'center'}
         %h3 #{h(@startup.name.possessive)} check-ins are private. To get permission to see them:
         %br/
-        = render 'relationships/buttons', :entity => @entity, :connected_with => @startup
+        = render 'relationships/buttons', :entity => @entity, :connected_with => @startup, :relationship => @relationship
 - else
   .row
     .span12{:align => 'center'}
