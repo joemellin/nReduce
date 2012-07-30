@@ -127,24 +127,26 @@ class Startup < ActiveRecord::Base
     }
 
     # Matching on all industries & company goal
-    search = Startup.search do
-      all_of do
-        with :industry_tag_ids, industry_ids
+    unless industry_ids.blank?
+      search = Startup.search do
+        all_of do
+          with :industry_tag_ids, industry_ids
+        end
+        with(:num_checkins).greater_than(1) # (greather_than is greater than or equal to)
+        with(:num_pending_relationships).less_than(10)
+        with :company_goal, self.company_goal
+        without :id, ignore_startup_ids
+        order_by :rating, :desc
+        order_by :num_checkins, :desc
+        paginate :per_page => limit
       end
-      with(:num_checkins).greater_than(1) # (greather_than is greater than or equal to)
-      with(:num_pending_relationships).less_than(10)
-      with :company_goal, self.company_goal
-      without :id, ignore_startup_ids
-      order_by :rating, :desc
-      order_by :num_checkins, :desc
-      paginate :per_page => limit
+      startups += search.results unless search.results.blank?
+      suggest_startups.call(startups, 'same industry & company goal')
     end
-    startups += search.results unless search.results.blank?
-    suggest_startups.call(startups, 'same industry & company goal')
     
 
     # Matching on all industries
-    if startups.size < limit
+    if startups.size < limit && !industry_ids.blank?
       search = Startup.search do
         all_of do
           with :industry_tag_ids, industry_ids
@@ -161,7 +163,7 @@ class Startup < ActiveRecord::Base
     end
 
     # Matching on any industry
-    if startups.size < limit
+    if startups.size < limit && !industry_ids.blank?
       search = Startup.search do
         any_of do
           with :industry_tag_ids, industry_ids
