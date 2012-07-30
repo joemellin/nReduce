@@ -3,7 +3,7 @@
   %head{:profile => "http://www.w3.org/2005/10/profile"}
     %meta(charset="utf-8")
     %title
-      nReduce S12
+      nReduce | online startup incubator
       = "➝ #{content_for(:subtitle)}" if content_for?(:subtitle)
     %link{:rel => 'icon', :href => 'http://assets.nreduce.com/images/favicon.ico'}
     -# add some fonts
@@ -80,8 +80,9 @@
         }
         _kms('//i.kissmetrics.com/i.js');
         _kms('//doug1izaerwt3.cloudfront.net/' + _kmk + '.1.js');
-
-        - if @conversion == true
-          :plain
-            _kmq.push(['record', 'Conversion']);
-      </script>
+    = "_kmq.push(['record', '#{controller.controller_name}_#{controller.action_name}']);"
+    - if user_signed_in?
+      = "_kmq.push(['identify', '#{current_user.id}']);"
+    - if @conversion == true
+      _kmq.push(['record', 'Conversion']);
+    </script>

@@ -1,74 +1,116 @@
 .home_page {
-  h1 {
-    padding-top:15px;
-    padding-bottom:30px;
+  margin-top: -12px;
+
+  h2 {
+    font-size: 40px;
+    color: #999999;
+  }
+  h2.feedback {
+    font-size: 45px;
+    color: #26A9EB;
+    line-height: 70px;
+    text-rendering: optimizelegibility;
+    margin: 10px 0;
+  }
+  h1.alliance {
+    font-size: 27px; 
+    color: #999;
+    margin: 14px 0;
+    text-rendering: optimizelegibility;
+  }
+
+  h1.feedback {
     font-size: 80px;
     color: #26A9EB;
     line-height: 70px;
-    
+    padding-left: 50px;
   }
-  h2 {
-    font-size: 40px; 
-    color: #999999;
 
+  h1.alliance strong{
+    font-weight: bold;
+    color: #666;
   }
+
   h3 {
     font-weight: 400;
     font-size: 25px; 
     color: #999999;
 
   }
+
+  .background-field{
+    background: url(background-pattern.png);
+  }
+
   .headspacing {
     padding: 25px 0px 0px 50px
   }
-  .linkedinbtn {
-    padding: 20px 0px 20px 0px;
 
-  }
   .share_btns {
     padding: 25px 0px 0px 50px
   }
   .linkedintxt {
-    color: #cccccc;
-    padding: 50px 00px 10px 00px;
-    font-size: 30px;
+    color: #aaa;
+    font-size: 24px;
+    font-weight: 100;
+    line-height: 2em;
+  }
+  .linkedintxt b{
+    color: #888;
+    font-weight: bold;
   }
 
   // .tk-museo-sans
   .scriptfeature {
-    font-family: "museo-sans",sans-serif;
-    font-style: italic;
-    font-weight: 300;
-    font-size: 36px;
-    color: #666666;
-    line-height:200%;
+    font-family: "myriad-pro", arial, sans-serif;
+    font-weight: 100;
+    font-size: 24px;
+    color: #888;
+    line-height: 1.4em;
+    width: 60%;
+    margin: 0 auto;
+    text-align: center;
 
   }
-  .newslogos {
-    padding: 20px 10px 20px 10px;
+  .news{
+    margin: 30px auto ;
+    width: 50%;
+  }
+
+  .newslogo {
+    display:inline-block;
+    margin: 0 35px 0 0;
 
   }
 
-  .exheading {
-    padding: 40px 25px 0px 50px;
+  .middle_container{
+    margin: 44px auto;
+    width: 70%;
+  }
+
+  .benefit{
+    display: block;
+    margin: 3px 0 18px 0;
+  }
+
+  .benefit h3 {
     font-family: "myriad-pro",sans-serif;
     font-style: normal;
     font-weight: 600; 
     font-size: 22px; 
-    color: #999999;
-
+    color: #666;
   }
-  .extext {
-    padding: 20px 25px 0px 50px;
+
+  .benefit p {
     font-family: "myriad-pro",sans-serif;
     font-style: normal;
     font-weight: 300; 
-    font-size: 18px;
-    line-height:150%;
-    color: #999999;
+    font-size: 20px;
+    line-height: 1.4;
+    color: #999;
   }
+
   .jobtitle {
-    padding-top:10px;
     padding-left:10px;
   }
 }
@@ -122,6 +164,17 @@
   }
 
 }
+
+// nStars
+
+.nstars{
+
+  .banner{
+    background-image: "nstars-banner-left.jpg"
+  }
+
+}
+
 .nstarjoe {
   h3 {
     align: center;
@@ -153,17 +206,52 @@
   }
   .demoday {
     text-align: left;
-    font-size: 16px;
-    color: #999999;
-    line-height:200%;
-    margin: 20px 0px 50px 0px;
-    font-weight: 300;
+    font-size: 18px;
+    color: #777;
+    line-height: 1.4;
+    font-weight: 100;
 
   }
 
+}
 
+
+
+// Team Page
+
+.team{
+  h1 {
+    border-bottom: 1px solid #eee;
+    margin: 20px 0;
+    padding-bottom: 10px;
+    font-weight: bold;
+  }
+
+  .teammate {
+    margin-bottom: 20px;
+    padding: 5px;
+
+
+    h2 {
+      font-size: 24px;
+
+      span{
+        color: #ccc;
+        font-size: 18px;
+      }
+    }
+
+    p{
+      font-size: 15px;
+    }
+  }
 
 }
+  
+
+
+
+
 .nstar {
   background-image: image-url("nstarsbkg.jpg") no-repeat left;
   .rsvp {

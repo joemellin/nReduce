@@ -179,6 +179,17 @@ class StartupsController < ApplicationController
     #end
   end
 
+  def intro_video
+    @startups = Startup.with_intro_video.limit(6).order("RAND()")
+    if !params[:startup].blank? && !params[:startup][:intro_video_url].blank?
+      @startup.intro_video_url = params[:startup][:intro_video_url]
+      if @startup.save
+        redirect_to '/'
+        return
+      end
+    end
+  end
+
     # Removes a team member
   def remove_team_member
     u = User.find(params[:user_id])

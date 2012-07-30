@@ -38,6 +38,13 @@ class UserMailer < ActionMailer::Base
     mail(:to => @user.email, :subject => "You have a new team!")
   end
 
+  def investor_approved(notification)
+    @relationship = notification.attachable
+    @connected_with = @relationship.connected_with
+    @user = notification.user
+    mail(:to => @user.email, :subject => "You have a new team!")
+  end
+
   def new_comment(notification)
     @comment = notification.attachable
     @checkin = @comment.checkin

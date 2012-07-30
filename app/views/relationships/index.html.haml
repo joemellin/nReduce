@@ -66,15 +66,6 @@
   %hr
   %br
   %br
-  - if @show_mentor_message
-    .row
-      Welcome to the nReduce Mentor network!  Startups that earn the ability to access the mentor network can then contact one mentor per week.   
-      If you are contacted by a startup for a mentorship, you will receive an email and the startup will appear here.  
-      You can then learn about the startup and decide if you would like to mentor them.  
-      If so you will be notified of their weekly progress and be able to give feedback / advice.  We have connected you with team nReduce, so that you can get a feel of the system.  <br />
-      Team really value mentors who are engaged weekly so we in the mentor network we promote mentors based on their weekly engagement and the number of startups they work with. 
-      Also, if you are mentoring other startups outside of nReduce, you can use the invite button to invite that startup to join nReduce so that you could mentor all your startups from the same system.  
-      Thank you again for being an nReduce mentor. <br />   Please contact me if you have any questions : joe@nreduce.com <br /><br />Best, <br />-Joe"
   .row.teams
     - c = 0
     - @startups.each do |s|
@@ -127,7 +118,9 @@
             .background{:style => "background-image: url('#{s.logo_url(:square)}'); cursor: pointer;"} &nbsp;
             .status.btn-group.glow{:align => 'center'}
               %button.btn{:href => '#', :class => 'btn'} Suggested Team
-              /= link_to '<i class="icon-info-sign"></i>'.html_safe, '#', :title => "Because similar industries and company goals"
+              - if !s.cached_relationship.blank? && !s.cached_relationship.message.blank?
+                %br/
+                %small{:color => '#999'} (#{s.cached_relationship.message})
             .members{:align => 'center'}
               - s.team_members.shuffle.first(3).each do |tm|
                 .inline-block{:style => 'margin-left: 4px'}= image_tag(user_avatar_url(tm), :title => tm.name, :style => 'width: 50px; height: 50px;')
@@ -204,3 +197,32 @@
       %h3 Invite a Startup
     .modal-body
       = render 'startups/invite'
+
+  - if @show_mentor_message
+    .row
+      .span3
+        &nbsp;
+      .span6
+        %h3 Welcome to the nReduce Mentor network!  
+        %br/ 
+        %p Startups earn the ability to access the mentor network with 1-3 months of hard work on nReduce. Once they earn access they can contact one mentor per week. If you are contacted by a startup for a mentorship, you will receive an email and the startup will appear here. You can then learn about the startup and decide if you would like to mentor them.
+        %p If you decide to mentor the startup, you will be notified about their weekly progress and be able to give feedback and advice.  To help you get familiar with the system, we have connected you with team nReduce.
+        %br/ 
+        %p The window for posting an after video opens at 4pm PST on Mondays and closes at 4 PM PST on Tuesdays.  Once one of your startups posts their after video for the week, you will be notifed by email and a "Give Feedback" button will appear below their startup square. Simply click this button to access their checkin and give feedback.
+        %p If it is after 4pm PST on Monday and one of your teams hasn't posted their after video, you will see a "Nudge" button that will send them a message saying that you are waiting to give them feedback.
+        %br/ 
+        %p If you are mentoring other startups outside of nReduce, you can invite them to join nReduce so that you can mentor all of your startups in one place. Simply click the invite button and enter their startup name and email to do so.
+        %br/ 
+        %p Mentorship is essential for startups to succeed and we are very grateful that you are willing to help these great entrepreneurs build amazing companies.
+        %br/ 
+        %p
+          Please contact me if you have any questions:
+          = mail_to 'joe@nreduce.com'
+          c: +1-415-259-8215
+        %br/ 
+        %p Best, 
+        %b -Joe
+        %br/
+        %p To meet your fellow nReduce mentors who are also passionate about helping startups, click the mentor tab in the menu bar!
+      .span3
+        &nbsp;

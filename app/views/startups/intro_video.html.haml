@@ -1,0 +1,25 @@
+.row
+  .span8
+    %h1 Post Your Team Intro Video
+    %br/
+    %br/
+    %p
+      %strong Please upload a 30 second video to Youtube that introduces your team so that everyone can "meet" you.
+
+    = semantic_form_for @startup, :url => intro_video_startup_path(@startup), :html => {:class => "form-horizontal"} do |f|
+      .control-group{error_css(@startup, :intro_video_url)}
+        = f.label :intro_video_url, "Team Intro Video URL", :class => 'control-label'
+        .controls
+          = f.text_field :intro_video_url, :class => 'span4 with-placeholder', :placeholder => 'http://www.youtube.com/watch?v=088YM4pB9lM'
+          = f.semantic_errors :intro_video_url
+          %span.help-inline.help-danger
+            %br/
+            Set it as unlisted but allow it to be embedded.
+
+      .form-actions= f.submit "Continue", :class => 'btn btn-large btn-primary'
+
+    %h2 Sample Intro Videos
+    - @startups.each do |s|
+      .left{:style => 'padding: 10px;'}
+        %iframe{:width => '250', :height => '188', :src => Youtube.embed_url(s.intro_video_url), :frameborder => 0, :allowfullscreen => true}
+    .clear

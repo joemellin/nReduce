@@ -3,6 +3,8 @@
     %h1 Post your first Before Video
     %br/
     %br/
+    %p
+      %strong This video will be private - you can choose who gets to see your checkins by adding startups to your group.
 
     = semantic_form_for @checkin, :url => before_video_startup_path(@startup), :html => {:class => "form-horizontal"} do |f|
       = render 'checkins/fields', :f => f
