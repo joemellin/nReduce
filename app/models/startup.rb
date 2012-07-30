@@ -12,6 +12,8 @@ class Startup < ActiveRecord::Base
   has_many :user_actions, :as => :attachable
   has_many :initiated_relationships, :as => :entity, :class_name => 'Relationship' # relationships this startup began
   has_many :received_relationships, :as => :connected_with, :class_name => 'Relationship' # relationships others began with this startup
+  has_many :instruments
+  has_many :slide_decks
 
   attr_accessible :name, :team_size, :website_url, :main_contact_id, :phone, :growth_model, :stage, :company_goal, :meeting_id, :one_liner, :active, :launched_at, :industry_list, :technology_list, :ideology_list, :industry, :intro_video_url, :elevator_pitch, :logo, :remote_logo_url, :logo_cache, :remove_logo, :checkins_public, :pitch_video_url
 
