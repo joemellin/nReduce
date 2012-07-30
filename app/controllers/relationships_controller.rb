@@ -5,6 +5,8 @@ class RelationshipsController < ApplicationController
   load_and_authorize_resource :except => :index
 
   def index
+    no_startups = false
+
     if current_user.mentor?
       @entity = current_user
     elsif @startup
@@ -23,7 +25,10 @@ class RelationshipsController < ApplicationController
     end
 
     # Add nreduce to list if they don't have any startups
-    @startups = Startup.where(:id => Startup.nreduce_id) if !current_user.entrepreneur? and @startups.blank?
+    if !current_user.entrepreneur? and @startups.blank?
+      @startups = Startup.where(:id => Startup.nreduce_id)
+      no_startups = true
+    end 
     
     # Sort by startups who have the most recent completed checkins first
     long_ago = Time.now - 100.years
@@ -55,7 +60,7 @@ class RelationshipsController < ApplicationController
 
     @num_blank_spots = current_user.mentor? ? 4 : 8
 
-    if current_user.roles?(:nreduce_mentor) and @startups.size == 0
+    if current_user.roles?(:nreduce_mentor) && no_startups == true
       flash[:notice] = 'Congratulations, you are now an nReduce mentor. Click on the "mentor" 
       link in the menu bar to see the other mentors.<br /><br />Qualified startups can now contact you, 
       and you will receive an email notifying you of mentorship requests.<br /><br />

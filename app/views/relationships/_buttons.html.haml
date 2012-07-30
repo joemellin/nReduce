@@ -17,7 +17,7 @@
   - elsif !relationship.blank? and relationship.suggested?
     = link_to '<i class="icon-refresh"></i> Pass'.html_safe, reject_relationship_path(relationship), :class => 'btn btn-large', :method => :post
     &nbsp;&nbsp;
-    = link_to '<i class="icon-ok icon-white"></i> Add Team'.html_safe, '#', :onclick => "$('##{form_id}').modal(); return false;", :class => 'btn btn-large btn-success'
+    = link_to '<i class="icon-ok icon-white"></i> Invite to Group'.html_safe, '#', :onclick => "$('##{form_id}').modal(); return false;", :class => 'btn btn-large btn-success'
   - elsif user_signed_in? # and Relationship.can_connect?(entity, connected_with)
     = link_to((connected_with.is_a?(Startup) ? 'Invite to Group' : 'Connect'), '#', :onclick => "$('##{form_id}').modal(); return false;", :class => 'btn btn-large btn-info')
   - relationship ||= Relationship.new(:entity => entity, :connected_with => connected_with)
