@@ -188,7 +188,7 @@
 
   - nreduce_id = Startup.nreduce_id
   - if !current_user.startup_id.blank? and !nreduce_id.blank?
-    %hr
+    %hr{:style => 'margin: 20px 0 20px 0;'}
     %h3= link_to 'View nReduce\'s latest checkin', latest_startup_checkins_path(:startup_id => nreduce_id)
 
   #invite_team_modal.modal.hide
@@ -199,6 +199,7 @@
       = render 'startups/invite'
 
   - if @show_mentor_message
+    %hr{:style => 'margin: 20px 0 20px 0;'}
     .row
       .span3
         &nbsp;
@@ -223,6 +224,9 @@
         %p Best, 
         %b -Joe
         %br/
-        %p P.S. To meet your fellow nReduce mentors who are also passionate about helping startups, click the mentor tab in the menu bar!
+        %p
+          P.S. To meet your fellow nReduce mentors who are also passionate about helping startups, click the
+          = link_to 'mentor tab', mentors_path
+          in the menu bar!
       .span3
         &nbsp;
