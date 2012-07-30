@@ -3,9 +3,12 @@
     %h1 You connect up with other Startups.
     %br/
     = image_tag 'connecting.png'
-    %h2 Connecting with a startup means that you will share your weekly progress with each other. 
+    - if current_user.entrepreneur?
+      %h2 Connecting with a startup means that you will share your weekly progress with each other.
+    - else
+      %h2 Connecting with a startup means that you will be able to give feedback and advice on their weekly progress checkins.
     %br/
-    %h2 You can invite startups you know to join and or connect with a startup in the global nReduce community. 
+    %h2 You can invite startups you know to join and or connect with startups in the global nReduce community. 
     %br/
     %br/
     %center
