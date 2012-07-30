@@ -66,6 +66,15 @@
   %hr
   %br
   %br
+  - if @show_mentor_message
+    .row
+      Welcome to the nReduce Mentor network!  Startups that earn the ability to access the mentor network can then contact one mentor per week.   
+      If you are contacted by a startup for a mentorship, you will receive an email and the startup will appear here.  
+      You can then learn about the startup and decide if you would like to mentor them.  
+      If so you will be notified of their weekly progress and be able to give feedback / advice.  We have connected you with team nReduce, so that you can get a feel of the system.  <br />
+      Team really value mentors who are engaged weekly so we in the mentor network we promote mentors based on their weekly engagement and the number of startups they work with. 
+      Also, if you are mentoring other startups outside of nReduce, you can use the invite button to invite that startup to join nReduce so that you could mentor all your startups from the same system.  
+      Thank you again for being an nReduce mentor. <br />   Please contact me if you have any questions : joe@nreduce.com <br /><br />Best, <br />-Joe"
   .row.teams
     - c = 0
     - @startups.each do |s|
