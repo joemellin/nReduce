@@ -27,6 +27,15 @@ Nreduce::Application.routes.draw do
 
   resources :nudges, :only => [:create, :show]
 
+  resources :investors, :only => [:index] do
+    collection do
+      get 'show_startup'
+    end
+    resources :ratings, :only => [:create]
+  end
+
+  
+
   resources :meetings, :only => [:index, :show, :edit, :update] do
     post 'message_attendees', :on => :member
     resources :meeting_messages, :only => [:index, :new, :create, :edit]

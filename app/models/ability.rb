@@ -180,6 +180,8 @@ class Ability
       cannot :change_mentor_status, User
       cannot :see_mentor_page, User
       cannot :search_mentors, User
+
+      cannot :see_investors, User
     end
     
     if user.mentor?
@@ -198,6 +200,9 @@ class Ability
         u.startup.can_invite_mentor?
       end
     end
+
+    # For now just show investor page to other investors
+    can :see_investors, User if user.investor?
 
     # Everyone can see users
     can :read, User
