@@ -85,9 +85,14 @@ class Ability
 
       # Only connected_with party can approve relationship
       can :approve, Relationship do |relationship|
-        if relationship.connected_with_type == 'User' and relationship.connected_with_id == user.id
+        if relationship.connected_with_type == 'User' && relationship.connected_with_id == user.id
           true
-        elsif relationship.connected_with_type == 'Startup' and relationship.connected_with_id == user.startup_id
+        elsif relationship.connected_with_type == 'Startup' && relationship.connected_with_id == user.startup_id
+          true
+        # if suggested relatinship, this will allow the user who it was suggested to, to change relationship to pending
+        elsif relationship.suggested? && relationship.entity_type == 'Startup' and relationship.entity_id == user.startup_id
+          true
+        elsif relationship.suggested? && relationship.entity_type == 'User' and relationship.entity_id == user.id
           true
         else
           false
@@ -133,14 +138,14 @@ class Ability
       # User can only manage their own authentications
       can [:read, :destroy], Authentication, :user_id => user.id
 
-      cannot :before_video, Startup
+      cannot :intro_video, Startup
 
       # Startup can view relationships they are involved in
       if !user.startup_id.blank?
         can :read, Relationship do |relationship|
           relationship.is_involved?(user.startup)
         end
-        can :before_video, Startup do |s|
+        can :intro_video, Startup do |s|
           s.checkins.count == 0
         end
       end

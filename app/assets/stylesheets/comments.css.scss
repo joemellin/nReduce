@@ -34,8 +34,9 @@ a {
   }
   .time {
     font-size: .9em;
+  }
+  .time, .time a {
     color: #999;
-    margin-top: -3px;
   }
   .content {
     font-size: 1.1em;

@@ -20,7 +20,6 @@ class Startup < ActiveRecord::Base
   validate :check_video_urls_are_valid
   validates_presence_of :one_liner, :if => :new_record?
   validates_presence_of :elevator_pitch, :if => :new_record?
-  validates_presence_of :logo, :if => :new_record?
   validates_presence_of :industry_list, :if => :new_record?
   validates_presence_of :growth_model, :if => :new_record?
   validates_presence_of :stage, :if => :new_record?
@@ -38,7 +37,7 @@ class Startup < ActiveRecord::Base
   scope :with_intro_video, where('intro_video_url IS NOT NULL')
   scope :with_logo, where('logo IS NOT NULL')
 
-  bitmask :setup, :as => [:profile, :invite_team_members, :before_video]
+  bitmask :setup, :as => [:profile, :invite_team_members, :intro_video]
 
   # Uses Sunspot gem with Solr backend. Docs: http://outoftime.github.com/sunspot/docs/index.html
   # https://github.com/outoftime/sunspot
@@ -111,6 +110,15 @@ class Startup < ActiveRecord::Base
 
     industry_ids = self.industries.map{|t| t.id }
 
+    # Create lambda to add startups
+    suggest_startups = Proc.new {|startups, message|
+      startups.each do |s|
+        break if num_suggested >= limit
+        Relationship.suggest_connection(self, s, :startup_startup, message)
+        num_suggested += 1
+      end
+    }
+
     # Find startups with same industries, company goal, and sort by best engagement first
     search = Startup.search do
       all_of do
@@ -121,11 +129,12 @@ class Startup < ActiveRecord::Base
       order_by :rating, :desc
       paginate :per_page => limit
     end
-
     startups += search.results unless search.results.blank?
+    suggest_startups.call(startups, 'same industry & company goal')
+    
 
     # Find startups just with same industries
-    if startups.blank? or startups.size < limit
+    if startups.size < limit
       search = Startup.search do
         all_of do
           with :industry_tag_ids, industry_ids
@@ -135,9 +144,10 @@ class Startup < ActiveRecord::Base
         paginate :per_page => limit
       end
       startups += search.results unless search.results.blank?
+      suggest_startups.call(startups, 'same industry')
     end
 
-    if startups.blank? or startups.size < limit
+    if startups.size < limit
       search = Startup.search do
         any_of do
           with :industry_tag_ids, industry_ids
@@ -147,14 +157,29 @@ class Startup < ActiveRecord::Base
         paginate :per_page => limit
       end
       startups += search.results unless search.results.blank?
+      suggest_startups.call(startups, 'same industry')
     end
 
-    # Create suggested relationships
-    startups.each do |s|
-      message = ''
-      break if num_suggested >= limit
-      Relationship.suggest_connection(self, s, :startup_startup, message)
-      num_suggested += 1
+    if startups.size < limit and !self.stage.blank?
+      search = Startup.search do
+        with :stage, self.stage
+        without :id, ignore_startup_ids
+        order_by :rating, :desc
+        paginate :per_page => 2
+      end
+      startups += search.results unless search.results.blank?
+      suggest_startups.call(startups, "same company stage")
+    end
+
+    if startups.size < limit and !self.company_goal.blank?
+      search = Startup.search do
+        with :company_goal, self.company_goal
+        without :id, ignore_startup_ids
+        order_by :rating, :desc
+        paginate :per_page => 2
+      end
+      startups += search.results unless search.results.blank?
+      suggest_startups.call(startups, "same company goal")
     end
 
     startups
@@ -373,7 +398,7 @@ class Startup < ActiveRecord::Base
 
     # Returns true if the user has set everything up for the account (otherwise forces user to go through flow)
   def account_setup?
-    self.setup?(:profile, :invite_team_members, :before_video)
+    self.setup?(:profile, :invite_team_members, :intro_video)
   end
 
   # Returns the current controller / action for setup - to see if they need to set anything up
@@ -392,12 +417,12 @@ class Startup < ActiveRecord::Base
     if !setup?(:invite_team_members)
       return [:startups, :invite_team_members]
     end
-    if !setup?(:before_video)
-      if self.checkins.count == 0
-        return [:startups, :before_video]
-      else
-        self.setup << :before_video
+    if !setup?(:intro_video)
+      if !self.intro_video_url.blank? && Youtube.valid_url?(intro_video_url)
+        self.setup << :intro_video
         self.save
+      else
+        return [:startups, :intro_video] # key is before video, but changing action to team intro video
       end
     end
     # If we just completed everything pass that back

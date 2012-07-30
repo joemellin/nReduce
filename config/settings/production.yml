@@ -10,11 +10,11 @@ apis:
 
   mailchimp:
     enabled: true
-    api_key: "7a3bbe7dd7c6cdfed2c7539c6c634c47-us5"
-    everyone_list_id: "91928a6996"
-    startup_list_id: "59cd07cfa3"
-    mentor_list_id: "fbf2bec566"
-    investor_list_id: "6dc0fcba2b"
+    api_key: "cf1fbea231f5330dbda47c72f151077e-us5"
+    everyone_list_id: "e67395ae74"
+    startup_list_id: ""
+    mentor_list_id: ""
+    investor_list_id: ""
 
 smtp_settings:
   address: 'smtp.sendgrid.net'

@@ -118,15 +118,8 @@ class Relationship < ActiveRecord::Base
           if !inv.blank?
             inv.update_attributes(:status => APPROVED, :approved_at => Time.now) unless inv.approved?
           else
-            Relationship.create(
-              :entity_id => self.connected_with_id, 
-              :entity_type => self.connected_with_type, 
-              :connected_with_id => self.entity_id, 
-              :connected_with_type => self.entity_type, 
-              :status => APPROVED,
-              :context => self.context,
-              :approved_at => Time.now
-            )
+            inv = self.new_inverse_relationship
+            inv.save
             Notification.create_for_relationship_approved(self)
           end
           # Reset relationship cache for both startups involved
@@ -157,6 +150,18 @@ class Relationship < ActiveRecord::Base
 
   def inverse_relationship
     Relationship.where(:entity_id => self.connected_with_id, :entity_type => self.connected_with_type, :connected_with_id => self.entity_id, :connected_with_type => self.entity_type).first
+  end
+
+  # Clones current object and populates a new object with same attribtues, but entity and connected_with are swapped
+  def new_inverse_relationship
+    r = self.dup
+    r.id = nil
+    # Switch entity and connected with
+    r.entity_id = self.connected_with_id
+    r.entity_type = self.connected_with_type
+    r.connected_with_id = self.entity_id
+    r.connected_with_type = self.entity_type
+    r
   end
 
   def pending?
