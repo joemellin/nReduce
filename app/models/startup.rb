@@ -71,6 +71,9 @@ class Startup < ActiveRecord::Base
     integer :num_checkins do
       self.checkins.count
     end
+    integer :num_pending_relationships do
+      self.received_relationships.pending.count
+    end
   end
 
   def self.registration_open?
@@ -129,6 +132,7 @@ class Startup < ActiveRecord::Base
         with :industry_tag_ids, industry_ids
       end
       with(:num_checkins).greater_than(1) # (greather_than is greater than or equal to)
+      with(:num_pending_relationships).less_than(10)
       with :company_goal, self.company_goal
       without :id, ignore_startup_ids
       order_by :rating, :desc
@@ -146,6 +150,7 @@ class Startup < ActiveRecord::Base
           with :industry_tag_ids, industry_ids
         end
         with(:num_checkins).greater_than(1)
+        with(:num_pending_relationships).less_than(10)
         without :id, ignore_startup_ids
         order_by :rating, :desc
         order_by :num_checkins, :desc
@@ -162,6 +167,7 @@ class Startup < ActiveRecord::Base
           with :industry_tag_ids, industry_ids
         end
         with(:num_checkins).greater_than(1)
+        with(:num_pending_relationships).less_than(10)
         without :id, ignore_startup_ids
         order_by :rating, :desc
         order_by :num_checkins, :desc
@@ -176,6 +182,7 @@ class Startup < ActiveRecord::Base
       search = Startup.search do
         with :stage, self.stage
         with(:num_checkins).greater_than(1)
+        with(:num_pending_relationships).less_than(10)
         without :id, ignore_startup_ids
         order_by :rating, :desc
         order_by :num_checkins, :desc
@@ -190,6 +197,7 @@ class Startup < ActiveRecord::Base
       search = Startup.search do
         with :company_goal, self.company_goal
         with(:num_checkins).greater_than(1)
+        with(:num_pending_relationships).less_than(10)
         without :id, ignore_startup_ids
         order_by :rating, :desc
         order_by :num_checkins, :desc
