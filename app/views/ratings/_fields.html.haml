@@ -5,17 +5,17 @@
 .control-group{error_css(f.object, :startup_id)}
   .controls= f.semantic_errors :startup_id
 
-.control-group{error_css(f.object, :feedback)}
-  = f.label :feedback, 'Rate the startup on these attributes:'
-  .controls
-    - Rating::FEEDBACK_OPTIONS.each do |o|
-      / Check true by default if they say they're interested, otherwise false / whatever is selected
-      %h3{:style => 'margin: 10px 0 10px 0'}
-        .left= check_box_tag "rating[feedback][]", o, (f.object.interested? ? true : f.object.feedback?(o))
-        .left{:style => 'margin-left: 10px'}= o.to_s.titleize
-        .clear
-    = f.semantic_errors :feedback
-      
+- if 1 == 2
+  .control-group{error_css(f.object, :feedback)}
+    = f.label :feedback, 'Rate the startup on these attributes:'
+    .controls
+      - Rating::FEEDBACK_OPTIONS.each do |o|
+        / Check true by default if they say they're interested, otherwise false / whatever is selected
+        %h3{:style => 'margin: 10px 0 10px 0'}
+          .left= check_box_tag "rating[feedback][]", o, (f.object.interested? ? true : f.object.feedback?(o))
+          .left{:style => 'margin-left: 10px'}= o.to_s.titleize
+          .clear
+      = f.semantic_errors :feedback
 
 .control-group{error_css(f.object, :explanation)}
   = f.label :explanation, f.object.interested? ? 'Why do you want to connect to them?' : 'Why did you pass?'

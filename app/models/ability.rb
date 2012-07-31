@@ -182,6 +182,7 @@ class Ability
       cannot :search_mentors, User
 
       cannot :see_investors, User
+      cannot :investor_connect_with_startups, User
     end
     
     if user.mentor?
