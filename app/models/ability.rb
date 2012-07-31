@@ -181,7 +181,7 @@ class Ability
       cannot :see_mentor_page, User
       cannot :search_mentors, User
 
-      cannot :see_investors, User
+      cannot :see_investor_page, User
       cannot :investor_connect_with_startups, User
     end
     
@@ -205,7 +205,9 @@ class Ability
     can :manage, Rating if user.investor?
 
     # For now just show investor page to other investors
-    can :see_investors, User if user.investor?
+    can :see_investor_page, User do |u|
+      u.investor? || (u.entrepreneur? and !u.startup_id.blank?)
+    end
 
     # Investor can see startups if they have contacted less than one startup this week.
     can :investor_connect_with_startups, User do |u|

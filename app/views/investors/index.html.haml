@@ -1,6 +1,47 @@
-%h1 Investors
+.investors
+  - if current_user.investor?
+    %h1 Investors
 
-- if can? :investor_connect_with_startups, current_user
-  %h2= link_to 'Show me the money!', show_startup_investors_path, :class => 'btn btn-large btn-success', :style => 'font-size: 60px;'
-- else
-  %p You have already connected with one startup this week. Please come back next Tuesday at 4pm PST to see more startups, or upgrade your account.
+    - if can? :investor_connect_with_startups, current_user
+      %h2= link_to 'Show me the money!', show_startup_investors_path, :class => 'btn btn-large btn-success', :style => 'font-size: 60px;'
+    - else
+      %p You have already connected with one startup this week. Please come back next Tuesday at 4pm PST to see more startups, or upgrade your account.
+
+  - elsif current_user.entrepreneur?
+    .row
+      .span8
+        = form_for current_user.startup, :url => '/startup/', :remote => true, :html => {:class => 'form-horizontal startup'} do |f|
+          %center
+            = image_tag('nstar_s.png')
+            %h3 Apply to be Featured in the September 5th nStar Online Demo Day
+            %br/
+            %p I am seeking investment, and nominate my startup for demo day:
+            = f.check_box :investable, :class => 'investable'
+
+          %br/
+          %h3 Your Investor Profile
+          %p To be eligible for the demo day, you'll need to create a basic pitch deck and create intro videos for each of your teammates.
+
+          %h3 Pitch Video
+          %p This is a short 4-deck pitch that gives the investor a quick intro to what you're building.
+        
+          .control-group{:style => 'margin-bottom: 0'}
+            = f.label :pitch_video_url, :class => 'control-label'
+            .controls
+              = f.text_field :pitch_video_url, :placeholder => 'http://www.youtube.com/watch?v=088YM4pB9lM', :class => 'span4'
+              %p.help-text 60 seconds, unlisted YouTube video
+          .control-group
+            .controls= f.submit 'Save', :class => 'btn'
+
+        %h3 Teammate Intro Videos
+        %p These are designed to give investors a good idea of the personalities and skillsets of your team.
+        %p 30 seconds each, unlisted YouTube video
+        - current_user.startup.team_members.each do |u|
+          .left{:style => 'margin-right: 15px'}
+            = form_for u, :remote => true do |f|
+              .control-group
+                = f.label :intro_video_url, u.name, :style => 'font-weight: bold'
+                .controls
+                  = f.text_field :intro_video_url, :placeholder => 'http://www.youtube.com/watch?v=088YM4pB9lM'
+              = f.submit 'Save', :class => 'btn'
+        .clear
