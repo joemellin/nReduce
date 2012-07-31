@@ -3,16 +3,43 @@
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
 .investors {
-  .checkin_history {
-    .checkin {
-      width: 8px;
-      height: 8px;
-      margin: 0 3px 3px 0;
-      border: 1px solid #ccc;
+  .startup {
+    .headline {
+      .name {
+        h2 { 
+          font-weight: 600;
+        }
+        padding: 10px;
+      }
+      .details {
+        padding: 10px;
+      }
     }
-    .checkin.done {
-      background-color: #ccc;
+    .video {
+      width: 500px;
+      height: 315px;
+      margin: 0 15px 15px 0;
+    }
+    .chart {
+      width: 500px;
+      height: 300px;
+    }
+    .team_members {
+      .team_member {
+        margin: 0 20px 15px 0;
+      }
+    }
+    .checkin_history {
+      margin-right: 15px;
+      .checkin {
+        width: 8px;
+        height: 8px;
+        margin: 0 3px 3px 0;
+        border: 1px solid #ccc;
+      }
+      .checkin.done {
+        background-color: #ccc;
+      }
     }
   }
-
 }
