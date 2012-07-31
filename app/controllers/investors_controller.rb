@@ -3,7 +3,7 @@ class InvestorsController < ApplicationController
   before_filter :login_required
 
   def index
-    authorize! :see_investors, User
+    authorize! :see_investor_page, current_user
   end
 
   # Show a new startup to an investor
