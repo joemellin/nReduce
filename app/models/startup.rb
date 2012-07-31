@@ -428,6 +428,11 @@ class Startup < ActiveRecord::Base
     self.setup?(:profile, :invite_team_members, :intro_video)
   end
 
+  # scope for a completed account
+  def self.account_complete
+    with_setup(:profile, :invite_team_members, :intro_video)
+  end
+
   # Returns the current controller / action for setup - to see if they need to set anything up
   # first checks setup field so we don't have to perform db queries if they've completed that step
   def account_setup_action
