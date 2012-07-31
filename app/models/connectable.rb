@@ -83,4 +83,139 @@ module Connectable
   def connectable?
   	true
   end
+
+  def suggested_startups(limit = 2)
+    relationships = self.suggested_relationships('Startup')
+    startup_ids = relationships.map{|r| r.connected_with_id }
+    r_by_id = Hash.by_key(relationships, :connected_with_id)
+    Startup.find(startup_ids.first(limit)).map{|s| s.cached_relationship = r_by_id[s.id] unless r_by_id[s.id].blank?; s }
+  end
+
+    # Generate suggestion connections that this startup might like to connect to - based on similar industries and company goal
+  def generate_suggested_connections(limit = 10)
+    startups = []
+    # See if they are over limit of suggested connections
+    suggested = self.suggested_startups(limit + 5)
+    return false if !suggested.blank? and (suggested.size >= limit)
+    num_suggested = suggested.size
+
+    # Find all startups this person is connected to, has been suggested, and has rejected
+    ignore_startup_ids = (self.received_relationships.where(:entity_type => 'Startup') + self.initiated_relationships.where(:connected_with_type => 'Startup')).map{|r| r.connected_with_id }
+    ignore_startup_ids << self.id if self.is_a?(Startup) # make sure this startup doesn't appear in suggested startups
+    ignore_startup_ids << Startup.nreduce_id # hide nreduce from suggested startups
+    ignore_startup_ids.uniq!
+
+     # Create lambda to add startups that will create a suggested relationship when passed an array of startups
+    suggest_startups = Proc.new {|startups, message|
+      startups.each do |s|
+        break if num_suggested >= limit
+        Relationship.suggest_connection(self, s, :startup_startup, message)
+        num_suggested += 1
+      end
+    }
+
+    industry_ids = self.industries.map{|t| t.id }
+
+    # If this object is an investor then just pull companies that say they are looking for investment
+    if self.is_a?(User) and self.investor?
+      search = Startup.search do
+        with :investable, true
+        with(:num_checkins).greater_than(1) # (greater_than is greater than or equal to)
+        without :id, ignore_startup_ids
+        order_by :rating, :desc
+        order_by :num_checkins, :desc
+        paginate :per_page => limit
+      end
+      startups += search.results unless search.results.blank?
+      suggest_startups.call(startups, nil)
+
+    # If this is a startup do some searches for matching companies
+    elsif self.is_a?(Startup)
+
+      # Matching on all industries & company goal
+      unless industry_ids.blank?
+        search = Startup.search do
+          all_of do
+            with :industry_tag_ids, industry_ids
+          end
+          with(:num_checkins).greater_than(1) # (greater_than is greater than or equal to)
+          with(:num_pending_relationships).less_than(10)
+          with :company_goal, self.company_goal
+          without :id, ignore_startup_ids
+          order_by :rating, :desc
+          order_by :num_checkins, :desc
+          paginate :per_page => limit
+        end
+        startups += search.results unless search.results.blank?
+        suggest_startups.call(startups, 'same industry & company goal')
+      end
+      
+
+      # Matching on all industries
+      if startups.size < limit && !industry_ids.blank?
+        search = Startup.search do
+          all_of do
+            with :industry_tag_ids, industry_ids
+          end
+          with(:num_checkins).greater_than(1)
+          with(:num_pending_relationships).less_than(10)
+          without :id, ignore_startup_ids
+          order_by :rating, :desc
+          order_by :num_checkins, :desc
+          paginate :per_page => limit
+        end
+        startups += search.results unless search.results.blank?
+        suggest_startups.call(startups, 'same industry')
+      end
+
+      # Matching on any industry
+      if startups.size < limit && !industry_ids.blank?
+        search = Startup.search do
+          any_of do
+            with :industry_tag_ids, industry_ids
+          end
+          with(:num_checkins).greater_than(1)
+          with(:num_pending_relationships).less_than(10)
+          without :id, ignore_startup_ids
+          order_by :rating, :desc
+          order_by :num_checkins, :desc
+          paginate :per_page => limit
+        end
+        startups += search.results unless search.results.blank?
+        suggest_startups.call(startups, 'same industry')
+      end
+
+      # Matching on company stage
+      if startups.size < limit and !self.stage.blank?
+        search = Startup.search do
+          with :stage, self.stage
+          with(:num_checkins).greater_than(1)
+          with(:num_pending_relationships).less_than(10)
+          without :id, ignore_startup_ids
+          order_by :rating, :desc
+          order_by :num_checkins, :desc
+          paginate :per_page => 2
+        end
+        startups += search.results unless search.results.blank?
+        suggest_startups.call(startups, "same company stage")
+      end
+
+      # Matching on company goal
+      if startups.size < limit and !self.company_goal.blank?
+        search = Startup.search do
+          with :company_goal, self.company_goal
+          with(:num_checkins).greater_than(1)
+          with(:num_pending_relationships).less_than(10)
+          without :id, ignore_startup_ids
+          order_by :rating, :desc
+          order_by :num_checkins, :desc
+          paginate :per_page => 2
+        end
+        startups += search.results unless search.results.blank?
+        suggest_startups.call(startups, "same company goal")
+      end
+    end
+
+    startups
+  end
 end

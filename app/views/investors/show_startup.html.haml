@@ -1,11 +1,24 @@
-%h1= @startup.name
+.investors 
+  %h1= @startup.name
 
-%hr/
-%br/
-%center
-  = link_to 'Connect', new_startup_rating_path(:interested => true, :startup_id => @startup.id), :class => 'btn btn-large btn-success', :remote => true
-  &nbsp;&nbsp;
-  = link_to 'Pass', new_startup_rating_path(:interested => false, :startup_id => @startup.id), :class => 'btn btn-large', :remote => true
+  - vid_url = Youtube.embed_url(@startup.pitch_video_url)
+  - if vid_url.blank?
+    [ no pitch video ]
+  - else
+    %iframe{:width => '500', :height => '315', :src => vid_url, :frameborder => 0, :allowfullscreen => true}
 
-#rating_modal.hide
+  .checkin_history
+    - @checkin_history.each do |status|
+      .left.checkin{:class => status.first == true ? 'done' : ''} &nbsp;
+      .left.checkin{:class => status.first == true ? 'done' : ''} &nbsp;
+      .clear
+
+  %hr/
+  %br/
+  %center
+    = link_to 'Connect', new_startup_rating_path(:interested => true, :startup_id => @startup.id), :class => 'btn btn-large btn-success', :remote => true
+    &nbsp;&nbsp;
+    = link_to 'Pass', new_startup_rating_path(:interested => false, :startup_id => @startup.id), :class => 'btn btn-large', :remote => true
+
+  #rating_modal.hide
 

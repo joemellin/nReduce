@@ -1,3 +1,18 @@
 // Place all the styles related to the Investors controller here.
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
+
+.investors {
+  .checkin_history {
+    .checkin {
+      width: 8px;
+      height: 8px;
+      margin: 0 3px 3px 0;
+      border: 1px solid #ccc;
+    }
+    .checkin.done {
+      background-color: #ccc;
+    }
+  }
+
+}
