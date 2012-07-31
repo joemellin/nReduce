@@ -201,8 +201,15 @@ class Ability
       end
     end
 
+    can :manage, Rating if user.investor?
+
     # For now just show investor page to other investors
     can :see_investors, User if user.investor?
+
+    # Investor can see startups if they have contacted less than one startup this week.
+    can :investor_connect_with_startups, User do |u|
+      u.can_connect_with_startups?
+    end
 
     # Everyone can see users
     can :read, User

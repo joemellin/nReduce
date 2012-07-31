@@ -1,0 +1,9 @@
+:plain
+  $('#rating_modal').html("#{escape_javascript(render('ratings/modal'))}");
+  $('#rating_modal').modal();
+  // iPhone-style checkboxes: http://awardwinningfjords.com/2009/06/16/iphone-style-checkboxes.html
+  $('.rating-form :checkbox').iphoneStyle({
+    checkedLabel: 'YES',
+    uncheckedLabel: 'NO'
+  });
+  $('.rating-form textarea').autosize();

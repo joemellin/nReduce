@@ -359,6 +359,16 @@ class User < ActiveRecord::Base
     return nil
   end
 
+  # Method for investors - to see how many startups they have connected with this week
+  # Week is based on checkin cycle, so it starts after "after" video is done
+  def num_startups_connected_with_this_week
+    self.relationships.where(:connected_with_type => 'Startup').where(['pending_at >= ?', Checkin.prev_after_checkin]).pending.count
+  end
+
+  def can_connect_with_startups?
+    self.num_startups_connected_with_this_week < 1
+  end
+
   #
   # LINKEDIN
   #

@@ -5,7 +5,7 @@ class Relationship < ActiveRecord::Base
   has_many :notifications, :as => :attachable
   has_many :user_actions, :as => :attachable
 
-  attr_accessible :context, :entity, :entity_id, :entity_type, :connected_with, :connected_with_id, :connected_with_type, :status, :approved_at, :rejected_at, :silent, :message
+  attr_accessible :context, :entity, :entity_id, :entity_type, :connected_with, :connected_with_id, :connected_with_type, :status, :approved_at, :rejected_at, :silent, :message, :pending_at
 
   attr_accessor :silent
 
@@ -109,6 +109,7 @@ class Relationship < ActiveRecord::Base
     # If this is a suggested relationship simply set to pending so the other person sees it
     if self.suggested?
       self.status = Relationship::PENDING
+      self.pending_at = Time.now
       self.save
     else
       begin
@@ -222,6 +223,9 @@ class Relationship < ActiveRecord::Base
     elsif connected_with.is_a?(Startup) and (entity.is_a?(User) and entity.mentor?)
       self.context = :startup_mentor
       return true
+    elsif connected_with.is_a?(Startup) and (entity.is_a?(User) and entity.investor?)
+      self.context = :startup_investor
+      return true
     else
       self.errors.add(:entity, "can't be connected to a #{connected_with_type.downcase}")
     end
@@ -252,7 +256,10 @@ class Relationship < ActiveRecord::Base
   end
 
   def set_pending_status
-    self.status ||= Relationship::PENDING
+    if self.status.blank?
+      self.status = Relationship::PENDING
+      self.pending_at = Time.now
+    end
   end
 
   def notify_users

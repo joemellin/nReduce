@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120730154659) do
+ActiveRecord::Schema.define(:version => 20120730232531) do
 
   create_table "authentications", :force => true do |t|
     t.string   "provider"
@@ -102,6 +102,13 @@ ActiveRecord::Schema.define(:version => 20120730154659) do
 
   add_index "invites", ["code"], :name => "index_invites_on_code"
 
+  create_table "measurements", :force => true do |t|
+    t.integer  "instrument_id"
+    t.float    "value"
+    t.datetime "created_at",    :null => false
+    t.datetime "updated_at",    :null => false
+  end
+
   create_table "meeting_messages", :force => true do |t|
     t.string   "subject"
     t.text     "body"
@@ -176,6 +183,16 @@ ActiveRecord::Schema.define(:version => 20120730154659) do
 
   add_index "rails_admin_histories", ["item", "table", "month", "year"], :name => "index_rails_admin_histories"
 
+  create_table "ratings", :force => true do |t|
+    t.integer  "investor_id"
+    t.integer  "startup_id"
+    t.boolean  "interested"
+    t.integer  "feedback"
+    t.text     "explanation"
+    t.datetime "created_at",  :null => false
+    t.datetime "updated_at",  :null => false
+  end
+
   create_table "relationships", :force => true do |t|
     t.integer  "entity_id"
     t.integer  "connected_with_id"
@@ -188,6 +205,7 @@ ActiveRecord::Schema.define(:version => 20120730154659) do
     t.text     "message"
     t.integer  "context"
     t.string   "reason"
+    t.datetime "pending_at"
   end
 
   add_index "relationships", ["entity_id", "entity_type", "status"], :name => "relationship_index"
@@ -201,6 +219,14 @@ ActiveRecord::Schema.define(:version => 20120730154659) do
     t.datetime "created_at",  :null => false
     t.datetime "updated_at",  :null => false
     t.boolean  "accredited"
+  end
+
+  create_table "slide_decks", :force => true do |t|
+    t.integer  "startup_id"
+    t.text     "slides"
+    t.string   "title"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
   end
 
   create_table "startups", :force => true do |t|
@@ -334,5 +360,16 @@ ActiveRecord::Schema.define(:version => 20120730154659) do
   end
 
   add_index "versions", ["item_type", "item_id"], :name => "index_versions_on_item_type_and_item_id"
+
+  create_table "videos", :force => true do |t|
+    t.integer  "user_id"
+    t.string   "external_id"
+    t.integer  "video_type"
+    t.string   "file_url"
+    t.text     "callback_result"
+    t.integer  "vimeo_id"
+    t.datetime "created_at",      :null => false
+    t.datetime "updated_at",      :null => false
+  end
 
 end
