@@ -27,11 +27,10 @@ Nreduce::Application.routes.draw do
 
   resources :nudges, :only => [:create, :show]
 
-  resources :investors, :only => [:index] do
+  resources :investors do
     collection do
       get 'show_startup'
     end
-    resources :ratings, :only => [:create]
   end
 
   
@@ -121,6 +120,7 @@ Nreduce::Application.routes.draw do
       get 'latest' => "checkins#show", :checkin_id => 'latest', :on => :collection
     end
     resources :invites, :only => [:create, :destroy, :show]
+    resources :ratings, :only => [:new, :create]
   end
 
   # onboarding

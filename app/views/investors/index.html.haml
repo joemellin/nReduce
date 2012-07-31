@@ -1,3 +1,6 @@
 %h1 Investors
 
-= link_to 'Show me a new startup', show_startup_investors_path
+- if can? :investor_connect_with_startups, current_user
+  %h2= link_to 'Show me the money!', show_startup_investors_path, :class => 'btn btn-large btn-success', :style => 'font-size: 60px;'
+- else
+  %p You have already connected with one startup this week. Please come back next Tuesday at 4pm PST to see more startups, or upgrade your account.
