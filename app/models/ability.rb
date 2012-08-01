@@ -161,6 +161,14 @@ class Ability
       can :read, Startup do |s|
         s.account_setup?
       end
+
+      # Anyone with a startup can upload a screenshot
+      can [:new, :create], Screenshot unless user.startup_id.blank?
+
+      # Anyone can manage a screenshot that is on that startup
+      can :manage, Screenshot do |s|
+        s.startup_id == user.startup_id
+      end
     end
 
     #
@@ -174,6 +182,9 @@ class Ability
 
     # User can only manage their own account
     can [:manage, :onboard, :onboard_next], User, :id => user.id
+
+    # Anyonen can see a screenshot
+    can :read, Screenshot
 
     # Have to override manage roles on user for mentors
     unless user.admin?

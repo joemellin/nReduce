@@ -9,6 +9,9 @@ $ ->
     checkedLabel: 'YES',
     uncheckedLabel: 'NO'
   );
+
+  # Screenshot carousel
+  $('#screenshots_carousel').carousel()
   
   # Prevent remote form from submitting so we can append success message  
   $('.investors form[data-remote=true]').submit (e) ->

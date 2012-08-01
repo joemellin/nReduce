@@ -17,6 +17,7 @@ class InvestorsController < ApplicationController
     # @startup = search.results.first
     @rating = Rating.new(:startup_id => @startup.id)
     @checkin_history = Checkin.history_for_startup(@startup)
+    @screenshots = @startup.screenshots.ordered
 
     # Temporary hack until we build suggested startups
     Relationship.suggest_connection(current_user, @startup, :startup_investor)
