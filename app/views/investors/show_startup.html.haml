@@ -26,8 +26,26 @@
         .clear
     .left
       = render 'chart'
-      %h4 Product
-      [ screenshots ]
+
+      - unless @screenshots.blank?
+        %h3 Product Screenshots
+
+        - c = 0
+        - @screenshots.each do |s|
+          .screenshot.left= link_to image_tag(s.image_url(:small)), '#', :onclick => "$('#screenshots_modal').modal(); $('#screenshots_carousel').carousel(#{c}); return false;"
+          - c += 1
+        .clear
+
+        #screenshots_modal.modal.hide
+          .modal-body
+            #screenshots_carousel.carousel.slide
+              .carousel-inner
+                - c = 0
+                - @screenshots.each do |s|
+                  .item{:class => c == 0 ? 'active' : '' }= image_tag s.image_url
+                  - c += 1
+              %a.carousel-control.left{:href => '#screenshots_carousel', 'data-slide' => 'prev'} &lsaquo;
+              %a.carousel-control.right{:href => '#screenshots_carousel', 'data-slide' => 'next'} &rsaquo;
     .clear
 
     .team_members

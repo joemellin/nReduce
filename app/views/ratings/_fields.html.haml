@@ -12,7 +12,7 @@
       / Check true by default if they say they're interested, otherwise false / whatever is selected
       .left{:style => 'margin-right: 10px'}
         = label_tag '' do
-          = radio_button_tag "rating[feedback][]", o, f.object.feedback?(o)
+          = radio_button_tag "rating[feedback][]", o, f.object.feedback?(o), :class => 'btn'
           = o.to_s.titleize 
 
     .clear

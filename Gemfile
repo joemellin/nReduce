@@ -44,6 +44,7 @@ gem 'progress_bar' # shows solr indexing progress
 gem 'bitmask_attributes'
 gem 'paper_trail', '~> 2.6.3'
 gem 'slope_one'
+gem 'rails_autolink'
 
 
 group :test, :development do

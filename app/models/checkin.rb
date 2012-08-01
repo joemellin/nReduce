@@ -1,8 +1,8 @@
 class Checkin < ActiveRecord::Base
   belongs_to :startup
   belongs_to :user # the user logged in who created check-in
-  has_many :comments
-  has_many :awesomes, :as => :awsm
+  has_many :comments, :dependent => :destroy
+  has_many :awesomes, :as => :awsm, :dependent => :destroy
   has_many :notifications, :as => :attachable
   has_many :user_actions, :as => :attachable
 

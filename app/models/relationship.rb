@@ -11,7 +11,7 @@ class Relationship < ActiveRecord::Base
 
   before_create :set_pending_status
   after_create :notify_users, :unless => lambda{|r| r.silent == true }
-  after_destroy :destroy_inverse_relationship
+  after_destroy :destroy_inverse_relationship_and_reset_cache
 
   # Statuses
   PENDING = 1
@@ -251,8 +251,9 @@ class Relationship < ActiveRecord::Base
 
   protected
 
-  def destroy_inverse_relationship
+  def destroy_inverse_relationship_and_reset_cache
     self.inverse_relationship.destroy unless self.inverse_relationship.blank?
+    self.reset_cache_for_entities_involved
   end
 
   def set_pending_status

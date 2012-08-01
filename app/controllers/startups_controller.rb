@@ -138,6 +138,9 @@ class StartupsController < ApplicationController
   def edit
     @profile_elements = @startup.profile_elements
     @profile_completeness_percent = (@startup.profile_completeness_percent * 100).round
+    @screenshots = @startup.screenshots.ordered
+    # Build up to 4 screenshots
+    @screenshots.size.upto(3).each{|i| @startup.screenshots.build }
   end
 
   def update
