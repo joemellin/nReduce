@@ -8,7 +8,8 @@
       %p You have already connected with one startup this week. Please come back next Tuesday at 4pm PST to see more startups, or upgrade your account.
 
   - elsif current_user.entrepreneur?
-    .row
+    - investor_profile_class = current_user.startup.investable? ? '' : 'hide'
+    .row.startup
       .span8
         = form_for current_user.startup, :url => '/startup/', :remote => true, :html => {:class => 'form-horizontal startup'} do |f|
           %center
@@ -18,30 +19,46 @@
             %p I am seeking investment, and nominate my startup for demo day:
             = f.check_box :investable, :class => 'investable'
 
+          .investor_profile{:class => investor_profile_class}
+            %br/
+            %h3 Your Investor Profile
+            %p To be eligible for the demo day, you'll need to create a basic pitch deck and create intro videos for each of your teammates.
+
+            %h3 Pitch Video
+            %p Use our template pitch deck, and record a short video pitch. [DOWNLOAD LINK]
+          
+            .control-group{:style => 'margin-bottom: 0'}
+              = f.label :pitch_video_url, :class => 'control-label'
+              .controls
+                = f.text_field :pitch_video_url, :placeholder => 'http://www.youtube.com/watch?v=088YM4pB9lM', :class => 'span4'
+                %p.help-text 60 seconds, unlisted YouTube video
+            .control-group
+              .controls= f.submit 'Save', :class => 'btn'
+
+        .investor_profile{:class => investor_profile_class}
+          %h3 Teammate Intro Videos
+          %p These are designed to give investors a good idea of the personalities and skillsets of your team. You'll need to ask each team member to login and post them to their profile.
+          %p The videos should be 30 seconds each, unlisted YouTube video. Users with a check mark have completed their videos:
+          - current_user.startup.team_members.each do |u|
+            .left{:style => 'margin-right: 15px'}
+              - if !u.intro_video_url.blank?
+                %i.icon-ok
+              - else
+                %i.icon-remove
+              = u.name
+          .clear
           %br/
-          %h3 Your Investor Profile
-          %p To be eligible for the demo day, you'll need to create a basic pitch deck and create intro videos for each of your teammates.
+          %h3 Product Screenshot
+          %p Upload up to #{Startup::NUM_SCREENSHOTS} screenshots of your product on the #{link_to('edit startup profile page', edit_startup_path(@startup))}.
+          - c = 0
+          - current_user.startup.screenshots.each do |ss|
+            .screenshot.left= image_tag ss.image_url(:small)
+            - c += 1
+          - c.upto(Startup::NUM_SCREENSHOTS - 1).each do |i|
+            %i.icon-remove
+            Screenshot
+            &nbsp;
+      .span4{:style => 'margin-top: 235px'}
+        .investor_profile{:class => investor_profile_class}= render 'users/profile_completeness', :title => 'Investor Profile'
 
-          %h3 Pitch Video
-          %p This is a short 4-deck pitch that gives the investor a quick intro to what you're building.
-        
-          .control-group{:style => 'margin-bottom: 0'}
-            = f.label :pitch_video_url, :class => 'control-label'
-            .controls
-              = f.text_field :pitch_video_url, :placeholder => 'http://www.youtube.com/watch?v=088YM4pB9lM', :class => 'span4'
-              %p.help-text 60 seconds, unlisted YouTube video
-          .control-group
-            .controls= f.submit 'Save', :class => 'btn'
 
-        %h3 Teammate Intro Videos
-        %p These are designed to give investors a good idea of the personalities and skillsets of your team.
-        %p 30 seconds each, unlisted YouTube video
-        - current_user.startup.team_members.each do |u|
-          .left{:style => 'margin-right: 15px'}
-            = form_for u, :remote => true do |f|
-              .control-group
-                = f.label :intro_video_url, u.name, :style => 'font-weight: bold'
-                .controls
-                  = f.text_field :intro_video_url, :placeholder => 'http://www.youtube.com/watch?v=088YM4pB9lM'
-              = f.submit 'Save', :class => 'btn'
-        .clear

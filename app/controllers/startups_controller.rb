@@ -140,16 +140,23 @@ class StartupsController < ApplicationController
     @profile_completeness_percent = (@startup.profile_completeness_percent * 100).round
     @screenshots = @startup.screenshots.ordered
     # Build up to 4 screenshots
-    @screenshots.size.upto(3).each{|i| @startup.screenshots.build }
+    @screenshots.size.upto(Startup::NUM_SCREENSHOTS - 1).each{|i| @startup.screenshots.build }
   end
 
   def update
     @startup.attributes = params[:startup]
     if @startup.save
       #flash[:notice] = "Startup information has been saved. Thanks!"
-      redirect_to '/startup'
+      respond_to do |format|
+        format.js
+        format.html { redirect_to '/startup' }
+      end
     else
-      render :edit
+      @message = "Could not save: #{@startup.errors.full_messages.join(', ')}."
+      respond_to do |format|
+        format.js
+        format.html { render :edit }
+      end
     end
   end
 
