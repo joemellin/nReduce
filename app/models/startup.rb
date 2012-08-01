@@ -16,7 +16,7 @@ class Startup < ActiveRecord::Base
   has_many :slide_decks, :dependent => :destroy
   has_many :screenshots, :dependent => :destroy
 
-  attr_accessible :name, :investable, :team_size, :website_url, :main_contact_id, :phone, :growth_model, :stage, :company_goal, :meeting_id, :one_liner, :active, :launched_at, :industry_list, :technology_list, :ideology_list, :industry, :intro_video_url, :elevator_pitch, :logo, :remote_logo_url, :logo_cache, :remove_logo, :checkins_public, :pitch_video_url, :screenshots_attributes
+  attr_accessible :name, :investable, :team_size, :website_url, :main_contact_id, :phone, :growth_model, :stage, :company_goal, :meeting_id, :one_liner, :active, :launched_at, :industry_list, :technology_list, :ideology_list, :industry, :intro_video_url, :elevator_pitch, :logo, :remote_logo_url, :logo_cache, :remove_logo, :checkins_public, :pitch_video_url, :investable, :screenshots_attributes
 
   accepts_nested_attributes_for :screenshots, :reject_if => proc {|attributes| attributes.all? {|k,v| v.blank?} }, :allow_destroy => true
 
@@ -43,6 +43,8 @@ class Startup < ActiveRecord::Base
   scope :with_logo, where('logo IS NOT NULL')
 
   bitmask :setup, :as => [:profile, :invite_team_members, :intro_video]
+
+  NUM_SCREENSHOTS = 4
 
   # Uses Sunspot gem with Solr backend. Docs: http://outoftime.github.com/sunspot/docs/index.html
   # https://github.com/outoftime/sunspot
@@ -194,6 +196,19 @@ class Startup < ActiveRecord::Base
       elements[tm.name.to_url.to_sym] = tm.profile_completeness_percent
     end
     elements
+  end
+
+  def investor_profile_completeness_percent
+    total = completed = 0.0
+    completed += 1 unless self.pitch_video_url.blank?
+    total += 1
+    self.team_members.each do |tm|
+      completed += 1 unless self.intro_video_url.blank?
+      total += 1
+    end
+    completed += 1 if self.screenshots.count == Startup::NUM_SCREENSHOTS
+    total += 1
+    (completed / total).round(2)
   end
 
   def self.stages

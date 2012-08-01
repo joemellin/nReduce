@@ -20,6 +20,7 @@
       - else
         %iframe{:width => '500', :height => '315', :src => vid_url, :frameborder => 0, :allowfullscreen => true}
     .left.checkin_history
+      %p Checkins
       - @checkin_history.each do |status|
         .left.checkin{:class => status.first == true ? 'done' : ''} &nbsp;
         .left.checkin{:class => status.first == true ? 'done' : ''} &nbsp;

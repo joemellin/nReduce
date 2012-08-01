@@ -7,23 +7,31 @@ $ ->
   # iPhone-style checkboxes: http://awardwinningfjords.com/2009/06/16/iphone-style-checkboxes.html
   $('form.startup .investable').iphoneStyle(
     checkedLabel: 'YES',
-    uncheckedLabel: 'NO'
-  );
+    uncheckedLabel: 'NO',
+    onChange: ->
+      $('form.startup').submit()
+      if $('#startup_investable').attr('checked') == 'checked'
+        $('.investor_profile').fadeIn()
+      else
+        $('.investor_profile').fadeOut()
+  )
 
   # Screenshot carousel
   $('#screenshots_carousel').carousel()
   
   # Prevent remote form from submitting so we can append success message  
-  $('.investors form[data-remote=true]').submit (e) ->
+  $('.ssss form[data-remote=true]').submit (e) ->
     e.stopPropagation()
     e.preventDefault()
     submit = $($(this).find(':submit'))
     $.ajax(
-      type: $(this).attr('method').toUpperCase(),
+      type: 'PUT',
       url: $(this).attr('action'),
+      data: $(this).seri
       success: (data) ->
-        submit.after('<span style="font-weight: bold; padding-left: 10px;" class="saved">Saved!</span>')
-        setTimeout(10000, ->
-          $('.saved').hide()
-        )
+        if $('.saved').length == 0
+          submit.after('<span style="font-weight: bold; padding-left: 10px;" class="saved">Saved!</span>')
+          setTimeout( ->
+            $('.saved').remove()
+          , 5000)
     )
