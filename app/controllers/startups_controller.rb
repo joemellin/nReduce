@@ -216,6 +216,11 @@ class StartupsController < ApplicationController
     redirect_to edit_startup_path(@startup)
   end
 
+  def investment_profile
+    @checkin_history = Checkin.history_for_startup(@startup)
+    @screenshots = @startup.screenshots.ordered
+  end
+
   #
   # ADMIN ONLY
   #

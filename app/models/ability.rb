@@ -222,7 +222,7 @@ class Ability
 
     # Investor can see startups if they have contacted less than one startup this week.
     can :investor_connect_with_startups, User do |u|
-      u.can_connect_with_startups?
+      u.investor? && u.can_connect_with_startups?
     end
 
     # Everyone can see users

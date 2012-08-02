@@ -16,7 +16,6 @@ class InvestorsController < ApplicationController
     #   paginate :per_page => 1
     # }
     # @startup = search.results.first
-    @rating = Rating.new(:startup_id => @startup.id)
     @checkin_history = Checkin.history_for_startup(@startup)
     @screenshots = @startup.screenshots.ordered
 

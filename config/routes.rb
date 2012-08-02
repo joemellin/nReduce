@@ -137,6 +137,7 @@ Nreduce::Application.routes.draw do
   resource :startup do
     member do
       post 'remove_team_member'
+      get 'investment_profile'
     end
   end
 
