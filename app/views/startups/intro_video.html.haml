@@ -5,6 +5,7 @@
     %br/
     %p
       %strong Please upload a 30 second video to Youtube that introduces your team so that everyone can "meet" you.
+      %p Who are you? What have you done?  Why are you doing nReduce?
 
     = semantic_form_for @startup, :url => intro_video_startup_path(@startup), :html => {:class => "form-horizontal"} do |f|
       .control-group{error_css(@startup, :intro_video_url)}
