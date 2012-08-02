@@ -1,3 +1,6 @@
+
+
+
 .investors
   - if current_user.investor?
     %h1 Investors
@@ -15,86 +18,113 @@
           .span8
             %h1
               %small Get Discovered By Investors
-          .span4{:align => 'right'}
-            .left
+          .span4
+            .right{:style => 'margin: 15px 0px 20px 0px'}= f.check_box :investable, :class => 'investable'
+            .right{:style => 'margin: 15px 30px 20px 0px'}
               %h3 Seeking investment?
-            .left{:style => 'margin-left: 10px'}= f.check_box :investable, :class => 'investable'
             .clear
 
         %hr/
         %br/
+        %br/
+        %br/
         .row.investor_profile{:class => investor_profile_class}
-          .span8
-            %h3 Complete your investment profile by August 8th to be considered for our September 5th Demo Day.
+          .span1
+            %p
+          .span6
+            %br
+            %h1 Your investment Status : INACTIVE
+            %br
+            %p Complete your investment profile by August 8th to be considered for our September 5th Demo Day.
+            %br
+            %p View Investment Profile
 
             %br/
-            %h3 1) nReduce Themed Elevator Pitch
+            %br/
+            %h3 To Dos :
+            %br/
+            %h2 1) nReduce Themed Elevator Pitch
             %p The point is to communicate your idea as quickly as possible in a way that is easily digestable for investors.
-
-            %ol.myriad_light
+            %ol.myriad_light{:style => 'font-size: 16px'}
               %li
                 Download and use this 4-slide deck. Do not change the font size or any aspect of the presentation - simply enter your answers to the 4 prompts.
                 %br/
+                %br/
                 = link_to(image_tag('powerpoint.jpg'), '/nreduce_stock_deck.pptx')
                 %strong= link_to 'Download stock deck', '/nreduce_stock_deck.pptx'
-              %li Record a 30 second screen capture of you talking through the 4 slides. Tip: use #{link_to('screenr', 'http://www.screenr.com', :target => '_blank')}.
+                %br/
+                %br/
 
+              %li Record a 30 second screen capture of you talking through the 4 slides. Tip: use #{link_to('screenr', 'http://www.screenr.com', :target => '_blank')}.
+              %br/
               %li Upload to #{link_to('Youtube', 'http://www.youtube.com/upload', :target => '_blank')} and set the privacy to unlisted.
+              %br/
               %li
                 Submit the link in the form to the right.
                 %br/
+                %br/
                 %strong Example:
+                %br/
                 %br/
                 :plain
                   <iframe width="300" height="189" src="http://www.youtube.com/embed/cJNbbIWYtHg?rel=0" frameborder="0" allowfullscreen></iframe>
             %br/
-            %h3 2) Team Member Intro Videos
-            %p Investors invest in your team. To help them better learn about your team, have each team member record and upload an intro video covering:
-            %ol.myriad_light
+            %h2 2) Team Member Intro Videos
+            %p Investors invest in people not ideas. To help them better learn about you and your team, have each team member record and upload an intro video covering:
+            %ol.myriad_light{:style => 'font-size: 16px'}
+              %br/
               %li Who are you?
+              %br/
               %li What have you done?
+              %br/
               %li
                 Why are you doing this startup?
                 %br/
+                %br/
                 %strong Example:
+                %br/
                 %br/
                 :plain
                   <iframe width="300" height="189" src="http://www.youtube.com/embed/ITq61YDVBbM?rel=0" frameborder="0" allowfullscreen></iframe>
 
             %p Each team member will have to submit their intro video to their #{link_to('profile page', edit_user_path(current_user))}.
             %br/
-            %h3 3) Product Shots
+            %h2 3) Product Shots
             %p Upload #{Startup::NUM_SCREENSHOTS} screenshots or photos of your product. To do so visit your #{link_to('Edit Startup Page', edit_startup_path(@startup))}.
-              
-          .span4
+          .span1
+            %p  
+          .span3
             = render 'users/profile_completeness', :title => 'Investor Profile'
-            %h3 Submit your Pitch Video
+            %h3 nReduce Elevator Pitch Video
+            %p{:style => 'font-size: 12px'} 30 Second YouTube Video
             .control-group{:style => 'margin-bottom: 0'}
               .controls
-                = f.text_field :pitch_video_url, :placeholder => 'http://www.youtube.com/watch?v=088YM4pB9lM', :class => 'span4'
-                %p.help-text 60 seconds, unlisted YouTube video
+                = f.text_field :pitch_video_url, :placeholder => 'http://www.youtube.com/watch?v=088YM4pB9lM', :class => 'span3'
+                
 
             .control-group
-              .controls= f.submit 'Save', :class => 'btn'
-
-            %h3 Team Member Intro Videos
+              .controls= f.submit 'Save', :class => 'btn btn-success'
+            %br/
+            %h3 Team Member Intro Videos #{link_to('Edit', edit_user_path(current_user))}
+            %br/
             - current_user.startup.team_members.each do |u|
               %div
                 - if !u.intro_video_url.blank?
                   = u.name
                   %iframe{:width => '250', :height => '94', :src => Youtube.embed_url(u.intro_video_url), :frameborder => 0, :allowfullscreen => true}
                 - else
-                  %div{:style => 'margin-bottom: 12px'}
+                  %div{:style => 'margin-bottom: 20px'}
                     = image_tag 'smallx.png'
                     = u.name
-
-            %h3{:style => 'margin-top: 15px'} Product Shots
+            %br/
+            %h3{:style => 'margin-top: 15px'} Product Shots #{link_to('Edit', edit_startup_path(@startup))}
+            %br/
             - c = 0
             - current_user.startup.screenshots.each do |ss|
-              %div{:style => 'margin-bottom: 12px'}= image_tag ss.image_url(:small)
+              %div{:style => 'margin-bottom: 20px'}= image_tag ss.image_url(:small)
               - c += 1
             - c.upto(Startup::NUM_SCREENSHOTS - 1).each do |i|
-              %div{:style => 'margin-bottom: 12px'}
+              %div{:style => 'margin-bottom: 20px'}
                 = image_tag 'smallx.png'
                 Screenshot ##{i + 1}
 
