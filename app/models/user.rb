@@ -15,9 +15,9 @@ class User < ActiveRecord::Base
   has_many :sent_invites, :foreign_key => 'from_id', :class_name => 'Invite'
   has_many :awesomes
   has_many :sent_nudges, :class_name => 'Nudge', :foreign_key => 'from_id'
-  has_many :user_actions, :as => :attachable
-  has_many :relationships, :as => :entity
-  has_many :connected_with_relationships, :as => :connected_with, :class_name => 'Relationship'
+  has_many :user_actions, :as => :attachable, :dependent => :destroy
+  has_many :relationships, :as => :entity, :dependent => :destroy
+  has_many :connected_with_relationships, :as => :connected_with, :class_name => 'Relationship', :dependent => :destroy
   has_many :screenshots
 
   # Include default devise modules. Others available are:
