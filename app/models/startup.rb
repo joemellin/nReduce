@@ -203,7 +203,7 @@ class Startup < ActiveRecord::Base
     completed += 1 unless self.pitch_video_url.blank?
     total += 1
     self.team_members.each do |tm|
-      completed += 1 unless self.intro_video_url.blank?
+      completed += 1 unless tm.intro_video_url.blank?
       total += 1
     end
     completed += 1 if self.screenshots.count == Startup::NUM_SCREENSHOTS
