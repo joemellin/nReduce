@@ -24,8 +24,16 @@ class Comment < ActiveRecord::Base
   def notify_users_and_update_count
     update_cache_and_count
     parent_comment = self.parent
-    # Notify person that this comment was a reply to
-    Notification.create_for_comment_reply(self, parent_comment.user) if !parent_comment.blank?
+    user_ids = [self.user.id]
+    # Notify all users up in the comment reply chain
+    while !parent_comment.blank?
+      # Notify person that this comment was a reply to - but not if they were above in the comments
+      unless user_ids.include?(parent_comment.user_id)
+        Notification.create_for_comment_reply(self, parent_comment.user) 
+        user_ids << parent_comment.user_id
+      end
+      parent_comment = parent_comment.parent
+    end
     # Notify all team members who are on team with checkin of new comment
     Notification.create_for_new_comment(self) unless parent_comment and (parent_comment.user_id == self.user_id)
   end
