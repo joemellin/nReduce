@@ -206,7 +206,8 @@ class Startup < ActiveRecord::Base
       completed += 1 unless tm.intro_video_url.blank?
       total += 1
     end
-    completed += 1 if self.screenshots.count == Startup::NUM_SCREENSHOTS
+    num_screenshots = self.screenshots.count
+    completed += (num_screenshots.to_f / Startup::NUM_SCREENSHOTS.to_f) unless num_screenshots == 0
     total += 1
     (completed / total).round(2)
   end
