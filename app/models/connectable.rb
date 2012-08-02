@@ -126,8 +126,11 @@ module Connectable
         order_by :num_checkins, :desc
         paginate :per_page => limit
       end
-      startups += search.results unless search.results.blank?
-      suggest_startups.call(startups, nil)
+      unless search.results.blank?
+        startups += search.results
+        ignore_startup_ids += startups.map{|s| s.id }
+        suggest_startups.call(startups, nil)
+      end
 
     # If this is a startup do some searches for matching companies
     elsif self.is_a?(Startup)
@@ -146,8 +149,11 @@ module Connectable
           order_by :num_checkins, :desc
           paginate :per_page => limit
         end
-        startups += search.results unless search.results.blank?
-        suggest_startups.call(startups, 'same industry & company goal')
+        unless search.results.blank?
+          startups += search.results
+          ignore_startup_ids += startups.map{|s| s.id }
+          suggest_startups.call(startups, 'same industry & company goal')
+        end
       end
       
 
@@ -164,8 +170,11 @@ module Connectable
           order_by :num_checkins, :desc
           paginate :per_page => limit
         end
-        startups += search.results unless search.results.blank?
-        suggest_startups.call(startups, 'same industry')
+        unless search.results.blank?
+          startups += search.results
+          ignore_startup_ids += startups.map{|s| s.id }
+          suggest_startups.call(startups, 'same industry')
+        end
       end
 
       # Matching on any industry
@@ -181,8 +190,11 @@ module Connectable
           order_by :num_checkins, :desc
           paginate :per_page => limit
         end
-        startups += search.results unless search.results.blank?
-        suggest_startups.call(startups, 'same industry')
+        unless search.results.blank?
+          startups += search.results
+          ignore_startup_ids += startups.map{|s| s.id }
+          suggest_startups.call(startups, 'same industry')
+        end
       end
 
       # Matching on company stage
@@ -196,8 +208,11 @@ module Connectable
           order_by :num_checkins, :desc
           paginate :per_page => 2
         end
-        startups += search.results unless search.results.blank?
-        suggest_startups.call(startups, "same company stage")
+        unless search.results.blank?
+          startups += search.results
+          ignore_startup_ids += startups.map{|s| s.id }
+          suggest_startups.call(startups, "same company stage")
+        end
       end
 
       # Matching on company goal
@@ -211,8 +226,11 @@ module Connectable
           order_by :num_checkins, :desc
           paginate :per_page => 2
         end
-        startups += search.results unless search.results.blank?
-        suggest_startups.call(startups, "same company goal")
+        unless search.results.blank?
+          startups += search.results
+          ignore_startup_ids += startups.map{|s| s.id }
+          suggest_startups.call(startups, "same company goal")
+        end
       end
     end
 

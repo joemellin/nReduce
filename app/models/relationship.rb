@@ -195,8 +195,9 @@ class Relationship < ActiveRecord::Base
   def reset_cache_for_entities_involved
     Cache.delete(['connections', "#{entity_type.downcase}_#{entity_id}"])
     Cache.delete(['connections', "#{connected_with_type.downcase}_#{connected_with_id}"])
-    Cache.delete(['sugg_connections', "#{entity_type.downcase}_#{entity_id}"])
-    Cache.delete(['sugg_connections', "#{connected_with_type.downcase}_#{connected_with_id}"])
+    # Not caching suggested connections yet
+    #Cache.delete(['sugg_connections', "#{entity_type.downcase}_#{entity_id}"])
+    #Cache.delete(['sugg_connections', "#{connected_with_type.downcase}_#{connected_with_id}"])
   end
 
   def entities_are_connectable
