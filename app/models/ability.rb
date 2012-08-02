@@ -161,6 +161,14 @@ class Ability
       can :read, Startup do |s|
         s.account_setup?
       end
+
+      # Anyone with a startup can upload a screenshot
+      can [:new, :create], Screenshot unless user.startup_id.blank?
+
+      # Anyone can manage a screenshot that is on that startup
+      can :manage, Screenshot do |s|
+        s.startup_id == user.startup_id
+      end
     end
 
     #
@@ -175,11 +183,17 @@ class Ability
     # User can only manage their own account
     can [:manage, :onboard, :onboard_next], User, :id => user.id
 
+    # Anyonen can see a screenshot
+    can :read, Screenshot
+
     # Have to override manage roles on user for mentors
     unless user.admin?
       cannot :change_mentor_status, User
       cannot :see_mentor_page, User
       cannot :search_mentors, User
+
+      cannot :see_investor_page, User
+      cannot :investor_connect_with_startups, User
     end
     
     if user.mentor?
@@ -197,6 +211,18 @@ class Ability
       can :search_mentors, User do |u|
         u.startup.can_invite_mentor?
       end
+    end
+
+    can :manage, Rating if user.investor?
+
+    # For now just show investor page to other investors
+    can :see_investor_page, User do |u|
+      u.investor? || (u.entrepreneur? and !u.startup_id.blank?)
+    end
+
+    # Investor can see startups if they have contacted less than one startup this week.
+    can :investor_connect_with_startups, User do |u|
+      u.investor? && u.can_connect_with_startups?
     end
 
     # Everyone can see users

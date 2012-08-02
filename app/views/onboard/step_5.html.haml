@@ -1,13 +1,14 @@
 .row.onboard
   .span6
-    %h1 You build a group of Startups.
+    %h1 You Build A Group Of Startups.
     %br/
     = image_tag 'sharing.png'
     %h2 As you connect with startups you create your group.
     %br/
-    %h2 Each week you privately share your progress with the startups in your group. 
-    %br/
-    %h2 We recomend 6-8 startups as you are expected to give feedback to each startup in your group each week. 
+    - if current_user.entrepreneur?
+      %h2 Each week you privately share your progress with the startups in your group. 
+      %br/
+    %h2 We recommend 6-8 startups per group, as you are expected to give feedback to each startup in your group each week. 
     %br/
     %center
       %h2 Does that make sense?

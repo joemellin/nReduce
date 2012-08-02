@@ -27,6 +27,14 @@ Nreduce::Application.routes.draw do
 
   resources :nudges, :only => [:create, :show]
 
+  resources :investors do
+    collection do
+      get 'show_startup'
+    end
+  end
+
+  
+
   resources :meetings, :only => [:index, :show, :edit, :update] do
     post 'message_attendees', :on => :member
     resources :meeting_messages, :only => [:index, :new, :create, :edit]
@@ -112,6 +120,8 @@ Nreduce::Application.routes.draw do
       get 'latest' => "checkins#show", :checkin_id => 'latest', :on => :collection
     end
     resources :invites, :only => [:create, :destroy, :show]
+    resources :ratings, :only => [:new, :create]
+    resources :screenshots, :only => [:create, :update, :destroy]
   end
 
   # onboarding
@@ -127,6 +137,7 @@ Nreduce::Application.routes.draw do
   resource :startup do
     member do
       post 'remove_team_member'
+      get 'investment_profile'
     end
   end
 

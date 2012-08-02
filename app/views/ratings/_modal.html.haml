@@ -1,0 +1,11 @@
+.modal
+  .rating-form
+    = semantic_form_for [@startup, @rating], :remote => true, :html => {:class => 'form-vertical' } do |f|
+      .modal-header
+        %button.close{:type => 'button', 'data-dismiss' => 'modal'} x
+        %h3 Feedback
+      .modal-body
+        = render 'ratings/fields', :f => f
+      .modal-footer
+        = f.submit 'Save & Stop', :class => 'btn btn-large'
+        = f.submit 'Save & See Next Startup', :class => 'btn btn-large btn-success'
