@@ -29,7 +29,7 @@ class MeetingMessage < ActiveRecord::Base
   # Queue up all users to be notified
   def notify_attendees
     emailed_to = []
-    self.meeting.attendees.select('id, email, email_on').where('email IS NOT NULL').each do |u|
+    self.meeting.attendees.where('email IS NOT NULL').each do |u|
       if u.email_for?('meeting')
         Resque.enqueue(MeetingMessage, self.id, u.id)
         emailed_to.push(u.id)
