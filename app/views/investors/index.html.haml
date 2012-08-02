@@ -23,21 +23,36 @@
         %hr/
         %br/
         .row
-          .span8
+          .span3
+            %p
+          .span6
             %center
-              = image_tag('nstar_s.png')
-              %h3 Apply to be Featured in the September 5th nStar Online Demo Day
+              %br/
+              %br/
+              %br/
+              = image_tag('nstar_m.png')
+              %br/
+              %br/
+              %br/
+              %h1 Interested in being featured in the September 5th nStar Online Demo Day?
+              %br/
+              %h3 To apply set your seeking investment setting to yes.
               %br/
               
-
+        .row
+          .span9
             .investor_profile{:class => investor_profile_class}
               %br/
-              %h3 Your Investor Profile
-              %p To be eligible for the demo day, you'll need to create a basic pitch deck and create intro videos for each of your teammates.
+              %h1  Build Your Investment Profile
+              %p To be eligible for the demo day, you need to complete the following items by 8/7/2012.
 
-              %h3 Pitch Video
-              %p Use our template pitch deck, and record a short video pitch. [DOWNLOAD LINK]
-            
+              %h2 1) Your nReduce Themed Elevator Pitch
+              %h3 A) Use our template pitch deck, and record a short video pitch.
+              %p It is requried that you use the exact theme provided.  Do not change the background, font size or slide order / prompts.  We ask that you do this so that we can quickly communicate your idea to investors. 
+              %h3 B) Record a max 30sec screen capture of you talking over the slides. 
+              %p Suggestion : Use Screenr.com
+              %h3 C) Upload to Youtube and set the privacy setting to discrete.
+              %h3 D) Submit your pitch Video Below
               .control-group{:style => 'margin-bottom: 0'}
                 = f.label :pitch_video_url, :class => 'control-label'
                 .controls
@@ -47,7 +62,7 @@
                 .controls= f.submit 'Save', :class => 'btn'
 
             .investor_profile{:class => investor_profile_class}
-              %h3 Teammate Intro Videos
+              %h2 2) Teammate Intro Videos
               %p These are designed to give investors a good idea of the personalities and skillsets of your team. You'll need to ask each team member to login and post them to their profile.
               %p The videos should be 30 seconds each, unlisted YouTube video. Users with a check mark have completed their videos:
               - current_user.startup.team_members.each do |u|
