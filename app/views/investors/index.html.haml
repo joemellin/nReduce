@@ -39,9 +39,18 @@
             %h2 1) nReduce Themed Elevator Pitch
             %p The point is to communicate your idea as quickly as possible in a way that is easily digestable for investors.
 
+<<<<<<< HEAD
             %ol.myriad_light{:style => 'font-size: 16px'}
               %li Download and use this 4-slide deck. Do not change the font size or any aspect of the presentation - simply enter your answers to the 4 prompts. 
               %br/
+=======
+            %ol.myriad_light
+              %li
+                Download and use this 4-slide deck. Do not change the font size or any aspect of the presentation - simply enter your answers to the 4 prompts.
+                %br/
+                = link_to(image_tag('powerpoint.jpg'), '/nreduce_stock_deck.pptx')
+                %strong= link_to 'Download stock deck', '/nreduce_stock_deck.pptx'
+>>>>>>> 94343a92f646f44216ed85475a0fd57f2782b260
               %li Record a 30 second screen capture of you talking through the 4 slides. Tip: use #{link_to('screenr', 'http://www.screenr.com', :target => '_blank')}.
               %br/
               %li Upload to #{link_to('Youtube', 'http://www.youtube.com/upload', :target => '_blank')} and set the privacy to unlisted.
@@ -75,7 +84,6 @@
                   <iframe width="300" height="189" src="http://www.youtube.com/embed/ITq61YDVBbM?rel=0" frameborder="0" allowfullscreen></iframe>
 
             %p Each team member will have to submit their intro video to their #{link_to('profile page', edit_user_path(current_user))}.
-         
             %br/
             %h2 3) Product Shots
             %p Upload #{Startup::NUM_SCREENSHOTS} screenshots or photos of your product. To do so visit your #{link_to('Edit Startup Page', edit_startup_path(@startup))}.
@@ -96,20 +104,22 @@
             - current_user.startup.team_members.each do |u|
               %div
                 - if !u.intro_video_url.blank?
-                  %iframe{:width => '250', :height => '188', :src => Youtube.embed_url(u.intro_video_url), :frameborder => 0, :allowfullscreen => true}
+                  = u.name
+                  %iframe{:width => '250', :height => '94', :src => Youtube.embed_url(u.intro_video_url), :frameborder => 0, :allowfullscreen => true}
                 - else
-                  %i.icon-remove
-                = u.name
-            
-            %h3{:style => 'margin-top: 15px'} Product Shots #{link_to('Edit', edit_startup_path(@startup))}
+                  %div{:style => 'margin-bottom: 12px'}
+                    = image_tag 'smallx.png'
+                    = u.name
+
+            %h3{:style => 'margin-top: 15px'} Product Shots
             - c = 0
             - current_user.startup.screenshots.each do |ss|
-              %div{:style => 'margin-bottom: 10px'}= image_tag ss.image_url(:small)
+              %div{:style => 'margin-bottom: 12px'}= image_tag ss.image_url(:small)
               - c += 1
             - c.upto(Startup::NUM_SCREENSHOTS - 1).each do |i|
-              %div
-                %i.icon-remove
-                Screenshot
+              %div{:style => 'margin-bottom: 12px'}
+                = image_tag 'smallx.png'
+                Screenshot ##{i + 1}
 
 
 
