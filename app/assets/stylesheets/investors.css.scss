@@ -4,6 +4,12 @@
 
 .investors {
   .startup {
+    .well {
+      width: 90%;
+      .progress{
+        width: 100%;
+      }
+    }
     .headline {
       .name {
         h2 { 
@@ -53,6 +59,9 @@
       .checkin.done {
         background-color: #ccc;
       }
+    }
+    ol {
+      margin-left: 35px;
     }
   }
 }

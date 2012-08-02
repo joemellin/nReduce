@@ -10,81 +10,89 @@
   - elsif current_user.entrepreneur?
     .startup
       - investor_profile_class = current_user.startup.investable? ? '' : 'hide'
-      = form_for current_user.startup, :url => '/startup/', :remote => true, :html => {:class => 'form-horizontal startup'} do |f|
+      = form_for current_user.startup, :url => '/startup/', :remote => true, :html => {:class => 'form-vertical startup'} do |f|
         .row
           .span8
             %h1
-              %small Investor Profile
+              %small Get Discovered By Investors
           .span4{:align => 'right'}
-            .left I am seeking investment
+            .left
+              %h3 Seeking investment?
             .left{:style => 'margin-left: 10px'}= f.check_box :investable, :class => 'investable'
             .clear
 
         %hr/
         %br/
-        .row
-          .span3
-            %p
-          .span6
-            %center
-              %br/
-              %br/
-              %br/
-              = image_tag('nstar_m.png')
-              %br/
-              %br/
-              %br/
-              %h1 Interested in being featured in the September 5th nStar Online Demo Day?
-              %br/
-              %h3 To apply set your seeking investment setting to yes.
-              %br/
+        .row.investor_profile{:class => investor_profile_class}
+          .span8
+            %h3 Complete your investment profile by August 8th to be considered for our September 5th Demo Day.
+
+            %br/
+            %h3 1) nReduce Themed Elevator Pitch
+            %p The point is to communicate your idea as quickly as possible in a way that is easily digestable for investors.
+
+            %ol.myriad_light
+              %li Download and use this 4-slide deck. Do not change the font size or any aspect of the presentation - simply enter your answers to the 4 prompts. 
+              %li Record a 30 second screen capture of you talking through the 4 slides. Tip: use #{link_to('screenr', 'http://www.screenr.com', :target => '_blank')}.
+
+              %li Upload to #{link_to('Youtube', 'http://www.youtube.com/upload', :target => '_blank')} and set the privacy to unlisted.
+              %li
+                Submit the link in the form to the right.
+                %br/
+                %strong Example:
+                %br/
+                :plain
+                  <iframe width="300" height="189" src="http://www.youtube.com/embed/cJNbbIWYtHg?rel=0" frameborder="0" allowfullscreen></iframe>
+            %br/
+            %h3 2) Team Member Intro Videos
+            %p Investors invest in your team. To help them better learn about your team, have each team member record and upload an intro video covering:
+            %ol.myriad_light
+              %li Who are you?
+              %li What have you done?
+              %li
+                Why are you doing this startup?
+                %br/
+                %strong Example:
+                %br/
+                :plain
+                  <iframe width="300" height="189" src="http://www.youtube.com/embed/ITq61YDVBbM?rel=0" frameborder="0" allowfullscreen></iframe>
+
+            %p Each team member will have to submit their intro video to their #{link_to('profile page', edit_user_path(current_user))}.
+         
+            %br/
+            %h3 3) Product Shots
+            %p Upload #{Startup::NUM_SCREENSHOTS} screenshots or photos of your product. To do so visit your #{link_to('Edit Startup Page', edit_startup_path(@startup))}.
               
-        .row
-          .span9
-            .investor_profile{:class => investor_profile_class}
-              %br/
-              %h1  Build Your Investment Profile
-              %p To be eligible for the demo day, you need to complete the following items by 8/7/2012.
+          .span4
+            = render 'users/profile_completeness', :title => 'Investor Profile'
+            %h3 Submit your Pitch Video
+            .control-group{:style => 'margin-bottom: 0'}
+              .controls
+                = f.text_field :pitch_video_url, :placeholder => 'http://www.youtube.com/watch?v=088YM4pB9lM', :class => 'span4'
+                %p.help-text 60 seconds, unlisted YouTube video
 
-              %h2 1) Your nReduce Themed Elevator Pitch
-              %h3 A) Use our template pitch deck, and record a short video pitch.
-              %p It is requried that you use the exact theme provided.  Do not change the background, font size or slide order / prompts.  We ask that you do this so that we can quickly communicate your idea to investors. 
-              %h3 B) Record a max 30sec screen capture of you talking over the slides. 
-              %p Suggestion : Use Screenr.com
-              %h3 C) Upload to Youtube and set the privacy setting to discrete.
-              %h3 D) Submit your pitch Video Below
-              .control-group{:style => 'margin-bottom: 0'}
-                = f.label :pitch_video_url, :class => 'control-label'
-                .controls
-                  = f.text_field :pitch_video_url, :placeholder => 'http://www.youtube.com/watch?v=088YM4pB9lM', :class => 'span4'
-                  %p.help-text 60 seconds, unlisted YouTube video
-              .control-group
-                .controls= f.submit 'Save', :class => 'btn'
+            .control-group
+              .controls= f.submit 'Save', :class => 'btn'
 
-            .investor_profile{:class => investor_profile_class}
-              %h2 2) Teammate Intro Videos
-              %p These are designed to give investors a good idea of the personalities and skillsets of your team. You'll need to ask each team member to login and post them to their profile.
-              %p The videos should be 30 seconds each, unlisted YouTube video. Users with a check mark have completed their videos:
-              - current_user.startup.team_members.each do |u|
-                .left{:style => 'margin-right: 15px'}
-                  - if !u.intro_video_url.blank?
-                    %i.icon-ok
-                  - else
-                    %i.icon-remove
-                  = u.name
-              .clear
-              %br/
-              %h3 Product Screenshot
-              %p Upload up to #{Startup::NUM_SCREENSHOTS} screenshots of your product on the #{link_to('edit startup profile page', edit_startup_path(@startup))}.
-              - c = 0
-              - current_user.startup.screenshots.each do |ss|
-                .screenshot.left= image_tag ss.image_url(:small)
-                - c += 1
-              - c.upto(Startup::NUM_SCREENSHOTS - 1).each do |i|
+            %h3 Team Member Intro Videos
+            - current_user.startup.team_members.each do |u|
+              %div
+                - if !u.intro_video_url.blank?
+                  %iframe{:width => '250', :height => '188', :src => Youtube.embed_url(u.intro_video_url), :frameborder => 0, :allowfullscreen => true}
+                - else
+                  %i.icon-remove
+                = u.name
+            
+            %h3{:style => 'margin-top: 15px'} Product Shots
+            - c = 0
+            - current_user.startup.screenshots.each do |ss|
+              %div{:style => 'margin-bottom: 10px'}= image_tag ss.image_url(:small)
+              - c += 1
+            - c.upto(Startup::NUM_SCREENSHOTS - 1).each do |i|
+              %div
                 %i.icon-remove
                 Screenshot
-                &nbsp;
-          .span4{:style => 'margin-top: 235px'}
-            .investor_profile{:class => investor_profile_class}= render 'users/profile_completeness', :title => 'Investor Profile'
+
+
 
 
