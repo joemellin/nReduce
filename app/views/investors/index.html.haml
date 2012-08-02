@@ -78,7 +78,7 @@
             - current_user.startup.team_members.each do |u|
               %div
                 - if !u.intro_video_url.blank?
-                  %i.icon-ok
+                  %iframe{:width => '250', :height => '188', :src => Youtube.embed_url(u.intro_video_url), :frameborder => 0, :allowfullscreen => true}
                 - else
                   %i.icon-remove
                 = u.name
@@ -86,7 +86,7 @@
             %h3{:style => 'margin-top: 15px'} Product Shots
             - c = 0
             - current_user.startup.screenshots.each do |ss|
-              %div= image_tag ss.image_url(:small)
+              %div{:style => 'margin-bottom: 10px'}= image_tag ss.image_url(:small)
               - c += 1
             - c.upto(Startup::NUM_SCREENSHOTS - 1).each do |i|
               %div
