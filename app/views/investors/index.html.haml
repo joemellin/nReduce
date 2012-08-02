@@ -33,7 +33,12 @@
             %p
           .span6
             %br
-            %h1 Your investment Status : INACTIVE
+            %h1
+              Your investment Status:
+              - if @profile_completeness_percent == 100
+                %span{:style => 'color: #51A351'} ACTIVE
+              - else
+                INACTIVE
             %br
             %p Complete your investment profile by August 8th to be considered for our September 5th Demo Day.
             %br
@@ -41,7 +46,7 @@
 
             %br/
             %br/
-            %h3 To Dos :
+            %h3 To Dos:
             %br/
             %h2 1) nReduce Themed Elevator Pitch
             %p The point is to communicate your idea as quickly as possible in a way that is easily digestable for investors.
@@ -90,38 +95,43 @@
             %p Each team member will have to submit their intro video to their #{link_to('profile page', edit_user_path(current_user))}.
             %br/
             %h2 3) Product Shots
-            %p Upload #{Startup::NUM_SCREENSHOTS} screenshots or photos of your product. To do so visit your #{link_to('Edit Startup Page', edit_startup_path(@startup))}.
+            %p Upload #{Startup::NUM_SCREENSHOTS} screenshots or photos of your product. To do so visit your #{link_to('edit startup page', edit_startup_path(@startup))}.
           .span1
             %p  
-          .span3
+          .span4
             = render 'users/profile_completeness', :title => 'Investor Profile'
             %h3 nReduce Elevator Pitch Video
             %p{:style => 'font-size: 12px'} 30 Second YouTube Video
             .control-group{:style => 'margin-bottom: 0'}
               .controls
                 = f.text_field :pitch_video_url, :placeholder => 'http://www.youtube.com/watch?v=088YM4pB9lM', :class => 'span3'
-                
 
             .control-group
               .controls= f.submit 'Save', :class => 'btn btn-success'
             %br/
-            %h3 Team Member Intro Videos #{link_to('Edit', edit_user_path(current_user))}
+            %h3 Team Member Intro Videos
             %br/
             - current_user.startup.team_members.each do |u|
-              %div
+              %div{:style => 'margin-bottom: 20px'}
                 - if !u.intro_video_url.blank?
-                  = u.name
-                  %iframe{:width => '250', :height => '94', :src => Youtube.embed_url(u.intro_video_url), :frameborder => 0, :allowfullscreen => true}
+                  %iframe{:width => '142', :height => '90', :src => Youtube.embed_url(u.intro_video_url), :frameborder => 0, :allowfullscreen => true}
                 - else
-                  %div{:style => 'margin-bottom: 20px'}
+                  - if u.id == current_user.id
+                    = link_to image_tag('smallx.png'), edit_user_path(current_user)
+                  - else
                     = image_tag 'smallx.png'
-                    = u.name
+                - if u.id == current_user.id
+                  %strong #{truncate(u.name, :length => 25)} #{link_to('Edit', edit_user_path(current_user))}
+                - else
+                  = u.name
             %br/
-            %h3{:style => 'margin-top: 15px'} Product Shots #{link_to('Edit', edit_startup_path(@startup))}
+            %h3{:style => 'margin-top: 15px'} Product Shots - #{link_to('Edit', edit_startup_path(@startup))}
             %br/
             - c = 0
             - current_user.startup.screenshots.each do |ss|
-              %div{:style => 'margin-bottom: 20px'}= image_tag ss.image_url(:small)
+              %div{:style => 'margin-bottom: 20px;'}
+                = image_tag ss.image_url(:medium), :style => 'max-width: 140px; max-height: 140px; border: 1px solid #ccc'
+                Screenshot ##{c + 1}
               - c += 1
             - c.upto(Startup::NUM_SCREENSHOTS - 1).each do |i|
               %div{:style => 'margin-bottom: 20px'}
