@@ -36,7 +36,6 @@ class Video < ActiveRecord::Base
             file.write(segment)
           end
         end
-     
       ensure
         file.close
       end
