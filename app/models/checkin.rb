@@ -195,6 +195,30 @@ class Checkin < ActiveRecord::Base
     arr
   end
 
+  def self.num_consecutive_checkins_for_startup(startup)
+    history = Checkin.history_for_startup(startup)
+    consecutive_checkins = longest_streak = 0
+    prev_week = false
+    history.each do |before, after|
+      # If the checkin has a before and after video count it
+      if before and after
+        # Starting off - first week
+        if prev_week.blank?
+          consecutive_checkins += 1
+        else
+          consecutive_checkins += 1
+        end
+        prev_week = true
+      else # otherwise reset consecutive checkins
+        longest_streak = consecutive_checkins if consecutive_checkins > longest_streak
+        consecutive_checkins = 0
+      end
+    end
+    # If streak was never broken need to populate longest streak
+    longest_streak = consecutive_checkins if consecutive_checkins > longest_streak
+    longest_streak
+  end
+
   # Cache # of comments
   def update_comments_count
     self.comment_count = self.comments.count
