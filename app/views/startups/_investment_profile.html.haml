@@ -23,7 +23,7 @@
     %p Checkins
     - @checkin_history.each do |status|
       .left.checkin{:class => status.first == true ? 'done' : ''} &nbsp;
-      .left.checkin{:class => status.first == true ? 'done' : ''} &nbsp;
+      .left.checkin{:class => status.last == true ? 'done' : ''} &nbsp;
       .clear
   .left
     - unless hide_chart
