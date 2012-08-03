@@ -12,8 +12,10 @@ $ ->
       $('form.startup').submit()
       if $('#startup_investable').attr('checked') == 'checked'
         $('.investor_profile').fadeIn()
+        $('.investor_profile_inactive').fadeOut()
       else
         $('.investor_profile').fadeOut()
+        $('.investor_profile_inactive').fadeIn()
   )
 
   # Screenshot carousel
