@@ -53,7 +53,7 @@ class User < ActiveRecord::Base
 
   # important that you keep the order the same on this array - uses bitmask_attributes gem
   # adds methods and scopes: https://github.com/joelmoss/bitmask_attributes
-  bitmask :roles, :as => [:admin, :entrepreneur, :mentor, :investor, :nreduce_mentor, :spectator]
+  bitmask :roles, :as => [:admin, :entrepreneur, :mentor, :investor, :nreduce_mentor, :spectator, :approved_investor]
   bitmask :onboarded, :as => [:startup, :mentor, :nreduce_mentor, :investor]
   bitmask :email_on, :as => [:docheckin, :comment, :meeting, :checkin, :relationship]
   bitmask :setup, :as => [:account_type, :onboarding, :profile, :invite_startups, :welcome]
@@ -370,7 +370,7 @@ class User < ActiveRecord::Base
   end
 
   def can_connect_with_startups?
-    self.num_startups_connected_with_this_week < User::INVESTOR_STARTUPS_PER_WEEK
+    (self.num_startups_connected_with_this_week < User::INVESTOR_STARTUPS_PER_WEEK) && self.roles?(:approved_investor) 
   end
 
   #
