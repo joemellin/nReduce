@@ -44,6 +44,7 @@ class User < ActiveRecord::Base
   before_create :set_default_settings
   after_create :mailchimp!
   before_save :geocode_location
+  before_save :ensure_roles_exist
 
   acts_as_taggable_on :skills, :industries
 
@@ -575,5 +576,9 @@ class User < ActiveRecord::Base
       err = true
     end
     err
+  end
+
+  def ensure_roles_exist
+    self.setup -= [:account_type] if self.roles.blank?
   end
 end

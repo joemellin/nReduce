@@ -66,7 +66,14 @@ class ApplicationController < ActionController::Base
       return true
     else
       @hide_nav = true
+      controller_action_arr = [controller_name.to_sym, action_name.to_sym]
       @account_setup_action = current_user.account_setup_action
+      if @account_setup_action.blank?
+        # If for some reason account setup action is blank - redirect to user account page
+        return if controller_action_arr == [:users, :show]
+        redirect_to current_user
+        return
+      end
       @setup = true unless [:account_type, :spectator].include?(@account_setup_action.last)
       if @account_setup_action.first == :complete
         flash[:notice] = "Thanks for setting up your account!"
@@ -74,16 +81,16 @@ class ApplicationController < ActionController::Base
         return
       end
       # if we're in the right place, don't do anything
-      return true if [controller_name.to_sym, action_name.to_sym] == @account_setup_action
+      return true if controller_action_arr == @account_setup_action
       # Allow them to choose account type again / invite team members
-      return true if [[:users, :account_type], [:invites, :create]].include?([controller_name.to_sym, action_name.to_sym])
+      return true if [[:users, :account_type], [:invites, :create]].include?(controller_action_arr)
       # Allow create/update actions
-      if controller_name.to_sym == @account_setup_action.first
+      if controller_action_arr.first == @account_setup_action.first
         return true if @account_setup_action.last == :edit and action_name.to_sym == :update
-        return true if @account_setup_action.last == :new and [:create, :edit].include?(action_name.to_sym)
+        return true if @account_setup_action.last == :new and [:create, :edit].include?(controller_action_arr.last)
       end
       # onboarding has a few actions involved, so if they're in onboarding don't change action
-      return true if [controller_name.to_sym, @account_setup_action.first] == [:onboard, :onboard]
+      return true if [controller_action_arr.first, @account_setup_action.first] == [:onboard, :onboard]
       # otherwise redirect to correct controller/action
       prms = {:controller => @account_setup_action.first, :action => @account_setup_action.last}
       prms[:id] = current_user.id if prms[:controller] == :users
