@@ -53,7 +53,7 @@
       .team_member.left
         .top
           - if !team_member.intro_video_url.blank?
-            %iframe{:width => '150', :height => '94', :src => Youtube.embed_url(team_member.intro_video_url), :frameborder => 0, :allowfullscreen => true}
+            %iframe{:width => '200', :height => '126', :src => Youtube.embed_url(team_member.intro_video_url), :frameborder => 0, :allowfullscreen => true}
           - else
             = link_to(image_tag(user_avatar_url(team_member)), team_member)
         .bottom

@@ -10,7 +10,7 @@ class InvestorsController < ApplicationController
   # Show a new startup to an investor
   def show_startup 
     authorize! :investor_connect_with_startups, current_user
-    @startup = Startup.find 1
+    @startup = Startup.find 319
     # search = Startup.search {
     #   with(:num_checkins).greater_than(1)
     #   paginate :per_page => 1
