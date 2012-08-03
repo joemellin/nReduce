@@ -115,8 +115,9 @@
   .control-group{error_css(@user, :blog_url)}
     = f.label :twitter, :class => 'control-label'
     .controls
-      http://www.twitter.com/#!/
-      = f.text_field :twitter, :class => "span2", :placeholder => '@you'
+      .input-prepend
+        %span.add-on{:style => 'margin-right: -5px'} @
+        = f.text_field :twitter, :class => "span2"
       = f.semantic_errors :twitter
 
 - if show_user_field?(:facebook_url)
