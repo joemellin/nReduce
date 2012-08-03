@@ -1,3 +1,4 @@
+- hide_chart ||= false
 .startup
   .headline
     .left.name
@@ -25,7 +26,8 @@
       .left.checkin{:class => status.first == true ? 'done' : ''} &nbsp;
       .clear
   .left
-    = render 'investors/chart'
+    - unless hide_chart
+      = render 'investors/chart'
 
     - unless @screenshots.blank?
       %h3 Product Screenshots

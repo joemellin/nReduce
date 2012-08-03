@@ -181,13 +181,14 @@ class Checkin < ActiveRecord::Base
     current_week = Checkin.week_integer_for_time(Checkin.prev_after_checkin)
     while(current_week != checkins.first.week)
       arr << [false, false]
-      puts current_week
       current_week = Checkin.previous_week(current_week)
     end
     checkins.each do |c|
-      arr << [c.submitted?, c.completed?]
-      # check if they missed a week between prev checkin
-      arr << [false, false] if current_week != c.week
+      if current_week == c.week
+        arr << [c.submitted?, c.completed?]
+      else # they missed a week
+        arr << [false, false] 
+      end
       # move current week back one week
       current_week = Checkin.previous_week(current_week)
     end
