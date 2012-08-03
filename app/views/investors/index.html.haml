@@ -36,7 +36,7 @@
 
         %hr/
         %br/
-        .row.investor_profile_inactive
+        .row.investor_profile_inactive{:class => current_user.startup.investable? ? 'hide' : ''}
           %center
             = image_tag 'nstar_s.png'
             %br/
