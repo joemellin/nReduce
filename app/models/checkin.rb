@@ -1,8 +1,8 @@
 class Checkin < ActiveRecord::Base
   belongs_to :startup
   belongs_to :user # the user logged in who created check-in
-  has_many :comments
-  has_many :awesomes, :as => :awsm
+  has_many :comments, :dependent => :destroy
+  has_many :awesomes, :as => :awsm, :dependent => :destroy
   has_many :notifications, :as => :attachable
   has_many :user_actions, :as => :attachable
 
@@ -121,6 +121,27 @@ class Checkin < ActiveRecord::Base
     "#{beginning.strftime('%b %-d')}-#{week_end.strftime('%b %-d')}"
   end
 
+  def self.week_integer_for_time(time)
+    Checkin.week_start_for_time(time).strftime("%Y%W").to_i
+  end
+
+  # Pass in a week integer (ex: 20126) and this will pass back the week before, 20125
+  # accounts for changes in years
+  def self.previous_week(week)
+    # see if we're at the end of a year
+    s = week.to_s
+    # If passing in 2012, zerofill with one zero so it's the right length
+    if s.size == 4
+      week = "#{week}0".to_i 
+      s = week.to_s
+    end
+    if s.size == 5 and s.last == '0'
+      return ((s.first(4).to_i - 1).to_s + '53').to_i
+    else
+      return week - 1
+    end
+  end
+
   # Queues up 'before' email to be sent to all active users
   def self.send_before_checkin_email
     users_with_startups = User.where('email IS NOT NULL').where(:startup_id => Startup.select('id').account_complete.map{|s| s.id })
@@ -147,6 +168,30 @@ class Checkin < ActiveRecord::Base
     elsif checkin_type.to_sym == :after
       UserMailer.after_checkin_reminder(User.find(user_id)).deliver
     end
+  end
+
+  # Returns an array of checkin history for this startup, each array element being whether they completed a before/after video
+  # ex: [[true, false], [false, false], [true, false]]
+  def self.history_for_startup(startup)
+    arr = []
+    week = nil
+    checkins = startup.checkins.order('created_at DESC')
+    return arr if checkins.blank?
+    # add blank elements at the beginning until they've done a checkin - start at end of prev after checkin
+    current_week = Checkin.week_integer_for_time(Checkin.prev_after_checkin)
+    while(current_week != checkins.first.week)
+      arr << [false, false]
+      puts current_week
+      current_week = Checkin.previous_week(current_week)
+    end
+    checkins.each do |c|
+      arr << [c.submitted?, c.completed?]
+      # check if they missed a week between prev checkin
+      arr << [false, false] if current_week != c.week
+      # move current week back one week
+      current_week = Checkin.previous_week(current_week)
+    end
+    arr
   end
 
   # Cache # of comments
@@ -185,7 +230,7 @@ class Checkin < ActiveRecord::Base
     # Assigns week for this checkin, ex: 20125 is week 5 of 2012
     # uses created at date, or if not yet saved, current time
   def assign_week
-    self.week = Checkin.week_start_for_time(self.created_at || Time.now).strftime("%Y%W").to_i
+    self.week = Checkin.week_integer_for_time(self.created_at || Time.now)
     true
   end
 

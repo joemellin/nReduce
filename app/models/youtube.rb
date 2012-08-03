@@ -26,7 +26,8 @@ class Youtube
   def self.embed_url(url_string)
     id = Youtube.id_from_url(url_string)
     return '' if id.blank?
-    "http://www.youtube.com/embed/#{id}"
+    # add &rel=0 so related videos aren't shown
+    "http://www.youtube.com/embed/#{id}?rel=0"
   end
   
   def self.valid_url?(url_string)

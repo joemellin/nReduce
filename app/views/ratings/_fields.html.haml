@@ -1,0 +1,25 @@
+= f.hidden_field :startup_id
+= f.hidden_field :interested
+
+/ Display any errors for startup
+.control-group{error_css(f.object, :startup_id)}
+  .controls= f.semantic_errors :startup_id
+
+.control-group{error_css(f.object, :feedback)}
+  = f.label :feedback, f.object.interested? ? 'What is their strongest element?' : 'What is their weakest element?'
+  .controls
+    - Rating::FEEDBACK_OPTIONS.each do |o|
+      / Check true by default if they say they're interested, otherwise false / whatever is selected
+      .left{:style => 'margin-right: 10px'}
+        = label_tag '' do
+          = radio_button_tag "rating[feedback][]", o, f.object.feedback?(o), :class => 'btn'
+          = o.to_s.titleize 
+
+    .clear
+    = f.semantic_errors :feedback
+
+.control-group{error_css(f.object, :explanation)}
+  = f.label :explanation, f.object.interested? ? 'Why do you want to connect to them?' : 'Why did you pass?'
+  .controls
+    = f.text_area :explanation, :size => '120x5', :class => 'span4'
+    = f.semantic_errors :explanation
