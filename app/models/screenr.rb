@@ -1,0 +1,3 @@
+class Screenr < Video
+
+end

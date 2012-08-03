@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120801185226) do
+ActiveRecord::Schema.define(:version => 20120803205656) do
 
   create_table "authentications", :force => true do |t|
     t.string   "provider"
@@ -208,7 +208,7 @@ ActiveRecord::Schema.define(:version => 20120801185226) do
     t.datetime "pending_at"
   end
 
-  add_index "relationships", ["entity_id", "entity_type", "status"], :name => "relationship_index"
+  add_index "relationships", ["entity_id", "entity_type", "connected_with_id", "connected_with_type", "status"], :name => "relationship_index", :unique => true
 
   create_table "rsvps", :force => true do |t|
     t.string   "email"
@@ -337,12 +337,11 @@ ActiveRecord::Schema.define(:version => 20120801185226) do
     t.string   "blog_url"
     t.string   "pic"
     t.float    "rating"
-    t.string   "intro_video_url"
     t.integer  "roles"
     t.integer  "onboarded"
-    t.boolean  "admin"
     t.integer  "email_on"
     t.integer  "setup"
+    t.boolean  "admin"
   end
 
   add_index "users", ["reset_password_token"], :name => "index_users_on_reset_password_token", :unique => true
@@ -363,12 +362,12 @@ ActiveRecord::Schema.define(:version => 20120801185226) do
   create_table "videos", :force => true do |t|
     t.integer  "user_id"
     t.string   "external_id"
-    t.integer  "video_type"
-    t.string   "file_url"
-    t.text     "callback_result"
+    t.string   "local_file_path"
     t.integer  "vimeo_id"
-    t.datetime "created_at",      :null => false
-    t.datetime "updated_at",      :null => false
+    t.datetime "created_at",                         :null => false
+    t.datetime "updated_at",                         :null => false
+    t.boolean  "vimeod",          :default => false
+    t.string   "type"
   end
 
 end
