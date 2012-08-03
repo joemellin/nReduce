@@ -103,7 +103,6 @@ yes_no_options:
     - "No"
     - false
 
-
 agree_options:
   -
     - "Agree"
@@ -144,6 +143,17 @@ apis:
   linkedin:
     key: 'dlvvu7wj3crq'
     secret_key: 'FEoK8dhge3JbczQe'
+
+  viddler:
+    key: '1xp3gdymerewd1u1e3w8'
+    username: 'nreduce'
+    password: 'th3dudeabides'
+
+  vimeo:
+    client_id: ''
+    client_secret: ''
+    access_token: ''
+    access_token_secret: ''
 
 aws:
   s3:

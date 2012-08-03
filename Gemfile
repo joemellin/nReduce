@@ -45,6 +45,8 @@ gem 'bitmask_attributes'
 gem 'paper_trail', '~> 2.6.3'
 gem 'slope_one'
 gem 'rails_autolink'
+gem 'viddler-ruby'
+gem 'vimeo'
 
 
 group :test, :development do

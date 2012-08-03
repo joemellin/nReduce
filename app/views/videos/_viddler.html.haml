@@ -1,0 +1,17 @@
+= ViddlerClient.embedded_recorder_html(30).html_safe
+
+= form_for @viddler, :url => videos_path, :html => { :id => 'viddler_form' } do |f|
+  = f.hidden_field :type
+  = f.hidden_field :external_id, :id => 'external_id'
+
+/ Mac bug in Lion that won't allow you to click on allow flash recording: http://blog.mailvu.com/blog/adobe-flash-issue-on-mac-os-10-7-lion/
+/ how to change: http://blog.mailvu.com/blog/setting-flash-system-preference-on-a-mac/
+:javascript
+  // Called when recording is finished and saved to the server
+  function recordDone(username,user_video_number,video_id) {
+    // Set video id correctly
+    if(video_id != null){
+      $('#viddler_form #external_id').val(video_id);
+      $('#viddler_form').submit();
+    }
+  }
