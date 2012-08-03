@@ -140,16 +140,3 @@
           = ss.file_field :image
           = ss.hidden_field :image_cache
         = ss.semantic_errors :image
-        
-
-/ %hr
-
-/ .control-group{error_css(@startup, :meeting_id)}
-/   = f.label :meeting_id, "Where is your<br>team located?".html_safe, :class => 'control-label'
-/   .controls
-/     = f.select :meeting_id, options_for_select(Meeting.select_options, @startup.meeting_id), :include_blank => true
-/     = f.semantic_errors :meeting_id
-/     .row
-/       .span5
-/         %p.help-block
-/           We're looking to put together in-person dinners in the major startup hubs. If you are close enough to one of these hubs, choose it from this list. If your location is not on the list, choose "other" and enter it below.
