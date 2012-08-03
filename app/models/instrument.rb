@@ -1,3 +1,4 @@
 class Instrument < ActiveRecord::Base
-  # attr_accessible :title, :body
+  has_many :measurements
+  belongs_to :startup
 end

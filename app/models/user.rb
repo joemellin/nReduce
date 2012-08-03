@@ -15,9 +15,10 @@ class User < ActiveRecord::Base
   has_many :sent_invites, :foreign_key => 'from_id', :class_name => 'Invite'
   has_many :awesomes
   has_many :sent_nudges, :class_name => 'Nudge', :foreign_key => 'from_id'
-  has_many :user_actions, :as => :attachable
-  has_many :relationships, :as => :entity
-  has_many :connected_with_relationships, :as => :connected_with, :class_name => 'Relationship'
+  has_many :user_actions, :as => :attachable, :dependent => :destroy
+  has_many :relationships, :as => :entity, :dependent => :destroy
+  has_many :connected_with_relationships, :as => :connected_with, :class_name => 'Relationship', :dependent => :destroy
+  has_many :screenshots
 
   # Include default devise modules. Others available are:
   # :token_authenticatable, :confirmable,
@@ -56,6 +57,9 @@ class User < ActiveRecord::Base
   bitmask :onboarded, :as => [:startup, :mentor, :nreduce_mentor, :investor]
   bitmask :email_on, :as => [:docheckin, :comment, :meeting, :checkin, :relationship]
   bitmask :setup, :as => [:account_type, :onboarding, :profile, :invite_startups, :welcome]
+
+  # Number of startups an investor can contact per week
+  INVESTOR_STARTUPS_PER_WEEK = 5
 
   searchable do
     # full-text search fields - can add :stored => true if you don't want to hit db
@@ -357,6 +361,16 @@ class User < ActiveRecord::Base
     return :mentor if mentor?
     return :investor if investor?
     return nil
+  end
+
+  # Method for investors - to see how many startups they have connected with this week
+  # Week is based on checkin cycle, so it starts after "after" video is done
+  def num_startups_connected_with_this_week
+    self.relationships.where(:connected_with_type => 'Startup').where(['pending_at >= ?', Checkin.prev_after_checkin]).pending.count
+  end
+
+  def can_connect_with_startups?
+    self.num_startups_connected_with_this_week < User::INVESTOR_STARTUPS_PER_WEEK
   end
 
   #

@@ -1,0 +1,8 @@
+:plain
+  submit = $('#edit_startup_#{@startup.id} :submit');
+  if($('.save_status').length == 0){
+    submit.after('<span style="font-weight: bold; padding-left: 10px;" class="save_status">#{@message}</span>');
+  }else{
+    $('.save_status').text('#{@message}');
+  }
+  $(submit).effect("highlight", {}, 1500);

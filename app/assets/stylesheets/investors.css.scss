@@ -1,0 +1,81 @@
+// Place all the styles related to the Investors controller here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: http://sass-lang.com/
+
+.investors {
+  p {
+    font-size: 20px;
+    line-height: 130%;
+  }
+  h2 {
+    font-size: 30px;
+  }
+  h1 {
+    font-size: 30px;
+    font-weight: 600;
+  }
+  .startup {
+    .well {
+      width: 90%;
+      .progress{
+        width: 100%;
+      }
+    }
+    .headline {
+      .name {
+        h2 {
+          font-weight: 600;
+        }
+        padding: 10px;
+      }
+      .details {
+        padding: 10px;
+      }
+    }
+    .video {
+      width: 500px;
+      height: 315px;
+      margin: 0 15px 15px 0;
+    }
+    .chart {
+      width: 500px;
+      height: 300px;
+    }
+    .team_members {
+      .team_member {
+        margin: 0 20px 15px 0;
+      }
+    }
+    #screenshots_modal.modal {
+      margin: -450px 0 0 -530px;
+      width: 1054px;
+      height: 798px;
+      #screenshots_carousel, .modal-body {
+        width: 1024px;
+        height: 768px;
+      }
+    }
+    .screenshot {
+      margin-right: 15px;
+      border: 1px solid #ccc;
+    }
+    .checkin_history {
+      margin-right: 15px;
+      .checkin {
+        width: 8px;
+        height: 8px;
+        margin: 0 3px 3px 0;
+        border: 1px solid #ccc;
+      }
+      .checkin.done {
+        background-color: #ccc;
+      }
+    }
+    ol {
+      margin-left: 35px;
+      li {
+        padding-bottom: 4px;
+      }
+    }
+  }
+}

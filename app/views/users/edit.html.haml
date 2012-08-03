@@ -14,6 +14,8 @@
             %a.btn.btn-large{:href => '/auth/linkedin'}
               = image_tag('linkedin_32.png')
               Add LinkedIn
+            - if @setup
+              %i To automatically populate your account
           - else
             Authorized with
             = image_tag('linkedin_32.png', :alt => 'LinkedIn', :title => 'LinkedIn')

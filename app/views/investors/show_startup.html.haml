@@ -1,0 +1,10 @@
+.investors 
+  = render 'startups/investment_profile'
+  %br/
+  %center
+    = link_to 'Connect', new_startup_rating_path(:interested => true, :startup_id => @startup.id), :class => 'btn btn-large btn-success', :remote => true
+    &nbsp;&nbsp;
+    = link_to 'Pass', new_startup_rating_path(:interested => false, :startup_id => @startup.id), :class => 'btn btn-large', :remote => true
+
+  #rating_modal.hide
+

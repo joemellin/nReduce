@@ -29,4 +29,6 @@ en:
       user: "Sorry but you need to be an nReduce mentor to see other mentors."
     change_mentor_status:
       user: "You must currently be a mentor to change your mentor status."
+    see_investor_page:
+      user: "You don't have privileges to view the investor area."
 
