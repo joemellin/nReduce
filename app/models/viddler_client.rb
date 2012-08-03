@@ -25,11 +25,11 @@ id="viddler_recorder" align="middle">
       <param name="allowNetworking" value="all" />
       <param name="movie" value="http://cdn-static.viddler.com/flash/recorder.swf" />
       <param name="quality" value="high" />
-      <param name="scale" value="noScale">
+      <param name="scale" value="noScale" />
       <param name="bgcolor" value="#000000" />
-      <param name="recQuality" value="H">
-      <param name="enableCallbacks" value="Y">
-      <param name="flashvars" value="fake=1&recordToken=[YourRecordTokenHere]" />
+      <param name="recQuality" value="H" />
+      <param name="enableCallbacks" value="Y" />
+      <param name="flashvars" value="fake=1&recordToken=' + token + '" />
       <embed src="http://cdn-static.viddler.com/flash/recorder.swf" quality="high" scale="noScale" bgcolor="#000000"
 allowScriptAccess="always" allowNetworking="all" width="449" height="545" name="viddler_recorder"
 flashvars="fake=1&recordToken=' + token + '" align="middle" allowScriptAccess="sameDomain"
@@ -42,12 +42,12 @@ type="application/x-shockwave-flash"  pluginspage="http://www.macromedia.com/go/
   def transfer_to_vimeo!(force_upload = false)
     # return true if already uploaded
     return true if !self.vimeo_id.blank? && !force_upload
+    #ViddlerClient.client.post('viddler.videos.set_details', :video_id => self.external_id, :download_perm => 
     details = ViddlerClient.client.get('viddler.videos.get_details', :video_id => self.external_id)
     raise "Viddler: Video with id #{self.external_id} doesn't exist or isn't encoded yet" if details.blank?
     # First get html5 video source
     remote_url = details['video']['html5_video_source']
-    remote_url += '?sessionid' + ViddlerClient.client.sessionid + '&key=' + ViddlerClient.client.api_key
-    puts remote_url
+    #remote_url += '?sessionid=' + ViddlerClient.client.sessionid + '&key=' + ViddlerClient.client.api_key
     raise "Viddler: did not return html5 video source" if remote_url.blank?
     # Save it locally
     self.save_file_locally(remote_url, 'mp4')
