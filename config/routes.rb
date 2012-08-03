@@ -33,7 +33,12 @@ Nreduce::Application.routes.draw do
     end
   end
 
-  
+  resources :videos do
+    collection do
+      get 'screencast'
+      get 'record'
+    end
+  end
 
   resources :meetings, :only => [:index, :show, :edit, :update] do
     post 'message_attendees', :on => :member
