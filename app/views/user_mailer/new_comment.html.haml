@@ -1,6 +1,6 @@
 = render :partial => 'header'
 - if @owner
-  %h1.h1 You Have Feedback!
+  %h1.h1 Feedback received: Team #{@comment.user.startup.name}
 - else
   %h1.h1 #{@comment.user.name} responded to you!
 %br/
@@ -18,7 +18,7 @@
 - else
   They wrote:
 %hr/
-%h4.h4 "#{h(@comment.content)}"
+%p "#{h(@comment.content)}"
 %hr/
 %br/
 %br/
