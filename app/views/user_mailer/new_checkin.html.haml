@@ -1,7 +1,11 @@
 = render :partial => 'header'
 %h1.h1 Team #{@checkin.startup.name}
-%br
 %h4.h4 Posted their "After" Video
-%br
+%hr
+%h4 What we said we'd accomplish this week:
+%p=@checkin.start_comments
+%br/
+%h4 What we got done this week and what feedback on:
+%p=@checkin.end_comments
 %h3.h3= link_to 'Give Feedback & Support', startup_checkin_url(:startup_id => @checkin.startup_id, :id => @checkin.id)
 = render :partial => 'footer'
