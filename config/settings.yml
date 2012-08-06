@@ -150,10 +150,10 @@ apis:
     password: 'th3dudeabides'
 
   vimeo:
-    client_id: ''
-    client_secret: ''
-    access_token: ''
-    access_token_secret: ''
+    client_id: '3acc3d4fffe8c2528735a354d5bf3605ff56aca1'
+    client_secret: '30dedf19e4c8b53f6ef0a493b33e7efb94e4d4b5'
+    access_token: '24d05958c9750310741a76c7c89474cd'
+    access_token_secret: '2346d1c724bd6503c4891461f0a26663d4bb7332'
 
 aws:
   s3:
