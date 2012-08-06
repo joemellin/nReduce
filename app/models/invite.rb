@@ -105,14 +105,19 @@ class Invite < ActiveRecord::Base
     # Updates all people on shared trip of updates
   def self.perform(invite_id)
     i = Invite.find(invite_id)
+    success = false
     if i.invite_type == MENTOR or i.invite_type == NREDUCE_MENTOR
-      UserMailer.invite_mentor(i).deliver
+      success = UserMailer.invite_mentor(i).deliver
     elsif i.invite_type == TEAM_MEMBER
-      UserMailer.invite_team_member(i).deliver
+      success = UserMailer.invite_team_member(i).deliver
     elsif i.invite_type == STARTUP
-      UserMailer.invite_startup(i).deliver
+      success = UserMailer.invite_startup(i).deliver
     elsif i.invite_type == INVESTOR
-      UserMailer.invite_investor(i).deliver
+      success = UserMailer.invite_investor(i).deliver
+    end
+    if success
+      i.emailed_at = Time.now
+      i.save
     end
   end
   
