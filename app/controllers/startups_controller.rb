@@ -2,8 +2,8 @@ class StartupsController < ApplicationController
   around_filter :record_user_action, :except => [:onboard_next, :stats]
   before_filter :login_required
   before_filter :load_requested_or_users_startup, :except => [:index, :invite, :stats]
-  load_and_authorize_resource :except => [:index, :stats, :invite]
-  before_filter :redirect_if_no_startup, :except => [:index, :invite]
+  load_and_authorize_resource :except => [:index, :stats, :invite, :show]
+  before_filter :redirect_if_no_startup, :except => [:index, :invite, :show]
 
   def index
     redirect_to :action => :search
@@ -53,6 +53,14 @@ class StartupsController < ApplicationController
   end
 
   def show
+    begin
+      @startup ||= Startup.find_by_obfuscated_id(params[:id])
+    rescue ActiveRecord::RecordNotFound
+      redirect_to '/'
+      return
+    end
+    redirect_if_no_startup
+    authorize! :read, @startup
     @owner = true if user_signed_in? and (@startup.id == current_user.startup_id)
     @can_view_checkin_details = can? :read, Checkin.new(:startup => @startup)
     @num_checkins = @startup.checkins.count

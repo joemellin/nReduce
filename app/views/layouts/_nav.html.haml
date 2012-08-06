@@ -25,7 +25,7 @@
                     = pluralize(current_user.unread_nc, 'notification')
             %ul.dropdown-menu
               - unless current_user.startup_id.blank?
-                %li= link_to 'My Startup', startup_path(:id => current_user.startup_id)
+                %li= link_to 'My Startup', startup_path(current_user.startup)
               %li= link_to 'My Profile', user_path(current_user)
               - if current_user.entrepreneur?
                 - if current_user.meeting_id.blank?

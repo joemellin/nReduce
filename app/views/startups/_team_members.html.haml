@@ -13,9 +13,9 @@
           Located: #{team_member.location}
 - if add_team_member
   .left
-    .span1{:align => 'right', :style => 'margin-left: 0'}= link_to image_tag('adduser.png'), edit_startup_path(:id => current_user.startup_id)
+    .span1{:align => 'right', :style => 'margin-left: 0'}= link_to image_tag('adduser.png'), edit_startup_path(current_user.startup)
     .span2
-      %h4= link_to 'Invite to Team', edit_startup_path(:id => current_user.startup_id)
+      %h4= link_to 'Invite to Team', edit_startup_path(current_user.startup)
       %p
         %small Add team members to your startup
 .clear
