@@ -1,4 +1,5 @@
 class Startup < ActiveRecord::Base
+  obfuscate_id :spin => 29406582
   include Connectable # methods for relationships
   has_paper_trail
   has_many :team_members, :class_name => 'User'

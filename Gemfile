@@ -45,6 +45,7 @@ gem 'bitmask_attributes'
 gem 'paper_trail', '~> 2.6.3'
 gem 'slope_one'
 gem 'rails_autolink'
+gem "obfuscate_id", :git => 'git://github.com/geeosh/obfuscate_id.git'
 
 
 group :test, :development do

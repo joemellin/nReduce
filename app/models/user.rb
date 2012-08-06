@@ -1,4 +1,5 @@
 class User < ActiveRecord::Base
+  obfuscate_id :spin => 94062493
   include Connectable # methods for relationships
   acts_as_mappable
   has_paper_trail
