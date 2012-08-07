@@ -301,6 +301,8 @@ class User < ActiveRecord::Base
     if roles?(:spectator)
       return [:users, :spectator]
     end
+    # If it's time to start the class, then allow them to see new welcome process
+    
     if !setup?(:onboarding)
       if self.onboarded.blank?
         return [:onboard, :start]

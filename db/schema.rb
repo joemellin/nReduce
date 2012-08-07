@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120806172629) do
+ActiveRecord::Schema.define(:version => 20120807024343) do
 
   create_table "authentications", :force => true do |t|
     t.string   "provider"
@@ -266,9 +266,11 @@ ActiveRecord::Schema.define(:version => 20120806172629) do
     t.string   "pitch_video_url"
     t.integer  "setup"
     t.boolean  "investable",      :default => false
+    t.integer  "week"
   end
 
   add_index "startups", ["public"], :name => "index_startups_on_public"
+  add_index "startups", ["week"], :name => "index_startups_on_week"
 
   create_table "taggings", :force => true do |t|
     t.integer  "tag_id"
