@@ -5,7 +5,7 @@ class CheckinsController < ApplicationController
   load_and_authorize_resource :startup
   before_filter :load_latest_checkin, :only => :show
   before_filter :load_current_checkin, :only => :new
-  load_and_authorize_resource :checkin
+  load_and_authorize_resource :checkin, :except => :show
 
   def index
     @checkins = @startup.checkins
@@ -14,6 +14,12 @@ class CheckinsController < ApplicationController
   end
 
   def show
+    begin
+      @checkin ||= Checkin.find_by_obfuscated_id(params[:id])
+    rescue ActiveRecord::RecordNotFound
+      redirect_to '/'
+      return
+    end
     @new_comment = Comment.new(:checkin_id => @checkin.id)
     @comments = @checkin.comments.includes(:user).arrange(:order => 'created_at DESC') # arrange in nested order
     @ua = {:attachable => @checkin}

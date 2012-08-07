@@ -1,4 +1,5 @@
 class Checkin < ActiveRecord::Base
+  obfuscate_id :spin => 284759320
   belongs_to :startup
   belongs_to :user # the user logged in who created check-in
   has_many :comments, :dependent => :destroy
