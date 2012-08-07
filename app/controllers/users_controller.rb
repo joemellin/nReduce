@@ -81,6 +81,14 @@ class UsersController < ApplicationController
     @conversion = true
   end
 
+  def current_class
+
+  end
+
+  def wait_for_next_class
+    
+  end
+
   protected
 
   def load_user_if_me_or_current

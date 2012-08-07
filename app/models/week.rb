@@ -1,4 +1,6 @@
 class Week
+  # THIS IS REALLY A DIFFERENT CLASS - TIME WINDOWS
+  
   def self.time_windows
     {
       # type => [offset from beginning of week, length]
@@ -13,7 +15,7 @@ class Week
     # Wed from Noon - 2pm
     time ||= Time.now
     next_window = Week.next_window_for(type)
-    return true if now > next_window.first && now < next_window.last
+    return true if time > next_window.first && time < next_window.last
     false
   end
 
@@ -31,6 +33,13 @@ class Week
   def self.prev_window_for(type)
     Week.next_window_for(type).map{|t| t - 1.week }
   end
+
+  # Returns string description of the next time window for this type, ex: Jul 5 to Jul 12 for next class
+  def self.desc_for_next_of_type(type)
+    Week.for_time(Week.next_window_for(type).first)
+  end
+
+  # WEEK STUFF
 
     # Pass in a timestamp and this will return the current week description for that timestamp
   # ex: Jul 5 to Jul 12
