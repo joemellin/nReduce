@@ -65,6 +65,12 @@ class ApplicationController < ActionController::Base
     if current_user.account_setup?
       return true
     else
+      # temporary time travel
+      if !params[:travel].blank? && params[:travel].to_s == '1'
+        Timecop.return
+        Timecop.travel(Week.next_window_for(:join_class).first + 1.hour) 
+        logger.info Time.now
+      end
       @hide_nav = true
       controller_action_arr = [controller_name.to_sym, action_name.to_sym]
       @account_setup_action = current_user.account_setup_action
@@ -93,7 +99,8 @@ class ApplicationController < ActionController::Base
       return true if [controller_action_arr.first, @account_setup_action.first] == [:onboard, :onboard]
       # otherwise redirect to correct controller/action
       prms = {:controller => @account_setup_action.first, :action => @account_setup_action.last}
-      prms[:id] = current_user.id if prms[:controller] == :users
+      # use obfuscated id
+      prms[:id] = current_user.to_param if prms[:controller] == :users
       prms[:id] = current_user.startup_id if prms[:controller] == :startups
       redirect_to prms
     end

@@ -12,21 +12,20 @@ class Week
 
      # Returns true if time given is in the time window. If no time given, defaults to now
   def self.in_time_window?(type, time = nil)
-    # Wed from Noon - 2pm
     time ||= Time.now
-    next_window = Week.next_window_for(type)
+    next_window = Week.next_window_for(type, true)
     return true if time > next_window.first && time < next_window.last
     false
   end
 
     # Returns array of [start_time, end_time] for this type
-  def self.next_window_for(type)
+  def self.next_window_for(type, dont_skip_if_in_window = false)
     t = Time.now
     beginning_of_week = t.beginning_of_week
     window_info = Week.time_windows[type]
     window_start = beginning_of_week + window_info.first
-    # We're after the beginning of this time window, so add a week
-    window_start += 1.week if t > (beginning_of_week + window_info.first)
+    # We're after the beginning of this time window, so add a week unless we're suppressing that
+    window_start += 1.week if (t > window_start) && !dont_skip_if_in_window
     [window_start, window_start + window_info.last]
   end
 

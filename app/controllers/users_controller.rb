@@ -2,7 +2,8 @@ class UsersController < ApplicationController
   around_filter :record_user_action, :except => [:reset_hipchat_account]
   before_filter :login_required
   before_filter :load_user_if_me_or_current
-  load_and_authorize_resource :except => [:show]
+  before_filter :load_obfuscated_user
+  load_and_authorize_resource
 
   def index
     redirect_to '/'
@@ -86,10 +87,19 @@ class UsersController < ApplicationController
   end
 
   def wait_for_next_class
-    
+
   end
 
   protected
+
+  def load_obfuscated_user
+    begin
+      @user ||= User.find_by_obfuscated_id(params[:id])
+    rescue ActiveRecord::RecordNotFound
+      redirect_to '/'
+      return
+    end
+  end
 
   def load_user_if_me_or_current
     @user = current_user if params[:id].blank?
