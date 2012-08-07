@@ -10,6 +10,8 @@ Nreduce::Application.routes.draw do
       member do
         get 'sign_in_as'
         post 'approve'
+        get 'current_class'
+        get 'wait_for_next_class'
       end
     end
     # Resque Admin
