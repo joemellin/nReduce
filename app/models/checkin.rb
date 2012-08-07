@@ -117,30 +117,17 @@ class Checkin < ActiveRecord::Base
   # ex: Jul 5 to Jul 12
   def self.week_for_time(time)
     # reset to tuesday
-    beginning = Checkin.week_start_for_time(time)
-    week_end = beginning + 6.days
-    "#{beginning.strftime('%b %-d')}-#{week_end.strftime('%b %-d')}"
+    beginning_of_week = Checkin.week_start_for_time(time)
+    Week.for_time(beginning_of_week)
   end
 
   def self.week_integer_for_time(time)
-    Checkin.week_start_for_time(time).strftime("%Y%W").to_i
+    Week.integer_for_time(Checkin.week_start_for_time(time))
   end
 
   # Pass in a week integer (ex: 20126) and this will pass back the week before, 20125
-  # accounts for changes in years
   def self.previous_week(week)
-    # see if we're at the end of a year
-    s = week.to_s
-    # If passing in 2012, zerofill with one zero so it's the right length
-    if s.size == 4
-      week = "#{week}0".to_i 
-      s = week.to_s
-    end
-    if s.size == 5 and s.last == '0'
-      return ((s.first(4).to_i - 1).to_s + '53').to_i
-    else
-      return week - 1
-    end
+    Week.previous(week)
   end
 
   # Queues up 'before' email to be sent to all active users
@@ -182,7 +169,7 @@ class Checkin < ActiveRecord::Base
     current_week = Checkin.week_integer_for_time(Checkin.prev_after_checkin)
     while(current_week != checkins.first.week)
       arr << [false, false]
-      current_week = Checkin.previous_week(current_week)
+      current_week = Week.previous(current_week)
     end
     checkins.each do |c|
       if current_week == c.week
@@ -191,7 +178,7 @@ class Checkin < ActiveRecord::Base
         arr << [false, false] 
       end
       # move current week back one week
-      current_week = Checkin.previous_week(current_week)
+      current_week = Week.previous(current_week)
     end
     arr
   end
