@@ -33,6 +33,7 @@ class UsersController < ApplicationController
   end
 
   def edit
+    @user.intro_video.build if @user.intro_video.blank?
     @profile_elements = @user.profile_elements
     @profile_completeness_percent = (@user.profile_completeness_percent * 100).round
   end

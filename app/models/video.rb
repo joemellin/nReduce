@@ -25,24 +25,20 @@ class Video < ActiveRecord::Base
   end
 
   # Given a location of a file on a remote server it will save it locally to the tmp_file_dir
-  # DOES NOT WORK with files over SSL yet
   # DOES NOT SAVE model
   def save_file_locally(remote_url_str, extension = nil)
     extension ||= remote_url_str.match(/\.\w+$/)[0].sub(/^\./, '')
     new_file_name = self.tmp_file_name(extension)
     local_path_to_file = File.join(Video.tmp_file_dir, new_file_name)
     uri = URI.parse(remote_url_str)
-    Net::HTTP.start(uri.host, uri.port) do |http|
-      begin
-        file = open(local_path_to_file, 'wb')
-        http.request_get(uri.path) do |response|
-          response.read_body do |segment|
-            file.write(segment)
-          end
-        end
-      ensure
-        file.close
+    download_file = open(local_path_to_file, "wb")
+    request = Net::HTTP.start(uri.host, uri.port, :use_ssl => uri.scheme == 'https', :verify_mode => OpenSSL::SSL::VERIFY_NONE)
+    begin
+      request.request_get(uri.path) do |resp|
+        resp.read_body { |segment| download_file.write(segment) }
       end
+    ensure
+      download_file.close
     end
     self.local_file_path = local_path_to_file if File.exists?(local_path_to_file)
     if self.local_file_path.blank?
@@ -56,6 +52,7 @@ class Video < ActiveRecord::Base
   # Adds vimeo_id to model on success - does not save
   # delete_on_success will delete the local file if it is successfully uploaded
   def upload_to_vimeo(delete_on_success = false)
+
     # Vimeo upload
     begin
       upload = Vimeo::Advanced::Upload.new(Settings.apis.vimeo.client_id, Settings.apis.vimeo.client_secret, :token => Settings.apis.vimeo.access_token, :secret => Settings.apis.vimeo.access_token_secret)

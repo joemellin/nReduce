@@ -141,6 +141,8 @@ class StartupsController < ApplicationController
     @screenshots = @startup.screenshots.ordered
     # Build up to 4 screenshots
     @screenshots.size.upto(Startup::NUM_SCREENSHOTS - 1).each{|i| @startup.screenshots.build }
+    @startup.intro_video.build if @startup.intro_video.blank?
+    @startup.pitch_video.build if @startup.pitch_video.blank?
   end
 
   def update
@@ -191,6 +193,7 @@ class StartupsController < ApplicationController
 
   def intro_video
     @startups = Startup.with_intro_video.limit(6).order("RAND()")
+    @startup.intro_video.build if @startup.intro_video.blank?
     if !params[:startup].blank? && !params[:startup][:intro_video_url].blank?
       @startup.intro_video_url = params[:startup][:intro_video_url]
       if @startup.save
