@@ -349,10 +349,13 @@ class User < ActiveRecord::Base
     save!
   end
 
-  def setup_complete!
+  def setup_complete!(dont_suggest_startups = false)
     self.setup << :welcome
     if self.save
-      self.startup.generate_suggested_connections(10) unless self.startup.blank?
+      self.startup.generate_suggested_connections(10) if !dont_suggest_startups && !self.startup.blank?
+      true
+    else
+      false
     end
   end
 

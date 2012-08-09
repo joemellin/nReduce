@@ -88,7 +88,11 @@ class Invite < ActiveRecord::Base
       end
     end
 
-    if user.save
+    # Only suggest startups if invite is for a new startup
+    dont_suggest_startups = (self.invite_type != STARTUP)
+    
+    # Let user skip approval step
+    if user.setup_complete!(dont_suggest_startups)
       self.to = user
       self.accepted_at = Time.now
       self.save
