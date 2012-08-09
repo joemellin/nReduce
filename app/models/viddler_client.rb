@@ -37,24 +37,22 @@ type="application/x-shockwave-flash"  pluginspage="http://www.macromedia.com/go/
     </object>'
   end
 
-  # Method to take the viddler video and save it to our vimeo account
-  # First it saves it locally, then it uploads to vimeo, finally saves object
-  def transfer_to_vimeo!(force_upload = false)
+  def save_external_video_locally
     # return true if already uploaded
     return true if !self.vimeo_id.blank? && !force_upload
     #ViddlerClient.client.post('viddler.videos.set_details', :video_id => self.external_id, :download_perm => 
     details = ViddlerClient.client.get('viddler.videos.get_details', :video_id => self.external_id)
-    raise "Viddler: Video with id #{self.external_id} doesn't exist or isn't encoded yet" if details.blank?
+    raise "Viddler: Video with id #{self.external_id} doesn't exist or isn't encoded yet" if details.blank? || details['video']['files'].blank?
     # First get html5 video source
-    remote_url = details['video']['html5_video_source']
-    #remote_url += '?sessionid=' + ViddlerClient.client.sessionid + '&key=' + ViddlerClient.client.api_key
+    remote_url = extension = nil
+    details['video']['files'].each do |f|
+      if f['profile_name'].match(/source/i) != nil
+        remote_url = f['url']
+        extension = f['ext']
+      end 
+    end
     raise "Viddler: did not return html5 video source" if remote_url.blank?
     # Save it locally
-    self.save_file_locally(remote_url, 'mp4')
-    raise "Local file could not be saved" if self.local_file_path.blank?
-    # Transfer to vimeo
-    self.upload_to_vimeo(true)
-    raise "Vimeo: video could not be uploaded from local file: #{path_to_local_file}" if self.vimeo_id.blank?
-    self.save
+    self.save_file_locally(remote_url, extension)
   end
 end

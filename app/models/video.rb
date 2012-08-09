@@ -5,7 +5,6 @@ class Video < ActiveRecord::Base
 
   attr_accessible :external_id, :user_id, :type, :vimeo_id
 
-  validates_presence_of :user_id
   validates_presence_of :external_id
 
   @queue = :video
@@ -18,6 +17,11 @@ class Video < ActiveRecord::Base
     # generate random token if new record, or just return id
     beginning = self.new_record? ? "#{Time.now.to_i}#{Random.rand(20)}" : self.id
     "#{beginning}.#{extension}"
+  end
+
+  # Mock - to be implemented on any external video classes that inherit from the Video class
+  def save_external_video_locally
+    #self.save_file_locally
   end
 
   # Given a location of a file on a remote server it will save it locally to the tmp_file_dir
@@ -41,10 +45,14 @@ class Video < ActiveRecord::Base
       end
     end
     self.local_file_path = local_path_to_file if File.exists?(local_path_to_file)
-    return self.local_file_path.blank? ? true : false
+    if self.local_file_path.blank?
+      raise "Local file could not be saved" 
+    else
+      return true
+    end
   end
 
-  # Transfers a local file to vimeo account
+  # Transfers a local file (using local_file_path) to vimeo account
   # Adds vimeo_id to model on success - does not save
   # delete_on_success will delete the local file if it is successfully uploaded
   def upload_to_vimeo(delete_on_success = false)
@@ -69,5 +77,16 @@ class Video < ActiveRecord::Base
 
     # Remove local file
     FileUtils.rm(self.local_file_path) if delete_on_success if !self.vimeo_id.blank?
+  end
+
+  # Method to take the external video and save it to our vimeo account
+  # First it saves it locally, then it uploads to vimeo, finally saves object
+  def download_and_transfer_to_vimeo!
+    # Use individually implemented method to save file locally
+    self.save_external_video_locally
+    # Transfer to vimeo
+    self.upload_to_vimeo(true)
+    raise "Vimeo: video could not be uploaded from local file: #{path_to_local_file}" if self.vimeo_id.blank?
+    self.save
   end
 end
