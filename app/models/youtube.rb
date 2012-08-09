@@ -35,11 +35,6 @@ class Youtube < Video
     "http://www.youtube.com/embed/#{id}?rel=0"
   end
 
-  # Returns location of flv file for video
-  def self.download_url_for_id(id)
-    "http://youtube.googleapis.com/v/#{id}"
-  end
-
   def self.valid_url?(url_string)
     return !Youtube.embed_url(url_string).blank?
   end
@@ -55,8 +50,40 @@ class Youtube < Video
     v
   end
 
+  def embed_url
+    Youtube.embed_url_for_id(self.external_id)
+  end
+
   # Generates download link from external id and then triggers super method to save video locally
-  def save_file_locally
+  def save_external_video_locally
+    # First we have to get the token from youtube to download the video
+    uri = URI.parse('http://www.youtube.com/get_video_info?&video_id=' + self.external_id)
+    http = Net::HTTP.new(uri.host, uri.port)
+    response = http.request(Net::HTTP::Get.new(uri.request_uri))
+    body = CGI::parse(response.body) unless response.body.blank?
+    token = body['token'].first unless body.blank?
+    raise "Youtube: could not get token for video with id #{self.external_id}" if token.blank?
+    # Now we can get the video
+    # Youtube quality formats: http://en.wikipedia.org/wiki/Youtube#Quality_and_codecs
+    # fmt=18 is mp4 360p
+    # fmt=22 is mp4 720p
+
+    url = "http://www.youtube.com/get_video?video_id=#{self.external_id}&t=#{token}&fmt=18&l=#{body['l'].first}&sk=#{body['sk'].first}"
+
+    uri = URI.parse(url)
+    puts url
+    http = Net::HTTP.new(uri.host, uri.port)
+    response = http.request(Net::HTTP::Get.new(uri.request_uri))
+    puts response.inspect
+    rh = CGI::parse(response)
+    rh.each do |k,v|
+      puts "#{k} -- #{v}"
+    end
+    return
+    self.save_file_locally("http://www.youtube.com/get_video?video_id=#{self.external_id}&t=#{token}&fmt=18", 'mp4')
+    puts self.local_file_path
+    return
+
     uri = URI.parse(Youtube.download_url_for_id(self.external_id))
     http = Net::HTTP.new(uri.host, uri.port)
     FileUtils.touch '/Users/josh/Projects/nreduce/tmp/video/sample.flv'
@@ -73,10 +100,6 @@ class Youtube < Video
     http = Net::HTTP.new(uri.host, uri.port)
     response = http.request(Net::HTTP::Get.new(uri.request_uri))
     puts response.inspect
-    super(Youtube.download_url_for_id(self.external_id), 'flv')
-  end
-
-  def embed_url
-    Youtube.embed_url_for_id(self.external_id)
+    self.save_file_locally(Youtube.download_url_for_id(self.external_id), 'flv')
   end
 end
