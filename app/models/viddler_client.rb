@@ -53,6 +53,7 @@ type="application/x-shockwave-flash"  pluginspage="http://www.macromedia.com/go/
     end
     puts remote_url
     puts extension
+    return
     raise "Viddler: did not return html5 video source" if remote_url.blank?
     # Save it locally
     self.save_file_locally(remote_url, extension)
