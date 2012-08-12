@@ -92,7 +92,7 @@ module Connectable
   end
 
     # Generate suggestion connections that this startup might like to connect to - based on similar industries and company goal
-  def generate_suggested_connections(limit = 10)
+  def generate_suggested_connections(limit = 4)
     startups = []
     # See if they are over limit of suggested connections
     suggested = self.suggested_startups(limit + 5)
