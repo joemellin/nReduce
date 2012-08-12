@@ -1,0 +1,88 @@
+- content_for :subtitle do
+  Add Teams
+
+.relationships
+  .row
+    .span3
+      %h2 Add Teams
+    .span9{:align => 'right'}
+      = text_field_tag 'search', '', :placeholder => 'Find founders by email'
+      = link_to 'Search', add_teams_relationships_path, :class => 'btn'
+  %hr/
+  %br/
+
+  .row.teams
+    / Relationship Requests
+    /
+    .span3.received
+      .header
+        %h3 Received Invites
+      - if @pending_relationships.size > 0
+        - @pending_relationships.each do |r|
+          - s = r.entity
+          .team{:align => 'center'}
+            .top{:align => 'center', :onclick => "window.location = '#{url_for(s)}';"}
+              .background{:style => "background-image: url('#{s.logo_url(:square)}'); cursor: pointer;"} &nbsp;
+              .members{:align => 'center'}
+                - s.team_members.shuffle.first(3).each do |tm|
+                  .inline-block{:style => 'margin-left: 4px'}= image_tag(user_avatar_url(tm), :title => tm.name, :style => 'width: 50px; height: 50px;')
+            .bottom
+              %h3= link_to truncate(s.name, :length => 20), startup_path(s)
+              
+              = link_to '<i class="icon-remove"></i> Ignore'.html_safe, reject_relationship_path(r), :class => 'btn', :method => :post
+              &nbsp;&nbsp;
+              = link_to 'View <i class="icon-arrow-right icon-white"></i>'.html_safe, s, :class => 'btn btn-success'
+
+    / Suggested teams
+    /
+
+    - if current_user.entrepreneur? and !@suggested_startups.blank?
+      .span6.suggested
+        .header
+          %h2 Suggested Teams
+        - @suggested_startups.each do |s|
+          .team{:align => 'center'}
+            .top{:align => 'center', :onclick => "window.location = '#{url_for(s)}';"}
+              .background{:style => "background-image: url('#{s.logo_url(:square)}'); cursor: pointer;"} &nbsp;
+              .status.btn-group.glow{:align => 'center'}
+                - if !s.cached_relationship.blank? && !s.cached_relationship.message.blank?
+                  %small{:color => '#999'} (#{s.cached_relationship.message})
+              .members{:align => 'center'}
+                - s.team_members.shuffle.first(3).each do |tm|
+                  .inline-block{:style => 'margin-left: 4px'}= image_tag(user_avatar_url(tm), :title => tm.name, :style => 'width: 50px; height: 50px;')
+            .bottom
+              %h3= link_to truncate(s.name, :length => 20), startup_path(s)
+              - unless s.cached_relationship.blank?
+                = link_to '<i class="icon-refresh"></i> Pass'.html_safe, reject_relationship_path(s.cached_relationship), :class => 'btn', :method => :post
+                &nbsp;&nbsp;
+              = link_to 'View <i class="icon-arrow-right icon-white"></i>'.html_safe, startup_path(s, :suggested => 1), :class => 'btn btn-success'
+
+    / Invited teams
+    /
+    .span3.invited
+      - if @invited_startups.size > 0
+        .header
+          %h3 Invited Startups
+        - @invited_startups.each do |i|
+          .team{:align => 'center'}
+            .top{:style => "background-image: url('#{image_path('pendingteam.png')}'); cursor: pointer;"}
+              .background &nbsp;
+            .bottom
+              %h3= i.to_name
+              = form_for Nudge.new(:invite_id => i.id), :html => {:id => "new_nudge_invite_#{i.id}"} do |f|
+                = f.hidden_field :invite_id
+                = link_to '<i class="icon-hand-left icon"></i> Nudge'.html_safe, '#', :title => "Nudge #{i.to_name} to join nReduce", :onclick => "$('#new_nudge_invite_#{i.id}').submit();", :class => 'btn'
+      / Invite teams
+      /
+      .team.invite_team_modal{:align => 'center'}
+        .top{:style => "background-image: url('#{image_path('addteam.png')}'); cursor: pointer;"}
+          .background &nbsp;
+        .bottom
+          %h3= link_to '+ Invite Team', '#', :class => 'invite_team_modal'
+
+      #invite_team_modal.modal.hide
+        .modal-header
+          %button.close{:type => 'button', 'data-dismiss' => 'modal'} x
+          %h3 Invite a Startup
+        .modal-body
+          = render 'startups/invite'

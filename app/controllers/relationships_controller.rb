@@ -1,8 +1,8 @@
 class RelationshipsController < ApplicationController
   around_filter :record_user_action
   before_filter :login_required
-  before_filter :load_requested_or_users_startup, :only => :index
-  load_and_authorize_resource :except => :index
+  before_filter :load_requested_or_users_startup, :only => [:index, :add_teams]
+  load_and_authorize_resource :except => [:index, :add_teams]
 
   def index
     no_startups = false
@@ -11,7 +11,6 @@ class RelationshipsController < ApplicationController
       @entity = current_user
     elsif @startup
       @entity = @startup
-      @current_checkin = @entity.current_checkin
     end
     unless can? :read, Relationship.new(:entity => @entity)
       redirect_to current_user
@@ -64,6 +63,18 @@ class RelationshipsController < ApplicationController
     
     # Suggested, pending relationships and invited startups
     @suggested_startups = @startup.suggested_startups(3) unless @startup.blank?
+    @pending_relationships = @entity.pending_relationships
+    @invited_startups = current_user.sent_invites.to_startups.not_accepted
+  end
+
+  def add_teams
+    if current_user.mentor?
+      @entity = current_user
+    elsif @startup
+      @entity = @startup
+    end
+     # Suggested, pending relationships and invited startups
+    @suggested_startups = @startup.suggested_startups(4) unless @startup.blank?
     @pending_relationships = @entity.pending_relationships
     @invited_startups = current_user.sent_invites.to_startups.not_accepted
   end

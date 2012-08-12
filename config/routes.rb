@@ -101,6 +101,9 @@ Nreduce::Application.routes.draw do
   get '/tags/:context(/:term)' => "tags#search"
   
   resources :relationships, :only => [:create, :index] do
+    collection do
+      get 'add_teams'
+    end
     member do
       post 'approve'
       post 'reject'
