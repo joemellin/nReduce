@@ -11,7 +11,7 @@
     .span9{:align => 'right'}
       = form_for Invite.new, :url => invite_with_confirm_startups_path, :remote => true, :html => { :class => 'form-inline invite_form' } do |f|
         = f.text_field :email, :placeholder => 'founder@startup.com'
-        = f.submit 'Search by Email', :class => 'btn'
+        = f.submit 'Invite by Email', :class => 'btn'
   %hr/
   %br/
 
