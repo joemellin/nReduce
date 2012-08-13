@@ -1,8 +1,6 @@
 - content_for :subtitle do
   Edit Account
 
-
-
 .row{:style => "height:100%"}
   .span7
     %h2 Edit Your Profile
@@ -19,6 +17,8 @@
           - else
             Authorized with
             = image_tag('linkedin_32.png', :alt => 'LinkedIn', :title => 'LinkedIn')
+          &nbsp;&nbsp;
+          = link_to 'Change Password', change_password_user_path(current_user)
       - if @setup
         .control-group{:style => 'padding-top: 0'}
           &nbsp;

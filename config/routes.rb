@@ -85,6 +85,7 @@ Nreduce::Application.routes.draw do
       get 'spectator'
       post 'account_type'
       match 'welcome'
+      get 'change_password'
     end
     resources :notifications
   end

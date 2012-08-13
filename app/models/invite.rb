@@ -23,6 +23,7 @@ class Invite < ActiveRecord::Base
   scope :to_nreduce_mentors, lambda { where(:invite_type => Invite::NREDUCE_MENTOR) }
   scope :to_startups, lambda{ where(:invite_type => Invite::STARTUP) }
   scope :to_investors, lambda{ where(:invite_type => Invite::INVESTOR) }
+  scope :ordered, order('created_at DESC')
 
   TEAM_MEMBER = 1
   MENTOR = 2
