@@ -5,7 +5,7 @@ class CheckinsController < ApplicationController
   load_and_authorize_resource :startup
   before_filter :load_latest_checkin, :only => :show
   before_filter :load_current_checkin, :only => :new
-  load_and_authorize_resource :checkin, :except => :show
+  load_and_authorize_resource :checkin, :except => [:show, :update, :edit]
 
   def index
     @checkins = @startup.checkins
@@ -14,18 +14,16 @@ class CheckinsController < ApplicationController
   end
 
   def show
-    begin
-      @checkin ||= Checkin.find_by_obfuscated_id(params[:id])
-    rescue ActiveRecord::RecordNotFound
-      redirect_to '/'
-      return
-    end
+    load_obfuscated_checkin
+    authorize! :read, @checkin
     @new_comment = Comment.new(:checkin_id => @checkin.id)
     @comments = @checkin.comments.includes(:user).arrange(:order => 'created_at DESC') # arrange in nested order
     @ua = {:attachable => @checkin}
   end
 
   def edit
+    load_obfuscated_checkin
+    authorize! :edit, @checkin
     set_disabled_states(@checkin)
     @ua = {:attachable => @checkin}
   end
@@ -48,6 +46,8 @@ class CheckinsController < ApplicationController
   end
 
   def update
+    load_obfuscated_checkin
+    authorize! :manage, @checkin
     if @checkin.update_attributes(params[:checkin])
       if @checkin.completed?
         flash[:notice] = "Your check-in has been completed!"
@@ -96,6 +96,15 @@ class CheckinsController < ApplicationController
     if !checkin.new_record?
       @before_disabled = true if checkin.created_at < Checkin.prev_before_checkin
       @after_disabled = true if checkin.created_at < Checkin.prev_after_checkin
+    end
+  end
+
+  def load_obfuscated_checkin
+    begin
+      @checkin ||= Checkin.find_by_obfuscated_id(params[:id])
+    rescue ActiveRecord::RecordNotFound
+      redirect_to '/'
+      return
     end
   end
 end
