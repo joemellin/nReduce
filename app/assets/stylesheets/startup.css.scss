@@ -34,12 +34,9 @@ body.apply > .container .onboard hr {
 
 .countdown_and_checkin {
   position: relative;
-  height: 70px;
+  height: 90px;
   .checkin_button {
-    height: 70px;
-    position: relative;
-    right: 0;
-    top: 30%;
+    margin-right: 20px;
   }
   h4 {
     font-size: 1em;
@@ -48,6 +45,7 @@ body.apply > .container .onboard hr {
   #countdown {
     max-width: 300px;
     margin-top: -10px;
+    margin-left: 40px;
     .number_block{
       padding: 0 12px;
       margin: 0 0 0 4px;
