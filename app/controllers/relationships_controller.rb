@@ -60,11 +60,6 @@ class RelationshipsController < ApplicationController
     @num_blank_spots = current_user.mentor? ? 4 : 8
 
     @show_mentor_message = true if current_user.roles?(:nreduce_mentor) && no_startups == true
-    
-    # Suggested, pending relationships and invited startups
-    @suggested_startups = @startup.suggested_startups(3) unless @startup.blank?
-    @pending_relationships = @entity.pending_relationships
-    @invited_startups = current_user.sent_invites.to_startups.not_accepted
   end
 
   def add_teams
@@ -77,6 +72,7 @@ class RelationshipsController < ApplicationController
     @suggested_startups = @startup.suggested_startups(4) unless @startup.blank?
     @pending_relationships = @entity.pending_relationships
     @invited_startups = current_user.sent_invites.to_startups.not_accepted
+    @modal = true
   end
 
   def create
