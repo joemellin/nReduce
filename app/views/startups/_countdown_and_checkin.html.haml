@@ -2,7 +2,7 @@
   - nc = Checkin.next_checkin_type_and_time
   - left = distance_until_time_from_now_arr(nc[:time])
   - left = left.map{|d| "%02d" % d }
-  %div{:align => 'center', :style => 'width: 320px; overflow: hidden;'}
+  %div{:align => 'center', :style => 'overflow: hidden;'}
     - if current_user.mentor?
       %h4 After videos are due in
     - else

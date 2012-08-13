@@ -41,8 +41,13 @@ body.apply > .container .onboard hr {
     right: 0;
     top: 30%;
   }
+  h4 {
+    font-size: 1em;
+    margin-right: 20px;
+  }
   #countdown {
-    margin-top: -15px;
+    max-width: 300px;
+    margin-top: -10px;
     .number_block{
       padding: 0 12px;
       margin: 0 0 0 4px;
@@ -51,19 +56,19 @@ body.apply > .container .onboard hr {
       .numbers {
         position: relative;
         overflow: hidden;
-        font-size: 35px;
-        line-height: 40px;
+        font-size: 26px;
+        line-height: 30px;
         padding: 12px 0 0;
         span {
           position: relative;
         }
-        height: 46px;
+        height: 40px;
       }
       p {
         margin-top: -10px;
         padding: 0;
         font-weight: normal;
-        font-size: 1em;
+        font-size: .9em;
         color: #999;
       }
     }
