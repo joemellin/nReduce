@@ -66,7 +66,7 @@
                 .right= link_to 'View Team', startup_path(s, :suggested => 1), :class => 'btn btn-success btn-large'
                 .left{:style => 'padding-top: 10px'}
                   %h4
-                    %strong #{s.rating.round(2)}
+                    %strong #{s.rating.blank? ? '' : s.rating.round(2)}
                     %small{:style => 'color: #333'} Community Score 
                 .clear
                 %p= simple_format(h(s.elevator_pitch))
