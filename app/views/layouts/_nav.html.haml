@@ -42,7 +42,7 @@
                   %li.divider
                   - unless current_user.startup_id.blank?
                     %li= link_to 'Edit Startup', edit_startup_path
-                  %li= link_to 'Edit Profile', edit_user_path(:id => current_user.id)
+                  %li= link_to 'Edit Profile', edit_user_path(current_user)
                   - if current_user.admin?
                     %li.divider
                     %li= link_to "Admin Tools", "/admin/db"
