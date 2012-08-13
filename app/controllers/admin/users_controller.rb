@@ -7,7 +7,7 @@ class Admin::UsersController < ApplicationController
 
   # Sign in as a different user
   def sign_in_as
-    @user = User.find(params[:id])
+    @user = User.find_by_obfuscated_id(params[:id])
     sign_out(current_user)
     sign_in(@user)
     flash[:notice] = "You are now signed in as #{@user.name}. Remember to sign out when you're done."
@@ -15,7 +15,7 @@ class Admin::UsersController < ApplicationController
   end
 
   def approve
-    @user = User.find(params[:id])
+    @user = User.find_by_obfuscated_id(params[:id])
     flash[:notice] = "User account has been set up" if @user.setup_complete!
     redirect_to @user
   end
