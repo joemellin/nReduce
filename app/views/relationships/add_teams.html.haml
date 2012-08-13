@@ -5,13 +5,15 @@
 
 .relationships
   .row
-    .span3
+    .span4= link_to '<i class="icon-arrow-left"></i> Back'.html_safe, relationships_path, :class => 'btn btn-large'
+    .span3{:align => 'center'}
       %h2 
         %small Add Teams
-    .span9{:align => 'right'}
+    .span5{:align => 'right'}
       = form_for Invite.new, :url => invite_with_confirm_startups_path, :remote => true, :html => { :class => 'form-inline invite_form' } do |f|
+        %p Search by Founder's Email
         = f.text_field :email, :placeholder => 'founder@startup.com'
-        = f.submit 'Invite by Email', :class => 'btn'
+        = f.submit 'Search'.html_safe, :class => 'btn'
   %hr/
   %br/
 
@@ -66,7 +68,7 @@
                 .right= link_to 'View Team', startup_path(s, :suggested => 1), :class => 'btn btn-success btn-large'
                 .left{:style => 'padding-top: 10px'}
                   %h4
-                    %strong #{s.rating.blank? ? '' : s.rating.round(2)}
+                    %strong #{s.rating.blank? ? '0' : s.rating.round(2)}
                     %small{:style => 'color: #333'} Community Score 
                 .clear
                 %p= simple_format(h(s.elevator_pitch))
