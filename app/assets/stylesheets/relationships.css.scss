@@ -57,11 +57,20 @@
 
   .teams {
     .header {
-      text-align: center;
-      padding: 10px;
-    }
+        text-align: center;
+        padding: 10px;
+      }
     .suggested {
-      background-color: #ccc;
+      .block{
+        margin-left: -10px;
+        margin-bottom: 20px;
+        .team{
+          width: 240px;
+        }
+        .team_details {
+          width: 290px;
+        }
+      }
     }
   }
 }
