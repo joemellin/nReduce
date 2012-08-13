@@ -134,6 +134,8 @@ class Invite < ActiveRecord::Base
 
   def recipient_can_be_invited
     user_with_email = User.where(:email => self.email).first
+    self.to = user_with_email unless user_with_email.blank?
+    # Check if user has startup - if so just create relationship
     if Invite.where(:email => self.email).not_accepted.count > 0
       self.errors.add(:email, 'has already been invited')
     elsif !user_with_email.blank? and !user_with_email.startup_id.blank?
@@ -143,7 +145,6 @@ class Invite < ActiveRecord::Base
         self.errors.add(:email, 'is already a team member on another startup')
       end
     else
-      self.to = user_with_email unless user_with_email.blank?
       self.expires_at = Time.now + 30.days
     end
   end 

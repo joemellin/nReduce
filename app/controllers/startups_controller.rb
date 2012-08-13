@@ -26,6 +26,11 @@ class StartupsController < ApplicationController
         else
           flash[:alert] = "#{@invite.errors.full_messages.join('. ')}."
         end
+        @modal = true if request.xhr?
+        respond_to do |format|
+          format.js { render :action => 'update_invite_modal' }
+          format.html
+        end
       end
       # They're in setup, and said they're done inviting
       if params[:done]
@@ -35,6 +40,26 @@ class StartupsController < ApplicationController
       end
     end
     @invites = current_user.sent_invites
+  end
+
+  # Two-step invite
+  # 1) Check email to see if they are already in the system and have a startup - if so just create relationship
+  # 2) Otherwise do traditional path
+  def invite_with_confirm
+    @invite = Invite.new(params[:invite])
+    @invite.from = current_user
+    # run validations to assign from/to
+    @invite.valid?
+    logger.info @invite.inspect
+    if !@invite.from.blank? && !@invite.from.startup.blank? && !@invite.to.blank? && !@invite.to.startup.blank?
+      @relationship = Relationship.new(:entity => @invite.from.startup, :connected_with => @invite.to.startup)
+      @relationship.context << :startup_startup
+    end
+    @modal = true
+    respond_to do |format|
+      format.js { render :action => 'update_invite_modal' }
+      format.html
+    end
   end
 
   def create

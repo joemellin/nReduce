@@ -1,13 +1,16 @@
 - content_for :subtitle do
   Add Teams
 
+= render 'startups/invite_modal'
+
 .relationships
   .row
     .span3
       %h2 Add Teams
     .span9{:align => 'right'}
-      = text_field_tag 'search', '', :placeholder => 'Find founders by email'
-      = link_to 'Search', add_teams_relationships_path, :class => 'btn'
+      = form_for Invite.new, :url => invite_with_confirm_startups_path, :remote => true, :html => { :class => 'form-inline invite_form' } do |f|
+        = f.text_field :email, :placeholder => 'Find founders by email'
+        = f.submit 'Search', :class => 'btn'
   %hr/
   %br/
 
@@ -93,10 +96,3 @@
       /     .background &nbsp;
       /   .bottom
       /     %h3= link_to '+ Invite Team', '#', :class => 'invite_team_modal'
-
-      #invite_team_modal.modal.hide
-        .modal-header
-          %button.close{:type => 'button', 'data-dismiss' => 'modal'} x
-          %h3 Invite a Startup
-        .modal-body
-          = render 'startups/invite'

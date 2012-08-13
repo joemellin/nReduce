@@ -1,0 +1,6 @@
+:plain
+  $("#invite_team_modal").modal('hide');
+  $("#invite_team_modal").replaceWith('#{escape_javascript(render('startups/invite_modal'))}');
+  $('#invite_team_modal').modal();
+  $("#invite_team_modal .modal-body").prepend('#{escape_javascript(render('layouts/flash_messages', :no_dismiss => true))}');
+- flash.discard
