@@ -1,58 +1,57 @@
 - hide_nav ||= false
-.nav
-  - unless user_signed_in?
-    .right= link_to image_tag('nstarlink_s.png'), nstar_path
-  .right
-    %ul.nav.nav-pills
-      - if user_signed_in?
-        - if hide_nav
-          %li= link_to "Log out", logout_path, :method => :delete
-        - else
-          %li.padding{:class => is_controller_action?('relationships', 'index') ? 'active' : ''}= link_to "Home", '/'
-          - if can? :see_mentor_page, current_user
-            %li.padding{:class => is_controller_action?('mentors', 'index') ? 'active' : ''}= link_to "Mentors", mentors_path
-          - if can? :see_investor_page, current_user
-            %li.padding{:class => is_controller_action?('investors', 'index') ? 'active' : ''}= link_to "Investors", investors_path
-          - if current_user.entrepreneur? and !current_user.startup_id.blank? and current_user.can_access_chat?
-            %li.padding{:class => is_controller_action?('users', 'chat') ? 'active' : ''}= link_to "Chat", chat_users_path
-          %li.dropdown
-            %a.dropdown-toggle.btn{:href => '#', 'data-toggle' => 'dropdown'}
-              = image_tag(user_avatar_url(current_user))
-              %b.caret
-              - if 1 == 2 #current_user.unread_nc > 0
-                %div{:style => 'margin-top: 5px'}
-                  %span.badge.badge-info
-                    = pluralize(current_user.unread_nc, 'notification')
-            %ul.dropdown-menu
-              - unless current_user.startup_id.blank?
-                %li= link_to 'My Startup', startup_path(current_user.startup)
-              %li= link_to 'My Profile', user_path(current_user)
-              - if current_user.entrepreneur?
-                - if current_user.meeting_id.blank?
-                  %li= link_to 'Local Meetings', meetings_path
-                - else
-                  %li= link_to "My Meeting", meeting_path(:id => current_user.meeting_id)
-              - if 1 == 2
-                %li
-                  %a{:href => user_notifications_path(current_user)}
-                    Notifications
-                    %span.badge{:class => current_user.unread_nc > 0 ? 'badge-info' : ''}= current_user.unread_nc
-              %li.divider
-              - unless current_user.startup_id.blank?
-                %li= link_to 'Edit Startup', edit_startup_path
-              %li= link_to 'Edit Profile', edit_user_path(:id => current_user.id)
-              - if current_user.admin?
+.row
+  .nav
+    .span5= link_to image_tag('nreduce_s.png'), "/"
+    .span2{:align => 'center'}= render 'startups/countdown_and_checkin'
+    .span5
+      %ul.nav.nav-pills
+        - if user_signed_in?
+          - if hide_nav
+            %li= link_to "Log out", logout_path, :method => :delete
+          - else
+            %li.padding{:class => is_controller_action?('relationships', 'index') ? 'active' : ''}= link_to "Home", '/'
+            - if can? :see_mentor_page, current_user
+              %li.padding{:class => is_controller_action?('mentors', 'index') ? 'active' : ''}= link_to "Mentors", mentors_path
+            - if can? :see_investor_page, current_user
+              %li.padding{:class => is_controller_action?('investors', 'index') ? 'active' : ''}= link_to "Investors", investors_path
+            - if current_user.entrepreneur? and !current_user.startup_id.blank? and current_user.can_access_chat?
+              %li.padding{:class => is_controller_action?('users', 'chat') ? 'active' : ''}= link_to "Chat", chat_users_path
+            %li.dropdown
+              %a.dropdown-toggle.btn{:href => '#', 'data-toggle' => 'dropdown'}
+                = image_tag(user_avatar_url(current_user))
+                %b.caret
+                - if 1 == 2 #current_user.unread_nc > 0
+                  %div{:style => 'margin-top: 5px'}
+                    %span.badge.badge-info
+                      = pluralize(current_user.unread_nc, 'notification')
+              %ul.dropdown-menu
+                - unless current_user.startup_id.blank?
+                  %li= link_to 'My Startup', startup_path(current_user.startup)
+                %li= link_to 'My Profile', user_path(current_user)
+                - if current_user.entrepreneur?
+                  - if current_user.meeting_id.blank?
+                    %li= link_to 'Local Meetings', meetings_path
+                  - else
+                    %li= link_to "My Meeting", meeting_path(:id => current_user.meeting_id)
+                - if 1 == 2
+                  %li
+                    %a{:href => user_notifications_path(current_user)}
+                      Notifications
+                      %span.badge{:class => current_user.unread_nc > 0 ? 'badge-info' : ''}= current_user.unread_nc
                 %li.divider
-                %li= link_to "Admin Tools", "/admin/db"
-                %li= link_to "Approve Users", "/admin/users"
-                %li= link_to "Mentors", admin_mentors_path
-                %li= link_to "Job Queue", "/admin/resque"
-              %li.divider
-              %li= link_to "Log out", logout_path, :method => :delete
-      - else
-        %li= link_to "Login", login_path
-      
-  .left= link_to image_tag('nreduce_s.png'), "/"
-  .left= render 'startups/countdown_and_checkin'
-  .clear
-  %hr
+                - unless current_user.startup_id.blank?
+                  %li= link_to 'Edit Startup', edit_startup_path
+                %li= link_to 'Edit Profile', edit_user_path(:id => current_user.id)
+                - if current_user.admin?
+                  %li.divider
+                  %li= link_to "Admin Tools", "/admin/db"
+                  %li= link_to "Approve Users", "/admin/users"
+                  %li= link_to "Mentors", admin_mentors_path
+                  %li= link_to "Job Queue", "/admin/resque"
+                %li.divider
+                %li= link_to "Log out", logout_path, :method => :delete
+        - else
+          %li= link_to "Login", login_path
+        - unless user_signed_in?
+          = link_to image_tag('nstarlink_s.png'), nstar_path
+%hr
