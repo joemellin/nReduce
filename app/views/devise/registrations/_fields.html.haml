@@ -1,13 +1,13 @@
-/ .control-group{error_css(resource, :name)}
-/   = f.label :name, 'Your Name', :class => 'control-label'
-/   .controls
-/     = f.email_field :name
-/     = f.semantic_errors :name
-/ .control-group{error_css(resource, :email)}
-/   = f.label :email, :class => 'control-label'
-/   .controls
-/     = f.email_field :email
-/     = f.semantic_errors :email
+.control-group{error_css(resource, :name)}
+  = f.label :name, 'Your Name', :class => 'control-label'
+  .controls
+    = f.email_field :name
+    = f.semantic_errors :name
+.control-group{error_css(resource, :email)}
+  = f.label :email, :class => 'control-label'
+  .controls
+    = f.email_field :email
+    = f.semantic_errors :email
 .control-group{error_css(@user, :password)}
   = f.label :password, 'New Password', :class => 'control-label'
   .controls
@@ -26,4 +26,4 @@
       = f.semantic_errors :current_password
       %p.help-block (we need your current password to confirm your changes)
 .control-group
-  .controls= f.submit "Change Password", :class => 'btn btn-large btn-primary'
+  .controls= f.submit "Save", :class => 'btn btn-large btn-primary'

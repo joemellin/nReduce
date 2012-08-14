@@ -2,8 +2,8 @@ class StartupsController < ApplicationController
   around_filter :record_user_action, :except => [:onboard_next, :stats]
   before_filter :login_required
   before_filter :load_requested_or_users_startup, :except => [:index, :invite, :stats]
-  load_and_authorize_resource :except => [:index, :stats, :invite, :show]
-  before_filter :redirect_if_no_startup, :except => [:index, :invite, :show]
+  load_and_authorize_resource :except => [:index, :stats, :invite, :show, :invite_team_members, :intro_video]
+  before_filter :redirect_if_no_startup, :except => [:index, :invite, :show, :invite_team_members, :intro_video]
 
   def index
     redirect_to :action => :search
@@ -194,6 +194,13 @@ class StartupsController < ApplicationController
   end
 
   def invite_team_members
+    begin
+      @startup ||= Startup.find_by_obfuscated_id(params[:id])
+    rescue ActiveRecord::RecordNotFound
+      redirect_to '/'
+      return
+    end
+    authorize! :edit, @startup
     if request.post?
       @startup.invited_team_members!
       redirect_to '/'
@@ -203,6 +210,13 @@ class StartupsController < ApplicationController
 
    # Start of setup flow - to get startup to post initial before video
   def before_video
+    begin
+      @startup ||= Startup.find_by_obfuscated_id(params[:id])
+    rescue ActiveRecord::RecordNotFound
+      redirect_to '/'
+      return
+    end
+    authorize! :edit, @startup
     #if can? :before_video, @startup
       @before_disabled = false
       @after_disabled = true
@@ -223,6 +237,13 @@ class StartupsController < ApplicationController
   end
 
   def intro_video
+    begin
+      @startup ||= Startup.find_by_obfuscated_id(params[:id])
+    rescue ActiveRecord::RecordNotFound
+      redirect_to '/'
+      return
+    end
+    authorize! :edit, @startup
     @startups = Startup.with_intro_video.limit(6).order("RAND()")
     if !params[:startup].blank? && !params[:startup][:intro_video_url].blank?
       @startup.intro_video_url = params[:startup][:intro_video_url]

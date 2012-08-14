@@ -2,7 +2,7 @@ class UsersController < ApplicationController
   around_filter :record_user_action, :except => [:reset_hipchat_account]
   before_filter :login_required
   before_filter :load_user_if_me_or_current
-  load_and_authorize_resource :except => [:show, :edit, :change_password]
+  load_and_authorize_resource :except => [:show, :edit, :change_password, :account_type, :update, :welcome]
 
   def index
     redirect_to '/'
@@ -23,6 +23,7 @@ class UsersController < ApplicationController
   end
 
   def account_type
+    load_and_authorize_obfuscated_user
     # Save account type if post
     if request.post?
       current_user.set_account_type(params[:roles], !params[:reset].blank?) unless params[:roles].blank?
@@ -40,6 +41,7 @@ class UsersController < ApplicationController
   end
 
   def update
+    load_and_authorize_obfuscated_user
     @user.profile_fields_required = true
     if @user.update_attributes(params[:user])
       #flash[:notice] = "Your account has been updated!"
@@ -67,6 +69,7 @@ class UsersController < ApplicationController
   end
 
   def welcome
+    load_and_authorize_obfuscated_user
     # For now require that we manually approve users so don't finish account setup
     if request.post? and params[:i]
       current_user.setup_complete!
