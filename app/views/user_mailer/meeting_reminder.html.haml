@@ -6,7 +6,7 @@
   %strong The #{@meeting.location_name} Local nReduce Leader
 %br/
 %br/
-%p #{@message}
+#{simple_format(h(@message))}
 %br/
 %br/
 %h4.h4 Meeting details:
