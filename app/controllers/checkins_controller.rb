@@ -47,7 +47,7 @@ class CheckinsController < ApplicationController
 
   def update
     load_obfuscated_checkin
-    authorize! :manage, @checkin
+    authorize! :update, @checkin
     if @checkin.update_attributes(params[:checkin])
       if @checkin.completed?
         flash[:notice] = "Your check-in has been completed!"
