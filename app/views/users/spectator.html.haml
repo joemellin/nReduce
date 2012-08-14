@@ -19,6 +19,6 @@
   %h2 All founders have their first day. Is today yours?
   %br/
   %br/
-  %h2= link_to 'Found Your Startup', account_type_user_path(:id => current_user.id, :reset => true, :roles => 'entrepreneur'), :method => :post, :class => 'btn btn-large btn-success', :style => 'font-size: 60px;'
+  %h2= link_to 'Found Your Startup', account_type_user_path(current_user, :reset => true, :roles => 'entrepreneur'), :method => :post, :class => 'btn btn-large btn-success', :style => 'font-size: 60px;'
   %br/
   %br/

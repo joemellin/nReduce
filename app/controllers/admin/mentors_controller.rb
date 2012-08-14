@@ -24,6 +24,6 @@ class Admin::MentorsController < ApplicationController
       end
     end
     flash[:notice] = "#{num_added} new startups added for mentor."
-    redirect_to :action => :show, :id => @mentor.id
+    redirect_to admin_mentor_path(@mentor)
   end
 end
