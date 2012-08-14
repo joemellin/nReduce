@@ -90,7 +90,7 @@ module ApplicationHelper
       when :new_checkin then link_to("#{obj.entity.name} completed their 'after' checkin", obj)
       when :relationship_request then link_to("#{obj.entity.name} would like to connect with you", relationships_path)
       when :relationship_approved then link_to("#{obj.connected_with.name} is now connected to you", startup_path(:id => obj.connected_with_id))
-      when :new_comment then link_to("#{obj.user.name} commented on your #{obj.checkin.time_label} checkin", checkin_path(:id => obj.checkin_id))
+      when :new_comment then link_to("#{obj.user.name} commented on your #{obj.checkin.time_label} checkin", checkin_path(obj.checkin))
       when :new_nudge then link_to("#{obj.from.name} nudged you to complete your check-in", relationships_path)
       when :mentorship_approved then link_to("#{obj.entity.name} is now a mentor for you!", obj.entity)
       else link_to(title, '#')
