@@ -93,8 +93,8 @@ class ApplicationController < ActionController::Base
       return true if [controller_action_arr.first, @account_setup_action.first] == [:onboard, :onboard]
       # otherwise redirect to correct controller/action
       prms = {:controller => @account_setup_action.first, :action => @account_setup_action.last}
-      prms[:id] = current_user.id if prms[:controller] == :users
-      prms[:id] = current_user.startup_id if prms[:controller] == :startups
+      prms[:id] = current_user.to_param if prms[:controller] == :users
+      prms[:id] = current_user.startup.to_param if prms[:controller] == :startups
       redirect_to prms
     end
     false

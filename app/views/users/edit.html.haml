@@ -17,8 +17,9 @@
           - else
             Authorized with
             = image_tag('linkedin_32.png', :alt => 'LinkedIn', :title => 'LinkedIn')
-          &nbsp;&nbsp;
-          = link_to 'Change Password', change_password_user_path(current_user)
+          - unless @setup
+            &nbsp;&nbsp;
+            = link_to 'Change Password', change_password_user_path(current_user)
       - if @setup
         .control-group{:style => 'padding-top: 0'}
           &nbsp;

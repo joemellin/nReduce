@@ -84,15 +84,55 @@ module Connectable
   	true
   end
 
-  def suggested_startups(limit = 2)
+  def delete_suggested_startups
+    self.suggested_relationships('Startup').each{|r| r.reject_or_pass! }
+  end
+
+  def suggested_startups(limit = 4)
     relationships = self.suggested_relationships('Startup')
     startup_ids = relationships.map{|r| r.connected_with_id }
     r_by_id = Hash.by_key(relationships, :connected_with_id)
     Startup.find(startup_ids.first(limit)).map{|s| s.cached_relationship = r_by_id[s.id] unless r_by_id[s.id].blank?; s }
   end
 
+   def generate_suggested_connections(limit = 4)
+    startups = []
+    # See if they are over limit of suggested connections
+    suggested = self.suggested_startups(limit + 5)
+    return false if !suggested.blank? and (suggested.size >= limit)
+    num_suggested = suggested.size
+
+    # Find all startups this person is connected to, has been suggested, and has rejected
+    ignore_startup_ids = (self.received_relationships.where(:entity_type => 'Startup') + self.initiated_relationships.where(:connected_with_type => 'Startup')).map{|r| r.connected_with_id }
+    ignore_startup_ids << self.id if self.is_a?(Startup) # make sure this startup doesn't appear in suggested startups
+    ignore_startup_ids << Startup.nreduce_id # hide nreduce from suggested startups
+    ignore_startup_ids.uniq!
+
+     # Create lambda to add startups that will create a suggested relationship when passed an array of startups
+    suggest_startup = Proc.new {|startup, message|
+      return if num_suggested >= limit
+      Relationship.suggest_connection(self, startup, :startup_startup, message)
+      num_suggested += 1
+    }
+
+    # Find all startups that checked in last week
+    end_after = Checkin.prev_after_checkin
+    start_after = end_after - 24.hours
+    checkins = Checkin.completed.limit(200) #Checkin.completed.where(['completed_at >= ? AND completed_at <= ?', start_after, end_after]).includes(:startup).all
+    
+    return startups if checkins.blank?
+
+    1.upto(limit).each do |i|
+      s = checkins.sample.startup
+      startups << s
+      suggest_startup.call(s, nil)
+    end
+
+    startups
+  end
+
     # Generate suggestion connections that this startup might like to connect to - based on similar industries and company goal
-  def generate_suggested_connections(limit = 4)
+  def generate_suggested_connections_old(limit = 4)
     startups = []
     # See if they are over limit of suggested connections
     suggested = self.suggested_startups(limit + 5)

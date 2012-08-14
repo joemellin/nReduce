@@ -48,10 +48,16 @@ class CheckinsController < ApplicationController
   def update
     load_obfuscated_checkin
     authorize! :update, @checkin
+    was_completed = @checkin.completed?
     if @checkin.update_attributes(params[:checkin])
       if @checkin.completed?
-        flash[:notice] = "Your check-in has been completed!"
-        redirect_to '/'
+        session[:checkin_completed] = true
+        unless was_completed
+          # Generate suggested startups if this isn't just an update
+          @checkin.startup.delete_suggested_startups
+          @checkin.startup.generate_suggested_connections
+        end
+        redirect_to add_teams_relationships_path
       else
         redirect_to edit_checkin_path(@checkin)
       end
