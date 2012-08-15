@@ -6,13 +6,15 @@ class Ability
   def initialize(user, params)
     user ||= User.new
 
+    cannot :manage, Video
+
     # Admins can do anything
     if user.admin?
       can :manage, :all
       can :stats, Startup
 
     # Users who have a startup or are a mentor
-    elsif !user.new_record? and user.has_startup_or_is_mentor?
+    elsif !user.new_record? and user.has_startup_or_is_mentor_or_investor?
 
       # Abilities if user has a startup
       if !user.startup_id.blank?
@@ -38,6 +40,8 @@ class Ability
         can :manage, Invite, :startup_id => user.startup_id
 
         can :manage, Nudge, :startup_id => user.startup_id
+
+        can :manage, Video, :startup_id => user.startup_id
       end
 
       # Can destroy if they were assigned as receiver or created it
@@ -58,10 +62,28 @@ class Ability
         elsif checkin.startup.checkins_public?
           true
         # This user is a startup's mentor
-        elsif user.mentor? and user.connected_to?(checkin.startup)
+        elsif (user.mentor? || user.investor?) && user.connected_to?(checkin.startup)
           true
         # This user's startup is connected
-        elsif !user.startup.blank? and user.startup.connected_to?(checkin.startup)
+        elsif !user.startup.blank? && user.startup.connected_to?(checkin.startup)
+          true
+        else
+          false
+        end
+      end
+
+      can :read, Video do |video|
+        # From user's startup
+        if video.startup_id == user.startup_id
+          true
+        # The checkin's startup has listed all as public
+        elsif video.startup.checkins_public?
+          true
+        # This user is a startup's mentor
+        elsif (user.mentor? || user.investor?) && user.connected_to?(video.startup)
+          true
+        # This user's startup is connected
+        elsif !user.startup.blank? && user.startup.connected_to?(video.startup)
           true
         else
           false
@@ -70,8 +92,8 @@ class Ability
 
       # User with startup or mentor can create a relationship
       can :create, Relationship do |relationship|
-        if user.has_startup_or_is_mentor?
-          if user.mentor? and relationship.is_involved?(user)
+        if user.has_startup_or_is_mentor_or_investor?
+          if (user.mentor? || user.investor?) && relationship.is_involved?(user)
             true
           elsif !user.startup.blank? and relationship.is_involved?(user.startup)
             true
@@ -101,7 +123,7 @@ class Ability
 
       # Either party can reject a relationship
       can :reject, Relationship do |relationship|
-        if user.mentor? and relationship.is_involved?(user)
+        if (user.mentor? || user.investor?) && relationship.is_involved?(user)
           true
         elsif !user.startup.blank? and relationship.is_involved?(user.startup)
           true
@@ -150,8 +172,8 @@ class Ability
         end
       end
 
-      # Mentor can view relationships they are involved in (index)
-      if user.mentor?
+      # Mentor/Investor can view relationships they are involved in (index)
+      if user.mentor? || user.investor?
         can :read, Relationship do |relationship|
           relationship.is_involved?(user)
         end
@@ -183,7 +205,7 @@ class Ability
     # User can only manage their own account
     can [:manage, :onboard, :onboard_next], User, :id => user.id
 
-    # Anyonen can see a screenshot
+    # Anyone can see a screenshot
     can :read, Screenshot
 
     # Have to override manage roles on user for mentors
@@ -232,6 +254,12 @@ class Ability
     can [:chat, :reset_hipchat_account], User do |u|
       u.can_access_chat?
     end
+
+    # Can manage video if they own it
+    can :manage, Video, :user_id => user.id
+
+    # Anyone can create a new video
+    can [:new, :record, :create], Video
 
     cannot :read, Startup
 

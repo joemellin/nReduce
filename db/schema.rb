@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120806172629) do
+ActiveRecord::Schema.define(:version => 20120815073622) do
 
   create_table "authentications", :force => true do |t|
     t.string   "provider"
@@ -376,6 +376,8 @@ ActiveRecord::Schema.define(:version => 20120806172629) do
     t.datetime "updated_at",                         :null => false
     t.boolean  "vimeod",          :default => false
     t.string   "type"
+    t.string   "title"
+    t.integer  "startup_id"
   end
 
 end
