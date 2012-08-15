@@ -2,7 +2,8 @@ class UsersController < ApplicationController
   around_filter :record_user_action, :except => [:reset_hipchat_account]
   before_filter :login_required
   before_filter :load_user_if_me_or_current
-  load_and_authorize_resource :except => [:show, :edit, :change_password, :account_type, :update, :welcome]
+  before_filter :load_obfuscated_user, :only => [:show, :edit, :change_password, :account_type, :update, :welcome]
+  authorize_resource
 
   def index
     redirect_to '/'
@@ -12,7 +13,6 @@ class UsersController < ApplicationController
   end
 
   def show
-    load_and_authorize_obfuscated_user
     # Load current invite if they have one  - don't search by email because that opens security hole where a user can sign up with an email they don't own and get invite - really should be verifying email
     if @user.id == current_user.id
       @current_invite = Invite.not_accepted.where(:to_id => current_user.id).first
@@ -23,7 +23,6 @@ class UsersController < ApplicationController
   end
 
   def account_type
-    load_and_authorize_obfuscated_user
     # Save account type if post
     if request.post?
       current_user.set_account_type(params[:roles], !params[:reset].blank?) unless params[:roles].blank?
@@ -35,14 +34,12 @@ class UsersController < ApplicationController
   end
 
   def edit
-    load_and_authorize_obfuscated_user
     @user.intro_video.build if @user.intro_video.blank?
     @profile_elements = @user.profile_elements
     @profile_completeness_percent = (@user.profile_completeness_percent * 100).round
   end
 
   def update
-    load_and_authorize_obfuscated_user
     @user.profile_fields_required = true
     if @user.update_attributes(params[:user])
       #flash[:notice] = "Your account has been updated!"
@@ -70,7 +67,6 @@ class UsersController < ApplicationController
   end
 
   def welcome
-    load_and_authorize_obfuscated_user
     # For now require that we manually approve users so don't finish account setup
     if request.post? and params[:i]
       current_user.setup_complete!
@@ -81,7 +77,6 @@ class UsersController < ApplicationController
   end
 
   def change_password
-    load_and_authorize_obfuscated_user
     render 'devise/registrations/edit'
   end
 
@@ -91,13 +86,5 @@ class UsersController < ApplicationController
     @user = current_user if params[:id].blank?
     @user = current_user if params[:id] == 'me'
     
-  end
-
-  def redirect_unless_authorized_for_user(user)
-    unless current_user.id == user.id or current_user.admin?
-      redirect_to '/'
-      return false
-    end
-    true
   end
 end
