@@ -164,14 +164,13 @@ class ApplicationController < ActionController::Base
 
   protected
 
-  def load_and_authorize_obfuscated_user
+  def load_obfuscated_user
     begin
       @user = User.find_by_obfuscated_id(params[:id])
     rescue ActiveRecord::RecordNotFound
       redirect_to '/'
       return
     end
-    authorize! :read, @user
   end
   
   def redirect_if_no_startup
