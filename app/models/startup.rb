@@ -99,7 +99,7 @@ class Startup < ActiveRecord::Base
 
   def self.nreduce_id
     Cache.get('nreduce_id', nil, true){
-      Startup.named('nreduce').id
+      Startup.named('nreduce').to_param
     }
   end
 
