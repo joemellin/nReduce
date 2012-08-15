@@ -61,6 +61,8 @@
               = link_to '<i class="icon-remove"></i> Ignore'.html_safe, reject_relationship_path(r), :class => 'btn', :method => :post
               &nbsp;
               = link_to 'View <i class="icon-arrow-right icon-white"></i>'.html_safe, s, :class => 'btn btn-success'
+      - else
+        %center (none)
 
     / Suggested teams
     /
@@ -103,9 +105,9 @@
     / Invited teams
     /
     .span3.invited
+      .header
+        %h3 Invited Startups
       - if @invited_startups.size > 0
-        .header
-          %h3 Invited Startups
         - @invited_startups.each do |i|
           .team{:align => 'center'}
             .top{:style => "background-image: url('#{image_path('pendingteam.png')}'); cursor: pointer;"}
@@ -115,6 +117,8 @@
               = form_for Nudge.new(:invite_id => i.id), :html => {:id => "new_nudge_invite_#{i.id}"} do |f|
                 = f.hidden_field :invite_id
                 = link_to '<i class="icon-hand-left icon"></i> Nudge'.html_safe, '#', :title => "Nudge #{i.to_name} to join nReduce", :onclick => "$('#new_nudge_invite_#{i.id}').submit();", :class => 'btn'
+      - else
+        %center (none)
       / Invite teams
       /
       / .team.invite_team_modal{:align => 'center'}
