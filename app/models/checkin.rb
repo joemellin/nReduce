@@ -1,4 +1,5 @@
 class Checkin < ActiveRecord::Base
+  obfuscate_id :spin => 284759320
   belongs_to :startup
   belongs_to :user # the user logged in who created check-in
   belongs_to :before_video, :class_name => 'Video', :dependent => :destroy
@@ -186,17 +187,42 @@ class Checkin < ActiveRecord::Base
     current_week = Checkin.week_integer_for_time(Checkin.prev_after_checkin)
     while(current_week != checkins.first.week)
       arr << [false, false]
-      puts current_week
       current_week = Checkin.previous_week(current_week)
     end
     checkins.each do |c|
-      arr << [c.submitted?, c.completed?]
-      # check if they missed a week between prev checkin
-      arr << [false, false] if current_week != c.week
+      if current_week == c.week
+        arr << [c.submitted?, c.completed?]
+      else # they missed a week
+        arr << [false, false] 
+      end
       # move current week back one week
       current_week = Checkin.previous_week(current_week)
     end
     arr
+  end
+
+  def self.num_consecutive_checkins_for_startup(startup)
+    history = Checkin.history_for_startup(startup)
+    consecutive_checkins = longest_streak = 0
+    prev_week = false
+    history.each do |before, after|
+      # If the checkin has a before and after video count it
+      if before and after
+        # Starting off - first week
+        if prev_week.blank?
+          consecutive_checkins += 1
+        else
+          consecutive_checkins += 1
+        end
+        prev_week = true
+      else # otherwise reset consecutive checkins
+        longest_streak = consecutive_checkins if consecutive_checkins > longest_streak
+        consecutive_checkins = 0
+      end
+    end
+    # If streak was never broken need to populate longest streak
+    longest_streak = consecutive_checkins if consecutive_checkins > longest_streak
+    longest_streak
   end
 
   # Cache # of comments

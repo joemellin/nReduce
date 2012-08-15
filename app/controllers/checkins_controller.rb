@@ -5,7 +5,7 @@ class CheckinsController < ApplicationController
   load_and_authorize_resource :startup
   before_filter :load_latest_checkin, :only => :show
   before_filter :load_current_checkin, :only => :new
-  load_and_authorize_resource :checkin
+  load_and_authorize_resource :checkin, :except => [:show, :update, :edit]
 
   def index
     @checkins = @startup.checkins
@@ -14,12 +14,16 @@ class CheckinsController < ApplicationController
   end
 
   def show
+    load_obfuscated_checkin
+    authorize! :read, @checkin
     @new_comment = Comment.new(:checkin_id => @checkin.id)
     @comments = @checkin.comments.includes(:user).arrange(:order => 'created_at DESC') # arrange in nested order
     @ua = {:attachable => @checkin}
   end
 
   def edit
+    load_obfuscated_checkin
+    authorize! :edit, @checkin
     set_disabled_states(@checkin)
     @ua = {:attachable => @checkin}
   end
@@ -44,10 +48,18 @@ class CheckinsController < ApplicationController
   end
 
   def update
+    load_obfuscated_checkin
+    authorize! :update, @checkin
+    was_completed = @checkin.completed?
     if @checkin.update_attributes(params[:checkin])
       if @checkin.completed?
-        flash[:notice] = "Your check-in has been completed!"
-        redirect_to '/'
+        session[:checkin_completed] = true
+        unless was_completed
+          # Generate suggested startups if this isn't just an update
+          @checkin.startup.delete_suggested_startups
+          @checkin.startup.generate_suggested_connections
+        end
+        redirect_to add_teams_relationships_path
       else
         redirect_to edit_checkin_path(@checkin)
       end
@@ -92,6 +104,15 @@ class CheckinsController < ApplicationController
     if !checkin.new_record?
       @before_disabled = true if checkin.created_at < Checkin.prev_before_checkin
       @after_disabled = true if checkin.created_at < Checkin.prev_after_checkin
+    end
+  end
+
+  def load_obfuscated_checkin
+    begin
+      @checkin ||= Checkin.find_by_obfuscated_id(params[:id])
+    rescue ActiveRecord::RecordNotFound
+      redirect_to '/'
+      return
     end
   end
 end

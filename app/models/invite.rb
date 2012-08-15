@@ -23,6 +23,7 @@ class Invite < ActiveRecord::Base
   scope :to_nreduce_mentors, lambda { where(:invite_type => Invite::NREDUCE_MENTOR) }
   scope :to_startups, lambda{ where(:invite_type => Invite::STARTUP) }
   scope :to_investors, lambda{ where(:invite_type => Invite::INVESTOR) }
+  scope :ordered, order('created_at DESC')
 
   TEAM_MEMBER = 1
   MENTOR = 2
@@ -88,7 +89,11 @@ class Invite < ActiveRecord::Base
       end
     end
 
-    if user.save
+    # Only suggest startups if invite is for a new startup
+    dont_suggest_startups = (self.invite_type != STARTUP)
+    
+    # Let user skip approval step
+    if user.setup_complete!(dont_suggest_startups)
       self.to = user
       self.accepted_at = Time.now
       self.save
@@ -105,14 +110,19 @@ class Invite < ActiveRecord::Base
     # Updates all people on shared trip of updates
   def self.perform(invite_id)
     i = Invite.find(invite_id)
+    success = false
     if i.invite_type == MENTOR or i.invite_type == NREDUCE_MENTOR
-      UserMailer.invite_mentor(i).deliver
+      success = UserMailer.invite_mentor(i).deliver
     elsif i.invite_type == TEAM_MEMBER
-      UserMailer.invite_team_member(i).deliver
+      success = UserMailer.invite_team_member(i).deliver
     elsif i.invite_type == STARTUP
-      UserMailer.invite_startup(i).deliver
+      success = UserMailer.invite_startup(i).deliver
     elsif i.invite_type == INVESTOR
-      UserMailer.invite_investor(i).deliver
+      success = UserMailer.invite_investor(i).deliver
+    end
+    if success
+      i.emailed_at = Time.now
+      i.save
     end
   end
   
@@ -125,6 +135,8 @@ class Invite < ActiveRecord::Base
 
   def recipient_can_be_invited
     user_with_email = User.where(:email => self.email).first
+    self.to = user_with_email unless user_with_email.blank?
+    # Check if user has startup - if so just create relationship
     if Invite.where(:email => self.email).not_accepted.count > 0
       self.errors.add(:email, 'has already been invited')
     elsif !user_with_email.blank? and !user_with_email.startup_id.blank?
@@ -134,7 +146,6 @@ class Invite < ActiveRecord::Base
         self.errors.add(:email, 'is already a team member on another startup')
       end
     else
-      self.to = user_with_email unless user_with_email.blank?
       self.expires_at = Time.now + 30.days
     end
   end 

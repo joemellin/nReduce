@@ -11,6 +11,10 @@ body{
     font-weight: 600;
   }
 }
+
+.bold {
+  font-weight: bold;
+}
 .btn {
   font-family: "myriad-pro",sans-serif;
   font-style: normal;
@@ -161,7 +165,7 @@ body.apply {
 
     .nav {
       z-index: 10;
-      margin-right: 20px;
+      margin-right: 0px;
       margin-bottom: 10px;
       .padding {
         padding-top: 15px;
@@ -171,6 +175,12 @@ body.apply {
       }
       .right{
         padding-top: 3px;
+      }
+      .dropdown-toggle {
+        img {
+          width: 50px;
+          height: 50px;
+        }
       }
     }
 

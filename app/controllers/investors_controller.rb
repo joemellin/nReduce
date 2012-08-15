@@ -8,7 +8,7 @@ class InvestorsController < ApplicationController
   end
 
   # Show a new startup to an investor
-  def show_startup 
+  def show_startup
     authorize! :investor_connect_with_startups, current_user
     @startup = Startup.find 319
     # search = Startup.search {

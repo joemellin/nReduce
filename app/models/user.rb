@@ -1,4 +1,5 @@
 class User < ActiveRecord::Base
+  obfuscate_id :spin => 94062493
   include Connectable # methods for relationships
   acts_as_mappable
   has_paper_trail
@@ -47,6 +48,7 @@ class User < ActiveRecord::Base
   before_create :set_default_settings
   after_create :mailchimp!
   before_save :geocode_location
+  before_save :ensure_roles_exist
 
   acts_as_taggable_on :skills, :industries
 
@@ -56,7 +58,7 @@ class User < ActiveRecord::Base
 
   # important that you keep the order the same on this array - uses bitmask_attributes gem
   # adds methods and scopes: https://github.com/joelmoss/bitmask_attributes
-  bitmask :roles, :as => [:admin, :entrepreneur, :mentor, :investor, :nreduce_mentor, :spectator]
+  bitmask :roles, :as => [:admin, :entrepreneur, :mentor, :investor, :nreduce_mentor, :spectator, :approved_investor]
   bitmask :onboarded, :as => [:startup, :mentor, :nreduce_mentor, :investor]
   bitmask :email_on, :as => [:docheckin, :comment, :meeting, :checkin, :relationship]
   bitmask :setup, :as => [:account_type, :onboarding, :profile, :invite_startups, :welcome]
@@ -350,10 +352,13 @@ class User < ActiveRecord::Base
     save!
   end
 
-  def setup_complete!
+  def setup_complete!(dont_suggest_startups = false)
     self.setup << :welcome
     if self.save
-      self.startup.generate_suggested_connections(10) unless self.startup.blank?
+      self.startup.generate_suggested_connections(10) if !dont_suggest_startups && !self.startup.blank?
+      true
+    else
+      false
     end
   end
 
@@ -373,7 +378,7 @@ class User < ActiveRecord::Base
   end
 
   def can_connect_with_startups?
-    self.num_startups_connected_with_this_week < User::INVESTOR_STARTUPS_PER_WEEK
+    (self.num_startups_connected_with_this_week < User::INVESTOR_STARTUPS_PER_WEEK) && self.roles?(:approved_investor) 
   end
 
   #
@@ -578,5 +583,9 @@ class User < ActiveRecord::Base
       err = true
     end
     err
+  end
+
+  def ensure_roles_exist
+    self.setup -= [:account_type] if self.roles.blank?
   end
 end
