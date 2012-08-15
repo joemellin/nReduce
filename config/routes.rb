@@ -85,6 +85,7 @@ Nreduce::Application.routes.draw do
       get 'spectator'
       post 'account_type'
       match 'welcome'
+      get 'change_password'
     end
     resources :notifications
   end
@@ -101,6 +102,9 @@ Nreduce::Application.routes.draw do
   get '/tags/:context(/:term)' => "tags#search"
   
   resources :relationships, :only => [:create, :index] do
+    collection do
+      get 'add_teams'
+    end
     member do
       post 'approve'
       post 'reject'
@@ -114,6 +118,7 @@ Nreduce::Application.routes.draw do
       post 'search'
       get 'stats'
       match 'invite'
+      post 'invite_with_confirm'
     end
     member do
       match 'intro_video'

@@ -1,14 +1,24 @@
-
-
-
 .investors
   - if current_user.investor?
-    %h1 Investors
+    .row
+      .span12
+        %h1
+          %small Investors
+    %hr/
 
-    - if can? :investor_connect_with_startups, current_user
-      %h2= link_to 'Show me the money!', show_startup_investors_path, :class => 'btn btn-large btn-success', :style => 'font-size: 60px;'
+    - if current_user.roles?(:approved_investor)
+      - if can? :investor_connect_with_startups, current_user
+        %h2= link_to 'Show me a startup!', show_startup_investors_path, :class => 'btn btn-large btn-success', :style => 'font-size: 60px;'
+      - else
+        %p You have already connected with one startup this week. Please come back next Tuesday at 4pm PST to see more startups, or upgrade your account.
     - else
-      %p You have already connected with one startup this week. Please come back next Tuesday at 4pm PST to see more startups, or upgrade your account.
+      %center
+        = image_tag 'nstar_s.png'
+        %h2 nStar Demo Day
+        %h3 September 5th at 11 AM PST
+        %br/
+        %br/
+        %p Join us to meet the 10 nStar teams on our online-only demo day
 
   - elsif current_user.entrepreneur?
     .startup
@@ -26,6 +36,19 @@
 
         %hr/
         %br/
+        .row.investor_profile_inactive{:class => current_user.startup.investable? ? 'hide' : ''}
+          %center
+            = image_tag 'nstar_s.png'
+            %br/
+            %br/
+            %h2
+              Apply to be featured in the
+              %br/
+              Sept 5th nStar Online Demo Day
+            %br/
+            %h3 To apply set your "seeking investment?" setting to yes
+            %h3 (Application deadline is August 8th)
+
         .row.investor_profile{:class => investor_profile_class}
           .span1
             %p

@@ -47,6 +47,8 @@ gem 'slope_one'
 gem 'rails_autolink'
 gem 'viddler-ruby'
 gem 'vimeo'
+gem "obfuscate_id", :git => 'git://github.com/geeosh/obfuscate_id.git'
+
 
 
 group :test, :development do

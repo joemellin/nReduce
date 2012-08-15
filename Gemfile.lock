@@ -1,3 +1,10 @@
+GIT
+  remote: git://github.com/geeosh/obfuscate_id.git
+  revision: 798c775807633437dcc776e9481cd48bbeea92ad
+  specs:
+    obfuscate_id (0.0.2.alpha)
+      rails (~> 3.2.1)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -392,6 +399,7 @@ DEPENDENCIES
   linkedin (~> 0.3.7)
   mime-types
   mysql2
+  obfuscate_id!
   omniauth (>= 1.0)
   omniauth-linkedin
   omniauth-twitter

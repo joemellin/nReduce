@@ -215,7 +215,7 @@ class Ability
 
     can :manage, Rating if user.investor?
 
-    # For now just show investor page to other investors
+    # For now just show investor page to other investors or users with a startup
     can :see_investor_page, User do |u|
       u.investor? || (u.entrepreneur? and !u.startup_id.blank?)
     end

@@ -9,6 +9,10 @@ class RegistrationsController < Devise::RegistrationsController
     super
     session[:omniauth] = nil unless @user.new_record?
   end
+
+  def edit
+    redirect_to edit_user_path(current_user)
+  end
   
   private
 

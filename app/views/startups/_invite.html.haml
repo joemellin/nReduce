@@ -1,20 +1,47 @@
-= form_for Invite.new, :url => invite_startups_path, :method => :post, :class => 'form-horizontal' do |f|
-  %br/
-  - if current_user.entrepreneur?
-    %p Do you have any friends that are building startups that you think would benefit from nReduce, and would like to add to your private group? Please invite them here:
-  - elsif current_user.mentor?
-    %p Are you currently mentoring any startups? Invite them to join nReduce so that you can easily give them feedback each week.
-  - elsif current_user.investor?
-    %p Are you currently an investor in any startups? You can invite them to nReduce to easily keep up to date on their weekly progress.
-  %br/
-  %center
-    = f.text_field :email, :placeholder => "Founder's email address", :class => 'span2'
-    = f.text_field :name, :placeholder => "Startup name", :class => 'span2'
-    %br/
-    = f.submit 'Invite', :class => 'btn btn-primary btn-large'
+- if !@relationship.blank?
+  - form_id = "relationship_#{@relationship.connected_with.obj_str}"
+  = form_for @relationship, :url => (@relationship.new_record? ? {:controller => :relationships, :action => :create} : approve_relationship_path(@relationship)), :remote => true, :html => {:id => form_id, :class => 'form-horizontal', :method => :post} do |f|
+    = f.hidden_field :entity_id
+    = f.hidden_field :entity_type
+    = f.hidden_field :connected_with_id
+    = f.hidden_field :connected_with_type
+    - unless f.object.context.blank?
+      = hidden_field_tag 'relationship[context]', f.object.context.first.to_s
+    .row
+      .span2
+        .relationships
+          .team{:align => 'center'}
+            .top{:align => 'center'}
+              .background{:style => "background-image: url('#{@relationship.connected_with.logo_url(:square)}'); cursor: pointer;"} &nbsp;
+              .members{:align => 'center'}
+                - @relationship.connected_with.team_members.shuffle.first(3).each do |tm|
+                  .inline-block{:style => 'margin-left: 4px'}= image_tag(user_avatar_url(tm), :title => tm.name, :style => 'width: 50px; height: 50px;')
+      .span3{:align => 'center', :style => 'padding: 55px 0 0 20px'}
+        %h3{:style => 'margin-bottom: 25px'} #{@invite.to.name} is working on #{@relationship.connected_with.name}
+        = f.submit 'Connect', :class => 'btn btn-success btn-large'
 
-- unless @invites.blank?
-  %h4
-    %strong Current Invites
-  - @invites.each do |i|
-    %li= "#{i.to_name} (#{Invite.types[i.invite_type].titleize})"
+
+- else
+  - invite = @invite || Invite.new
+  = form_for invite, :url => invite_startups_path, :method => :post, :remote => (@modal == true ? true : false), :class => 'form-inline' do |f|
+    / Don't show welcome message if they already posted
+    - unless @modal
+      %br/
+      - if current_user.entrepreneur?
+        %p Do you have any friends that are building startups that you think would benefit from nReduce, and would like to add to your private group? Please invite them here:
+      - elsif current_user.mentor?
+        %p Are you currently mentoring any startups? Invite them to join nReduce so that you can easily give them feedback each week.
+      - elsif current_user.investor?
+        %p Are you currently an investor in any startups? You can invite them to nReduce to easily keep up to date on their weekly progress.
+    %br/
+    %center
+      = f.text_field :email, :placeholder => "Founder's email address", :class => 'span2'
+      = f.text_field :name, :placeholder => "Startup name", :class => 'span2'
+      %br/
+      = f.submit 'Invite', :class => 'btn btn-primary btn-large'
+
+  - unless @invites.blank?
+    %h4
+      %strong Current Invites
+    - @invites.each do |i|
+      %li= "#{i.to_name} (#{Invite.types[i.invite_type].titleize})"
