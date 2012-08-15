@@ -196,8 +196,8 @@ class User < ActiveRecord::Base
     self.mentor? and !self.roles?(:nreduce_mentor) and [4,5].include?(step)
   end
 
-  def has_startup_or_is_mentor?
-    !self.startup_id.blank? or self.mentor?
+  def has_startup_or_is_mentor_or_investor?
+    !self.startup_id.blank? || self.mentor? || self.investor?
   end
 
   def received_nudges
