@@ -3,6 +3,8 @@ class StartupsController < ApplicationController
   before_filter :login_required
   before_filter :load_requested_or_users_startup, :except => [:index, :invite, :stats]
   load_and_authorize_resource :except => [:index, :stats, :invite, :show, :invite_team_members, :intro_video]
+  before_filter :load_obfuscated_startup, :only => [:show, :invite_team_members, :before_video, :intro_video]
+  authorize_resource :only => [:show, :invite_team_members, :before_video, :intro_video]
   before_filter :redirect_if_no_startup, :except => [:index, :invite, :show, :invite_team_members, :intro_video]
 
   def index
