@@ -5,10 +5,10 @@ class StartupsController < ApplicationController
   load_and_authorize_resource :except => [:index, :stats, :invite, :show, :invite_team_members, :intro_video]
   before_filter :load_obfuscated_startup, :only => [:show, :invite_team_members, :before_video, :intro_video]
   authorize_resource :only => [:show, :invite_team_members, :before_video, :intro_video]
-  before_filter :redirect_if_no_startup, :except => [:index, :invite, :show, :invite_team_members, :intro_video]
+  before_filter :redirect_if_no_startup, :except => [:index]
 
   def index
-    redirect_to :action => :search
+    redirect_to '/'
   end
 
   def new
@@ -80,14 +80,6 @@ class StartupsController < ApplicationController
   end
 
   def show
-    begin
-      @startup ||= Startup.find_by_obfuscated_id(params[:id])
-    rescue ActiveRecord::RecordNotFound
-      redirect_to '/'
-      return
-    end
-    redirect_if_no_startup
-    authorize! :read, @startup
     @owner = true if user_signed_in? and (@startup.id == current_user.startup_id)
     @can_view_checkin_details = can? :read, Checkin.new(:startup => @startup)
     @num_checkins = @startup.checkins.count
@@ -196,13 +188,6 @@ class StartupsController < ApplicationController
   end
 
   def invite_team_members
-    begin
-      @startup ||= Startup.find_by_obfuscated_id(params[:id])
-    rescue ActiveRecord::RecordNotFound
-      redirect_to '/'
-      return
-    end
-    authorize! :edit, @startup
     if request.post?
       @startup.invited_team_members!
       redirect_to '/'
@@ -212,26 +197,19 @@ class StartupsController < ApplicationController
 
    # Start of setup flow - to get startup to post initial before video
   def before_video
-    begin
-      @startup ||= Startup.find_by_obfuscated_id(params[:id])
-    rescue ActiveRecord::RecordNotFound
-      redirect_to '/'
-      return
-    end
-    authorize! :edit, @startup
-    #if can? :before_video, @startup
-      @before_disabled = false
-      @after_disabled = true
-      @hide_time = true
-      @checkin = Checkin.new
-      unless params[:checkin].blank?
-        @checkin.attributes = params[:checkin]
-        @checkin.startup = @startup
-        if @checkin.before_completed? and @checkin.check_video_urls_are_valid and @checkin.save(:validate => false)
-          redirect_to '/'
-          return
-        end
+  #if can? :before_video, @startup
+    @before_disabled = false
+    @after_disabled = true
+    @hide_time = true
+    @checkin = Checkin.new
+    unless params[:checkin].blank?
+      @checkin.attributes = params[:checkin]
+      @checkin.startup = @startup
+      if @checkin.before_completed? and @checkin.check_video_urls_are_valid and @checkin.save(:validate => false)
+        redirect_to '/'
+        return
       end
+    end
     #else
     #  redirect_to '/'
     #  return
@@ -239,13 +217,6 @@ class StartupsController < ApplicationController
   end
 
   def intro_video
-    begin
-      @startup ||= Startup.find_by_obfuscated_id(params[:id])
-    rescue ActiveRecord::RecordNotFound
-      redirect_to '/'
-      return
-    end
-    authorize! :edit, @startup
     @startups = Startup.with_intro_video.limit(6).order("RAND()")
     if !params[:startup].blank? && !params[:startup][:intro_video_url].blank?
       @startup.intro_video_url = params[:startup][:intro_video_url]
@@ -290,6 +261,17 @@ class StartupsController < ApplicationController
                    :disposition => "attachment; filename=startup_stats_#{Date.today.to_s(:db)}.csv")
                  }
       format.html { render :nothing => true }
+    end
+  end
+
+  protected
+
+  def load_obfuscated_startup
+    begin
+      @startup ||= Startup.find_by_obfuscated_id(params[:id])
+    rescue ActiveRecord::RecordNotFound
+      redirect_to '/'
+      return
     end
   end
 end
