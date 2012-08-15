@@ -32,8 +32,8 @@ class Video < ActiveRecord::Base
     new_file_name = self.tmp_file_name(extension)
     local_path_to_file = File.join(Video.tmp_file_dir, new_file_name)
 
-    system("wget -O #{local_path_to_file} #{remote_url_str}")
-
+    #system("wget -O #{local_path_to_file} #{remote_url_str}")
+    system("curl #{remote_url_str} > #{local_path_to_file}")
     return
     # Wrap opening file to ensure it gets closed
     # could use open-uri: http://stackoverflow.com/questions/5386159/download-a-zip-file-through-nethttp
