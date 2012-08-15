@@ -26,16 +26,40 @@ class Video < ActiveRecord::Base
 
   # Given a location of a file on a remote server it will save it locally to the tmp_file_dir
   # DOES NOT SAVE model
+  # Will follow redirects
   def save_file_locally(remote_url_str, extension = nil)
     extension ||= remote_url_str.match(/\.\w+$/)[0].sub(/^\./, '')
     new_file_name = self.tmp_file_name(extension)
     local_path_to_file = File.join(Video.tmp_file_dir, new_file_name)
-    uri = URI.parse(remote_url_str)
-    download_file = open(local_path_to_file, "wb")
-    request = Net::HTTP.start(uri.host, uri.port, :use_ssl => uri.scheme == 'https', :verify_mode => OpenSSL::SSL::VERIFY_NONE)
+
+    system("wget -O #{local_path_to_file} #{remote_url_str}")
+
+    return
+    # Wrap opening file to ensure it gets closed
+    # could use open-uri: http://stackoverflow.com/questions/5386159/download-a-zip-file-through-nethttp
     begin
-      request.request_get(uri.path) do |resp|
-        resp.read_body { |segment| download_file.write(segment) }
+
+      download_file = open(local_path_to_file, "wb")
+      url = URI.parse(remote_url_str)
+      # May be better code for redirect following: http://stackoverflow.com/questions/5386159/download-a-zip-file-through-nethttp
+      found = false
+      until found
+        host, port = url.host, url.port if url.host && url.port
+        request = Net::HTTP.start(host, port, :use_ssl => url.scheme == 'https', :verify_mode => OpenSSL::SSL::VERIFY_NONE) 
+        request.request_get(url.path) do |resp|
+          # See if this is a redirect if so follow it
+          resp.header['location'] ? url = URI.parse(resp.header['location']) : found = true
+          # Otherwise save the file
+          if found == true
+            resp.read_body do |segment|
+              download_file.write(segment)
+              # hack to allow buffer to fille writes
+              puts "segment"
+              sleep 0.005
+            end
+          end
+        end
+        puts url.inspect
       end
     ensure
       download_file.close
@@ -47,6 +71,7 @@ class Video < ActiveRecord::Base
       return true
     end
   end
+
 
   # Transfers a local file (using local_file_path) to vimeo account
   # Adds vimeo_id to model on success - does not save
