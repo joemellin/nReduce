@@ -92,7 +92,7 @@ class RelationshipsController < ApplicationController
     end
     logger.info flash.inspect
     respond_to do |format|
-      format.html { redirect_to '/' }
+      format.html { redirect_to add_teams_relationships_path }
       format.js { render :action => 'update_modal' }
     end
   end
@@ -114,7 +114,7 @@ class RelationshipsController < ApplicationController
         format.js { render :action => 'update_modal' }
       end
     else
-      redirect_to relationships_path
+      redirect_to add_teams_relationships_path
     end
   end
 
@@ -134,6 +134,6 @@ class RelationshipsController < ApplicationController
     else
       flash[:alert] = "Sorry but the relationship couldn't be removed at this time."
     end
-    redirect_to relationships_path
+    redirect_to add_teams_relationships_path
   end
 end
