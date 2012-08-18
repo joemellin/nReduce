@@ -99,7 +99,7 @@ class UserMailer < ActionMailer::Base
     @from = @nudge.from
     @to = notification.user
     @to_startup = @nudge.startup
-    mail(:to => @to.email, :subject => "#{@from.name} nudged you to complete your check-in")
+    mail(:to => @to.email, :subject => "#{@from.name} nudged you to complete your check-in", :reply_to => @from.email)
   end
 
   def nudge_for_invite(nudge)
