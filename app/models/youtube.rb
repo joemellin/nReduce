@@ -55,7 +55,7 @@ class Youtube < Video
   end
 
   # Generates download link from external id and then triggers super method to save video locally
-  def save_external_video_locally
+  def save_external_video_locally_old
     # First we have to get the token from youtube to download the video
     uri = URI.parse('http://www.youtube.com/get_video_info?&video_id=' + self.external_id)
     http = Net::HTTP.new(uri.host, uri.port)
@@ -102,4 +102,64 @@ class Youtube < Video
     puts response.inspect
     self.save_file_locally(Youtube.download_url_for_id(self.external_id), 'flv')
   end
+
+  def save_external_video_locally
+    # First we have to get the valid urls
+    uri = URI.parse('http://www.youtube.com/get_video_info?&video_id=' + self.external_id)
+    http = Net::HTTP.new(uri.host, uri.port)
+    response = http.request(Net::HTTP::Get.new(uri.request_uri))
+    body = CGI::parse(response.body) unless response.body.blank?
+    urls_tmp = body['url_encoded_fmt_stream_map'].first.split(',')
+    return urls_tmp.map{|url| CGI::unescape(url.sub(/^url=/, '')) }
+    raise "Youtube: could not get token for video with id #{self.external_id}" if token.blank?
+    # Now we can get the video
+    # Youtube quality formats: http://en.wikipedia.org/wiki/Youtube#Quality_and_codecs
+    # fmt=18 is mp4 360p
+    # fmt=22 is mp4 720p
+  end
+ #      if(!preg_match('/fmt_url_map=(.*?)&/',$html,$match))
+ #      {
+ #          $this->error = "Error Locating Downlod URL's";
+ #          return false;
+ #      }
+ #
+ #
+ #      $fmt_url =  urldecode($match[1]);
+ #
+ #
+ #      if(preg_match('/^(.*?)\\\\u0026/',$fmt_url,$match))
+ #      {
+ #          $fmt_url = $match[1];
+ #      }
+ #
+ #      $urls = explode(',',$fmt_url);
+ #      $foundArray = array();
+ #
+ #      foreach($urls as $url)
+ #      {
+ #          $format = explode('|',$url,2);
+ #          $foundArray[$format[0]] = $format[1];
+ #      }
+ #
+ #
+ #      $formats = array(
+ #          '13'=>array('3gp','Low Quality'),
+ #          '17'=>array('3gp','Medium Quality'),
+ #          '36'=>array('3gp','High Quality'),
+ #          '5'=>array('flv','Low Quality'),
+ #          '6'=>array('flv','Low Quality'),
+ #          '34'=>array('flv','High Quality (320p)'),
+ #          '35'=>array('flv','High Quality (480p)'),
+ #          '18'=>array('mp4','High Quality (480p)'),
+ #          '22'=>array('mp4','High Quality (720p)'),
+ #          '37'=>array('mp4','High Quality (1080p)'),
+ #      );
+ #
+ #      foreach ($formats as $format => $meta) {
+ #          if (isset($foundArray[$format])) {
+ #              $videos[] = array('ext' => $meta[0], 'type' => $meta[1], 'url' => $foundArray[$format]);
+ #          } 
+ #      }
+
+
 end
