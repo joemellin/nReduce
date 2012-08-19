@@ -1,13 +1,14 @@
-.control-group{error_css(@user, :name)}
-  = f.label :name, 'Your Name', :class => 'control-label'
-  .controls
-    = f.email_field :name
-    = f.semantic_errors :name
-.control-group{error_css(@user, :email)}
-  = f.label :email, :class => 'control-label'
-  .controls
-    = f.email_field :email
-    = f.semantic_errors :email
+- unless @change_password
+  .control-group{error_css(@user, :name)}
+    = f.label :name, 'Your Name', :class => 'control-label'
+    .controls
+      = f.email_field :name
+      = f.semantic_errors :name
+  .control-group{error_css(@user, :email)}
+    = f.label :email, :class => 'control-label'
+    .controls
+      = f.email_field :email
+      = f.semantic_errors :email
 .control-group{error_css(@user, :password)}
   = f.label :password, 'New Password', :class => 'control-label'
   .controls
