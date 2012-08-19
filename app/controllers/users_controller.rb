@@ -76,6 +76,7 @@ class UsersController < ApplicationController
   end
 
   def change_password
+    @change_password = true
     render 'devise/registrations/edit'
   end
 
