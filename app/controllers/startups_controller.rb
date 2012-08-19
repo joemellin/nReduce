@@ -263,15 +263,4 @@ class StartupsController < ApplicationController
       format.html { render :nothing => true }
     end
   end
-
-  protected
-
-  def load_obfuscated_startup
-    begin
-      @startup ||= Startup.find_by_obfuscated_id(params[:id])
-    rescue ActiveRecord::RecordNotFound
-      redirect_to '/'
-      return
-    end
-  end
 end
