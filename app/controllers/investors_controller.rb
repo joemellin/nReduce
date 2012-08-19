@@ -10,7 +10,14 @@ class InvestorsController < ApplicationController
   # Show a new startup to an investor
   def show_startup
     authorize! :investor_connect_with_startups, current_user
-    @startup = Startup.find 319
+    # Only allow temporary investor account access to their suggested startups
+    if current_user.id == 2367
+      @startup = current_user.suggested_startups(1)
+    else
+      @startup = Startup.find 319
+      Relationship.suggest_connection(current_user, @startup, :startup_investor)
+    end
+    #@startup = Startup.find 319
     # search = Startup.search {
     #   with(:num_checkins).greater_than(1)
     #   paginate :per_page => 1
@@ -20,7 +27,7 @@ class InvestorsController < ApplicationController
     @screenshots = @startup.screenshots.ordered
 
     # Temporary hack until we build suggested startups
-    Relationship.suggest_connection(current_user, @startup, :startup_investor)
+    #Relationship.suggest_connection(current_user, @startup, :startup_investor)
 
   end
 end
