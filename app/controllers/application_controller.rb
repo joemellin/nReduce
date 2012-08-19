@@ -175,7 +175,8 @@ class ApplicationController < ActionController::Base
 
   def load_obfuscated_startup
     begin
-      @startup ||= Startup.find_by_obfuscated_id(params[:id])
+      @startup ||= Startup.find_by_obfuscated_id(params[:id]) unless params[:id].blank?
+      @startup ||= Startup.find_by_obfuscated_id(params[:startup_id]) unless params[:startup_id].blank?
     rescue ActiveRecord::RecordNotFound
       redirect_to '/'
       return
