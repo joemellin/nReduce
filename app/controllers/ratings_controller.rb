@@ -17,7 +17,7 @@ class RatingsController < ApplicationController
   def create
     @rating.investor = current_user
     if @rating.save
-      flash[:notice] = "Your rating has been stored!"
+      #flash[:notice] = "Your rating has been stored!"
       # They are done rating startups
       if params[:commit].match(/stop/i) != nil
         @redirect_to = investors_path
