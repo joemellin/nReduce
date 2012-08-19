@@ -116,6 +116,20 @@
             %br/
             %h2 3) Product Shots
             %p Upload #{Startup::NUM_SCREENSHOTS} screenshots or photos of your product. To do so visit your #{link_to('edit startup page', edit_startup_path(@startup))}.
+            %br/
+            %h2 4) What is your business model?
+            = f.text_area :business_model, :size => '80x5', :style => 'width: 350px; height: 100px;'
+            %br/
+            %br/
+            %h2 5) What is the size of your market?
+            $
+            = f.text_field :market_size, :placeholder => '2.5 billion'
+            %br/
+            %br/
+            %h2 6) When did you start working on this company?
+            = f.date_select :founding_date, :end_year => Time.now.year, :use_short_month => true, :order => [:month, :day, :year]
+            .control-group
+              .controls= f.submit 'Save', :class => 'btn btn-large btn-success'
           .span1
             %p  
           .span3
