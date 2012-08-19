@@ -33,7 +33,7 @@
 
       - c = 0
       - @screenshots.each do |s|
-        .screenshot.left= link_to image_tag(s.image_url(:small)), '#', :onclick => "$('#screenshots_modal').modal(); $('#screenshots_carousel').carousel(#{c}); return false;"
+        .screenshot.left= link_to image_tag(s.image_url(:medium)), '#', :onclick => "$('#screenshots_modal').modal(); $('#screenshots_carousel').carousel(#{c}); return false;"
         - c += 1
       .clear
 
@@ -54,7 +54,7 @@
       .team_member.left
         .top
           - if !team_member.intro_video_url.blank?
-            %iframe{:width => '200', :height => '126', :src => Youtube.embed_url(team_member.intro_video_url), :frameborder => 0, :allowfullscreen => true}
+            %iframe{:width => '225', :height => '160', :src => Youtube.embed_url(team_member.intro_video_url), :frameborder => 0, :allowfullscreen => true}
           - else
             = link_to(image_tag(user_avatar_url(team_member)), team_member)
         .bottom
