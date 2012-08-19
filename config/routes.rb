@@ -112,8 +112,8 @@ Nreduce::Application.routes.draw do
     # Searching other startups, seeing checkins - plural resource
   resources :startups, :only => [:show, :index] do
     collection do
-      get 'search'
-      post 'search'
+      get 'wait_for_next_class'
+      get 'current_class'
       get 'stats'
       match 'invite'
     end

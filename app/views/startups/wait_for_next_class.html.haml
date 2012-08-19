@@ -1,0 +1,8 @@
+- content_for :subtitle do
+  Wait for next class
+
+%center
+  %h2 Join us for the next class that starts in
+  %div{:align => 'center'}= render 'layouts/countdown', :time => Week.next_window_for(:join_class).first
+
+You will be joining #{pluralize(@other_startups.size, 'startup')} who are also joining this week from around the world.  

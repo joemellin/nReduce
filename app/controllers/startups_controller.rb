@@ -2,11 +2,11 @@ class StartupsController < ApplicationController
   around_filter :record_user_action, :except => [:onboard_next, :stats]
   before_filter :login_required
   before_filter :load_requested_or_users_startup, :except => [:index, :invite, :stats]
-  load_and_authorize_resource :except => [:index, :stats, :invite, :show]
-  before_filter :redirect_if_no_startup, :except => [:index, :invite, :show]
+  load_and_authorize_resource :except => [:index, :stats, :invite, :show, :wait_for_next_class, :current_class]
+  before_filter :redirect_if_no_startup, :except => [:index, :invite, :show, :wait_for_next_class, :current_class]
 
   def index
-    redirect_to :action => :search
+    redirect_to '/'
   end
 
   def new
@@ -78,65 +78,14 @@ class StartupsController < ApplicationController
     end
   end
 
-  def search
-    if !params[:search].blank?
-      # sanitize search params
-      params[:search].select{|k,v| [:name, :meeting_id, :industries].include?(k) }
+  def current_class
 
-      # save in session for pagination
-      @search = session[:search] = params[:search]
-    elsif !params[:page].blank?
-      @search = session[:search]
-    end
+  end
 
-    @search ||= {}
-    @search[:page] = 1 # Force one page
-    @search[:per_page] = 20
-    @search[:sort] ||= 'rating'
-
-    # Have to pass context for block or else you can't access @search instance variable
-    @search_results = Startup.search do |s|
-      s.fulltext @search[:name] unless @search[:name].blank?
-      s.with :onboarded, true
-      s.with :meeting_id, @search[:meeting_id] unless @search[:meeting_id].blank?
-      unless @search[:industries].blank?
-        tag_ids = ActsAsTaggableOn::Tag.named_like_any_from_string(@search[:industries]).map{|t| t.id }
-        s.with :industry_tag_ids, tag_ids unless tag_ids.blank?
-      end
-      if @search[:sort] == 'rating'
-        s.order_by :rating, :desc
-      else
-        s.order_by @search[:sort]
-      end
-      s.paginate :page => @search[:page], :per_page => @search[:per_page]
-    end
-
-    # # Establish basic query to find public startups
-    # @startups = Startup.is_public.where(:onboarding_step => Startup.num_onboarding_steps).order('startups.name').includes(:team_members).paginate(:page => @search[:page], :per_page => 10)
-
-    # # Add conditions
-    # # Ignore current user's startup
-    # #if user_signed_in? and !current_user.startup_id.blank?
-    # #  @startups = @startups.where("startups.id != '#{current_user.startup_id}'")
-    # #end
-    # unless @search[:name].blank?
-    #   @startups = @startups.where(['startups.name LIKE ?', "%#{@search[:name]}%"])
-    # end
-    # unless @search[:meeting_id].blank?
-    #   @startups = @startups.where(['startups.meeting_id = ?', @search[:meeting_id]])
-    # end
-    # unless @search[:industry_id].blank?
-    #   @startups = @startups.where(['startups.industry_id = ?', @search[:industry_id]])
-    # end
-    @ua = {:data => @search}
-    @meetings_by_id = Meeting.location_name_by_id
-    #@tags_by_startup_id = Startup.tags_by_startup_id(@startups)
-
-    if current_user.mentor?
-      @entity = current_user
-    elsif !current_user.startup.blank?
-      @entity = current_user.startup
-    end
+  def wait_for_next_class
+    @waiting_for_next_class = true
+    window = Week.next_window_for(:join_class)
+    @other_startups = Startup.where(:week => Week.integer_for_time(window.first))
   end
 
   #
@@ -242,6 +191,69 @@ class StartupsController < ApplicationController
                    :disposition => "attachment; filename=startup_stats_#{Date.today.to_s(:db)}.csv")
                  }
       format.html { render :nothing => true }
+    end
+  end
+
+  protected
+
+  def search
+    if !params[:search].blank?
+      # sanitize search params
+      params[:search].select{|k,v| [:name, :meeting_id, :industries].include?(k) }
+
+      # save in session for pagination
+      @search = session[:search] = params[:search]
+    elsif !params[:page].blank?
+      @search = session[:search]
+    end
+
+    @search ||= {}
+    @search[:page] = 1 # Force one page
+    @search[:per_page] = 20
+    @search[:sort] ||= 'rating'
+
+    # Have to pass context for block or else you can't access @search instance variable
+    @search_results = Startup.search do |s|
+      s.fulltext @search[:name] unless @search[:name].blank?
+      s.with :onboarded, true
+      s.with :meeting_id, @search[:meeting_id] unless @search[:meeting_id].blank?
+      unless @search[:industries].blank?
+        tag_ids = ActsAsTaggableOn::Tag.named_like_any_from_string(@search[:industries]).map{|t| t.id }
+        s.with :industry_tag_ids, tag_ids unless tag_ids.blank?
+      end
+      if @search[:sort] == 'rating'
+        s.order_by :rating, :desc
+      else
+        s.order_by @search[:sort]
+      end
+      s.paginate :page => @search[:page], :per_page => @search[:per_page]
+    end
+
+    # # Establish basic query to find public startups
+    # @startups = Startup.is_public.where(:onboarding_step => Startup.num_onboarding_steps).order('startups.name').includes(:team_members).paginate(:page => @search[:page], :per_page => 10)
+
+    # # Add conditions
+    # # Ignore current user's startup
+    # #if user_signed_in? and !current_user.startup_id.blank?
+    # #  @startups = @startups.where("startups.id != '#{current_user.startup_id}'")
+    # #end
+    # unless @search[:name].blank?
+    #   @startups = @startups.where(['startups.name LIKE ?', "%#{@search[:name]}%"])
+    # end
+    # unless @search[:meeting_id].blank?
+    #   @startups = @startups.where(['startups.meeting_id = ?', @search[:meeting_id]])
+    # end
+    # unless @search[:industry_id].blank?
+    #   @startups = @startups.where(['startups.industry_id = ?', @search[:industry_id]])
+    # end
+    @ua = {:data => @search}
+    @meetings_by_id = Meeting.location_name_by_id
+    #@tags_by_startup_id = Startup.tags_by_startup_id(@startups)
+
+    if current_user.mentor?
+      @entity = current_user
+    elsif !current_user.startup.blank?
+      @entity = current_user.startup
     end
   end
 end

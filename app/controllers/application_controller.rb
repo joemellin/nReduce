@@ -68,8 +68,7 @@ class ApplicationController < ActionController::Base
       # temporary time travel
       if !params[:travel].blank? && params[:travel].to_s == '1'
         Timecop.return
-        Timecop.travel(Week.next_window_for(:join_class).first + 1.hour) 
-        logger.info Time.now
+        Timecop.travel(Week.next_window_for(:join_class).first + 1.hour)
       end
       @hide_nav = true
       controller_action_arr = [controller_name.to_sym, action_name.to_sym]

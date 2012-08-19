@@ -82,14 +82,6 @@ class UsersController < ApplicationController
     @conversion = true
   end
 
-  def current_class
-
-  end
-
-  def wait_for_next_class
-
-  end
-
   protected
 
   def load_obfuscated_user

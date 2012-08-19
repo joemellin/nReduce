@@ -12,35 +12,12 @@
 
     .span6.countdown_and_checkin{:align => 'center'}
       - nc = Checkin.next_checkin_type_and_time
-      - left = distance_until_time_from_now_arr(nc[:time])
-      - left = left.map{|d| "%02d" % d }
       %div{:align => 'center', :style => 'width: 320px; overflow: hidden;'}
         - if current_user.mentor?
           %h4 After videos are due in
         - else
           %h4 Your #{nc[:type]} video is due in
-        #countdown
-          .left.number_block
-            .numbers.days
-              %span= left[0][0,1]
-              %span= left[0][1,1]
-            %p Days
-          .left.number_block
-            .numbers.hours
-              %span= left[1][0,1]
-              %span= left[1][1,1]
-            %p Hours
-          .left.number_block
-            .numbers.minutes
-              %span= left[2][0,1]
-              %span= left[2][1,1]
-            %p Minutes
-          .left.number_block
-            .numbers.seconds
-              %span= left[3][0,1]
-              %span= left[3][1,1]
-            %p Seconds
-          %br.clear/
+        = render 'layouts/countdown', :time => nc[:time]
     .span3
       - if @startup.blank?
         &nbsp;

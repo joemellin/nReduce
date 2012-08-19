@@ -304,9 +304,9 @@ class User < ActiveRecord::Base
     # If it's time to start the class, then allow them to see new welcome process
     if roles?(:entrepreneur)
       if Week.in_time_window?(:join_class)
-        return [:users, :current_class]
+        return [:startups, :current_class]
       else
-        return [:users, :wait_for_next_class]
+        return [:startups, :wait_for_next_class]
       end
     end
     if !setup?(:onboarding)
