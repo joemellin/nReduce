@@ -128,8 +128,9 @@ class Relationship < ActiveRecord::Base
         end
       rescue ActiveRecord::RecordNotUnique
         # Relationship exists - check to see if it's in the right state
-        inv = self.inverse_relationship
-        inv.approve! unless inv.approved?
+        # It could've been a previously suggested relationship that the entity wants to approve now (changed mind)
+        r = Relationship.where(:entity_id => self.entity_id, :entity_type => self.entity_type, :connected_with_id => self.connected_with_id, :connected_with_type => self.connected_with_type).first
+        r.approve! if !r.blank? and !r.approved?
       end
       true
     end
