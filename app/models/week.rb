@@ -47,6 +47,7 @@ class Week
     "#{beginning_of_week.strftime('%b %-d')}-#{end_of_week.strftime('%b %-d')}"
   end
 
+    # returns the week integer for this timestamp, ex: 201223
   def self.integer_for_time(time)
     time.strftime("%Y%W").to_i
   end
