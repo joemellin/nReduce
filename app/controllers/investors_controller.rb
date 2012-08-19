@@ -12,7 +12,7 @@ class InvestorsController < ApplicationController
     authorize! :investor_connect_with_startups, current_user
     # Only allow temporary investor account access to their suggested startups
     if current_user.id == 2367
-      @startup = current_user.suggested_startups(1)
+      @startup = current_user.suggested_startups(1).first
     else
       @startup = Startup.find 319
       Relationship.suggest_connection(current_user, @startup, :startup_investor)
