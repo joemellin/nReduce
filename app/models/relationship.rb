@@ -127,7 +127,9 @@ class Relationship < ActiveRecord::Base
           self.reset_cache_for_entities_involved
         end
       rescue ActiveRecord::RecordNotUnique
-        # Already approved don't need to do anything
+        # Relationship exists - check to see if it's in the right state
+        inv = self.inverse_relationship
+        inv.approve! unless inv.approved?
       end
       true
     end
@@ -135,16 +137,12 @@ class Relationship < ActiveRecord::Base
 
   # Reject the friendship (or pass on a suggestion), but don't delete records
   def reject_or_pass!
-    begin
-      Relationship.transaction do
-        new_status = self.suggested? ? PASSED : REJECTED
-        self.update_attributes(:status => new_status, :rejected_at => Time.now) unless self.rejected?
-        inv = self.inverse_relationship
-        inv.update_attributes(:status => new_status, :rejected_at => Time.now) unless inv.blank? or (inv.rejected? or inv.passed?)
-        self.reset_cache_for_entities_involved
-      end
-    rescue ActiveRecord::RecordNotUnique
-      # Already rejected don't need to do anything
+    Relationship.transaction do
+      new_status = self.suggested? ? PASSED : REJECTED
+      self.update_attributes(:status => new_status, :rejected_at => Time.now) unless self.rejected?
+      inv = self.inverse_relationship
+      inv.update_attributes(:status => new_status, :rejected_at => Time.now) unless inv.blank? or (inv.rejected? or inv.passed?)
+      self.reset_cache_for_entities_involved
     end
     true
   end
