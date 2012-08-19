@@ -1,9 +1,10 @@
-#screencast
+%a.btn.btn-large.btn-success{:href => '#', :id => 'screencast'} Record Screencast
 :plain
   <script type="text/javascript">
     var sEmbedHost = (("https:" == document.location.protocol) ? "https://" : "http://");
     document.write(unescape("%3Cscript charset='utf-8' id='screenr_recorder' src='" + sEmbedHost + "nreduce.viewscreencasts.com/api/recorder' type='text/javascript'%3E%3C/script%3E"));
   </script>
   <script type="text/javascript">
-    Screenr.Recorder({id:"3b0463d0b3dc406283a9329a4b5d6140"}).appendTo("screencast");
+    // When clicking on button with id "screencast" it will launch the recorder
+    Screenr.Recorder({id:"3b0463d0b3dc406283a9329a4b5d6140"}).attachTo("screencast");
   </script>
