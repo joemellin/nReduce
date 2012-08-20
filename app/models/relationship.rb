@@ -211,6 +211,7 @@ class Relationship < ActiveRecord::Base
       self.errors.add(:connected_with, "hasn't approved your request yet") if existing.pending?
       self.errors.add(:entity, "is already connected to #{connected_with.name}") if existing.approved?
       self.errors.add(:connected_with, "has ignored your request") if existing.rejected?
+      self.errors.add(:entity, "is already suggested") if existing.suggested? || existing.passed?
     end
 
     # Now check if these two types can be connected
