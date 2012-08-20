@@ -8,7 +8,27 @@
 
     - if current_user.roles?(:approved_investor)
       - if can? :investor_connect_with_startups, current_user
-        %h2= link_to 'Show me a startup!', show_startup_investors_path, :class => 'btn btn-large btn-success', :style => 'font-size: 60px;'
+        %br/
+        %br/
+        %br/
+        %h1.center Thank you for being willing to judge startups.
+        %br/
+        %br/
+        %br/
+        %p The goal of this process is to determine which startups are most investible for the 100 investors that will see the startups on Demo Day. We are doing that by taking a sample of investors and which teams appeal to investors most.
+        %br/
+        %p Please rate the startups on a scale from 1 to 5 based on your personal interest in investing in them. With 1 being not intersted at all and 5 being interested in taking a meeting for an in person pitch.  
+        %br/
+        %p Also if you would like to you can give one peice of constructive feedback to each startup that will be shared with them anonymously.
+        %br/
+        %p When you are ready to start please click "Judge Startups" button below. You can stop at any time and then return later.
+        %br/
+        %p.center You have reviewed 0 of 28 startups.
+        %p.center ( Progress Bar Here )
+        %br/
+        %h2.center= link_to 'Judge Startups!', show_startup_investors_path, :class => 'btn btn-large btn-success', :style => 'font-size: 60px;'
+        %br/
+        %br/
       - else
         %p You have already connected with one startup this week. Please come back next Tuesday at 4pm PST to see more startups, or upgrade your account.
     - else
