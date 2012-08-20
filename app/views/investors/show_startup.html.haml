@@ -6,7 +6,13 @@
       = render 'ratings/fields', :f => f
       %br/
       = f.submit 'Save & Stop', :class => 'btn btn-large'
+      &nbsp;&nbsp;
       = f.submit 'Save & See Next Startup', :class => 'btn btn-large btn-success'
+
+  %div{:align => 'center'}
+    .progress{:style => 'width: 40%'}
+      .bar{:style => "width: #{@pct_complete}%"}
+  
 
     / = link_to 'Connect', new_startup_rating_path(@startup, :interested => true), :class => 'btn btn-large btn-success', :remote => true
     / &nbsp;&nbsp;
