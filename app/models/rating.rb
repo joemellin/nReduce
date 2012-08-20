@@ -2,7 +2,7 @@ class Rating < ActiveRecord::Base
   belongs_to :investor, :class_name => 'User'
   belongs_to :startup
 
-  attr_accessible :explanation, :feedback, :interested, :investor_id, :startup_id
+  attr_accessible :explanation, :feedback, :interested, :investor_id, :startup_id, :value
 
   FEEDBACK_OPTIONS = [:team, :idea, :traction, :market]
 
@@ -10,12 +10,21 @@ class Rating < ActiveRecord::Base
 
   validates_presence_of :startup_id
   validates_presence_of :investor_id
-  validates_length_of :explanation, :minimum => 50
+  validates_presence_of :value
+  #validates_length_of :explanation, :minimum => 50
   validate :relationship_exists
   validate :investor_can_connect
 
   before_create :change_suggested_relationship_state
 
+  def self.labels
+    { 1 => 'Unlikely',
+      2 => '',
+      3 => 'Somewhat Likely',
+      4 => '',
+      5 => 'Definitely',
+    }
+  end
 
   # Finds the relationship that exists between the startup and investor involved in this rating
   def startup_relationship
@@ -38,7 +47,7 @@ class Rating < ActiveRecord::Base
     if self.new_record?
       rel = self.startup_relationship
       if rel.blank? || (!rel.blank? and !rel.suggested?)
-        self.errors.add(:startup_id, "rating can't be given to this startup.")
+        self.errors.add(:startup_id, "has already been rated by you.")
         return false
       end
     end
