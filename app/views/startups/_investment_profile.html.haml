@@ -47,6 +47,17 @@
                 - c += 1
             %a.carousel-control.left{:href => '#screenshots_carousel', 'data-slide' => 'prev'} &lsaquo;
             %a.carousel-control.right{:href => '#screenshots_carousel', 'data-slide' => 'next'} &rsaquo;
+    %h3 Business Model
+    = simple_format(h(@startup.business_model))
+
+    %p
+      %strong Market Size:
+      $#{@startup.market_size}
+      %i (self reported)
+    %p
+      %strong Date Founded:
+      #{@startup.founding_date.strftime('%B %d, %Y')}
+
   .clear
 
   .team_members
