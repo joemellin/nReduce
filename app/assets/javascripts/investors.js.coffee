@@ -18,8 +18,14 @@ $ ->
         $('.investor_profile_inactive').fadeIn()
   )
 
-  # Screenshot carousel
-  $('#screenshots_carousel').carousel()
+  # Screenshot carousel - set long interval between auto-change
+  $('#screenshots_carousel').carousel({ interval: 100000 })
+
+  $('.screenshot.screenshot_modal').click ->
+    # Show modal if not visible
+    if $('#screenshot_modal :visible').length == 0
+      $('#screenshots_modal').modal()
+    $('#screenshots_carousel').carousel($(this).data('id'))
   
   # Prevent remote form from submitting so we can append success message  
   $('.ssss form[data-remote=true]').submit (e) ->

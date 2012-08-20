@@ -25,15 +25,15 @@
       .left.checkin{:class => status.last == true ? 'done' : ''} &nbsp;
       .clear
   .left
-    - unless hide_chart
-      = render 'investors/chart'
+    -# unless hide_chart
+    =# render 'investors/chart'
 
     - unless @screenshots.blank?
       %h3 Product Screenshots
 
       - c = 0
       - @screenshots.each do |s|
-        .screenshot.left= link_to image_tag(s.image_url(:medium)), '#', :onclick => "$('#screenshots_modal').modal(); $('#screenshots_carousel').carousel(#{c}); return false;"
+        .screenshot.screenshot_modal.left{'data-id' => c}= link_to image_tag(s.image_url(:small)), '#'
         - c += 1
       .clear
 
@@ -43,7 +43,7 @@
             .carousel-inner
               - c = 0
               - @screenshots.each do |s|
-                .item{:class => c == 0 ? 'active' : '' }= image_tag s.image_url
+                .item{:class => c == 0 ? 'active' : ''}= image_tag s.image_url
                 - c += 1
             %a.carousel-control.left{:href => '#screenshots_carousel', 'data-slide' => 'prev'} &lsaquo;
             %a.carousel-control.right{:href => '#screenshots_carousel', 'data-slide' => 'next'} &rsaquo;
