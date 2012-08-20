@@ -17,17 +17,10 @@ class InvestorsController < ApplicationController
       @startup = Startup.find 319
       Relationship.suggest_connection(current_user, @startup, :startup_investor)
     end
-    #@startup = Startup.find 319
-    # search = Startup.search {
-    #   with(:num_checkins).greater_than(1)
-    #   paginate :per_page => 1
-    # }
-    # @startup = search.results.first
     @checkin_history = Checkin.history_for_startup(@startup)
     @screenshots = @startup.screenshots.ordered
 
-    # Temporary hack until we build suggested startups
-    #Relationship.suggest_connection(current_user, @startup, :startup_investor)
-
+    @rating = Rating.new
+    @rating.startup = @startup
   end
 end

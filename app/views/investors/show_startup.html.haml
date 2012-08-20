@@ -2,9 +2,15 @@
   = render 'startups/investment_profile'
   %br/
   %center
-    = link_to 'Connect', new_startup_rating_path(@startup, :interested => true), :class => 'btn btn-large btn-success', :remote => true
-    &nbsp;&nbsp;
-    = link_to 'Pass', new_startup_rating_path(@startup, :interested => false), :class => 'btn btn-large', :remote => true
+    = semantic_form_for [@startup, @rating], :remote => true, :html => {:class => 'form-vertical' } do |f|
+      = render 'ratings/fields', :f => f
+      %br/
+      = f.submit 'Save & Stop', :class => 'btn btn-large'
+      = f.submit 'Save & See Next Startup', :class => 'btn btn-large btn-success'
+
+    / = link_to 'Connect', new_startup_rating_path(@startup, :interested => true), :class => 'btn btn-large btn-success', :remote => true
+    / &nbsp;&nbsp;
+    / = link_to 'Pass', new_startup_rating_path(@startup, :interested => false), :class => 'btn btn-large', :remote => true
 
   #rating_modal.hide
 

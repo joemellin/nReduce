@@ -5,21 +5,33 @@
 .control-group{error_css(f.object, :startup_id)}
   .controls= f.semantic_errors :startup_id
 
-.control-group{error_css(f.object, :feedback)}
-  = f.label :feedback, f.object.interested? ? 'What is their strongest element?' : 'What is their weakest element?'
+%p What is the likelihood that you'd invest in this company?
+%br/
+.control-group{error_css(f.object, :value)}
   .controls
-    - Rating::FEEDBACK_OPTIONS.each do |o|
-      / Check true by default if they say they're interested, otherwise false / whatever is selected
-      .left{:style => 'margin-right: 10px'}
-        = label_tag '' do
-          = radio_button_tag "rating[feedback][]", o, f.object.feedback?(o), :class => 'btn'
-          = o.to_s.titleize 
-
-    .clear
-    = f.semantic_errors :feedback
-
+    - 1.upto(5).each do |c|
+      .inline-block{:style => 'width: 80px', :align => 'center'}
+        = label_tag do
+          = Rating.labels[c]
+          %br/
+          = f.radio_button :value, c
+    
 .control-group{error_css(f.object, :explanation)}
-  = f.label :explanation, f.object.interested? ? 'Why do you want to connect to them?' : 'Why did you pass?'
+  = f.label :explanation, 'Comments?'
   .controls
     = f.text_area :explanation, :size => '120x5', :class => 'span4'
-    = f.semantic_errors :explanation
+    = f.semantic_errors :explanation  
+
+/ .control-group{error_css(f.object, :feedback)}
+/   = f.label :feedback, f.object.interested? ? 'What is their strongest element?' : 'What is their weakest element?'
+/   .controls
+/     - Rating::FEEDBACK_OPTIONS.each do |o|
+/       / Check true by default if they say they're interested, otherwise false / whatever is selected
+/       .left{:style => 'margin-right: 10px'}
+/         = label_tag '' do
+/           = radio_button_tag "rating[feedback][]", o, f.object.feedback?(o), :class => 'btn'
+/           = o.to_s.titleize 
+
+/     .clear
+/     = f.semantic_errors :feedback
+

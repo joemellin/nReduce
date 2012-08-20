@@ -24,10 +24,10 @@ class RatingsController < ApplicationController
       else # They want to continue
         # Check if they are above their limit
         if current_user.can_connect_with_startups?
+          @redirect_to = show_startup_investors_path
+        else
           flash[:alert] = "You've already contacted a startup this week, please come back later or upgrade your account to connect with more startups."
           @redirect_to = investors_path
-        else
-          @redirect_to = show_startup_investors_path
         end
       end
       # JS will render page that redirects to url
