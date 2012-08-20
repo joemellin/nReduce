@@ -18,11 +18,11 @@ class Rating < ActiveRecord::Base
   before_create :change_suggested_relationship_state
 
   def self.labels
-    { 1 => 'Unlikely',
-      2 => '',
-      3 => 'Somewhat Likely',
-      4 => '',
-      5 => 'Definitely',
+    { 1 => 'Never',
+      2 => '6 months',
+      3 => '3 months',
+      4 => '1 month',
+      5 => 'Today',
     }
   end
 

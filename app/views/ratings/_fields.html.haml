@@ -5,9 +5,14 @@
 .control-group{error_css(f.object, :startup_id)}
   .controls= f.semantic_errors :startup_id
 
-%p What is the likelihood that you'd invest in this company?
-%br/
+.control-group{error_css(f.object, :explanation)}
+  %p What is one suggestion you can give to the founders to improve this business?
+  .controls
+    = f.text_area :explanation, :size => '140x5', :class => 'span5'
+    = f.semantic_errors :explanation  
+
 .control-group{error_css(f.object, :value)}
+  %p When are you interested in talking to the founders about investing?
   .controls
     - 1.upto(5).each do |c|
       .inline-block{:style => 'width: 80px', :align => 'center'}
@@ -15,12 +20,6 @@
           = Rating.labels[c]
           %br/
           = f.radio_button :value, c
-    
-.control-group{error_css(f.object, :explanation)}
-  = f.label :explanation, 'Comments?'
-  .controls
-    = f.text_area :explanation, :size => '120x5', :class => 'span4'
-    = f.semantic_errors :explanation  
 
 / .control-group{error_css(f.object, :feedback)}
 /   = f.label :feedback, f.object.interested? ? 'What is their strongest element?' : 'What is their weakest element?'
