@@ -26,5 +26,7 @@ class InvestorsController < ApplicationController
     @rating = Rating.new
     @rating.startup = @startup
     @rating.interested = false
+
+    @instrument = @startup.instruments.first
   end
 end

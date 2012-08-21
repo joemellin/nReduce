@@ -185,6 +185,7 @@ class StartupsController < ApplicationController
   def investment_profile
     @checkin_history = Checkin.history_for_startup(@startup)
     @screenshots = @startup.screenshots.ordered
+    @instrument = @startup.instruments.first
   end
 
   #
