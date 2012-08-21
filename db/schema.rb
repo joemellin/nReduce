@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120820070322) do
+ActiveRecord::Schema.define(:version => 20120820081454) do
 
   create_table "authentications", :force => true do |t|
     t.string   "provider"
@@ -51,6 +51,9 @@ ActiveRecord::Schema.define(:version => 20120820070322) do
     t.text     "start_comments"
     t.integer  "comment_count",   :default => 0
     t.integer  "week"
+    t.integer  "before_video_id"
+    t.integer  "after_video_id"
+    t.integer  "measurement_id"
   end
 
   add_index "checkins", ["startup_id", "created_at"], :name => "index_checkins_on_startup_id_and_created_at"
@@ -267,12 +270,16 @@ ActiveRecord::Schema.define(:version => 20120820070322) do
     t.string   "pitch_video_url"
     t.integer  "setup"
     t.boolean  "investable",      :default => false
+    t.integer  "week"
+    t.integer  "intro_video_id"
+    t.integer  "pitch_video_id"
     t.text     "business_model"
     t.date     "founding_date"
     t.string   "market_size"
   end
 
   add_index "startups", ["public"], :name => "index_startups_on_public"
+  add_index "startups", ["week"], :name => "index_startups_on_week"
 
   create_table "suggested_startups", :force => true do |t|
     t.string   "entity_type"
@@ -357,7 +364,6 @@ ActiveRecord::Schema.define(:version => 20120820070322) do
     t.string   "intro_video_url"
     t.integer  "roles"
     t.integer  "onboarded"
-    t.boolean  "admin"
     t.integer  "email_on"
     t.integer  "setup"
     t.integer  "intro_video_id"
@@ -382,12 +388,13 @@ ActiveRecord::Schema.define(:version => 20120820070322) do
   create_table "videos", :force => true do |t|
     t.integer  "user_id"
     t.string   "external_id"
-    t.integer  "video_type"
-    t.string   "file_url"
-    t.text     "callback_result"
+    t.string   "local_file_path"
     t.integer  "vimeo_id"
-    t.datetime "created_at",      :null => false
-    t.datetime "updated_at",      :null => false
+    t.datetime "created_at",                         :null => false
+    t.datetime "updated_at",                         :null => false
+    t.boolean  "vimeod",          :default => false
+    t.string   "type"
+    t.string   "title"
     t.integer  "startup_id"
   end
 

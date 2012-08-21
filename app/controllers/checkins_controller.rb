@@ -20,13 +20,10 @@ class CheckinsController < ApplicationController
     @ua = {:attachable => @checkin}
   end
 
-  def edit
-    set_disabled_states(@checkin)
-    @ua = {:attachable => @checkin}
-  end
-
   def new
     set_disabled_states(@checkin)
+    instrument = @startup.instruments.first
+    @checkin.measurement = Measurement.new(:instrument => instrument ? instrument.name : nil) if @checkin.measurement.blank?
     render :action => :edit
   end
 
@@ -39,6 +36,13 @@ class CheckinsController < ApplicationController
       set_disabled_states(@checkin)
       render :action => :edit
     end
+    @ua = {:attachable => @checkin}
+  end
+
+  def edit
+    set_disabled_states(@checkin)
+    instrument = @startup.instruments.first
+    @checkin.measurement = Measurement.new(:instrument => instrument ? instrument.name : nil) if @checkin.measurement.blank?
     @ua = {:attachable => @checkin}
   end
 
