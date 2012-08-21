@@ -3,9 +3,13 @@ class Video < ActiveRecord::Base
   belongs_to :user      # profile video
   belongs_to :startup   # team video, pitch video
 
-  attr_accessible :external_id, :user_id, :type, :vimeo_id
+  attr_accessible :external_id, :user_id, :type, :vimeo_id, :image, :remote_image_url, :image_cache
+
+  after_create :queue_transfer_to_vimeo
 
   validates_presence_of :external_id
+
+  mount_uploader :image, BaseUploader # carrierwave file uploads
 
   @queue = :video
 
@@ -17,6 +21,22 @@ class Video < ActiveRecord::Base
     # generate random token if new record, or just return id
     beginning = self.new_record? ? "#{Time.now.to_i}#{Random.rand(20)}" : self.id
     "#{beginning}.#{extension}"
+  end
+
+  # Method to get embed code - no matter what kind of video
+  def embed_code
+    width = 500
+    height = 315
+    if self.vimeod?
+      '<iframe src="http://player.vimeo.com/video/' + self.vimeo_id.to_s + '?title=0&byline=0&portrait=0" width="' + width.to_s + '" height="' + height.to_s + '" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>'
+    else
+      self.embed_code_html(width, height)
+    end
+  end
+
+  # Mock - this method should return a string of html to play the video
+  def embed_code_html(width = 500, height = 315)
+    '[video embed]'
   end
 
   # Mock - to be implemented on any external video classes that inherit from the Video class
@@ -71,6 +91,23 @@ class Video < ActiveRecord::Base
     end
   end
 
+  ## VIMEO SPECIFIC METHODS
+
+  # Authenticated Vimeo client
+  def self.vimeo_client
+    Vimeo::Advanced::Video.new(Settings.apis.vimeo.client_id, Settings.apis.vimeo.client_secret, :token => Settings.apis.vimeo.access_token, :secret => Settings.apis.vimeo.access_token_secret)
+  end
+
+    # Method to take the external video and save it to our vimeo account
+  # First it saves it locally, then it uploads to vimeo, finally saves object
+  def transfer_to_vimeo!
+    # Use individually implemented method to save file locally
+    self.save_external_video_locally
+    # Transfer to vimeo
+    self.upload_to_vimeo(true)
+    raise "Vimeo: video could not be uploaded from local file: #{path_to_local_file}" if self.vimeo_id.blank?
+    self.save
+  end
 
   # Transfers a local file (using local_file_path) to vimeo account
   # Adds vimeo_id to model on success - does not save
@@ -85,29 +122,69 @@ class Video < ActiveRecord::Base
       # Store vimeo id
       self.vimeo_id = uploaded_video['ticket']['video_id']
       
-      video = Vimeo::Advanced::Video.new(Settings.apis.vimeo.client_id, Settings.apis.vimeo.client_secret, :token => Settings.apis.vimeo.access_token, :secret => Settings.apis.vimeo.access_token_secret)
-      
-      # hide from vimeo.com
-      video.set_privacy(uploaded_video['ticket']['video_id'], "disable", { :users => nil, :password => nil })
-      
-      # set video title
-      video.set_title(uploaded_video['ticket']['video_id'], self.created_at.to_s)
+      self.set_desired_vimeo_permissions unless self.vimeo_id.blank?
     rescue => e
       raise e
     end
 
     # Remove local file
     FileUtils.rm(self.local_file_path) if delete_on_success if !self.vimeo_id.blank?
+
+    self.vimeo_id.blank? ? false : true
   end
 
-  # Method to take the external video and save it to our vimeo account
-  # First it saves it locally, then it uploads to vimeo, finally saves object
-  def download_and_transfer_to_vimeo!
-    # Use individually implemented method to save file locally
-    self.save_external_video_locally
-    # Transfer to vimeo
-    self.upload_to_vimeo(true)
-    raise "Vimeo: video could not be uploaded from local file: #{path_to_local_file}" if self.vimeo_id.blank?
+  def set_desired_vimeo_permissions
+    begin
+      video = Vimeo::Advanced::Video.new(Settings.apis.vimeo.client_id, Settings.apis.vimeo.client_secret, :token => Settings.apis.vimeo.access_token, :secret => Settings.apis.vimeo.access_token_secret)
+        
+      # hide from vimeo.com
+      video.set_privacy(self.vimeo_id, "disable", { :users => nil, :password => nil })
+      
+      # set embed preset to remove vimeo logo and add ours
+      video_embed = Vimeo::Advanced::VideoEmbed.new(Settings.apis.vimeo.client_id, Settings.apis.vimeo.client_secret, :token => Settings.apis.vimeo.access_token, :secret => Settings.apis.vimeo.access_token_secret)
+      video_embed.set_preset(self.vimeo_id, Settings.apis.vimeo.preset_id)
+
+      # set video title
+      video.set_title(self.vimeo_id, "#{self.id} - #{self.created_at.to_s}")
+    rescue
+      return false
+    end
+    true
+  end
+
+  def vimeo_details
+    return nil if self.vimeo_id.blank?
+    response = Video.vimeo_client.get_info(self.vimeo_id)
+    return !response['video'].blank? ? response['video'].first : nil
+  end
+
+  def check_if_encoded_and_get_thumbnail_urls
+    details = self.vimeo_details
+    return false if details.blank?
+    # Set as transcoded if it has completed
+    self.vimeod = true if details['is_transcoding'].to_i == 0
+    # Save image thumbnails
+    self.remote_image_url = details['thumbnails']['thumbnail'].last['_content'] if !details['thumbnails'].blank? && !details['thumbnails']['thumbnail'].blank?
     self.save
   end
+
+  # Downloads video and transfers to Vimeo
+  def self.perform(video_id)
+    v = Video.find(video_id)
+    begin
+      v.transfer_to_vimeo! unless v.vimeod?
+    rescue
+      # If it fails to download or video hasn't encoded yet, enqueue
+      v.queue_transfer_to_vimeo
+    end
+    # Get thumbnail video and confirm it has been transcoded on vimeo
+    # Need to schedule this ahead in time
+    # v.check_if_encoded_and_get_thumbnail_urls if v.vimeod?
+  end
+
+  def queue_transfer_to_vimeo
+    Resque.enqueue(Video, self.id)
+  end
+
+  # END VIMEO-SPECIFIC METHODS
 end

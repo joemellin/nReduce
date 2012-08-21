@@ -100,6 +100,8 @@ class CheckinsController < ApplicationController
       @before_disabled = true if checkin.created_at < Checkin.prev_before_checkin
       @after_disabled = true if checkin.created_at < Checkin.prev_after_checkin
     end
+    @checkin.before_video = ViddlerVideo.new if @checkin.before_video.blank?
+    @checkin.after_video = ViddlerVideo.new if @checkin.after_video.blank?
   end
 
   def load_obfuscated_checkin

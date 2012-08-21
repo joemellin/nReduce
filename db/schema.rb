@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120815073622) do
+ActiveRecord::Schema.define(:version => 20120821035706) do
 
   create_table "authentications", :force => true do |t|
     t.string   "provider"
@@ -271,6 +271,9 @@ ActiveRecord::Schema.define(:version => 20120815073622) do
     t.integer  "week"
     t.integer  "intro_video_id"
     t.integer  "pitch_video_id"
+    t.text     "business_model"
+    t.date     "founding_date"
+    t.string   "market_size"
   end
 
   add_index "startups", ["public"], :name => "index_startups_on_public"
@@ -378,6 +381,7 @@ ActiveRecord::Schema.define(:version => 20120815073622) do
     t.string   "type"
     t.string   "title"
     t.integer  "startup_id"
+    t.string   "image"
   end
 
 end

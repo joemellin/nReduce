@@ -9,7 +9,7 @@ class Checkin < ActiveRecord::Base
   has_many :notifications, :as => :attachable
   has_many :user_actions, :as => :attachable
 
-  attr_accessible :start_focus, :start_why, :start_video_url, :end_video_url, :end_comments, :startup_id, :start_comments, :startup
+  attr_accessible :start_focus, :start_why, :start_video_url, :end_video_url, :end_comments, :startup_id, :start_comments, :startup, :before_video_attributes, :after_video_attributes
 
   after_validation :check_submitted_completed_times
   before_save :notify_user
