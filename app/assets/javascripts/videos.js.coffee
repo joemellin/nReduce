@@ -22,7 +22,8 @@ $ ->
       }
       success: (response) =>
         $(elem).html(response.html)
-      error: =>
+      error: (e) =>
+        console.log e
         $(elem).html('Could not load video. Please try again later.')
     })
   )

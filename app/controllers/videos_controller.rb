@@ -4,7 +4,7 @@ class VideosController < ApplicationController
   load_and_authorize_resource
 
   def record
-    @viddler = Video.new(:type => 'ViddlerClient')
+    @viddler = Video.new(:type => 'ViddlerVideo')
     @screenr = Video.new(:type => 'Screenr')
   end
 
@@ -14,10 +14,19 @@ class VideosController < ApplicationController
   def create
     @video.user = current_user
     if @video.save
-      redirect_to @video
+      redirect = @video
     else
       flash[:alert] = "Sorry but your video could not be saved. Please try again."
-      redirect_to record_videos_path
+      redirect = record_videos_path
     end
+    @replace_form = true
+    respond_to do |format|
+      format.js { render :action => 'edit' }
+      format.html { redirect_to redirect }
+    end
+  end
+
+  def edit
+
   end
 end

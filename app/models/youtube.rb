@@ -50,6 +50,10 @@ class Youtube < Video
     v
   end
 
+  def embed_code_html(width = 500, height = 315)
+    '<iframe width="' + width.to_s + '" height="' + height.to_s + '" src="' + self.embed_url + '" frameborder="0" allowfullscreen></iframe>'
+  end
+
   def embed_url
     Youtube.embed_url_for_id(self.external_id)
   end

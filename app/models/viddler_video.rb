@@ -1,4 +1,4 @@
-class ViddlerClient < Video
+class ViddlerVideo < Video
   @@client = nil
 
   def self.client
@@ -31,9 +31,25 @@ id="viddler_recorder" align="middle">
       <param name="enableCallbacks" value="Y" />
       <param name="flashvars" value="fake=1&recordToken=' + token + '" />
       <embed src="http://cdn-static.viddler.com/flash/recorder.swf" quality="high" scale="noScale" bgcolor="#000000"
-allowScriptAccess="always" allowNetworking="all" width="449" height="545" name="viddler_recorder"
+allowScriptAccess="always" allowNetworking="all" width="449" height="400" name="viddler_recorder"
 flashvars="fake=1&recordToken=' + token + '" align="middle" allowScriptAccess="sameDomain"
 type="application/x-shockwave-flash"  pluginspage="http://www.macromedia.com/go/getflashplayer" />
+    </object>'
+  end
+
+  def embed_code_html(width = 437, height = 370)
+    '<object width="' + width.to_s + '" height="' + height.to_s + '" data="http://www.viddler.com/simple/key" type="application/x-shockwave-flash">
+      <param name="id" value="publisher" />
+      <param name="align" value="middle" />
+      <param name="flashvars" value="key=' + self.external_id + '" />
+      <param name="allowscriptaccess" value="always" />
+      <param name="allownetworking" value="all" />
+      <param name="allowfullscreen" value="true" />
+      <param name="scale" value="noscale" />
+      <param name="quality" value="high" />
+      <param name="wmode" value="transparent" />
+      <param name="src" value="http://www.viddler.com/simple/key" />
+      <param name="name" value="publisher" />
     </object>'
   end
 
@@ -41,7 +57,7 @@ type="application/x-shockwave-flash"  pluginspage="http://www.macromedia.com/go/
     # return true if already uploaded
     return true if !self.vimeo_id.blank? && !force_upload
     # Set video as downloadable
-    details = ViddlerClient.client.post('viddler.videos.set_details', :video_id => self.external_id, :download_perm => true)
+    details = ViddlerVideo.client.post('viddler.videos.set_details', :video_id => self.external_id, :download_perm => 'public')
     raise "Viddler: Video with id #{self.external_id} doesn't exist or isn't encoded yet" if details.blank? || details['video']['files'].blank?
     raise "Viddler: could not set video as downloadable" unless details['video']['permissions']['download']['level'] == 'public'
     # First get html5 video source
@@ -52,7 +68,6 @@ type="application/x-shockwave-flash"  pluginspage="http://www.macromedia.com/go/
         extension = f['ext']
       end 
     end
-    puts remote_url
     raise "Viddler: did not return html5 video source" if remote_url.blank?
     # Save it locally
     self.save_file_locally(remote_url, extension)
