@@ -44,5 +44,22 @@
       = f.text_area :end_comments, :size => '120x4', :class => "span4"
       = f.semantic_errors :end_comments
 
+= f.fields_for :measurement do |m|
+  = m.hidden_field :instrument_id, :id => 'instrument_id'
+  - if !m.object.instrument.blank?
+    What is the current value of #{m.object.instrument.name}?
+  - else
+    %p= link_to 'Choose Your Metric', '#'
+  .control-group{error_css(m.object, :value)}
+    = m.label :value, 'Value right now:'
+    .controls
+      = m.text_field :value, :class => "span2"
+      = m.semantic_errors :value
+
+  .modal
+    .modal-header
+      %h2 
+    .modal-body
+
 .form-actions
   = f.submit "Submit Video", :class => "btn btn-primary btn-large"

@@ -1,4 +1,5 @@
 class Measurement < ActiveRecord::Base
   belongs_to :instrument
-  attr_accessible :startup_id, :value
+  has_one :checkin
+  attr_accessible :startup_id, :value, :instrument, :instrument_id
 end

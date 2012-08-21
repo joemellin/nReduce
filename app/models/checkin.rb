@@ -2,12 +2,15 @@ class Checkin < ActiveRecord::Base
   obfuscate_id :spin => 284759320
   belongs_to :startup
   belongs_to :user # the user logged in who created check-in
+  belongs_to :measurement
   has_many :comments, :dependent => :destroy
   has_many :awesomes, :as => :awsm, :dependent => :destroy
   has_many :notifications, :as => :attachable
   has_many :user_actions, :as => :attachable
 
-  attr_accessible :start_focus, :start_why, :start_video_url, :end_video_url, :end_comments, :startup_id, :start_comments, :startup
+  attr_accessible :start_focus, :start_why, :start_video_url, :end_video_url, :end_comments, :startup_id, :start_comments, :startup, :measurement_attributes
+
+  accepts_nested_attributes_for :measurement, :reject_if => proc {|attributes| attributes.all? {|k,v| v.blank?} }, :allow_destroy => true
 
   after_validation :check_submitted_completed_times
   before_save :notify_user
