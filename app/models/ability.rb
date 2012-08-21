@@ -38,6 +38,12 @@ class Ability
         can :manage, Invite, :startup_id => user.startup_id
 
         can :manage, Nudge, :startup_id => user.startup_id
+
+        can :manage, Instrument do |m|
+          m.startup_id == user.startup_id
+        end
+
+        can [:new, :create], Instrument
       end
 
       # Can destroy if they were assigned as receiver or created it

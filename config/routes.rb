@@ -130,6 +130,7 @@ Nreduce::Application.routes.draw do
     resources :invites, :only => [:create, :destroy, :show]
     resources :ratings, :only => [:new, :create]
     resources :screenshots, :only => [:create, :update, :destroy]
+    resources :instruments, :except => [:index, :destroy]
   end
 
   # onboarding
