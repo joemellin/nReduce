@@ -112,17 +112,11 @@
       .span3
         %p
           %small Before Video :
-        - if c.start_video_url.blank?
-          = image_tag('novideo_s.png')
-        - else
-          %iframe{:width => 250, :height => 188, :src => Youtube.embed_url(c.start_video_url), :frameborder => 0, :allowfullscreen => true}
+        != display_checkin_video(c, :before_video, true, 250, 188)
       .span3
         %p
           %small After Video :
-        - if c.end_video_url.blank?
-          = image_tag('novideo_s.png')
-        - else
-          %iframe{:width => 250, :height => 188, :src => Youtube.embed_url(c.end_video_url), :frameborder => 0, :allowfullscreen => true}
+        != display_checkin_video(c, :after_video, true, 250, 188)
       .span3
         %p
           %small Accomplished :

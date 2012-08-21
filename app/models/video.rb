@@ -24,9 +24,7 @@ class Video < ActiveRecord::Base
   end
 
   # Method to get embed code - no matter what kind of video
-  def embed_code
-    width = 500
-    height = 315
+  def embed_code(width = 500, height = 315)
     if self.vimeod?
       '<iframe src="http://player.vimeo.com/video/' + self.vimeo_id.to_s + '?title=0&byline=0&portrait=0" width="' + width.to_s + '" height="' + height.to_s + '" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>'
     else
