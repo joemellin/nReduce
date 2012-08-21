@@ -40,9 +40,10 @@ type="application/x-shockwave-flash"  pluginspage="http://www.macromedia.com/go/
   def save_external_video_locally
     # return true if already uploaded
     return true if !self.vimeo_id.blank? && !force_upload
-    #ViddlerClient.client.post('viddler.videos.set_details', :video_id => self.external_id, :download_perm => 
-    details = ViddlerClient.client.get('viddler.videos.get_details', :video_id => self.external_id)
+    # Set video as downloadable
+    details = ViddlerClient.client.post('viddler.videos.set_details', :video_id => self.external_id, :download_perm => true)
     raise "Viddler: Video with id #{self.external_id} doesn't exist or isn't encoded yet" if details.blank? || details['video']['files'].blank?
+    raise "Viddler: could not set video as downloadable" unless details['video']['permissions']['download']['level'] == 'public'
     # First get html5 video source
     remote_url = extension = nil
     details['video']['files'].each do |f|
@@ -51,8 +52,7 @@ type="application/x-shockwave-flash"  pluginspage="http://www.macromedia.com/go/
         extension = f['ext']
       end 
     end
-    client = ViddlerClient.client
-    return "#{remote_url}&sessionid=#{client.sessionid}&key=#{client.api_key}"
+    puts remote_url
     raise "Viddler: did not return html5 video source" if remote_url.blank?
     # Save it locally
     self.save_file_locally(remote_url, extension)
