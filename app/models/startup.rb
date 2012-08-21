@@ -14,6 +14,7 @@ class Startup < ActiveRecord::Base
   has_many :initiated_relationships, :as => :entity, :class_name => 'Relationship', :dependent => :destroy # relationships this startup began
   has_many :received_relationships, :as => :connected_with, :class_name => 'Relationship', :dependent => :destroy # relationships others began with this startup
   has_many :instruments, :dependent => :destroy
+  has_many :measurements, :through => :instruments
   has_many :slide_decks, :dependent => :destroy
   has_many :screenshots, :dependent => :destroy
 

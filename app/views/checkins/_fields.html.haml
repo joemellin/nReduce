@@ -45,21 +45,23 @@
       = f.semantic_errors :end_comments
 
 = f.fields_for :measurement do |m|
+  = f.semantic_errors :measurement
   = m.hidden_field :instrument_id, :id => 'instrument_id'
-  - if !m.object.instrument.blank?
-    What is the current value of #{m.object.instrument.name}?
-  - else
-    %p= link_to 'Choose Your Metric', '#'
-  .control-group{error_css(m.object, :value)}
-    = m.label :value, 'Value right now:'
+  .control-group{:style => 'margin-bottom: 0'}
     .controls
-      = m.text_field :value, :class => "span2"
+      - if !m.object.instrument.new_record?
+        %strong Your Metric
+        %p 
+          What is the current value of
+          %strong #{m.object.instrument.name}
+          ?
+      - else
+        %p= link_to 'Choose Your Metric', '#', :onclick => "$('#instrument_modal').modal(); return false;"
+  .control-group{error_css(m.object, :value)}
+    = m.label :value, :class => 'control-label'
+    .controls
+      = m.text_field :value, :class => "span2", :id => 'checkin_instrument_id'
       = m.semantic_errors :value
-
-  .modal
-    .modal-header
-      %h2 
-    .modal-body
 
 .form-actions
   = f.submit "Submit Video", :class => "btn btn-primary btn-large"

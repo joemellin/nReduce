@@ -21,6 +21,7 @@ class Checkin < ActiveRecord::Base
   validates_presence_of :start_video_url, :message => "can't be blank", :if => lambda { Checkin.in_before_time_window? }
   validates_presence_of :end_video_url, :message => "can't be blank", :if =>  lambda { Checkin.in_after_time_window? }
   validate :check_video_urls_are_valid
+  validate :measurement_is_present_if_seeking_investment
 
   scope :ordered, order('created_at DESC')
   scope :completed, where('completed_at IS NOT NULL')
@@ -282,6 +283,16 @@ class Checkin < ActiveRecord::Base
     if self.errors.blank?
       self.submitted_at = Time.now if !self.submitted? and self.before_completed?
       self.completed_at = Time.now if !self.completed? and self.after_completed?
+    end
+    true
+  end
+
+  def measurement_is_present_if_seeking_investment
+    if self.startup.investable?
+      if self.measurement.blank? || self.measurement.value.blank?
+        self.errors.add(:measurement, 'needs to be added since you are seeking investment - to show traction/progress to investors')
+        return false
+      end
     end
     true
   end

@@ -21,53 +21,56 @@ class CheckinsController < ApplicationController
   end
 
   def new
-    set_disabled_states(@checkin)
-    instrument = @startup.instruments.first
-    @checkin.measurement = Measurement.new(:instrument => instrument ? instrument.name : nil) if @checkin.measurement.blank?
+    set_disabled_states_and_add_measurement(@checkin)
     render :action => :edit
   end
 
   def create
+    was_completed = @checkin.completed?
     @checkin.startup = @startup
     if @checkin.save
-      flash[:notice] = "Your checkin has been saved!"
-      redirect_to checkins_path
+      save_completed_state_and_redirect_checkin(@checkin, was_completed)
     else
-      set_disabled_states(@checkin)
+      set_disabled_states_and_add_measurement(@checkin)
       render :action => :edit
     end
     @ua = {:attachable => @checkin}
   end
 
   def edit
-    set_disabled_states(@checkin)
-    instrument = @startup.instruments.first
-    @checkin.measurement = Measurement.new(:instrument => instrument ? instrument.name : nil) if @checkin.measurement.blank?
+    @startup ||= @checkin.startup
+    set_disabled_states_and_add_measurement(@checkin)
     @ua = {:attachable => @checkin}
   end
 
   def update
+    @startup ||= @checkin.startup
     was_completed = @checkin.completed?
     if @checkin.update_attributes(params[:checkin])
-      if @checkin.completed?
-        session[:checkin_completed] = true
-        unless was_completed
-          # Generate suggested startups if this isn't just an update
-          @checkin.startup.delete_suggested_startups
-          @checkin.startup.generate_suggested_connections
-        end
-        redirect_to add_teams_relationships_path
-      else
-        redirect_to edit_checkin_path(@checkin)
-      end
+      save_completed_state_and_redirect_checkin(@checkin, was_completed)
     else
-      set_disabled_states(@checkin)
+      set_disabled_states_and_add_measurement(@checkin)
       render :action => :edit
     end
     @ua = {:attachable => @checkin}
   end
 
   protected
+
+  def save_completed_state_and_redirect_checkin(checkin, was_completed)
+    session[:checkin_completed] = false
+    if checkin.completed?
+      unless was_completed
+        session[:checkin_completed] = true
+        # Generate suggested startups if this isn't just an update
+        checkin.startup.delete_suggested_startups
+        checkin.startup.generate_suggested_connections
+      end
+      redirect_to add_teams_relationships_path
+    else
+      redirect_to relationships_path
+    end
+  end
 
   def load_latest_checkin
     if params[:checkin_id] == 'latest' and !@startup.blank?
@@ -95,13 +98,15 @@ class CheckinsController < ApplicationController
     end
   end
 
-  def set_disabled_states(checkin)
+  def set_disabled_states_and_add_measurement(checkin)
     @before_disabled = Checkin.in_before_time_window? ? false : true
     @after_disabled = Checkin.in_after_time_window? ? false : true
     if !checkin.new_record?
       @before_disabled = true if checkin.created_at < Checkin.prev_before_checkin
       @after_disabled = true if checkin.created_at < Checkin.prev_after_checkin
     end
+    @instrument = @startup.instruments.first || Instrument.new(:startup => @startup)
+    @checkin.measurement = Measurement.new(:instrument => @instrument) if @checkin.measurement.blank?
   end
 
   def load_obfuscated_checkin
