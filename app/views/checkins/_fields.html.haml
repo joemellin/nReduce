@@ -44,24 +44,27 @@
       = f.text_area :end_comments, :size => '120x4', :class => "span4"
       = f.semantic_errors :end_comments
 
-= f.fields_for :measurement do |m|
-  = f.semantic_errors :measurement
-  = m.hidden_field :instrument_id, :id => 'instrument_id'
-  .control-group{:style => 'margin-bottom: 0'}
-    .controls
-      - if !m.object.instrument.new_record?
-        %strong Your Metric
-        %p 
-          What is the current value of
-          %strong #{m.object.instrument.name}
-          ?
-      - else
-        %p= link_to 'Choose Your Metric', '#', :onclick => "$('#instrument_modal').modal(); return false;"
-  .control-group{error_css(m.object, :value)}
-    = m.label :value, :class => 'control-label'
-    .controls
-      = m.text_field :value, :class => "span2", :id => 'checkin_instrument_id'
-      = m.semantic_errors :value
+  = f.fields_for :measurement do |m|
+    = f.semantic_errors :measurement
+    = m.hidden_field :instrument_id, :id => 'instrument_id'
+    .control-group{:style => 'margin-bottom: 0'}
+      .controls
+        - if !m.object.instrument.new_record?
+          %strong Your Metric
+          %p 
+            What is the current value of
+            %strong #{m.object.instrument.name}
+            ?
+        - else
+          %p
+            %strong= link_to 'Choose Your Metric', '#', :onclick => "$('#instrument_modal').modal(); return false;"
+            %br/
+            %i Required since you are seeking investment - to show traction to investors
+    .control-group{error_css(m.object, :value)}
+      = m.label :value, :class => 'control-label'
+      .controls
+        = m.text_field :value, :class => "span2", :id => 'checkin_instrument_id'
+        = m.semantic_errors :value
 
 .form-actions
   = f.submit "Submit Video", :class => "btn btn-primary btn-large"
