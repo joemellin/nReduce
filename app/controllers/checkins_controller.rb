@@ -28,6 +28,8 @@ class CheckinsController < ApplicationController
   def create
     was_completed = @checkin.completed?
     @checkin.startup = @startup
+    @checkin.valid?
+    logger.info @checkin.errors.full_messages
     if @checkin.save
       save_completed_state_and_redirect_checkin(@checkin, was_completed)
     else
