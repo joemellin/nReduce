@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120820081454) do
+ActiveRecord::Schema.define(:version => 20120822021620) do
 
   create_table "authentications", :force => true do |t|
     t.string   "provider"
@@ -193,9 +193,10 @@ ActiveRecord::Schema.define(:version => 20120820081454) do
     t.boolean  "interested"
     t.integer  "feedback"
     t.text     "explanation"
-    t.datetime "created_at",  :null => false
-    t.datetime "updated_at",  :null => false
-    t.integer  "value"
+    t.datetime "created_at",      :null => false
+    t.datetime "updated_at",      :null => false
+    t.integer  "contact_in"
+    t.integer  "weakest_element"
   end
 
   create_table "relationships", :force => true do |t|
@@ -396,6 +397,7 @@ ActiveRecord::Schema.define(:version => 20120820081454) do
     t.string   "type"
     t.string   "title"
     t.integer  "startup_id"
+    t.string   "image"
   end
 
 end

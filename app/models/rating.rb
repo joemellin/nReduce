@@ -2,7 +2,7 @@ class Rating < ActiveRecord::Base
   belongs_to :investor, :class_name => 'User'
   belongs_to :startup
 
-  attr_accessible :explanation, :feedback, :interested, :investor_id, :startup_id, :value
+  attr_accessible :explanation, :feedback, :interested, :investor_id, :startup_id, :contact_in, :weakest_element
 
   FEEDBACK_OPTIONS = [:team, :idea, :traction, :market]
 
@@ -10,19 +10,28 @@ class Rating < ActiveRecord::Base
 
   validates_presence_of :startup_id
   validates_presence_of :investor_id
-  validates_presence_of :value
-  #validates_length_of :explanation, :minimum => 50
+  validates_presence_of :contact_in
+  validates_presence_of :weakest_element
   validate :relationship_exists
   validate :investor_can_connect
 
   before_create :change_suggested_relationship_state
 
-  def self.labels
-    { 1 => 'Never',
-      2 => '6 months',
-      3 => '3 months',
-      4 => '1 month',
-      5 => 'Today',
+  def self.contact_in_labels
+    { 1 => ['Not a fit', "Don't show me this startup again"],
+      2 => ['6 months', 'Show me again in 6 months and I might be interested'],
+      3 => ['3 months', 'Show me again in 3 months and I might be interested'],
+      4 => ['1 month', 'Show me again in 1 month and I might be interested'],
+      5 => ['Now', 'Please introduce me today']
+    }
+  end
+
+  def self.weakest_element_labels
+    { 1 => 'Team',
+      2 => 'Market',
+      3 => 'Traction',
+      4 => 'Product',
+      5 => 'Other',
     }
   end
 
