@@ -78,11 +78,11 @@ class Checkin < ActiveRecord::Base
   def self.next_before_checkin
     t = Time.now
     # Are we in Mon or tue? - if so next before checkin is this week
-    if t.monday? or t.tuesday? or (t.wednesday? and t.hour < 16)
-      t.beginning_of_week + 2.days + 16.hours
+    if t.monday? or t.tuesday? or t.wednesday? or (t.thursday? and t.hour < 16)
+      t.beginning_of_week + 3.days + 16.hours
     else
       # Otherwise it's next week
-      t.beginning_of_week + 1.week + 2.days + 16.hours
+      t.beginning_of_week + 1.week + 3.days + 16.hours
     end
   end
 
@@ -108,7 +108,7 @@ class Checkin < ActiveRecord::Base
   # Pass in a timestamp and this will return the start (4pm on Tue) of that checkin's week
   def self.week_start_for_time(time)
     # reset to tuesday
-    if time.sunday? or time.monday? or (time.tuesday? and time.hour < 16)
+    if time.sunday? or time.monday? or (time.wednesday? and time.hour < 16)
       time = time.beginning_of_week - 5.days
     else
       time = time.beginning_of_day - time.days_to_week_start.days + 2.days
@@ -288,6 +288,7 @@ class Checkin < ActiveRecord::Base
   end
 
   def measurement_is_present_if_seeking_investment
+    return true
     if self.startup.investable?
       if self.measurement.blank? || self.measurement.value.blank?
         self.errors.add(:measurement, 'needs to be added since you are seeking investment - to show traction/progress to investors')
