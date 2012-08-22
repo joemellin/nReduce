@@ -118,12 +118,13 @@ module Connectable
     # Find all startups that checked in last week
     end_after = Checkin.prev_after_checkin
     start_after = end_after - 24.hours
-    checkins = Checkin.completed.limit(200) #Checkin.completed.where(['completed_at >= ? AND completed_at <= ?', start_after, end_after]).includes(:startup).all
+    checkins = Checkin.completed.where(['completed_at >= ? AND completed_at <= ?', start_after, end_after]).includes(:startup).all
     
     return startups if checkins.blank?
 
     1.upto(limit).each do |i|
       s = checkins.sample.startup
+      next if s.blank?
       startups << s
       suggest_startup.call(s, nil)
     end
