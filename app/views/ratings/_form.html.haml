@@ -1,0 +1,11 @@
+= semantic_form_for [@startup, @rating], :remote => true, :html => {:class => 'form-vertical' } do |f|
+  = render 'ratings/fields', :f => f
+  %br/
+  - if f.object.contact_in.blank?
+    = f.submit 'Save & Stop', :class => "btn btn-large disabled", :disabled => true
+    &nbsp;&nbsp;
+    = f.submit 'Save & See Next Startup', :class => "btn btn-large btn-success disabled", :disabled => true
+  - else
+    = f.submit 'Save & Stop', :class => "btn btn-large"
+    &nbsp;&nbsp;
+    = f.submit 'Save & See Next Startup', :class => "btn btn-large btn-success"

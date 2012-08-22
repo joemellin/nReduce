@@ -89,6 +89,15 @@
       }
     }
   }
+  .weakest_element, .contact_in { min-width: 124px;}
+  .contact_in_description {
+    width: 116px;
+    padding: 2px;
+    margin: 0px;
+    font-size: .8em;
+    vertical-align:text-top;
+    text-align: center
+  }
 }
 
 .investor_profile {
