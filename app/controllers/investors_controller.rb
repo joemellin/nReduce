@@ -5,16 +5,15 @@ class InvestorsController < ApplicationController
   def index
     authorize! :see_investor_page, current_user
     @profile_completeness_percent = (@startup.investor_profile_completeness_percent * 100).round unless @startup.blank?
+    calculate_suggested_startup_completeness if current_user.roles? :approved_investor
   end
 
   # Show a new startup to an investor
   def show_startup
     authorize! :investor_connect_with_startups, current_user
-    total_suggested_startups = 27
     # Only allow temporary investor account access to their suggested startups
-    if [2367, 2375].include?(current_user.id)
-      num_left = current_user.suggested_startups.count
-      @pct_complete = ((num_left.to_f / total_suggested_startups.to_f) * 100).to_i
+    if [2367, 2375, 2435, 2436, 2437, 2438].include?(current_user.id)
+      calculate_suggested_startup_completeness
       @startup = current_user.suggested_startups(1).first
     else
       @startup = Startup.find 319
@@ -28,5 +27,13 @@ class InvestorsController < ApplicationController
     @rating.interested = false
 
     @instrument = @startup.instruments.first
+  end
+
+  protected
+
+  def calculate_suggested_startup_completeness
+    @total_suggested_startups = 30
+    @num_startups_left = current_user.suggested_startups.count
+    @pct_complete = ((@num_startups_left.to_f / @total_suggested_startups.to_f) * 100).to_i
   end
 end
