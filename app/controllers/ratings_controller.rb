@@ -5,6 +5,13 @@ class RatingsController < ApplicationController
   before_filter :load_obfuscated_startup
   load_and_authorize_resource :startup
 
+  def index
+    @ratings = @ratings.ordered
+    @weakest_element_data = Rating.weakest_element_hash_from_ratings(@ratings)
+    @contact_in_data = Rating.contact_in_hash_from_ratings(@ratings)
+    logger.info @weakest_element_data.inspect
+  end
+
   def new
     @rating.interested = params[:interested] unless params[:interested].blank?
     @rating.startup = @startup

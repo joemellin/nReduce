@@ -1,0 +1,34 @@
+%h2 Investor Feedback
+
+.row
+  .span6
+    %h3 Past 2 Weeks Investor Feedback
+    = render 'ratings/bar_chart', :chart_id => 'weakest_element', :data => @weakest_element_data, :title => 'Biggest aspect holding you back from investors funding you'
+    = render 'ratings/bar_chart', :chart_id => 'contact_in', :data => @contact_in_data, :title => 'When investors are interested in following up with you'
+
+  .span6
+    - if @ratings.blank?
+      You haven't been reviewed by any investors yet.
+    - else
+      - @ratings.each do |r|
+        - if r.interested?
+          .right
+            = link_to 'Ignore', '#'
+            &nbsp;&nbsp;
+            = link_to 'Connect', '#', :class => 'btn btn-success'
+          .left
+            %h3 #{r.investor.name} would like to connect with you.
+          .clear
+        - else
+          %h3 Anonymous Investor
+          %p Result: #{r.contact_in_desc}
+          %p Main Blocker: #{r.weakest_element_desc}
+          - unless r.explanation.blank?
+            %p Suggestion: #{simple_format(h(r.explanation))}
+          .right= link_to 'Helpful', '#', :class => 'btn'
+          .left
+            Did this feedback help your startup?
+            %br/
+            %small Thank the investor by giving them a "Helpful"
+          .clear
+        %hr{:style => 'margin: 10px 0 10px 0'}/

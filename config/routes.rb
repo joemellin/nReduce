@@ -128,7 +128,7 @@ Nreduce::Application.routes.draw do
       get 'latest' => "checkins#show", :checkin_id => 'latest', :on => :collection
     end
     resources :invites, :only => [:create, :destroy, :show]
-    resources :ratings, :only => [:new, :create]
+    resources :ratings, :only => [:index, :new, :create]
     resources :screenshots, :only => [:create, :update, :destroy]
     resources :instruments, :except => [:index, :destroy]
   end

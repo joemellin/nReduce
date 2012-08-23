@@ -44,6 +44,8 @@ class Ability
         end
 
         can [:new, :create], Instrument
+
+        can :read, Rating, :startup_id => user.startup_id
       end
 
       # Can destroy if they were assigned as receiver or created it

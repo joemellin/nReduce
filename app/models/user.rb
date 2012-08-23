@@ -20,6 +20,7 @@ class User < ActiveRecord::Base
   has_many :relationships, :as => :entity, :dependent => :destroy
   has_many :connected_with_relationships, :as => :connected_with, :class_name => 'Relationship', :dependent => :destroy
   has_many :screenshots
+  has_many :ratings
 
   # Include default devise modules. Others available are:
   # :token_authenticatable, :confirmable,
