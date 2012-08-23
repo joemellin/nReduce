@@ -152,7 +152,7 @@ class Checkin < ActiveRecord::Base
     users_with_startups = User.where('email IS NOT NULL').where(:startup_id => Startup.select('id').account_complete.map{|s| s.id })
 
     users_with_startups.each do |u|
-      Resque.enqueue(Checkin, :before, u.id) if u.email_for?('docheckin')
+      Resque.enqueue(Checkin, :before, u.id) if u.account_setup? && u.email_for?('docheckin')
     end
   end
 
@@ -161,7 +161,7 @@ class Checkin < ActiveRecord::Base
     users_with_startups = User.where('email IS NOT NULL').where(:startup_id => Startup.select('id').account_complete.map{|s| s.id })
 
     users_with_startups.each do |u|
-      Resque.enqueue(Checkin, :after, u.id) if u.email_for?('docheckin')
+      Resque.enqueue(Checkin, :after, u.id) if u.account_setup? && u.email_for?('docheckin')
     end
   end
 
