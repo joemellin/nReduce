@@ -2,8 +2,10 @@
 
 .row
   .span6
-    %h3 Past 2 Weeks Investor Feedback
+    %p
+      %strong Aggregated feedback from #{pluralize(@ratings.size, 'investor')}:
     = render 'ratings/bar_chart', :chart_id => 'weakest_element', :data => @weakest_element_data, :title => 'Biggest aspect holding you back from investors funding you'
+    %br/
     = render 'ratings/bar_chart', :chart_id => 'contact_in', :data => @contact_in_data, :title => 'When investors are interested in following up with you'
 
   .span6
@@ -13,20 +15,30 @@
       - @ratings.each do |r|
         - if r.interested?
           .right
-            = link_to 'Ignore', '#'
-            &nbsp;&nbsp;
-            = link_to 'Connect', '#', :class => 'btn btn-success'
+            - relationship = r.startup_relationship
+            - unless relationship.blank?
+              = link_to 'Ignore', reject_relationship_path(relationship, :rating_id => r.id), :class => 'btn', :method => :post
+              &nbsp;&nbsp;
+              = link_to 'Connect', approve_relationship_path(relationship, :rating_id => r.id), :class => 'btn btn-success', :method => :post
           .left
             %h3 #{r.investor.name} would like to connect with you.
           .clear
         - else
           %h3 Anonymous Investor
-          %p Result: #{r.contact_in_desc}
-          %p Main Blocker: #{r.weakest_element_desc}
+          %strong Result:
+          - if r.contact_never?
+            Passed
+          - else
+            Wants to check back in #{r.contact_in_desc}
+          %br/
+          %strong Main Blocker:
+          #{r.weakest_element_desc}
+          %br/
           - unless r.explanation.blank?
-            %p Suggestion: #{simple_format(h(r.explanation))}
+            %strong Suggestion:
+            %h3 #{simple_format(h(r.explanation))}
           .right= link_to 'Helpful', '#', :class => 'btn'
-          .left
+          .left{:style => 'font-size: .9em'}
             Did this feedback help your startup?
             %br/
             %small Thank the investor by giving them a "Helpful"

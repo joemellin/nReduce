@@ -101,6 +101,11 @@ class RelationshipsController < ApplicationController
     @relationship.message = params[:relationship][:message] if !params[:relationship].blank? and !params[:relationship][:message].blank?
     suggested = true if @relationship.suggested?
     if @relationship.approve!
+      # Update rating to say investor connected if so
+      unless params[:rating_id].blank?
+        r = Rating.find(params[:rating_id])
+        r.update_attribute('connected', true) if !r.startup_relationship.blank? && (r.startup_relationship == @relationship)
+      end
       if suggested
         flash[:notice] = "Your connection has been requested with #{@relationship.connected_with.name}"
       else
@@ -124,6 +129,11 @@ class RelationshipsController < ApplicationController
     if @relationship.reject_or_pass!
       removed = @relationship.entity if (@relationship.connected_with == current_user) or (!current_user.startup.blank? and (@relationship.connected_with == current_user.startup))
       removed ||= @relationship.connected_with
+      # Update rating to say startup didn't connect
+      unless params[:rating_id].blank?
+        r = Rating.find(params[:rating_id])
+        r.update_attribute('connected', false) if !r.startup_relationship.blank? && (r.startup_relationship == @relationship)
+      end
       if prev_status_pending
         flash[:notice] = "You have ignored the connection request from #{removed.name}."
       elsif prev_status_suggested

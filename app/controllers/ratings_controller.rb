@@ -7,8 +7,8 @@ class RatingsController < ApplicationController
 
   def index
     @ratings = @ratings.ordered
-    @weakest_element_data = Rating.weakest_element_hash_from_ratings(@ratings)
-    @contact_in_data = Rating.contact_in_hash_from_ratings(@ratings)
+    @weakest_element_data = Rating.weakest_element_arr_from_ratings(@ratings)
+    @contact_in_data = Rating.contact_in_arr_from_ratings(@ratings)
     logger.info @weakest_element_data.inspect
   end
 

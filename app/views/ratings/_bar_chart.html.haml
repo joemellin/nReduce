@@ -27,7 +27,7 @@
             return this.value;
           }
         },
-        categories: [#{data.keys.map{|c| "'#{c}'" }.join(',')}]
+        categories: [#{data.map{|d| "'#{d.first}'" }.join(',')}]
       },
       yAxis: {
         title: {
@@ -37,7 +37,8 @@
           formatter: function() {
             return this.value;
           }
-        }
+        },
+        tickInterval: 1
       },
       plotOptions: {
         column: {
@@ -50,7 +51,7 @@
       },
       series: [{
         name: '',
-        data: [#{data.values.join(',')}]
+        data: [#{data.map{|d| d.last }.join(',')}]
       }]
     });
   });
