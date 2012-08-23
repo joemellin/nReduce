@@ -45,7 +45,7 @@ class Ability
 
         can [:new, :create], Instrument
 
-        can :read, Rating, :startup_id => user.startup_id
+        can :read, Rating, :startup_id => user.startup_id if user.startup.investable?
       end
 
       # Can destroy if they were assigned as receiver or created it
@@ -222,8 +222,8 @@ class Ability
     end
 
     if user.investor?
-      can :read, Rating
-      can :manage, Rating, :investor_id => user.id 
+      can [:new, :create], Rating
+      can :manage, Rating, :user_id => user.id 
     end
     
     # For now just show investor page to other investors or users with a startup
