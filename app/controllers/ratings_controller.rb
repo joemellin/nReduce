@@ -1,15 +1,14 @@
 class RatingsController < ApplicationController
   around_filter :record_user_action, :except => [:cancel_edit]
   before_filter :login_required
-  load_and_authorize_resource
   before_filter :load_obfuscated_startup
   load_and_authorize_resource :startup
-
+  load_and_authorize_resource :through => :startup
+  
   def index
     @ratings = @ratings.ordered
     @weakest_element_data = Rating.weakest_element_arr_from_ratings(@ratings)
     @contact_in_data = Rating.contact_in_arr_from_ratings(@ratings)
-    logger.info @weakest_element_data.inspect
   end
 
   def new
@@ -22,7 +21,7 @@ class RatingsController < ApplicationController
   end
 
   def create
-    @rating.investor = current_user
+    @rating.user = current_user
     if @rating.save
       #flash[:notice] = "Your rating has been stored!"
       # They are done rating startups

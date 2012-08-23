@@ -21,7 +21,7 @@
               &nbsp;&nbsp;
               = link_to 'Connect', approve_relationship_path(relationship, :rating_id => r.id), :class => 'btn btn-success', :method => :post
           .left
-            %h3 #{r.investor.name} would like to connect with you.
+            %h3 #{r.user.name} would like to connect with you.
           .clear
         - else
           %h3 Anonymous Investor
@@ -37,7 +37,7 @@
           - unless r.explanation.blank?
             %strong Suggestion:
             %h3 #{simple_format(h(r.explanation))}
-          .right= link_to 'Helpful', '#', :class => 'btn'
+          .right!= render_awesome_button(r)
           .left{:style => 'font-size: .9em'}
             Did this feedback help your startup?
             %br/

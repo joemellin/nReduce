@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120823050651) do
+ActiveRecord::Schema.define(:version => 20120823065737) do
 
   create_table "authentications", :force => true do |t|
     t.string   "provider"
@@ -189,7 +189,7 @@ ActiveRecord::Schema.define(:version => 20120823050651) do
   add_index "rails_admin_histories", ["item", "table", "month", "year"], :name => "index_rails_admin_histories"
 
   create_table "ratings", :force => true do |t|
-    t.integer  "investor_id"
+    t.integer  "user_id"
     t.integer  "startup_id"
     t.boolean  "interested"
     t.integer  "feedback"

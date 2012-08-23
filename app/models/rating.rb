@@ -1,6 +1,7 @@
 class Rating < ActiveRecord::Base
-  belongs_to :investor, :class_name => 'User'
+  belongs_to :user
   belongs_to :startup
+  has_many :awesomes, :as => :awsm, :dependent => :destroy
 
   attr_accessible :explanation, :feedback, :interested, :investor_id, :startup_id, :contact_in, :weakest_element, :connected
 
@@ -84,7 +85,7 @@ class Rating < ActiveRecord::Base
 
   # Finds the relationship that exists between the startup and investor involved in this rating
   def startup_relationship
-    Relationship.between(self.investor, self.startup)
+    Relationship.between(self.user, self.startup)
   end
 
   protected
@@ -96,7 +97,7 @@ class Rating < ActiveRecord::Base
 
   def investor_can_connect
     if self.interested? # only check if they want to connect
-      unless self.investor.can_connect_with_startups?
+      unless self.user.can_connect_with_startups?
         self.errors.add(:startup_id, 'you have reached your limit - please upgrade your account to connect to more startups')
         return false
       end
