@@ -66,8 +66,9 @@ class Rating < ActiveRecord::Base
     we = {}
     ratings.map{|r| we[r.weakest_element] ||= 0; we[r.weakest_element] += 1 }
     ret = {}
+    total = we.inject(0.0){|r,e| r + e.last }
     we.each do |id, num|
-      ret[Rating.weakest_element_labels[id]] = num
+      ret[Rating.weakest_element_labels[id]] = ((num / total) * 100).round(2)
     end
     ret.sort{|a,b| a.last <=> b.last }.reverse
   end
