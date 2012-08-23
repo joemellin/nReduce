@@ -33,7 +33,7 @@ class Awesome < ActiveRecord::Base
   def self.label_for_type(type)
     case type
     when 'Checkin' then 'Awesome'
-    when 'Rating' then 'Helpful'
+    when 'Rating' then 'Value Add'
     when 'Comment' then 'Helpful'
     else 'Awesome'
     end

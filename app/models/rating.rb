@@ -64,6 +64,19 @@ class Rating < ActiveRecord::Base
   # Takes an array of ratings and returns an array for weakest element, eg: [['Traction', 5], ['Market', 4]] - used in charts
   def self.weakest_element_arr_from_ratings(ratings)
     we = {}
+    # Set it up so all values are represented
+    Rating.weakest_element_labels.each{|id, label| we[id] = 0 }
+    ratings.map{|r| we[r.weakest_element] += 1 }
+    ret = []
+    we.each do |id, num|
+      ret << [Rating.weakest_element_labels[id], num]
+    end
+    ret
+  end
+
+  # For use in pie chart
+  def self.weakest_element_pct_arr_from_ratings(ratings)
+    we = {}
     ratings.map{|r| we[r.weakest_element] ||= 0; we[r.weakest_element] += 1 }
     ret = {}
     total = we.inject(0.0){|r,e| r + e.last }
@@ -76,7 +89,8 @@ class Rating < ActiveRecord::Base
   # Takes an array of ratings and returns an array for contact in time (format same as weakest element) - used in charts
   def self.contact_in_arr_from_ratings(ratings)
     ci = {}
-    ratings.map{|r| ci[r.contact_in] ||= 0; ci[r.contact_in] += 1 }
+    Rating.contact_in_labels.each{|id, label| ci[id] = 0 }
+    ratings.map{|r| ci[r.contact_in] += 1 }
     ret = []
     ci.each do |id, num|
       ret << [Rating.contact_in_labels[id].first, num]

@@ -4,7 +4,7 @@
   .span6
     %p
       %strong Aggregated feedback from #{pluralize(@ratings.size, 'investor')}:
-    = render 'ratings/pie_chart', :chart_id => 'weakest_element_pie', :data => @weakest_element_data, :title => 'Biggest aspect holding you back from investors funding you'
+    = render 'ratings/bar_chart', :chart_id => 'weakest_element', :data => @weakest_element_data, :title => 'Biggest aspect holding you back from investors funding you'
     %br/
     = render 'ratings/bar_chart', :chart_id => 'contact_in', :data => @contact_in_data, :title => 'When investors are interested in following up with you'
 
@@ -25,15 +25,16 @@
           .clear
         - else
           %h3 Anonymous Investor
-          %strong Result:
-          - if r.contact_never?
-            Passed
-          - else
-            Wants to check back in #{r.contact_in_desc}
-          %br/
-          %strong Main Blocker:
-          #{r.weakest_element_desc}
-          %br/
+          .left
+            %strong Result:
+            - if r.contact_never?
+              Passed
+            - else
+              Wants to check back in #{r.contact_in_desc}
+          .left{:style => 'margin-left: 10px'}
+            %strong Main Blocker:
+            #{r.weakest_element_desc}
+          .clear
           - unless r.explanation.blank?
             %strong Suggestion:
             %h3 #{simple_format(h(r.explanation))}
@@ -41,6 +42,6 @@
           .left{:style => 'font-size: .9em'}
             Did this feedback help your startup?
             %br/
-            %small Thank the investor by giving them a "Helpful"
+            %small Thank the investor by giving them a "#{Awesome.label_for_type('Rating')}"
           .clear
         %hr{:style => 'margin: 10px 0 10px 0'}/
