@@ -78,7 +78,7 @@ class Checkin < ActiveRecord::Base
   def self.next_before_checkin
     t = Time.now
     # Are we in Mon or tue? - if so next before checkin is this week
-    if t.monday? or t.tuesday? or t.wednesday? or (t.thursday? and t.hour < 16)
+    if t.monday? or t.tuesday? or (t.wednesday? and t.hour < 16)
       t.beginning_of_week + 3.days + 16.hours
     else
       # Otherwise it's next week
