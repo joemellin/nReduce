@@ -160,7 +160,8 @@ module ApplicationHelper
 
   def link_to_external(title, url, options = {})
     # show modal to investors
-    options.merge!(:target => '_blank', :class => user_signed_in? && current_user.investor? ? 'external' : '')
+    options.merge!(:target => '_blank')
+    options.merge!(:class => 'external') if user_signed_in? && current_user.investor?
     link_to(title, external_url(url), options)
   end
 end
