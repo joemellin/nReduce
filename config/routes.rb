@@ -154,6 +154,9 @@ Nreduce::Application.routes.draw do
   match '/investors/new' => "pages#investor"
   match '/community_guidelines' => "pages#community_guidelines", :as => :community_guidelines
 
+  # Url redirection
+  match '/ciao/:url' => "application#ciao", :as => :ciao
+
 
   root :to => 'pages#home'
 end
