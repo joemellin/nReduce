@@ -7,7 +7,7 @@ class ApplicationController < ActionController::Base
   def ciao
     redirect_to '/' && return if params[:url].blank?
     url = Base64.decode64(params[:url])
-    url = "http://#{url}" unless url.match('http://') != nil
+    url = "http://#{url}" unless url.match(/https?:\/\//) != nil
     redirect_to url
   end
 

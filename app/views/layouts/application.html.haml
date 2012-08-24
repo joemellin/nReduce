@@ -86,3 +86,17 @@
     - if @conversion == true
       _kmq.push(['record', 'Conversion']);
     </script>
+    #ciao.modal.hide
+      .modal-header
+        %button.close{:type => 'button', 'data-dismiss' => 'modal'} x
+        %h2 Warning: you are about to leave nReduce
+      .modal-body
+        %center
+          %h3 Your identity may no longer be anonymous.
+          %h3 Are you sure you want to continue?
+          %br/
+          = link_to 'Continue', '#', :class => 'btn btn-large btn-success', :id => 'ciao_link'
+          %br/
+          %br/
+          %br/
+          = link_to 'Cancel', '#', :onclick => "$('#ciao').modal('hide'); return false;", :class => 'btn'
