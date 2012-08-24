@@ -4,6 +4,7 @@ class VideosController < ApplicationController
   load_and_authorize_resource
 
   def record
+    @recording_video = true
     @viddler = Video.new(:type => 'ViddlerVideo')
     @screenr = Video.new(:type => 'Screenr')
   end
