@@ -5,7 +5,7 @@
     .left.details
       %h2= @startup.one_liner
       - unless @startup.website_url.blank?
-        = link_to @startup.website_url, @startup.website_url, :target => '_blank'
+        = link_to @startup.website_url, external_url(@startup.website_url), :target => '_blank'
       - industries = @startup.industry_list
       - unless industries.blank?
         = industries.size == 1 ? 'Industry: ' : 'Industries: '
@@ -72,7 +72,7 @@
             = link_to team_member.name, team_member
             - unless team_member.linkedin_url.blank?
               &nbsp;
-              = link_to image_tag('linkedin_32.png'), team_member.linkedin_url, :target => '_blank'
+              = link_to image_tag('linkedin_32.png'), external_url(team_member.linkedin_url), :target => '_blank'
           %p
             %small
               Skills: #{team_member.skill_list}

@@ -3,6 +3,14 @@ class ApplicationController < ActionController::Base
   #before_filter :block_ips
   protect_from_forgery
 
+  # Visit an external site
+  def ciao
+    redirect_to '/' && return if params[:url].blank?
+    url = Base64.decode64(params[:url])
+    url = "http://#{url}" unless url.match('http://') != nil
+    redirect_to url
+  end
+
   protected
 
   def show_nstar_banner

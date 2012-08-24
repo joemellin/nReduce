@@ -153,4 +153,8 @@ module ApplicationHelper
     return true if @setup and current_user.required_profile_elements.include?(field)
     return false
   end
+
+  def external_url(url)
+    url_for(ciao_path(:url => Base64.encode64(url)))
+  end
 end

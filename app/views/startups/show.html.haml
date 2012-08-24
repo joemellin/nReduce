@@ -28,7 +28,7 @@
           %h3= h(@startup.one_liner)
         - unless @startup.website_url_to_uri.blank?
           %h3
-            %small= link_to @startup.website_url_to_uri.hostname, @startup.website_url, :target => '_blank'
+            %small= link_to @startup.website_url_to_uri.hostname, external_url(@startup.website_url), :target => '_blank'
         .row
           .span2
             - unless @startup.company_goal.blank?
