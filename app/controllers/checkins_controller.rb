@@ -22,6 +22,7 @@ class CheckinsController < ApplicationController
 
   def new
     set_disabled_states_and_add_measurement(@checkin)
+    @checkin.startup = current_user.startup
     render :action => :edit
   end
 
@@ -29,13 +30,13 @@ class CheckinsController < ApplicationController
     was_completed = @checkin.completed?
     @checkin.startup = @startup
     @checkin.valid?
-    logger.info @checkin.errors.full_messages
     if @checkin.save
       save_completed_state_and_redirect_checkin(@checkin, was_completed)
     else
       set_disabled_states_and_add_measurement(@checkin)
       render :action => :edit
     end
+    @startup.launched! if params[:startup] && params[:startup][:launched].to_i == 1
     @ua = {:attachable => @checkin}
   end
 
@@ -54,6 +55,7 @@ class CheckinsController < ApplicationController
       set_disabled_states_and_add_measurement(@checkin)
       render :action => :edit
     end
+    @startup.launched! if params[:startup] && params[:startup][:launched].to_i == 1
     @ua = {:attachable => @checkin}
   end
 
