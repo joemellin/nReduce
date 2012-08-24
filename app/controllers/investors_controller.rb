@@ -33,7 +33,7 @@ class InvestorsController < ApplicationController
 
   def calculate_suggested_startup_completeness
     @total_suggested_startups = 30
-    @num_startups_left = current_user.suggested_startups.count
+    @num_startups_left = @total_suggested_startups - current_user.suggested_startups(1000).count
     @pct_complete = ((@num_startups_left.to_f / @total_suggested_startups.to_f) * 100).to_i
   end
 end
