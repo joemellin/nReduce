@@ -105,6 +105,14 @@ class Startup < ActiveRecord::Base
     }
   end
 
+  def launched?
+    !self.launched_at.blank?
+  end
+
+  def launched!
+    self.update_attribute('launched_at', Time.now)
+  end
+
   def mentors
     self.connected_to('User')
   end
