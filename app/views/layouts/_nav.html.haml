@@ -8,6 +8,8 @@
       - else
         &nbsp;
     .span4
+      - unless user_signed_in?
+        .right{:style => 'margin-left: 5px'}= link_to image_tag('nstarlink_s.png'), nstar_path
       .right
         %ul.nav.nav-pills
           - if user_signed_in?
@@ -57,7 +59,5 @@
                   %li= link_to "Log out", logout_path, :method => :delete
           - else
             %li= link_to "Login", login_path
-          - unless user_signed_in?
-            = link_to image_tag('nstarlink_s.png'), nstar_path
       .clear
 %hr

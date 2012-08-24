@@ -38,13 +38,19 @@
             %a.carousel-control.left{:href => '#screenshots_carousel', 'data-slide' => 'prev'} &lsaquo;
             %a.carousel-control.right{:href => '#screenshots_carousel', 'data-slide' => 'next'} &rsaquo;
   .left.checkin_history
-    %p Checkin History
+    %p{:style => 'font-size: 1em'}
+      Checkin
+      %br/
+      History:
     - @checkin_history.each do |status|
       .left.checkin{:class => status.first == true ? 'done' : ''} &nbsp;
       .left.checkin{:class => status.last == true ? 'done' : ''} &nbsp;
       .clear
   .left
-    - unless @instrument.blank?
+    %h3 Traction
+    - if @instrument.blank?
+      %p This startup has not yet launched.
+    - else
       = render 'investors/chart'
 
     %h3 Business Model
