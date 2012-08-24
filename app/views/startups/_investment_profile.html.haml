@@ -5,7 +5,7 @@
     .left.details
       %h2= @startup.one_liner
       - unless @startup.website_url.blank?
-        = link_to @startup.website_url, external_url(@startup.website_url), :target => '_blank'
+        = link_to_external @startup.website_url, @startup.website_url
       - industries = @startup.industry_list
       - unless industries.blank?
         = industries.size == 1 ? 'Industry: ' : 'Industries: '
@@ -17,15 +17,6 @@
       [ no pitch video ]
     - else
       %iframe{:width => '500', :height => '315', :src => vid_url, :frameborder => 0, :allowfullscreen => true}
-  .left.checkin_history
-    %p Checkins
-    - @checkin_history.each do |status|
-      .left.checkin{:class => status.first == true ? 'done' : ''} &nbsp;
-      .left.checkin{:class => status.last == true ? 'done' : ''} &nbsp;
-      .clear
-  .left
-    - unless @instrument.blank?
-      = render 'investors/chart'
 
     - unless @screenshots.blank?
       %h3 Product Screenshots
@@ -46,6 +37,16 @@
                 - c += 1
             %a.carousel-control.left{:href => '#screenshots_carousel', 'data-slide' => 'prev'} &lsaquo;
             %a.carousel-control.right{:href => '#screenshots_carousel', 'data-slide' => 'next'} &rsaquo;
+  .left.checkin_history
+    %p Checkin History
+    - @checkin_history.each do |status|
+      .left.checkin{:class => status.first == true ? 'done' : ''} &nbsp;
+      .left.checkin{:class => status.last == true ? 'done' : ''} &nbsp;
+      .clear
+  .left
+    - unless @instrument.blank?
+      = render 'investors/chart'
+
     %h3 Business Model
     = simple_format(h(@startup.business_model))
 
@@ -60,6 +61,7 @@
   .clear
 
   .team_members
+    %h3 Team
     - @startup.team_members.each do |team_member|
       .team_member.left
         .top
@@ -72,7 +74,7 @@
             = link_to team_member.name, team_member
             - unless team_member.linkedin_url.blank?
               &nbsp;
-              = link_to image_tag('linkedin_32.png'), external_url(team_member.linkedin_url), :target => '_blank'
+              = link_to_external image_tag('linkedin_32.png'), team_member.linkedin_url
           %p
             %small
               Skills: #{team_member.skill_list}

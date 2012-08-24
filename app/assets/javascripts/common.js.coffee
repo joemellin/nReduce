@@ -21,6 +21,18 @@ $ ->
   $('.nstar_banner .clickable').click ->
     window.location = '/nstar';
 
+  $('.external').click (e) ->
+    e.preventDefault()
+    e.stopPropagation()
+    $('#ciao').modal()
+    $('#ciao_link').attr('href', $(this).attr('href'))
+
+  $('#ciao_link').click (e) ->
+    e.preventDefault()
+    e.stopPropagation()
+    $('#ciao').modal('hide')
+    window.open($(this).attr('href'), '_blank')
+
   split = (val) ->
     return val.split( /,\s*/ )
 

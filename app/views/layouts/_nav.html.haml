@@ -3,7 +3,7 @@
   .row
     .span4= link_to image_tag('nreduce_s.png'), "/"
     .span4{:align => 'center'}
-      - if user_signed_in?
+      - if user_signed_in? and !current_user.roles? :approved_investor
         = render 'startups/countdown_and_checkin'
       - else
         &nbsp;

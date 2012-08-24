@@ -157,4 +157,10 @@ module ApplicationHelper
   def external_url(url)
     url_for(ciao_path(:url => Base64.encode64(url)))
   end
+
+  def link_to_external(title, url, options = {})
+    # show modal to investors
+    options.merge!(:target => '_blank', :class => user_signed_in? && current_user.investor? ? 'external' : '')
+    link_to(title, external_url(url), options)
+  end
 end
