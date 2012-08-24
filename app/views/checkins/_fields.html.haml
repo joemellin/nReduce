@@ -48,7 +48,6 @@
 
   .launched{:class => @checkin.startup.launched? ? '' : 'hide'}
     = f.fields_for :measurement do |m|
-      = f.semantic_errors :measurement
       = m.hidden_field :instrument_id, :id => 'instrument_id'
       .control-group{:style => 'margin-bottom: 0'}
         %label.control-label Primary Metric
@@ -61,6 +60,7 @@
                 - if @checkin.startup.launched?
                   %br/
                   %i Required, since you are launched (to show traction &amp; progress)
+          = f.semantic_errors :measurement
 
       #instrument_value{:class => m.object.instrument.new_record? ? 'hide' : ''}
         .control-group{error_css(m.object, :value)}
