@@ -10,7 +10,7 @@ class Instrument < ActiveRecord::Base
 
   def self.instrument_types
     {
-      1 => ['Weekly Active Users', 'For companies that do not charge their main users (revenue often from ads)', 'Facebook, Code Academy'],
+      1 => ['Weekly Active Users', 'For companies that do not charge their main users (revenue often from ads)', 'Facebook, Codecademy'],
       2 => ['Weekly Revenue', 'For businesses that sell individual products and services', 'Amazon, Rosetta Stone, Pebble'],
       3 => ['Weekly # of Active Subscribers', 'For subscription businesses', 'Match.com, Netflix, BirchBox'],
       4 => ['Weekly # of Completed Transactions', 'For marketplaces or companies who earn a transaction fee', '99Designs, Uber, eBay'],

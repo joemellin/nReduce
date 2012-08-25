@@ -4,6 +4,7 @@ class InvestorsController < ApplicationController
 
   def index
     authorize! :see_investor_page, current_user
+    @startup = current_user.startup if current_user.entrepreneur?
     @profile_completeness_percent = (@startup.investor_profile_completeness_percent * 100).round unless @startup.blank?
     calculate_suggested_startup_completeness if current_user.roles? :approved_investor
   end
