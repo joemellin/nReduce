@@ -46,7 +46,7 @@
       .left.checkin{:class => status.first == true ? 'done' : ''} &nbsp;
       .left.checkin{:class => status.last == true ? 'done' : ''} &nbsp;
       .clear
-  .left
+  .left.traction
     %h3 Traction
     - if @instrument.blank?
       %p This startup has not yet launched.
