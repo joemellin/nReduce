@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120823065737) do
+ActiveRecord::Schema.define(:version => 20120825024527) do
 
   create_table "authentications", :force => true do |t|
     t.string   "provider"
@@ -81,12 +81,15 @@ ActiveRecord::Schema.define(:version => 20120823065737) do
   end
 
   create_table "instruments", :force => true do |t|
-    t.datetime "created_at",  :null => false
-    t.datetime "updated_at",  :null => false
+    t.datetime "created_at",         :null => false
+    t.datetime "updated_at",         :null => false
     t.integer  "startup_id"
     t.string   "name"
     t.text     "description"
+    t.integer  "instrument_type_id"
   end
+
+  add_index "instruments", ["startup_id"], :name => "index_instruments_on_startup_id"
 
   create_table "invites", :force => true do |t|
     t.string   "email"

@@ -56,13 +56,15 @@
     %h3 Business Model
     = simple_format(h(@startup.business_model))
 
-    %p
-      %strong Market Size:
-      $#{@startup.market_size}
-      %i (self reported)
-    %p
-      %strong Date Founded:
-      #{@startup.founding_date.strftime('%B %d, %Y')}
+    - unless @startup.market_size.blank?
+      %p
+        %strong Market Size:
+        $#{@startup.market_size}
+        %i (self reported)
+    - unless @startup.founding_date.blank?
+      %p
+        %strong Date Founded:
+        #{@startup.founding_date.strftime('%B %d, %Y')}
 
   .clear
 
