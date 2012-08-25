@@ -45,7 +45,6 @@ class ApplicationController < ActionController::Base
 
   # use an around_filter
   def record_user_action
-    Timecop.travel(Checkin.next_after_checkin - 10.minutes)
     return true if @ua
     started = Time.now
     yield
