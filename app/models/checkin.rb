@@ -108,7 +108,7 @@ class Checkin < ActiveRecord::Base
   # Pass in a timestamp and this will return the start (4pm on Tue) of that checkin's week
   def self.week_start_for_time(time)
     # reset to tuesday
-    if time.sunday? or time.monday? or (time.wednesday? and time.hour < 16)
+    if time.sunday? or time.monday? or (time.tuesday? and time.hour < 16)
       time = time.beginning_of_week - 5.days
     else
       time = time.beginning_of_day - time.days_to_week_start.days + 2.days
