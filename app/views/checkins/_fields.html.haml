@@ -48,7 +48,7 @@
 
   .launched{:class => @checkin.startup.launched? ? '' : 'hide'}
     = f.fields_for :measurement do |m|
-      = m.hidden_field :instrument_id, :id => 'instrument_id'
+      = m.hidden_field :instrument_id, :id => 'checkin_instrument_id'
       .control-group{:style => 'margin-bottom: 0'}
         %label.control-label Primary Metric
         .controls
