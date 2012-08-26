@@ -184,9 +184,11 @@ class Checkin < ActiveRecord::Base
     return arr if checkins.blank?
     # add blank elements at the beginning until they've done a checkin - start at end of prev after checkin
     current_week = Checkin.week_integer_for_time(Checkin.prev_after_checkin)
-    while(current_week != checkins.first.week)
-      arr << [false, false]
-      current_week = Checkin.previous_week(current_week)
+    if checkins.first.week < current_week
+      while(current_week != checkins.first.week)
+        arr << [false, false]
+        current_week = Checkin.previous_week(current_week)
+      end
     end
     checkins.each do |c|
       if current_week == c.week

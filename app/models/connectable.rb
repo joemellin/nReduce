@@ -88,14 +88,14 @@ module Connectable
     self.suggested_relationships('Startup').each{|r| r.reject_or_pass! }
   end
 
-  def suggested_startups(limit = 4)
+  def suggested_startups(limit = 10)
     relationships = self.suggested_relationships('Startup')
     startup_ids = relationships.map{|r| r.connected_with_id }
     r_by_id = Hash.by_key(relationships, :connected_with_id)
     Startup.find(startup_ids.first(limit)).map{|s| s.cached_relationship = r_by_id[s.id] unless r_by_id[s.id].blank?; s }
   end
 
-   def generate_suggested_connections(limit = 4)
+   def generate_suggested_connections(limit = 10)
     startups = []
     # See if they are over limit of suggested connections
     suggested = self.suggested_startups(limit + 5)

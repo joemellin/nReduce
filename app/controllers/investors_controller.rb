@@ -28,6 +28,9 @@ class InvestorsController < ApplicationController
     @rating.interested = false
 
     @instrument = @startup.instruments.first
+    @measurements = @instrument.measurements.ordered_asc.all
+
+    @checkins = @startup.checkins.ordered
   end
 
   protected
