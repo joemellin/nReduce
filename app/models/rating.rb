@@ -3,14 +3,14 @@ class Rating < ActiveRecord::Base
   belongs_to :startup
   has_many :awesomes, :as => :awsm, :dependent => :destroy
 
-  attr_accessible :explanation, :feedback, :interested, :investor_id, :startup_id, :contact_in, :weakest_element, :connected
+  attr_accessible :explanation, :feedback, :interested, :startup_id, :contact_in, :weakest_element, :connected
 
   FEEDBACK_OPTIONS = [:team, :idea, :traction, :market]
 
   bitmask :feedback, :as => Rating::FEEDBACK_OPTIONS
 
   validates_presence_of :startup_id
-  validates_presence_of :investor_id
+  validates_presence_of :user_id
   validates_presence_of :contact_in
   validates_presence_of :weakest_element
   validate :relationship_exists
