@@ -48,10 +48,10 @@
       .clear
   .left.traction
     %h3 Traction
-    - if @instrument.blank?
-      %p This startup has not yet launched.
+    - if !@instrument.blank? && !@measurements.blank?
+      = render 'investors/chart', :measurements => @measurements
     - else
-      = render 'investors/chart'
+      = image_tag 'prelaunch_chart.png'
 
     %h3 Business Model
     = simple_format(h(@startup.business_model))

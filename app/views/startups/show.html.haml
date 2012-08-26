@@ -92,50 +92,7 @@
         %br/
         = render 'relationships/buttons', :entity => @entity, :connected_with => @startup, :relationship => @relationship
 - else
-  .row
-    .span12{:align => 'center'}
-      %hr/
-      %h2
-        %small Team #{h(@startup.name).possessive} Progress
-      %hr
-      %br
-      - if @checkins.size == 0
-        %p
-          %strong They haven't made any check-ins yet.
-  - @checkins.each do |c|
-    .row
-      .span3
-        %h3 Week of #{c.time_label}
-        %p 
-          %small Goal:
-        %p= simple_format(truncate(h(c.start_focus), :length => 150))
-      .span3
-        %p
-          %small Before Video :
-        - if c.start_video_url.blank?
-          = image_tag('novideo_s.png')
-        - else
-          %iframe{:width => 250, :height => 188, :src => Youtube.embed_url(c.start_video_url), :frameborder => 0, :allowfullscreen => true}
-      .span3
-        %p
-          %small After Video :
-        - if c.end_video_url.blank?
-          = image_tag('novideo_s.png')
-        - else
-          %iframe{:width => 250, :height => 188, :src => Youtube.embed_url(c.end_video_url), :frameborder => 0, :allowfullscreen => true}
-      .span3
-        %p
-          %small Accomplished :
-        %p= simple_format(truncate(h(c.end_comments), :length => 150))
-        - if c.awesome_count > 0
-          %p
-            Awesomes
-            %span.badge.badge-warning= c.awesome_count
-        - if c.comment_count > 0
-          %p
-            Comments
-            %span.badge= c.comment_count
-        %p= link_to 'View Discussion', [@startup, c], :class => 'btn'
+  = render 'checkins_list'
 
 
 

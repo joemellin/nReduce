@@ -69,7 +69,7 @@ class RelationshipsController < ApplicationController
       @entity = @startup
     end
      # Suggested, pending relationships and invited startups
-    @suggested_startups = @startup.suggested_startups(4) unless @startup.blank?
+    @suggested_startups = @startup.suggested_startups(10) unless @startup.blank?
     @pending_relationships = @entity.pending_relationships
     @invited_startups = current_user.sent_invites.to_startups.not_accepted.ordered
     @modal = true
