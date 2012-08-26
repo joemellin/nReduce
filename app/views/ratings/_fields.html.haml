@@ -35,7 +35,10 @@
     = f.hidden_field :contact_in, :class => 'contact_in_hidden_field'
     .btn-group.inline-block{'data-toggle' => 'buttons-radio'}
       - Rating.contact_in_labels.each do |id, val_arr|
-        %button.btn.btn-large.contact_in{:type => 'button', :rel => id, :class => f.object.contact_in.blank? ? 'disabled' : ''}= val_arr.first
+        - css_class = f.object.contact_in.blank? ? 'disabled' : ''
+        - css_class += ' btn-danger' if id == 1
+        - css_class += ' btn-success' if id == 5
+        %button.btn.btn-large.contact_in{:type => 'button', :rel => id, :class => css_class}= val_arr.first
     %br/
     - Rating.contact_in_labels.each do |id, val_arr|
       .contact_in_description.inline-block= val_arr.last
