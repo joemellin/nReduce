@@ -1,6 +1,10 @@
 class DemoDay < ActiveRecord::Base
-  has_many :users
-  has_many :startups
+  attr_accessible :name, :day, :description, :startup_ids
 
-  attr_accessible :name, :day, :description
+  serialize :startup_ids
+
+  def startups
+    return [] if self.startup_ids.blank?
+    Startup.find(self.startup_ids)
+  end
 end

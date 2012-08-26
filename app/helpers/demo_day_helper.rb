@@ -1,0 +1,2 @@
+module DemoDayHelper
+end

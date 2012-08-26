@@ -1,0 +1,4 @@
+%h1 #{@demo_day.name} Companies
+
+- @demo_day.startups.each do |s|
+  %h3= link_to s.name, demo_day_path(:id => s.to_param)
