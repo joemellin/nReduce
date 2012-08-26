@@ -10,7 +10,7 @@
       = f.submit 'Save & See Next Startup', :class => 'btn btn-large btn-success disabled', :disabled => true
 
   %div{:align => 'center'}
-    .progress{:style => 'width: 40%'}
+    .progress{:style => 'width: 40%', :align => 'left', :title => "#{@pct_complete}% complete"}
       .bar{:style => "width: #{@pct_complete}%"}
   
     / = link_to 'Connect', new_startup_rating_path(@startup, :interested => true), :class => 'btn btn-large btn-success', :remote => true
@@ -18,6 +18,6 @@
     / = link_to 'Pass', new_startup_rating_path(@startup, :interested => false), :class => 'btn btn-large', :remote => true
 
   = render 'startups/checkins_list'
-  
+
   #rating_modal.hide
 
