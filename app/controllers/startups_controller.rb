@@ -186,7 +186,7 @@ class StartupsController < ApplicationController
     @checkin_history = Checkin.history_for_startup(@startup)
     @screenshots = @startup.screenshots.ordered
     @instrument = @startup.instruments.first
-    @measurements = @instrument.measurements.ordered_asc.all
+    @measurements = @instrument.measurements.ordered_asc.all unless @instrument.blank?
   end
 
   #
