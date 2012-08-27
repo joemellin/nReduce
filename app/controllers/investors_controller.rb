@@ -13,7 +13,7 @@ class InvestorsController < ApplicationController
   def show_startup
     authorize! :investor_connect_with_startups, current_user
     # Only allow temporary investor account access to their suggested startups
-    if [2367, 2375, 2435, 2436, 2437, 2438].include?(current_user.id)
+    if [2367, 2375, 2435, 2436, 2437, 2438, 2459].include?(current_user.id)
       calculate_suggested_startup_completeness
       @startup = current_user.suggested_startups(1).first
     else
