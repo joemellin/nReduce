@@ -51,7 +51,7 @@
           - s = r.entity
           .team{:align => 'center'}
             .top{:align => 'center', :onclick => "window.location = '#{url_for(s)}';"}
-              .background{:style => "background-image: url('#{s.logo_url(:square)}'); cursor: pointer;"} &nbsp;
+              .background{:style => "background-image: url('#{s.logo? ? s.logo_url(:square) : ''}'); cursor: pointer;"} &nbsp;
               .members{:align => 'center'}
                 - s.team_members.shuffle.first(3).each do |tm|
                   .inline-block{:style => 'margin-left: 4px'}= image_tag(user_avatar_url(tm), :title => tm.name, :style => 'width: 50px; height: 50px;')
