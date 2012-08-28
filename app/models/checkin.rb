@@ -79,10 +79,10 @@ class Checkin < ActiveRecord::Base
     t = Time.now
     # Are we in Mon or tue? - if so next before checkin is this week
     if t.monday? or t.tuesday? or (t.wednesday? and t.hour < 16)
-      t.beginning_of_week + 3.days + 16.hours
+      t.beginning_of_week + 2.days + 16.hours
     else
       # Otherwise it's next week
-      t.beginning_of_week + 1.week + 3.days + 16.hours
+      t.beginning_of_week + 1.week + 2.days + 16.hours
     end
   end
 
