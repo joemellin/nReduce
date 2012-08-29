@@ -106,6 +106,7 @@ class Rating < ActiveRecord::Base
   protected
 
   def set_interested_from_contact_in
+    return true
     self.interested = true if self.contact_in == CONTACT_IN_NOW
     true
   end
