@@ -55,7 +55,7 @@
               .background{:style => "background-image: url('#{img}'); cursor: pointer;"} &nbsp;
               - if entity.is_a?(Startup)
                 .members{:align => 'center'}
-                  - s.team_members.shuffle.first(3).each do |tm|
+                  - entity.team_members.shuffle.first(3).each do |tm|
                     .inline-block{:style => 'margin-left: 4px'}= image_tag(user_avatar_url(tm), :title => tm.name, :style => 'width: 50px; height: 50px;')
             .bottom
               %h3= link_to truncate(entity.name, :length => 20), entity
