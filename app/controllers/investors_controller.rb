@@ -20,6 +20,13 @@ class InvestorsController < ApplicationController
       @startup = Startup.find 319
       Relationship.suggest_connection(current_user, @startup, :startup_investor)
     end
+    
+    if @startup.blank?
+      flash[:notice] = "Thanks, you've reviewed all of the startups currently available to you."
+      redirect_to :action => :index
+      return
+    end
+
     @checkin_history = Checkin.history_for_startup(@startup)
     @screenshots = @startup.screenshots.ordered
 
