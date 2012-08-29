@@ -51,7 +51,7 @@
           - entity = r.entity
           .team{:align => 'center'}
             .top{:align => 'center', :onclick => "window.location = '#{url_for(entity)}';"}
-              - img = entity.is_a?(Startup) ? s.logo_url(:square) : s.pic_url(:square)
+              - img = entity.is_a?(Startup) ? entity.logo_url(:square) : entity.pic_url(:square)
               .background{:style => "background-image: url('#{img}'); cursor: pointer;"} &nbsp;
               - if entity.is_a?(Startup)
                 .members{:align => 'center'}
