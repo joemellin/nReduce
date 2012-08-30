@@ -1,26 +1,26 @@
 - unless @change_password
-  .control-group{error_css(@user, :name)}
+  .control-group{error_css(f.object, :name)}
     = f.label :name, 'Your Name', :class => 'control-label'
     .controls
       = f.email_field :name
       = f.semantic_errors :name
-  .control-group{error_css(@user, :email)}
+  .control-group{error_css(f.object, :email)}
     = f.label :email, :class => 'control-label'
     .controls
       = f.email_field :email
       = f.semantic_errors :email
-.control-group{error_css(@user, :password)}
+.control-group{error_css(f.object, :password)}
   = f.label :password, 'New Password', :class => 'control-label'
   .controls
     = f.password_field :password
     = f.semantic_errors :password
-.control-group{error_css(@user, :password_confirmation)}
+.control-group{error_css(f.object, :password_confirmation)}
   = f.label :password_confirmation, "Confirm New Password", :class => 'control-label'
   .controls
     = f.password_field :password_confirmation
     = f.semantic_errors :password_confirmation
-- unless @user.new_record?
-  .control-group{error_css(@user, :current_password)}
+- unless f.object.new_record?
+  .control-group{error_css(f.object, :current_password)}
     = f.label :current_password, 'What is your current password?', :class => 'control-label'
     .controls
       = f.password_field :current_password
