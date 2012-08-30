@@ -23,7 +23,7 @@
 .control-group{error_css(f.object, :weakest_element)}
   %p What is the weakest element of this startup?
   .controls{:align => 'center'}
-    = hidden_field_tag 'rating[weakest_element][]', :class => 'weakest_element_hidden_field'
+    = f.hidden_field :weakest_element, :class => 'weakest_element_hidden_field'
     .btn-group.inline-block{'data-toggle' => 'buttons-radio'}
       - Rating.weakest_element_labels.each do |id, value|
         %button.btn.btn-large.weakest_element{:type => 'button', :rel => id}= value
