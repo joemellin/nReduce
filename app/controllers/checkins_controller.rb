@@ -27,8 +27,6 @@ class CheckinsController < ApplicationController
 
   def new
     set_disabled_states(@checkin)
-    @checkin.before_video.build
-    @checkin.after_video.build
     render :action => :edit
   end
 
