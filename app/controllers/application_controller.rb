@@ -1,5 +1,6 @@
 class ApplicationController < ActionController::Base
   before_filter :show_nstar_banner
+  before_filter :authenticate_if_staging
   #before_filter :block_ips
   protect_from_forgery
 
@@ -234,6 +235,30 @@ class ApplicationController < ActionController::Base
       else # Otherwise redirect to main page to then render before/after pages
         redirect_to demo_day_index_path unless [controller_name.to_sym, action_name.to_sym] == [:demo_day, :index]
       end
+    end
+  end
+
+  private
+
+  def is_staging?
+    ['localhost', 'staging.nreduce.com'].include?(request.host)
+  end
+
+  def only_allow_in_staging
+    unless is_staging?
+      redirect_to '/'
+      return false
+    end
+    true
+  end
+
+  def authenticate_if_staging
+    if is_staging?
+      authenticate_or_request_with_http_basic do |username, password|
+        username == Settings.staging.username && password == Settings.staging.password
+      end
+    else
+      true
     end
   end
 end
