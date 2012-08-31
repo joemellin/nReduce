@@ -9,7 +9,7 @@
         %h1 #{@startup.name}
         %p= h(@startup.one_liner)
         - if @startup.website_url.present?
-          %p= link_to @startup.website_url, @startup.website_url
+          %p= link_to_external @startup.website_url, @startup.website_url
     .span3
       %center
         Investors Only
