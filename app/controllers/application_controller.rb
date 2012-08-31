@@ -204,10 +204,15 @@ class ApplicationController < ActionController::Base
     true
   end
 
-  def load_questions_for_startup(startup)
+  # Pass in a time object to only_if_any_since to load only if there are any new questions since that time
+  def load_questions_for_startup(startup, only_if_any_since = nil)
     @question = Question.new(:startup => startup)
     @new_question = true
     @questions = startup.questions.unanswered.ordered
+    # limit to questions only since a certain time
+    return false if @questions.where(['created_at > ?', only_if_any_since]).count == 0 if only_if_any_since.present?
+    
     @current_question = @questions.shift if @questions.present?
+    true
   end
 end
