@@ -257,6 +257,9 @@ class Ability
       end
     end
 
+    can [:new, :create, :support], Question
+    can :manage, Question, :user_id => user.id
+
     can [:new, :create], Rsvp
     can :manage, Rsvp do |r|
       r.user_id == user.id

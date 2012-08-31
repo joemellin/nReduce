@@ -131,6 +131,12 @@ Nreduce::Application.routes.draw do
     resources :ratings, :only => [:index, :new, :create]
     resources :screenshots, :only => [:create, :update, :destroy]
     resources :instruments, :except => [:index, :destroy]
+    resources :questions, :except => [:update, :destroy] do
+      member do
+        post 'support'
+        post 'answer'
+      end
+    end
   end
 
   # onboarding
@@ -150,12 +156,18 @@ Nreduce::Application.routes.draw do
     end
   end
 
+  resources :demo_day, :only => [:index, :show] do
+    post 'attend', :on => :member
+  end
+
   match '/mentors/new' => "pages#mentor"
   match '/investors/new' => "pages#investor"
   match '/community_guidelines' => "pages#community_guidelines", :as => :community_guidelines
 
   # Url redirection
   match '/ciao/:url' => "application#ciao", :as => :ciao
+
+  match '/capture_and_login' => 'application#capture_and_login', :as => :capture_and_login
 
 
   root :to => 'pages#home'

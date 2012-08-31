@@ -1,0 +1,8 @@
+:plain
+  $('.question_form').html("#{escape_javascript(render('questions/form'))}");
+  $('.questions').html("#{escape_javascript(render('questions/list'))}");
+  $('.current_question').html("#{escape_javascript(render('questions/current_question'))}");
+- if @new_question
+  :plain
+    $('.questions_modal').modal('hide');
+  

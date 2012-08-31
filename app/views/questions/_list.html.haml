@@ -1,0 +1,44 @@
+- @questions.each do |q|
+  .row.question{:id => "question_#{q.id}"}
+    .span1.well
+      %center
+        %div{:style => 'font-size: 1.4em'}= number_with_delimiter(q.followers_count)
+        Followers
+    .span8
+      .content= h(q.content)
+      .row
+        .span2
+          Asked By:
+          %br/
+          = image_tag user_avatar_url(q.user)
+          = q.user.name
+        .span6
+          - supporters = q.supporters(true)
+          - unless supporters.blank?
+            Supporters:
+            %br/
+            - supporters.each do |u|
+              .supporter.left= image_tag user_avatar_url(u)
+            .clear
+    .span2
+      %h3
+        .support
+          - if !user_signed_in? || (user_signed_in? && q.user_id != current_user.id)
+            - if user_signed_in? && q.is_supporter?(current_user)
+              Supported
+            - else
+              = link_to_login '<i class="icon-refresh"></i> Support'.html_safe, '#', :onclick => "$('#question_#{q.id} .modal').modal('show'); return false;", :class => 'btn btn-large'
+              %p 
+                %small Support by re-tweeting to your followers
+    .modal.hide
+      .modal-header
+        %button.close{:type => 'button', 'data-dismiss' => 'modal'} x
+        %h2{:style => 'margin-bottom: 5px'} Support this question
+      .modal-body
+        %p Show your support by re-tweeting (this will also bump the question up in line):
+        %h3= h(q.tweet_content)
+      .modal-footer
+        %center
+          = link_to 'Cancel', '#', :onclick => "$('#question_#{q.id} .modal').modal('hide'); return false;", :class => 'btn'
+          &nbsp;&nbsp;
+          = link_to 'Support', support_startup_question_path(@startup, q), :method => :post, :remote => true, :class => 'btn btn-large btn-success'

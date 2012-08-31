@@ -21,6 +21,7 @@ class User < ActiveRecord::Base
   has_many :connected_with_relationships, :as => :connected_with, :class_name => 'Relationship', :dependent => :destroy
   has_many :screenshots
   has_many :ratings
+  has_many :questions
 
   # Include default devise modules. Others available are:
   # :token_authenticatable, :confirmable,
@@ -379,6 +380,20 @@ class User < ActiveRecord::Base
     (self.num_startups_connected_with_this_week < User::INVESTOR_STARTUPS_PER_WEEK) && self.roles?(:approved_investor) 
   end
 
+  def twitter_authentication
+    self.authentications.provider('twitter').ordered.first
+  end
+
+  def twitter_client
+    return @twitter_client if @twitter_client.present?
+    auth = self.twitter_authentication
+    return nil if auth.blank?
+    @twitter_client = Twitter::Client.new(
+      :oauth_token => auth.token,
+      :oauth_token_secret => auth.secret
+    )
+  end
+
   #
   # LINKEDIN
   #
@@ -424,11 +439,11 @@ class User < ActiveRecord::Base
     begin
       # TWITTER
       if omniauth['provider'] == 'twitter'
-        logger.info omniauth['info'].inspect
         self.name = omniauth['info']['name'] if name.blank? and !omniauth['info']['name'].blank?
-        #self.external_pic_url = omniauth['info']['image'] unless omniauth['info']['image'].blank?
+        self.remote_pic_url = omniauth['info']['image'] if !self.pic? && omniauth['info']['image'].present?
         self.location = omniauth['info']['location'] if !omniauth['info']['location'].blank?
         self.twitter = omniauth['info']['nickname']
+        self.followers_count = omniauth['extra']['raw_info']['followers_count'] if omniauth['extra'].present? && omniauth['extra']['raw_info'].present?
       elsif omniauth['provider'] == 'linkedin'
         self.linkedin_authentication = auth
         self.name = omniauth['info']['name'] if name.blank? and !omniauth['info']['name'].blank?
