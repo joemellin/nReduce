@@ -39,4 +39,10 @@ class DemoDayController < ApplicationController
 
     redirect_to :action => :index && return unless @demo_day.startup_ids.include?(@startup.id)
   end
+
+  # Register that you've attended demo day
+  def attend
+    @demo_day.add_attendee!(current_user)
+    redirect_to :action => :index
+  end
 end

@@ -440,7 +440,7 @@ class User < ActiveRecord::Base
       # TWITTER
       if omniauth['provider'] == 'twitter'
         self.name = omniauth['info']['name'] if name.blank? and !omniauth['info']['name'].blank?
-        #self.external_pic_url = omniauth['info']['image'] unless omniauth['info']['image'].blank?
+        self.remote_pic_url = omniauth['info']['image'] if !self.pic? && omniauth['info']['image'].present?
         self.location = omniauth['info']['location'] if !omniauth['info']['location'].blank?
         self.twitter = omniauth['info']['nickname']
         self.followers_count = omniauth['extra']['raw_info']['followers_count']
