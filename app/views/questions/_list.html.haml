@@ -1,6 +1,9 @@
 - @questions.each do |q|
   .row{:id => "question_#{q.id}"}
-    .span2= q.followers_count
+    .span2.well
+      = q.followers_count
+      %br/
+      Followers
     .span4= h(q.content)
     .span2
       %h3

@@ -1,45 +1,84 @@
 .row
-  .span3= link_to 'All Demo Day Companies', demo_day_index_path, :class => 'btn'
+  .span3= link_to 'All Companies', demo_day_index_path, :class => 'btn'
   .span6
-    %h1 #{@startup.name}
+    %center
+      %h1 #{@startup.name}
   .span3
+%hr/
 
 .row
   .span6
-    #myPublisherDiv
+    #streamsContainer
+    - if @owner
       :javascript
-        // Tokbox chat
-        // http://www.tokbox.com/opentok/api/documentation/gettingstarted
-        var apiKey = '17419732';
-        var sessionId = '1_MX4xNzQxOTczMn5-U3VuIEF1ZyAyNiAwMTowNzoyNiBQRFQgMjAxMn4wLjc0MjgwMzM0fg';
-        var token = 'T1==cGFydG5lcl9pZD0xNzQxOTczMiZzZGtfdmVyc2lvbj10YnB5LUBzZGtfdmVyc2lvbkAuQG9wZW50b2suc2RrLnB5dGhvbi5tb2RfdGltZUAmc2lnPTMzOGUyMjY0NGJiODcxNTg4YTIyOWNhYjVlZjJhMGY2NWIwMTk2YTk6bm9uY2U9MjQ5NjUxJmNyZWF0ZV90aW1lPTEzNDU5Njg0NDYmcm9sZT1wdWJsaXNoZXImc2Vzc2lvbl9pZD0xX01YNHhOelF4T1Rjek1uNS1VM1Z1SUVGMVp5QXlOaUF3TVRvd056b3lOaUJRUkZRZ01qQXhNbjR3TGpjME1qZ3dNek0wZmc=';           
-         
-        TB.setLogLevel(TB.DEBUG);     
-
-        var session = TB.initSession(sessionId);      
-        session.addEventListener('sessionConnected', sessionConnectedHandler);
-        session.connect(apiKey, token);
-
         var publisher;
-
         function sessionConnectedHandler(event) {
           // Put my webcam in a div
-          var publishProps = {height:240, width:320};
-          publisher = TB.initPublisher(apiKey, 'myPublisherDiv', publishProps);
+          var publishProps = {width:500, height:315};
+          publisher = TB.initPublisher(apiKey, 'streamsContainer', publishProps);
           // Send my stream to the session
           session.publish(publisher);
+
+          // Record Session
+          // session.startRecording()
         }
+    - else
+      :javascript
+        function sessionConnectedHandler(event) {
+          console.log(event.streams);
+          for (var i = 0; i < event.streams.length; i++) {
+            var stream = event.streams[i];
+            displayStream(stream);
+          }
+          streams = event.streams;
+        }
+
+        function displayStream(stream) {
+          var div = document.createElement('div');
+          div.setAttribute('id', 'stream' + stream.streamId);
+          var streamsContainer = document.getElementById('streamsContainer');
+          streamsContainer.appendChild(div);
+          var divProps = {width: 500, height:315};
+          subscriber = session.subscribe(stream, 'stream' + stream.streamId, divProps);
+        }
+
+    :javascript
+      // Tokbox chat
+      // http://www.tokbox.com/opentok/api/documentation/gettingstarted
+      var apiKey = '#{Settings.apis.tokbox.key}';
+      var sessionId = '#{@tokbox_session_id}';
+      var token = '#{@tokbox_token}';        
+       
+      TB.setLogLevel(TB.DEBUG);     
+
+      var session = TB.initSession(sessionId);    
+      session.addEventListener('sessionConnected', sessionConnectedHandler);
+      session.connect(apiKey, token);
+
+
+
+
   .span6
     %h4 Current Question:
-    - if @current_question.blank?
-      = link_to 'Ask a question!', '#', :onclick => "$('.questions_modal').modal('show'); return false;"
-    - else
+    - unless @current_question.blank?
       %p= h(@current_question.content)
 
-= link_to 'Ask a question!', '#', :onclick => "$('.questions_modal').modal('show'); return false;"
+%h3= link_to 'Ask a question!', '#', :onclick => "$('.questions_modal').modal('show'); return false;"
 
-.row.questions
-  = render 'questions/list'
+%br/
+
+.tabbable
+  %ul.nav.nav-tabs
+    %li.active
+      %a{:href => '#questions', 'data-toggle' => 'tab'} Questions
+    %li
+      %a{:href => '#profile', 'data-toggle' => 'tab'} Startup Profile
+  .tab-content
+    .tab-pane.active#questions
+      .questions
+        = render 'questions/list'
+    .tab-pane#profile
+      [ startup profile ]
 
 .modal.questions_modal.hide
   .modal-header

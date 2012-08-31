@@ -145,6 +145,10 @@ apis:
     key: 'dlvvu7wj3crq'
     secret_key: 'FEoK8dhge3JbczQe'
 
+  tokbox:
+    key: '17419732'
+    secret: 'd6694363f2ad9b07e9093a5bb6ca8065209a31fd'
+
 aws:
   s3:
     access_key_id: 'AKIAIBBRV3NRIKHCXYYQ'
