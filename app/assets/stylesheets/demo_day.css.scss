@@ -35,6 +35,15 @@
   #video {
     width: 500px;
     height: 315px;
+    background-color: #000;
+    .loading {
+      text-align: center;
+      vertical-align: middle;
+      color: #fff;
+      font-size: 1.45em;
+      font-weight: 600;
+      line-height: 315px;
+    }
   }
   .ask_a_question {
     margin: 30px;
