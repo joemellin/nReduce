@@ -218,7 +218,7 @@ class ApplicationController < ActionController::Base
     true
   end
 
-    # Loads the demo day, and redirects to the done page if it's not in the time window
+    # Loads the demo day, and redirects to the before or after page if it's not in the time window
   def load_and_validate_demo_day
     @demo_day = DemoDay.first
     if Time.now < @demo_day.starts_at
@@ -227,7 +227,12 @@ class ApplicationController < ActionController::Base
       @after = true
     end
     if @before || @after
-      redirect_to demo_day_index_path unless [controller_name.to_sym, action_name.to_sym] == [:demo_day, :index]
+      # If ajax request do nothing
+      if request.xhr?
+        render :nothing => true
+      else # Otherwise redirect to main page to then render before/after pages
+        redirect_to demo_day_index_path unless [controller_name.to_sym, action_name.to_sym] == [:demo_day, :index]
+      end
     end
   end
 end
