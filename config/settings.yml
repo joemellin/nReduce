@@ -1,3 +1,7 @@
+staging:
+  username: 'nreduce'
+  password: 'sep5th'
+
 email_host: "localhost:3000"
 
 default_time_zone: "Pacific Time (US & Canada)"
