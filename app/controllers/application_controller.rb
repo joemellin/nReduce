@@ -203,4 +203,11 @@ class ApplicationController < ActionController::Base
     end
     true
   end
+
+  def load_questions_for_startup(startup)
+    @question = Question.new(:startup => startup)
+    @new_question = true
+    @questions = startup.questions.unanswered.ordered
+    @current_question = @questions.shift if @questions.present?
+  end
 end

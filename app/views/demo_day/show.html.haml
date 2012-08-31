@@ -60,8 +60,9 @@
 
   .span6
     %h4 Current Question:
-    - unless @current_question.blank?
-      %p= h(@current_question.content)
+    .current_question
+      - unless @current_question.blank?
+        = render 'questions/current_question'
 
 %h3= link_to 'Ask a question!', '#', :onclick => "$('.questions_modal').modal('show'); return false;"
 

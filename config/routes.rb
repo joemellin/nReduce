@@ -132,7 +132,10 @@ Nreduce::Application.routes.draw do
     resources :screenshots, :only => [:create, :update, :destroy]
     resources :instruments, :except => [:index, :destroy]
     resources :questions, :except => [:update, :destroy] do
-      post 'support', :on => :member
+      member do
+        post 'support'
+        post 'answer'
+      end
     end
   end
 

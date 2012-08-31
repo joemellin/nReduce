@@ -14,11 +14,7 @@ class QuestionsController < ApplicationController
   def create
     @question.user = current_user
     @question.startup = @startup
-    if @question.save
-      @question = Question.new(:startup => @startup)
-      @new_question = true
-      @questions = @startup.questions.unanswered.ordered
-    end
+    load_questions_for_startup(@startup) if @question.save
       # JS will render page that redirects to url
     respond_to do |format|
       format.js { render :action => :list }
@@ -31,6 +27,16 @@ class QuestionsController < ApplicationController
     @question.add_supporter!(current_user)
     respond_to do |format|
       format.js
+      format.html { render :nothing => true }
+    end
+  end
+
+  # Indicate you've answered
+  def answer
+    @question.answer!
+    load_questions_for_startup(@startup)
+    respond_to do |format|
+      format.js { render :action => :list }
       format.html { render :nothing => true }
     end
   end

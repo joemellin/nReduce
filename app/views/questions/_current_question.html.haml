@@ -1,0 +1,4 @@
+- unless @current_question.blank?
+  %p= h(@current_question.content)
+
+  = link_to 'Answered!', answer_startup_question_path(@startup, @current_question), :method => :post, :remote => :true
