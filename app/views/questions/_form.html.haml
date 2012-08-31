@@ -1,11 +1,11 @@
 = form_for [@startup, @question], :remote => true do |f|
   = f.hidden_field :startup_id
 
-  Tweet a question to #{@startup.name}:
+  %p Tweet a question to #{@startup.name}:
 
-  = f.text_area :content, :size => '120x5'
+  = f.text_area :content, :size => '120x3', :class => 'span5'
   %br/
   100 character limit
 
-  %br/
-  = f.submit 'Submit Question', :class => 'btn btn-success btn-large'
+  %div{:align => 'center', :style => 'margin-top: 20px'}
+    = f.submit 'Submit Question', :class => 'btn btn-success btn-large'

@@ -1,5 +1,5 @@
 class DemoDayController < ApplicationController
-  before_filter :only_allow_in_staging
+  #before_filter :only_allow_in_staging
   before_filter :load_and_validate_demo_day
 
   def index

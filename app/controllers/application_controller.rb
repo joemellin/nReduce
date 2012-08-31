@@ -1,6 +1,6 @@
 class ApplicationController < ActionController::Base
   before_filter :show_nstar_banner
-  before_filter :authenticate_if_staging
+  #before_filter :authenticate_if_staging
   protect_from_forgery
 
   # Visit an external site

@@ -1,3 +1,73 @@
 // Place all the styles related to the DemoDay controller here.
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
+
+.demo_day {
+  .teams {
+    .team_name {
+      font-size: 1.7em;
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+    .one_liner {
+      font-size: 1em;
+      height: 40px;
+      overflow: hidden;
+    }
+    .team {
+      margin-bottom: 50px;
+    }
+  }
+  margin-top: 10px;
+  font-family: "myriad-pro",sans-serif;
+  .attendee, .supporter {
+    width: 50px; 
+    height: 50px; 
+    margin: 0 10px 10px 0;
+  }
+  #video {
+    width: 500px;
+    height: 315px;
+  }
+  .ask_a_question {
+    margin: 30px;
+  }
+  .current_question{
+    .content {
+      margin: 25px 0 50px 0px;
+      font-size: 1.9em;
+      font-weight: 600;
+    }
+    .asked_by {
+      .image {
+        margin-right: 10px;
+      }
+      .name {
+        font-size: 1.4em;
+        margin-bottom: 5px;
+      }
+      margin-bottom: 10px;
+    }
+  }
+  .question {
+    .well {
+      padding: 10px;
+    }
+    .content {
+      margin-bottom: 20px;
+      font-size: 1.5em;
+      font-weight: 600;
+    }
+    border-bottom: 1px solid #ccc;
+    margin-top: 5px;
+    margin-bottom: 10px;
+    padding-bottom: 15px;
+  }
+  .tabbable {
+    li {
+      a {
+        font-size: 1.5em;
+      }
+    }
+  }
+}
