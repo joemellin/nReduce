@@ -3,12 +3,16 @@
   .row
     .span4= link_to image_tag('nreduce_s.png'), "/"
     .span4.countdown_and_checkin{:align => 'center'}
-      - if @demo_day && @before
-        %p Demo Day Starts In
-        = render 'layouts/countdown', :time => @demo_day.starts_at
-      - elsif @demo_day && @after && @next_demo_day
-        %p #{@next_demo_day.name} starts in
-        = render 'layouts/countdown', :time => @next_demo_day.starts_at
+      - if @demo_day
+        - if @before
+          %p Demo Day Starts In
+          = render 'layouts/countdown', :time => @demo_day.starts_at
+        - elsif @after && @next_demo_day
+          %p #{@next_demo_day.name} starts in
+          = render 'layouts/countdown', :time => @next_demo_day.starts_at
+        - else
+          %p #{@demo_day.name} ends in
+          = render 'layouts/countdown', :time => @demo_day.ends_at
       - elsif user_signed_in? && !current_user.roles?(:approved_investor)
         = render 'startups/countdown_and_checkin'
       - else
