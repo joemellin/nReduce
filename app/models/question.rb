@@ -10,7 +10,7 @@ class Question < ActiveRecord::Base
   validates :content, :length => { :maximum => 100 }
 
   after_create :tweet_question
-  before_create :update_user_followers_count
+  before_create :update_followers_and_attendees
 
   scope :unanswered, where('answered_at IS NULL')
   scope :ordered, order('followers_count DESC')
@@ -35,12 +35,16 @@ class Question < ActiveRecord::Base
     # Add supporter id
     self.supporter_ids << user.id
     # Retweet from supporter's account
-    if self.tweet_id.present?
+    if !dont_tweet && self.tweet_id.present?
       tw = user.twitter_client
       self.followers_count += user.followers_count if user.followers_count.present?
       tw.retweet(self.tweet_id) if Rails.env.production?
     end
-    save
+    if save
+      self.add_attendee_to_demo_day(self.user)
+    else
+      false
+    end
   end
 
   def remove_supporter!(user)
@@ -72,7 +76,13 @@ class Question < ActiveRecord::Base
 
   protected
 
-  def update_user_followers_count
+  def add_attendee_to_demo_day(attendee)
+    dd = DemoDay.next_or_current
+    dd.add_attendee!(attendee, true) if dd.present?
+  end
+
+  def update_followers_and_attendees
     self.followers_count = self.user.followers_count if self.user.followers_count.present?
+    self.add_attendee_to_demo_day(self.user)
   end
 end

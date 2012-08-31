@@ -4,6 +4,11 @@ class DemoDay < ActiveRecord::Base
   serialize :startup_ids
   serialize :attendee_ids
 
+  # Returns next demo day or current (current is demo day on this day)
+  def self.next_or_current
+    DemoDay.where(['day >= ?', Date.today]).order('day ASC').first
+  end
+
   def startups
     return [] if self.startup_ids.blank?
     Startup.find(self.startup_ids)
@@ -45,10 +50,12 @@ class DemoDay < ActiveRecord::Base
     self.attendee_ids ||= []
     # Add supporter id
     self.attendee_ids << user.id
-    
+
     # Tweet from supporter's account
-    tw = user.twitter_client
-    tw.update("I'm checking out some awesome companies in the nReduce Demo Day! #nreduce") if Rails.env.production? && tw.present?
+    unless dont_tweet
+      tw = user.twitter_client
+      tw.update("I'm checking out some awesome companies in the nReduce Demo Day! #nreduce") if Rails.env.production? && tw.present?
+    end
 
     save
   end
