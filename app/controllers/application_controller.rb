@@ -204,6 +204,8 @@ class ApplicationController < ActionController::Base
     true
   end
 
+  # DEMO-DAY related methods
+
   # Pass in a time object to only_if_any_since to load only if there are any new questions since that time
   def load_questions_for_startup(startup, only_if_any_since = nil)
     @question = Question.new(:startup => startup)
@@ -214,5 +216,18 @@ class ApplicationController < ActionController::Base
     
     @current_question = @questions.shift if @questions.present?
     true
+  end
+
+    # Loads the demo day, and redirects to the done page if it's not in the time window
+  def load_and_validate_demo_day
+    @demo_day = DemoDay.first
+    if Time.now < @demo_day.starts_at
+      @before = true
+    elsif Time.now > @demo_day.ends_at
+      @after = true
+    end
+    if @before || @after
+      redirect_to demo_day_index_path unless [controller_name.to_sym, action_name.to_sym] == [:demo_day, :index]
+    end
   end
 end

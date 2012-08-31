@@ -1,11 +1,16 @@
 class DemoDayController < ApplicationController
+  before_filter :load_and_validate_demo_day
+
   def index
-    @demo_day = DemoDay.first
+    if @before || @after
+      render :action => :before if @before
+      render :action => :after if @after
+      return
+    end
   end
 
     # Show a specific company
   def show
-    @demo_day = DemoDay.first
     @startup = Startup.find_by_obfuscated_id(params[:id])
     
     # Initialize tokbox session
