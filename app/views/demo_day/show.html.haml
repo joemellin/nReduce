@@ -55,8 +55,20 @@
       session.addEventListener('sessionConnected', sessionConnectedHandler);
       session.connect(apiKey, token);
 
+      // Start polling for questions
+      var lastPolledAt = new Date();
 
+      function loadQuestions(){
+        last = lastPolledAt.toISOString();
+        $.get('#{startup_questions_path(@startup)}.js?last=' + last);
+        lastPolledAt = new Date();
+        setTimeout(function(){
+          loadQuestions();
+        }, 10000);
+      }
 
+      loadQuestions();
+      
 
   .span6
     %h4 Current Question:

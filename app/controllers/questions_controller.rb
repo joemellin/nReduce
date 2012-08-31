@@ -5,7 +5,17 @@ class QuestionsController < ApplicationController
   load_and_authorize_resource :through => :startup
 
   def index
-    @questions = @questions.ordered
+    if params[:last]
+      last_polled_at = Time.parse(params[:last])
+    else
+      last_polled_at = nil
+    end
+    questions_exist = load_questions_for_startup(@startup, last_polled_at)
+    (render(:nothing => true) && return) unless questions_exist
+    respond_to do |format|
+      format.js { render :action => :list }
+      format.html { render :nothing => true }
+    end
   end
 
   def new
