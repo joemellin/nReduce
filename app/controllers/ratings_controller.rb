@@ -1,7 +1,7 @@
 class RatingsController < ApplicationController
   around_filter :record_user_action, :except => [:cancel_edit]
   before_filter :login_required
-  before_filter :load_obfuscated_startup
+  before_filter :load_obfuscated_startup_nested
   load_and_authorize_resource :startup
   load_and_authorize_resource :through => :startup
   

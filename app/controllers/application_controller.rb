@@ -181,14 +181,19 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  def load_obfuscated_startup
+  def load_obfuscated_startup(ignore_bare_id = false)
     begin
-      @startup ||= Startup.find_by_obfuscated_id(params[:id]) unless params[:id].blank?
+      @startup ||= Startup.find_by_obfuscated_id(params[:id]) unless ignore_bare_id || params[:id].blank?
       @startup ||= Startup.find_by_obfuscated_id(params[:startup_id]) unless params[:startup_id].blank?
     rescue ActiveRecord::RecordNotFound
       redirect_to '/'
       return
     end
+  end
+
+  # Only load based on startup_id instead of also checking id - used when in a nested controller
+  def load_obfuscated_startup_nested
+    load_obfuscated_startup(true)
   end
   
   def redirect_if_no_startup

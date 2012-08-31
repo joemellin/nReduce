@@ -131,6 +131,9 @@ Nreduce::Application.routes.draw do
     resources :ratings, :only => [:index, :new, :create]
     resources :screenshots, :only => [:create, :update, :destroy]
     resources :instruments, :except => [:index, :destroy]
+    resources :questions, :except => [:update, :destroy] do
+      post 'support', :on => :member
+    end
   end
 
   # onboarding
