@@ -1,7 +1,6 @@
 class ApplicationController < ActionController::Base
   before_filter :show_nstar_banner
   before_filter :authenticate_if_staging
-  #before_filter :block_ips
   protect_from_forgery
 
   # Visit an external site
@@ -107,13 +106,6 @@ class ApplicationController < ActionController::Base
       redirect_to prms
     end
     false
-  end
-
-  def block_ips
-    if request.remote_ip == '75.161.16.187'
-      render :nothing => true
-      return
-    end
   end
 
   def load_requested_or_users_startup
