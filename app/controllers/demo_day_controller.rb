@@ -30,10 +30,7 @@ class DemoDayController < ApplicationController
     end
     @tokbox_token = @tokbox.generateToken :session_id => @tokbox_session_id, :role => role, :connection_data => "uid=#{current_user.id}"
 
-    # Load questions
-    @questions = @startup.questions.unanswered.ordered
-    @current_question = @questions.shift
-    @question = Question.new(:startup => @startup)
+    load_questions_for_startup(@startup)
 
     redirect_to :action => :index && return unless @demo_day.startup_ids.include?(@startup.id)
   end

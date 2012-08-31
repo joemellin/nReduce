@@ -48,7 +48,7 @@ class Question < ActiveRecord::Base
     save
   end
 
-  def answered!
+  def answer!
     self.answered_at = Time.now
     self.save
   end
