@@ -34,6 +34,7 @@ class DemoDay < ActiveRecord::Base
   end
 
   def attendees
+    return [] if self.attendee_ids.blank?
     User.find(self.attendee_ids)
   end
 
