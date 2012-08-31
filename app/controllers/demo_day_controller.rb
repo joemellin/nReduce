@@ -28,10 +28,10 @@ class DemoDayController < ApplicationController
     @tokbox_session_id = @startup.tokbox_session_id
 
     # Define correct role so user has controls over video stream
-    if user_signed_in? && current_user.admin?
-      role = OpenTok::RoleConstants::MODERATOR
-      @owner = true
-    elsif user_signed_in? && @startup.id == current_user.startup_id
+    #if user_signed_in? && current_user.admin?
+    #  role = OpenTok::RoleConstants::MODERATOR
+    #  @owner = true
+    if user_signed_in? && @startup.id == current_user.startup_id
       role = OpenTok::RoleConstants::PUBLISHER
       @owner = true
     else
