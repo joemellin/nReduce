@@ -9,16 +9,17 @@
     .controls
       = f.email_field :email
       = f.semantic_errors :email
-.control-group{error_css(@user, :password)}
-  = f.label :password, 'New Password', :class => 'control-label'
-  .controls
-    = f.password_field :password
-    = f.semantic_errors :password
-.control-group{error_css(@user, :password_confirmation)}
-  = f.label :password_confirmation, "Confirm New Password", :class => 'control-label'
-  .controls
-    = f.password_field :password_confirmation
-    = f.semantic_errors :password_confirmation
+- unless @password_not_required
+  .control-group{error_css(@user, :password)}
+    = f.label :password, 'New Password', :class => 'control-label'
+    .controls
+      = f.password_field :password
+      = f.semantic_errors :password
+  .control-group{error_css(@user, :password_confirmation)}
+    = f.label :password_confirmation, "Confirm New Password", :class => 'control-label'
+    .controls
+      = f.password_field :password_confirmation
+      = f.semantic_errors :password_confirmation
 - unless @user.new_record?
   .control-group{error_css(@user, :current_password)}
     = f.label :current_password, 'What is your current password?', :class => 'control-label'

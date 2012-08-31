@@ -3,7 +3,11 @@
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
 .demo_day {
+  .header {
+    min-height: 80px;
+  }
   .teams {
+    margin-top: 20px;
     .team_name {
       font-size: 1.7em;
       font-weight: 600;
@@ -20,6 +24,9 @@
   }
   margin-top: 10px;
   font-family: "myriad-pro",sans-serif;
+  .attendees {
+    margin-top: 10px;
+  }
   .attendee, .supporter {
     width: 50px; 
     height: 50px; 

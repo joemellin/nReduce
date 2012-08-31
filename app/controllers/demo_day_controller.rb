@@ -1,13 +1,16 @@
 class DemoDayController < ApplicationController
   #before_filter :only_allow_in_staging
+  before_filter :login_required, :only => [:attend]
   before_filter :load_and_validate_demo_day
 
   def index
+    logger.info "RETURN TO: #{session[:user_return_to]}"
     if @before || @after
       render :action => :before if @before
       render :action => :after if @after
       return
     end
+    @question_count = Question.group('startup_id').unanswered.count
   end
 
     # Show a specific company
@@ -25,16 +28,16 @@ class DemoDayController < ApplicationController
     @tokbox_session_id = @startup.tokbox_session_id
 
     # Define correct role so user has controls over video stream
-    if current_user.admin?
+    if user_signed_in? && current_user.admin?
       role = OpenTok::RoleConstants::MODERATOR
       @owner = true
-    elsif @startup.id == current_user.startup_id
+    elsif user_signed_in? && @startup.id == current_user.startup_id
       role = OpenTok::RoleConstants::PUBLISHER
       @owner = true
     else
       role = OpenTok::RoleConstants::SUBSCRIBER
     end
-    @tokbox_token = @tokbox.generateToken :session_id => @tokbox_session_id, :role => role, :connection_data => "uid=#{current_user.id}"
+    @tokbox_token = @tokbox.generateToken :session_id => @tokbox_session_id, :role => role, :connection_data => user_signed_in? ? "uid=#{current_user.id}" : ''
 
     load_questions_for_startup(@startup)
 

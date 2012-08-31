@@ -1,6 +1,6 @@
 class QuestionsController < ApplicationController
   #before_filter :only_allow_in_staging
-  before_filter :login_required
+  before_filter :login_required, :except => [:index]
   before_filter :load_obfuscated_startup_nested
   load_and_authorize_resource :startup
   load_and_authorize_resource :through => :startup
