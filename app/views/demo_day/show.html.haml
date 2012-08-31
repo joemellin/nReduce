@@ -1,111 +1,117 @@
 - content_for :subtitle do
   #{@startup.name}
 
-.row
-  .span3= link_to 'All Companies', demo_day_index_path, :class => 'btn'
-  .span6
-    %center
-      %h1 #{@startup.name}
-      %p= h(@startup.one_liner)
-      - if @startup.website_url.present?
-        %p= link_to @startup.website_url, @startup.website_url
-      :plain
-        <a href="https://twitter.com/intent/tweet?button_hashtag=nreduce&text=Live!%20Ask%20any%20question%20to%20the%20founders%20of%20%40nReduce" class="twitter-hashtag-button" data-size="large">Share the live chat with #{@startup.name}</a>
-        <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
-  .span3
-%hr/
+.demo_day
+  .row
+    .span3= link_to '<i class="icon-chevron-left"></i> View All nStars'.html_safe, demo_day_index_path, :class => 'btn btn-large'
+    .span6
+      %center
+        %h1 #{@startup.name}
+        %p= h(@startup.one_liner)
+        - if @startup.website_url.present?
+          %p= link_to @startup.website_url, @startup.website_url
+    .span3
+      Investors Only
+      %br/
+      = link_to "Contact #{@startup.name}", '#', :class => 'btn btn-large'
+  %hr/
 
-.row
-  .span6
-    #streamsContainer
-    - if @owner
-      :javascript
-        var publisher;
-        function sessionConnectedHandler(event) {
-          // Put my webcam in a div
-          var publishProps = {width:500, height:315};
-          publisher = TB.initPublisher(apiKey, 'streamsContainer', publishProps);
-          // Send my stream to the session
-          session.publish(publisher);
+  .row
+    .span6
+      %div{:style => 'width: 500px'}
+        %center
+          %h3 Live Q&A with the founders of #{@startup.name}
+      #video
+      - if @owner
+        :javascript
+          var publisher;
+          function sessionConnectedHandler(event) {
+            // Put my webcam in a div
+            var publishProps = {width:500, height:315};
+            publisher = TB.initPublisher(apiKey, 'video', publishProps);
+            // Send my stream to the session
+            session.publish(publisher);
 
-          // Record Session
-          // session.startRecording()
-        }
-    - else
-      :javascript
-        function sessionConnectedHandler(event) {
-          console.log(event.streams);
-          for (var i = 0; i < event.streams.length; i++) {
-            var stream = event.streams[i];
-            displayStream(stream);
+            // Record Session
+            // session.startRecording()
           }
-          streams = event.streams;
+      - else
+        :javascript
+          function sessionConnectedHandler(event) {
+            console.log(event.streams);
+            for (var i = 0; i < event.streams.length; i++) {
+              var stream = event.streams[i];
+              displayStream(stream);
+            }
+            streams = event.streams;
+          }
+
+          function displayStream(stream) {
+            var div = document.createElement('div');
+            div.setAttribute('id', 'stream' + stream.streamId);
+            var streamsContainer = document.getElementById('video');
+            streamsContainer.appendChild(div);
+            var divProps = {width: 500, height:315};
+            subscriber = session.subscribe(stream, 'stream' + stream.streamId, divProps);
+          }
+
+      :javascript
+        // Tokbox chat
+        // http://www.tokbox.com/opentok/api/documentation/gettingstarted
+        var apiKey = '#{Settings.apis.tokbox.key}';
+        var sessionId = '#{@tokbox_session_id}';
+        var token = '#{@tokbox_token}';        
+         
+        TB.setLogLevel(TB.DEBUG);     
+
+        var session = TB.initSession(sessionId);    
+        session.addEventListener('sessionConnected', sessionConnectedHandler);
+        session.connect(apiKey, token);
+
+        // Start polling for questions
+        var lastPolledAt = new Date();
+
+        function loadQuestions(){
+          last = lastPolledAt.toISOString();
+          $.get('#{startup_questions_path(@startup)}.js?last=' + last);
+          lastPolledAt = new Date();
+          setTimeout(function(){
+            loadQuestions();
+          }, 10000);
         }
 
-        function displayStream(stream) {
-          var div = document.createElement('div');
-          div.setAttribute('id', 'stream' + stream.streamId);
-          var streamsContainer = document.getElementById('streamsContainer');
-          streamsContainer.appendChild(div);
-          var divProps = {width: 500, height:315};
-          subscriber = session.subscribe(stream, 'stream' + stream.streamId, divProps);
-        }
-
-    :javascript
-      // Tokbox chat
-      // http://www.tokbox.com/opentok/api/documentation/gettingstarted
-      var apiKey = '#{Settings.apis.tokbox.key}';
-      var sessionId = '#{@tokbox_session_id}';
-      var token = '#{@tokbox_token}';        
-       
-      TB.setLogLevel(TB.DEBUG);     
-
-      var session = TB.initSession(sessionId);    
-      session.addEventListener('sessionConnected', sessionConnectedHandler);
-      session.connect(apiKey, token);
-
-      // Start polling for questions
-      var lastPolledAt = new Date();
-
-      function loadQuestions(){
-        last = lastPolledAt.toISOString();
-        $.get('#{startup_questions_path(@startup)}.js?last=' + last);
-        lastPolledAt = new Date();
-        setTimeout(function(){
-          loadQuestions();
-        }, 10000);
-      }
-
-      loadQuestions();
+        loadQuestions();
       
 
-  .span6
-    %h4 Current Question:
-    .current_question
-      - unless @current_question.blank?
-        = render 'questions/current_question'
+    .span6
+      %h4 Current Question:
+      .current_question
+        - unless @current_question.blank?
+          = render 'questions/current_question'
+  .ask_a_question{:align => 'center'}
+    %h2
+      Have a question?
+      &nbsp;
+      = link_to 'Ask the Founders!', '#', :onclick => "$('.questions_modal').modal('show'); return false;", :class => 'btn btn-large btn-primary'
 
-%h3= link_to 'Ask a question!', '#', :onclick => "$('.questions_modal').modal('show'); return false;"
 
-%br/
+  .tabbable
+    %ul.nav.nav-tabs
+      %li.active
+        %a{:href => '#questions', 'data-toggle' => 'tab'} Questions
+      %li
+        %a{:href => '#profile', 'data-toggle' => 'tab'} Startup Profile
+    .tab-content
+      .tab-pane.active#questions
+        .questions
+          = render 'questions/list'
+      .tab-pane#profile
+        = render 'startups/profile'
 
-.tabbable
-  %ul.nav.nav-tabs
-    %li.active
-      %a{:href => '#questions', 'data-toggle' => 'tab'} Questions
-    %li
-      %a{:href => '#profile', 'data-toggle' => 'tab'} Startup Profile
-  .tab-content
-    .tab-pane.active#questions
-      .questions
-        = render 'questions/list'
-    .tab-pane#profile
-      = render 'startups/profile'
-
-.modal.questions_modal.hide
-  .modal-header
-    %button.close{:type => 'button', 'data-dismiss' => 'modal'} x
-    %h2{:style => 'margin-bottom: 5px'} Ask a question
-  .modal-body
-    .question_form
-      = render 'questions/form'
+  .modal.questions_modal.hide
+    .modal-header
+      %button.close{:type => 'button', 'data-dismiss' => 'modal'} x
+      %h2{:style => 'margin-bottom: 5px'} Ask the founders a question
+    .modal-body
+      .question_form
+        = render 'questions/form'

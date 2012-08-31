@@ -1,17 +1,35 @@
 - @questions.each do |q|
-  .row{:id => "question_#{q.id}"}
-    .span2.well
-      = q.followers_count
-      %br/
-      Followers
-    .span4= h(q.content)
+  .row.question{:id => "question_#{q.id}"}
+    .span1.well
+      %center
+        %div{:style => 'font-size: 1.4em'}= number_with_delimiter(q.followers_count)
+        Followers
+    .span8
+      .content= h(q.content)
+      .row
+        .span2
+          Asked By:
+          %br/
+          = image_tag user_avatar_url(q.user)
+          = q.user.name
+        .span6
+          - supporters = q.supporters(true)
+          - unless supporters.blank?
+            Supporters:
+            %br/
+            - supporters.each do |u|
+              .supporter.left= image_tag user_avatar_url(u)
+            .clear
     .span2
       %h3
         .support
-          - if q.is_supporter?(current_user)
-            Supporter
-          - else
-            = link_to 'Support', '#', :onclick => "$('#question_#{q.id} .modal').modal('show'); return false;"
+          - unless q.user_id == current_user.id
+            - if q.is_supporter?(current_user)
+              Supported
+            - else
+              = link_to '<i class="icon-refresh"></i> Support'.html_safe, '#', :onclick => "$('#question_#{q.id} .modal').modal('show'); return false;", :class => 'btn btn-large'
+              %p 
+                %small Support by re-tweeting to your followers
     .modal.hide
       .modal-header
         %button.close{:type => 'button', 'data-dismiss' => 'modal'} x

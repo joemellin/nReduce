@@ -23,8 +23,10 @@ class Question < ActiveRecord::Base
 
   # Returns an array of all the users who support this question
   def supporters(dont_include_creator = false)
-    ids = [self.user_id]
+    ids = []
+    ids << self.user_id unless dont_include_creator
     ids += self.supporter_ids if self.supporter_ids.present?
+    return [] if ids.blank?
     User.find(ids)
   end
 
@@ -58,7 +60,7 @@ class Question < ActiveRecord::Base
   end
 
   def tweet_content
-    "#{self.content.first(90)} #nreduce http://nreduce.com/demo_day/#{self.id}"
+    "#{self.content.first(90)} #nReduce http://nreduce.com/demo_day/#{self.startup.to_param}"
   end
 
   # Tweets question from creator's account

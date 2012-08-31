@@ -54,7 +54,7 @@ class DemoDay < ActiveRecord::Base
     # Tweet from supporter's account
     unless dont_tweet
       tw = user.twitter_client
-      tw.update("I'm checking out some awesome companies in the nReduce Demo Day! #nreduce") if Rails.env.production? && tw.present?
+      tw.update("I'm checking out some awesome companies in the nReduce Demo Day! #nReduce") if Rails.env.production? && tw.present?
     end
 
     save
