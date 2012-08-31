@@ -1,66 +1,50 @@
-%h1 #{@startup.name}
+.row
+  .span3= link_to 'All Demo Day Companies', demo_day_index_path, :class => 'btn'
+  .span6
+    %h1 #{@startup.name}
+  .span3
 
-.left{:style => 'width: 400px'}
-  #myPublisherDiv
-    :javascript
-      // Tokbox chat
-      // http://www.tokbox.com/opentok/api/documentation/gettingstarted
-      var apiKey = '17419732';
-      var sessionId = '1_MX4xNzQxOTczMn5-U3VuIEF1ZyAyNiAwMTowNzoyNiBQRFQgMjAxMn4wLjc0MjgwMzM0fg';
-      var token = 'T1==cGFydG5lcl9pZD0xNzQxOTczMiZzZGtfdmVyc2lvbj10YnB5LUBzZGtfdmVyc2lvbkAuQG9wZW50b2suc2RrLnB5dGhvbi5tb2RfdGltZUAmc2lnPTMzOGUyMjY0NGJiODcxNTg4YTIyOWNhYjVlZjJhMGY2NWIwMTk2YTk6bm9uY2U9MjQ5NjUxJmNyZWF0ZV90aW1lPTEzNDU5Njg0NDYmcm9sZT1wdWJsaXNoZXImc2Vzc2lvbl9pZD0xX01YNHhOelF4T1Rjek1uNS1VM1Z1SUVGMVp5QXlOaUF3TVRvd056b3lOaUJRUkZRZ01qQXhNbjR3TGpjME1qZ3dNek0wZmc=';           
-       
-      TB.setLogLevel(TB.DEBUG);     
+.row
+  .span6
+    #myPublisherDiv
+      :javascript
+        // Tokbox chat
+        // http://www.tokbox.com/opentok/api/documentation/gettingstarted
+        var apiKey = '17419732';
+        var sessionId = '1_MX4xNzQxOTczMn5-U3VuIEF1ZyAyNiAwMTowNzoyNiBQRFQgMjAxMn4wLjc0MjgwMzM0fg';
+        var token = 'T1==cGFydG5lcl9pZD0xNzQxOTczMiZzZGtfdmVyc2lvbj10YnB5LUBzZGtfdmVyc2lvbkAuQG9wZW50b2suc2RrLnB5dGhvbi5tb2RfdGltZUAmc2lnPTMzOGUyMjY0NGJiODcxNTg4YTIyOWNhYjVlZjJhMGY2NWIwMTk2YTk6bm9uY2U9MjQ5NjUxJmNyZWF0ZV90aW1lPTEzNDU5Njg0NDYmcm9sZT1wdWJsaXNoZXImc2Vzc2lvbl9pZD0xX01YNHhOelF4T1Rjek1uNS1VM1Z1SUVGMVp5QXlOaUF3TVRvd056b3lOaUJRUkZRZ01qQXhNbjR3TGpjME1qZ3dNek0wZmc=';           
+         
+        TB.setLogLevel(TB.DEBUG);     
 
-      var session = TB.initSession(sessionId);      
-      session.addEventListener('sessionConnected', sessionConnectedHandler);
-      session.connect(apiKey, token);
+        var session = TB.initSession(sessionId);      
+        session.addEventListener('sessionConnected', sessionConnectedHandler);
+        session.connect(apiKey, token);
 
-      var publisher;
+        var publisher;
 
-      function sessionConnectedHandler(event) {
-        // Put my webcam in a div
-        var publishProps = {height:240, width:320};
-        publisher = TB.initPublisher(apiKey, 'myPublisherDiv', publishProps);
-        // Send my stream to the session
-        session.publish(publisher);
-      }
-
-.left{:style => 'width: 400px; margin-left: 20px'}
-  :plain
-    <script charset="utf-8" src="http://widgets.twimg.com/j/2/widget.js"></script>
-  :javascript
-    // Twitter widget
-    new TWTR.Widget({
-      version: 2,
-      type: 'search',
-      search: '#nstar',
-      interval: 30000,
-      title: 'nStar Demo Day',
-      subject: 'Questions for nReduce',
-      width: 250,
-      height: 300,
-      theme: {
-        shell: {
-          background: '#8ec1da',
-          color: '#ffffff'
-        },
-        tweets: {
-          background: '#ffffff',
-          color: '#444444',
-          links: '#1985b5'
+        function sessionConnectedHandler(event) {
+          // Put my webcam in a div
+          var publishProps = {height:240, width:320};
+          publisher = TB.initPublisher(apiKey, 'myPublisherDiv', publishProps);
+          // Send my stream to the session
+          session.publish(publisher);
         }
-      },
-      features: {
-        scrollbar: false,
-        loop: false,
-        live: true,
-        behavior: 'default'
-      }
-    }).render().start();
+  .span6
+    %h4 Current Question:
+    - if @current_question.blank?
+      = link_to 'Ask a question!', '#', :onclick => "$('.questions_modal').modal('show'); return false;"
+    - else
+      %p= h(@current_question.content)
 
+= link_to 'Ask a question!', '#', :onclick => "$('.questions_modal').modal('show'); return false;"
 
-    !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
-  %a{:href => "https://twitter.com/intent/tweet?button_hashtag=nstar", :class => "twitter-hashtag-button", 'data-related' => "nReduce"} Ask #{@startup.name} a question
-.clear
-%br/
-= link_to 'All Demo Day Companies', demo_day_index_path, :class => 'btn'
+.row.questions
+  = render 'questions/list'
+
+.modal.questions_modal.hide
+  .modal-header
+    %button.close{:type => 'button', 'data-dismiss' => 'modal'} x
+    %h2{:style => 'margin-bottom: 5px'} Ask a question
+  .modal-body
+    .question_form
+      = render 'questions/form'
