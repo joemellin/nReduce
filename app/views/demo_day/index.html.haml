@@ -1,8 +1,24 @@
-%h1 #{@demo_day.name} Companies
+%center
+  %h1 #{@demo_day.name} Companies
 
-- @demo_day.startups.each do |s|
-  %h3= link_to s.name, demo_day_path(:id => s.to_param)
-
+%br/
+.relationships.row
+  - @demo_day.startups.each do |s|
+    - this_startup_url = demo_day_path(:id => s.to_param)
+    - logo_path = s.logo_url(:square)
+    - owner = (!current_user.startup_id.blank? && (s.id == current_user.startup_id))
+    .team.span3{:align => 'center'}
+      .top{:align => 'center', :onclick => "window.location = '#{this_startup_url}';"}
+        .background{:style => "background-image: url('#{logo_path}'); cursor: pointer;"} &nbsp;
+        .members{:align => 'center'}
+          - s.team_members.shuffle.first(3).each do |tm|
+            .inline-block{:style => 'margin-left: 4px'}= image_tag(user_avatar_url(tm), :title => tm.name, :style => 'width: 50px; height: 50px;')
+      .bottom{:align => 'center'}
+        %h3= link_to owner ? 'You' : truncate(s.name, :length => 20), this_startup_url
+        - if owner
+          = link_to 'Start Your Video Chat', this_startup_url, :class => 'btn btn-primary'
+        - else
+          = link_to 'Chat with Founders', this_startup_url, :class => 'btn btn-success'
 %hr/
 .row
   .span8
@@ -12,7 +28,7 @@
       - if @demo_day.is_attendee?(current_user)
         You're Attending
       - else
-        = link_to "I'm attending!", attend_demo_day_path(@demo_day), :method => :post
+        = link_to "I'm attending!", attend_demo_day_path(@demo_day), :method => :post, :class => 'btn'
 .row
   .span12
     - @demo_day.attendees.each do |u|
