@@ -156,7 +156,9 @@ Nreduce::Application.routes.draw do
     end
   end
 
-  resources :demo_day, :only => [:index, :show]
+  resources :demo_day, :only => [:index, :show] do
+    post 'attend', :on => :member
+  end
 
   match '/mentors/new' => "pages#mentor"
   match '/investors/new' => "pages#investor"

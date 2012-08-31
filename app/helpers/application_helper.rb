@@ -49,7 +49,11 @@ module ApplicationHelper
 
   def link_to_twitter(handle = '', opts = {})
     return '' if handle.blank?
-    link_to(handle, "https://twitter.com/#!/#{handle.sub('@', '')}", opts)
+    link_to(handle, url_for_twitter(handle), opts)
+  end
+
+  def url_for_twitter(handle)
+    "https://twitter.com/#!/#{handle.sub('@', '')}"
   end
 
   def is_controller_action?(controller_name, action_name = nil)

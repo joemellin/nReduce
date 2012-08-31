@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120831131532) do
+ActiveRecord::Schema.define(:version => 20120831153150) do
 
   create_table "authentications", :force => true do |t|
     t.string   "provider"
@@ -73,10 +73,10 @@ ActiveRecord::Schema.define(:version => 20120831131532) do
 
   create_table "demo_days", :force => true do |t|
     t.string   "name"
-    t.text     "description"
+    t.text     "attendee_ids"
     t.date     "day"
-    t.datetime "created_at",  :null => false
-    t.datetime "updated_at",  :null => false
+    t.datetime "created_at",   :null => false
+    t.datetime "updated_at",   :null => false
     t.string   "startup_ids"
   end
 

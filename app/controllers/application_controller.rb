@@ -225,6 +225,7 @@ class ApplicationController < ActionController::Base
       @before = true
     elsif Time.now > @demo_day.ends_at
       @after = true
+      @next_demo_day = @demo_day.next_demo_day
     end
     if @before || @after
       # If ajax request do nothing

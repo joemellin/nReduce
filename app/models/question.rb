@@ -54,7 +54,7 @@ class Question < ActiveRecord::Base
   end
 
   def tweet_content
-    "#{self.content.first(90)} #nReduce http://demoday.nreduce.com/#{self.id}"
+    "#{self.content.first(90)} #nreduce http://nreduce.com/demo_day/#{self.id}"
   end
 
   # Tweets question from creator's account

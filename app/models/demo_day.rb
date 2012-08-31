@@ -2,6 +2,7 @@ class DemoDay < ActiveRecord::Base
   attr_accessible :name, :day, :description, :startup_ids
 
   serialize :startup_ids
+  serialize :attendee_ids
 
   def startups
     return [] if self.startup_ids.blank?
@@ -9,6 +10,7 @@ class DemoDay < ActiveRecord::Base
   end
 
   def starts_at
+    return Time.now - 5.minutes
     Time.parse("#{self.day} 11:00:00 -0700")
   end
 
@@ -19,5 +21,35 @@ class DemoDay < ActiveRecord::Base
   # Returns true if it's currently the time window for this demo day
   def in_time_window?
     self.starts_at <= Time.now && self.ends_at >= Time.now
+  end
+
+  # Returns next demo day in chronological order
+  def next_demo_day
+    DemoDay.where(['day > ?', self.day]).order('day ASC').first
+  end
+
+  def attendees
+    User.find(self.attendee_ids)
+  end
+
+  def is_attendee?(user)
+    return true if self.attendee_ids.include?(user.id) if self.attendee_ids.present?
+    return false
+  end
+
+  # Add attendee and tweet that they attended
+  
+  def add_attendee!(user, dont_tweet = false)
+    # Return true if already a supporter
+    return true if self.is_attendee?(user)
+    self.attendee_ids ||= []
+    # Add supporter id
+    self.attendee_ids << user.id
+    
+    # Tweet from supporter's account
+    tw = user.twitter_client
+    tw.update("I'm checking out some awesome companies in the nReduce Demo Day! #nreduce") if Rails.env.production? && tw.present?
+
+    save
   end
 end

@@ -2,3 +2,19 @@
 
 - @demo_day.startups.each do |s|
   %h3= link_to s.name, demo_day_path(:id => s.to_param)
+
+%hr/
+.row
+  .span8
+    %h2 Attendees
+  .span4{:align => 'right'}
+    %h3
+      - if @demo_day.is_attendee?(current_user)
+        You're Attending
+      - else
+        = link_to "I'm attending!", attend_demo_day_path(@demo_day), :method => :post
+.row
+  .span12
+    - @demo_day.attendees.each do |u|
+      .left{:style => 'width: 50px; height: 50px; margin: 0 10px 10px 0;'}= link_to image_tag(user_avatar_url(u), :title => u.name, :alt => u.name), url_for_twitter(u.twitter), :target => '_blank'
+    .clear
