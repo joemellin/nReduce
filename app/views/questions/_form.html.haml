@@ -3,9 +3,12 @@
 
   %p Tweet a question to #{@startup.name}:
 
-  = f.text_area :content, :size => '120x3', :class => 'span5'
-  %br/
-  100 character limit
+  = f.text_area :content, :size => '120x3', :class => 'span5', :id => 'question_content'
 
   %div{:align => 'center', :style => 'margin-top: 20px'}
     = f.submit 'Submit Question', :class => 'btn btn-success btn-large'
+
+  :javascript
+    $(function() {
+      $('#question_content').textareaCount({maxCharacterSize: 100, displayFormat: '#input characters (limit of 100)'});
+    });

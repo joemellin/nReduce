@@ -443,7 +443,7 @@ class User < ActiveRecord::Base
         self.remote_pic_url = omniauth['info']['image'] if !self.pic? && omniauth['info']['image'].present?
         self.location = omniauth['info']['location'] if !omniauth['info']['location'].blank?
         self.twitter = omniauth['info']['nickname']
-        self.followers_count = omniauth['extra']['raw_info']['followers_count']
+        self.followers_count = omniauth['extra']['raw_info']['followers_count'] if omniauth['extra'].present? && omniauth['extra']['raw_info'].present?
       elsif omniauth['provider'] == 'linkedin'
         self.linkedin_authentication = auth
         self.name = omniauth['info']['name'] if name.blank? and !omniauth['info']['name'].blank?

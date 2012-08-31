@@ -167,6 +167,8 @@ Nreduce::Application.routes.draw do
   # Url redirection
   match '/ciao/:url' => "application#ciao", :as => :ciao
 
+  match '/capture_and_login' => 'application#capture_and_login', :as => :capture_and_login
+
 
   root :to => 'pages#home'
 end

@@ -23,11 +23,11 @@
     .span2
       %h3
         .support
-          - unless q.user_id == current_user.id
-            - if q.is_supporter?(current_user)
+          - if !user_signed_in? || (user_signed_in? && q.user_id != current_user.id)
+            - if user_signed_in? && q.is_supporter?(current_user)
               Supported
             - else
-              = link_to '<i class="icon-refresh"></i> Support'.html_safe, '#', :onclick => "$('#question_#{q.id} .modal').modal('show'); return false;", :class => 'btn btn-large'
+              = link_to_login '<i class="icon-refresh"></i> Support'.html_safe, '#', :onclick => "$('#question_#{q.id} .modal').modal('show'); return false;", :class => 'btn btn-large'
               %p 
                 %small Support by re-tweeting to your followers
     .modal.hide

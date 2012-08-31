@@ -1,16 +1,23 @@
 - content_for :subtitle do
   #{@demo_day.name}
 
-.demo_day
-  %center
-    %h1 #{@demo_day.name} Companies
+- startups = @demo_day.startups
 
+.demo_day
+  .row.header
+    .span3{:align => 'right'}= image_tag 'nstar_s.png', :style => 'width: 75px; height: 63px'
+    .span6
+      %center
+        %h1 Welcome to the #{@demo_day.name}
+        %p Out of the 300 teams that started nReduce in June, #{startups.size} became nStars
+    .span3= image_tag 'nstar_s.png', :style => 'width: 75px; height: 63px'
+  %hr/
   %br/
   .relationships.row.teams
-    - @demo_day.startups.each do |s|
+    - startups.each do |s|
       - this_startup_url = demo_day_path(:id => s.to_param)
       - logo_path = s.logo_url(:square)
-      - owner = (!current_user.startup_id.blank? && (s.id == current_user.startup_id))
+      - owner = (user_signed_in? && !current_user.startup_id.blank? && (s.id == current_user.startup_id))
       .span3{:align => 'center'}
         .team_name= link_to owner ? 'You' : truncate(s.name, :length => 20), this_startup_url
         .one_liner= s.one_liner
@@ -25,16 +32,19 @@
               = link_to 'Start Your Video Chat', this_startup_url, :class => 'btn btn-primary'
             - else
               = link_to 'Meet the Founders', this_startup_url, :class => 'btn btn-success'
+            %p= pluralize(@question_count[s.id], 'question')
   %hr/
-  .row
-    .span8
+  .row.attendees
+    .span3
       %h2 Attendees
+    .span5
+      %p To record that you attended the first nReduce Demo Day simply ask a question of a team, or click the “I am here!”. Attendees will be visible on the nStar Demo Day page for all time.
     .span4{:align => 'right'}
       %h3
-        - if @demo_day.is_attendee?(current_user)
+        - if user_signed_in? && @demo_day.is_attendee?(current_user)
           You're Attending
         - else
-          = link_to "I'm attending!", attend_demo_day_path(@demo_day), :method => :post, :class => 'btn'
+          = link_to_login "I am here!", attend_demo_day_path(@demo_day), :method => :post, :class => 'btn'
   .row
     .span12
       - @demo_day.attendees.each do |u|

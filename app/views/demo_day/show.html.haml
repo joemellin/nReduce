@@ -2,7 +2,7 @@
   #{@startup.name}
 
 .demo_day
-  .row
+  .row.header
     .span3= link_to '<i class="icon-chevron-left"></i> View All nStars'.html_safe, demo_day_index_path, :class => 'btn btn-large'
     .span6
       %center
@@ -11,9 +11,10 @@
         - if @startup.website_url.present?
           %p= link_to @startup.website_url, @startup.website_url
     .span3
-      Investors Only
-      %br/
-      = link_to "Contact #{@startup.name}", '#', :class => 'btn btn-large'
+      %center
+        Investors Only
+        %br/
+        = link_to "Contact #{@startup.name}", '#', :class => 'btn btn-large'
   %hr/
 
   .row
@@ -84,7 +85,6 @@
       
 
     .span6
-      %h4 Current Question:
       .current_question
         - unless @current_question.blank?
           = render 'questions/current_question'
@@ -92,7 +92,7 @@
     %h2
       Have a question?
       &nbsp;
-      = link_to 'Ask the Founders!', '#', :onclick => "$('.questions_modal').modal('show'); return false;", :class => 'btn btn-large btn-primary'
+      = link_to_login 'Ask the Founders!', '#', :onclick => "$('.questions_modal').modal('show'); return false;", :class => 'btn btn-large btn-primary'
 
 
   .tabbable

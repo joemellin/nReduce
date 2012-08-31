@@ -11,6 +11,12 @@ class ApplicationController < ActionController::Base
     redirect_to url
   end
 
+  def capture_and_login
+    session[:password_not_required] = true
+    session[:redirect_to] = params[:redirect_to]
+    authenticate_user!
+  end
+
   protected
 
   def show_nstar_banner
@@ -39,7 +45,14 @@ class ApplicationController < ActionController::Base
         root_path
       end
     else
-      root_path
+      logger.info "AFTER REDIRECT HERE #{session[:user_return_to]}"
+      if session[:redirect_to].present?
+        tmp = session[:redirect_to]
+        session[:redirect_to] = nil
+        return tmp
+      else
+        return root_path
+      end
     end
   end
 
@@ -70,11 +83,13 @@ class ApplicationController < ActionController::Base
 
   # This method ensures that a user's account has been setup. If not, redirects to correct action
   def redirect_for_setup_and_onboarding
+    controller_action_arr = [controller_name.to_sym, action_name.to_sym]
+    # Don't redirect if here for demo day
+    return true if [:question, :demo_day].include?(controller_action_arr.first)
     if current_user.account_setup?
       return true
     else
       @hide_nav = true
-      controller_action_arr = [controller_name.to_sym, action_name.to_sym]
       @account_setup_action = current_user.account_setup_action
       if @account_setup_action.blank?
         # If for some reason account setup action is blank - redirect to user account page
