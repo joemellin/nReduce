@@ -4,7 +4,8 @@
     %center
       %h1 #{@startup.name}
       %p= h(@startup.one_liner)
-      %p= link_to @startup.website_url, @startup.website_url
+      - if @startup.website_url.present?
+        %p= link_to @startup.website_url, @startup.website_url
       :plain
         <a href="https://twitter.com/intent/tweet?button_hashtag=nreduce&text=Live!%20Ask%20any%20question%20to%20the%20founders%20of%20%40nReduce" class="twitter-hashtag-button" data-size="large">Share the live chat with #{@startup.name}</a>
         <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
