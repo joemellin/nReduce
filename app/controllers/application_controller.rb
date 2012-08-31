@@ -228,7 +228,7 @@ class ApplicationController < ActionController::Base
 
     # Loads the demo day, and redirects to the before or after page if it's not in the time window
   def load_and_validate_demo_day
-    @demo_day = DemoDay.first
+    @demo_day = DemoDay.next_or_current
     if Time.now < @demo_day.starts_at
       @before = true
     elsif Time.now > @demo_day.ends_at
