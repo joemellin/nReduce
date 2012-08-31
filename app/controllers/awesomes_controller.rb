@@ -10,7 +10,7 @@ class AwesomesController < ApplicationController
     @awesome.user_id = current_user.id
     @success = true if @awesome.save
     respond_to do |format|
-      format.html { redirect_to @awesome.awsm }
+      format.html { redirect_to '/' }
       format.js { render :action => :button }
     end
   end
@@ -18,7 +18,7 @@ class AwesomesController < ApplicationController
   def destroy
     @success = true if @awesome.destroy
     respond_to do |format|
-      format.html { redirect_to @awesome.awsm }
+      format.html { redirect_to '/' }
       format.js { render :action => :button }
     end
   end
