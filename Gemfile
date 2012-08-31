@@ -47,6 +47,8 @@ gem 'slope_one'
 gem 'rails_autolink'
 gem "obfuscate_id", :git => 'git://github.com/geeosh/obfuscate_id.git'
 
+gem 'twitter'
+
 
 group :test, :development do
   # Pretty printed test output
