@@ -1,3 +1,7 @@
+staging:
+  username: 'nreduce'
+  password: 'sep5th'
+
 email_host: "localhost:3000"
 
 default_time_zone: "Pacific Time (US & Canada)"
@@ -144,6 +148,10 @@ apis:
   linkedin:
     key: 'dlvvu7wj3crq'
     secret_key: 'FEoK8dhge3JbczQe'
+
+  tokbox:
+    key: '17419732'
+    secret: 'd6694363f2ad9b07e9093a5bb6ca8065209a31fd'
 
 aws:
   s3:

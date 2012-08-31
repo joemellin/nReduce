@@ -29,4 +29,13 @@
   - unless @setup
     .span4
       = render 'users/profile_completeness'
-      
+      %br/
+      %div{:align => 'right'}
+        - if @user.twitter_authentication.blank?
+          %a.btn.btn-large{:href => '/auth/twitter'}
+            = image_tag('twitter_32.png')
+            Add Twitter
+        - else
+          Authorized with
+          = image_tag('twitter_32.png', :alt => 'Twitter', :title => 'Twitter')
+    

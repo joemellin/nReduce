@@ -1,0 +1,118 @@
+- content_for :subtitle do
+  #{@startup.name}
+
+.demo_day
+  .row.header
+    .span3= link_to '<i class="icon-chevron-left"></i> View All nStars'.html_safe, demo_day_index_path, :class => 'btn btn-large'
+    .span6
+      %center
+        %h1 #{@startup.name}
+        %p= h(@startup.one_liner)
+        - if @startup.website_url.present?
+          %p= link_to @startup.website_url, @startup.website_url
+    .span3
+      %center
+        Investors Only
+        %br/
+        = link_to "Contact #{@startup.name}", '#', :class => 'btn btn-large'
+  %hr/
+
+  .row
+    .span6
+      %div{:style => 'width: 500px'}
+        %center
+          %h3 Live Q&A with the founders of #{@startup.name}
+      #video
+        .loading Loading Live Stream...
+      - if @owner
+        :javascript
+          var publisher;
+          function sessionConnectedHandler(event) {
+            // Put my webcam in a div
+            var publishProps = {width:500, height:315};
+            publisher = TB.initPublisher(apiKey, 'video', publishProps);
+            // Send my stream to the session
+            session.publish(publisher);
+
+            // Record Session
+            // session.startRecording()
+          }
+      - else
+        :javascript
+          function sessionConnectedHandler(event) {
+            console.log(event.streams);
+            for (var i = 0; i < event.streams.length; i++) {
+              var stream = event.streams[i];
+              displayStream(stream);
+            }
+            streams = event.streams;
+          }
+
+          function displayStream(stream) {
+            var div = document.createElement('div');
+            div.setAttribute('id', 'stream' + stream.streamId);
+            var streamsContainer = document.getElementById('video');
+            streamsContainer.appendChild(div);
+            var divProps = {width: 500, height:315};
+            subscriber = session.subscribe(stream, 'stream' + stream.streamId, divProps);
+          }
+
+      :javascript
+        // Tokbox chat
+        // http://www.tokbox.com/opentok/api/documentation/gettingstarted
+        var apiKey = '#{Settings.apis.tokbox.key}';
+        var sessionId = '#{@tokbox_session_id}';
+        var token = '#{@tokbox_token}';        
+         
+        TB.setLogLevel(TB.DEBUG);     
+
+        var session = TB.initSession(sessionId);    
+        session.addEventListener('sessionConnected', sessionConnectedHandler);
+        session.connect(apiKey, token);
+
+        // Start polling for questions
+        var lastPolledAt = new Date();
+
+        function loadQuestions(){
+          last = lastPolledAt.toISOString();
+          $.get('#{startup_questions_path(@startup)}.js?last=' + last);
+          lastPolledAt = new Date();
+          setTimeout(function(){
+            loadQuestions();
+          }, 10000);
+        }
+
+        loadQuestions();
+      
+
+    .span6
+      .current_question
+        - unless @current_question.blank?
+          = render 'questions/current_question'
+  .ask_a_question{:align => 'center'}
+    %h2
+      Have a question?
+      &nbsp;
+      = link_to_login 'Ask the Founders!', '#', :onclick => "$('.questions_modal').modal('show'); return false;", :class => 'btn btn-large btn-primary'
+
+
+  .tabbable
+    %ul.nav.nav-tabs
+      %li.active
+        %a{:href => '#questions', 'data-toggle' => 'tab'} Questions
+      %li
+        %a{:href => '#profile', 'data-toggle' => 'tab'} Startup Profile
+    .tab-content
+      .tab-pane.active#questions
+        .questions
+          = render 'questions/list'
+      .tab-pane#profile
+        = render 'startups/profile'
+
+  .modal.questions_modal.hide
+    .modal-header
+      %button.close{:type => 'button', 'data-dismiss' => 'modal'} x
+      %h2{:style => 'margin-bottom: 5px'} Ask the founders a question
+    .modal-body
+      .question_form
+        = render 'questions/form'

@@ -1,6 +1,6 @@
 class ApplicationController < ActionController::Base
   before_filter :show_nstar_banner
-  #before_filter :block_ips
+  #before_filter :authenticate_if_staging
   protect_from_forgery
 
   # Visit an external site
@@ -9,6 +9,12 @@ class ApplicationController < ActionController::Base
     url = Base64.decode64(params[:url])
     url = "http://#{url}" unless url.match(/https?:\/\//) != nil
     redirect_to url
+  end
+
+  def capture_and_login
+    session[:password_not_required] = true
+    session[:redirect_to] = params[:redirect_to]
+    authenticate_user!
   end
 
   protected
@@ -39,7 +45,14 @@ class ApplicationController < ActionController::Base
         root_path
       end
     else
-      root_path
+      logger.info "AFTER REDIRECT HERE #{session[:user_return_to]}"
+      if session[:redirect_to].present?
+        tmp = session[:redirect_to]
+        session[:redirect_to] = nil
+        return tmp
+      else
+        return root_path
+      end
     end
   end
 
@@ -70,11 +83,13 @@ class ApplicationController < ActionController::Base
 
   # This method ensures that a user's account has been setup. If not, redirects to correct action
   def redirect_for_setup_and_onboarding
+    controller_action_arr = [controller_name.to_sym, action_name.to_sym]
+    # Don't redirect if here for demo day
+    return true if [:question, :demo_day].include?(controller_action_arr.first)
     if current_user.account_setup?
       return true
     else
       @hide_nav = true
-      controller_action_arr = [controller_name.to_sym, action_name.to_sym]
       @account_setup_action = current_user.account_setup_action
       if @account_setup_action.blank?
         # If for some reason account setup action is blank - redirect to user account page
@@ -106,13 +121,6 @@ class ApplicationController < ActionController::Base
       redirect_to prms
     end
     false
-  end
-
-  def block_ips
-    if request.remote_ip == '75.161.16.187'
-      render :nothing => true
-      return
-    end
   end
 
   def load_requested_or_users_startup
@@ -181,14 +189,19 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  def load_obfuscated_startup
+  def load_obfuscated_startup(ignore_bare_id = false)
     begin
-      @startup ||= Startup.find_by_obfuscated_id(params[:id]) unless params[:id].blank?
+      @startup ||= Startup.find_by_obfuscated_id(params[:id]) unless ignore_bare_id || params[:id].blank?
       @startup ||= Startup.find_by_obfuscated_id(params[:startup_id]) unless params[:startup_id].blank?
     rescue ActiveRecord::RecordNotFound
       redirect_to '/'
       return
     end
+  end
+
+  # Only load based on startup_id instead of also checking id - used when in a nested controller
+  def load_obfuscated_startup_nested
+    load_obfuscated_startup(true)
   end
   
   def redirect_if_no_startup
@@ -197,5 +210,62 @@ class ApplicationController < ActionController::Base
       return false
     end
     true
+  end
+
+  # DEMO-DAY related methods
+
+  # Pass in a time object to only_if_any_since to load only if there are any new questions since that time
+  def load_questions_for_startup(startup, only_if_any_since = nil)
+    @question = Question.new(:startup => startup)
+    @new_question = true
+    @questions = startup.questions.unanswered.ordered
+    # limit to questions only since a certain time
+    return false if @questions.where(['created_at > ?', only_if_any_since]).count == 0 if only_if_any_since.present?
+    
+    @current_question = @questions.shift if @questions.present?
+    true
+  end
+
+    # Loads the demo day, and redirects to the before or after page if it's not in the time window
+  def load_and_validate_demo_day
+    @demo_day = DemoDay.first
+    if Time.now < @demo_day.starts_at
+      @before = true
+    elsif Time.now > @demo_day.ends_at
+      @after = true
+      @next_demo_day = @demo_day.next_demo_day
+    end
+    if @before || @after
+      # If ajax request do nothing
+      if request.xhr?
+        render :nothing => true
+      else # Otherwise redirect to main page to then render before/after pages
+        redirect_to demo_day_index_path unless [controller_name.to_sym, action_name.to_sym] == [:demo_day, :index]
+      end
+    end
+  end
+
+  private
+
+  def is_staging?
+    ['localhost', 'staging.nreduce.com'].include?(request.host)
+  end
+
+  def only_allow_in_staging
+    unless is_staging?
+      redirect_to '/'
+      return false
+    end
+    true
+  end
+
+  def authenticate_if_staging
+    if is_staging?
+      authenticate_or_request_with_http_basic do |username, password|
+        username == Settings.staging.username && password == Settings.staging.password
+      end
+    else
+      true
+    end
   end
 end

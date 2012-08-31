@@ -13,7 +13,6 @@ class AuthenticationsController < ApplicationController
     authentication = Authentication.find_by_provider_and_uid(omniauth['provider'], omniauth['uid'])
     if authentication
       authentication.update_attributes(:token => omniauth['credentials']['token'], :secret => omniauth['credentials']['secret']) if omniauth['credentials'] && !omniauth['credentials']['token'].blank?
-      #flash[:notice] = "Signed in successfully."
       remember_me(authentication.user) # set remember me cookie
       sign_in_and_redirect(:user, authentication.user)
     elsif current_user # already a signed in user
@@ -29,12 +28,18 @@ class AuthenticationsController < ApplicationController
       user = User.new
       user.apply_omniauth(omniauth)
       if user.save
-        #flash[:notice] = "Signed in successfully."
         remember_me(user) # set remember me cookie
         sign_in_and_redirect(:user, user)
       else
-        logger.info "user inspect: #{user.inspect} with errors #{user.errors.full_messages}"
-        session[:omniauth] = omniauth.except('extra')
+        # Extra details are too much to store, so we have to grab just followers count
+        begin
+          fc = omniauth['extra']['raw_info']['followers_count']
+          omniauth.delete('extra')
+          omniauth['extra'] = {'raw_info' => {'followers_count' => fc}}
+        rescue
+          omniauth.delete('extra')
+        end
+        session[:omniauth] = omniauth
         redirect_to new_user_registration_url
       end
     end

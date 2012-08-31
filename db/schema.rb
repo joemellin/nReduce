@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120826082039) do
+ActiveRecord::Schema.define(:version => 20120831153150) do
 
   create_table "authentications", :force => true do |t|
     t.string   "provider"
@@ -73,10 +73,10 @@ ActiveRecord::Schema.define(:version => 20120826082039) do
 
   create_table "demo_days", :force => true do |t|
     t.string   "name"
-    t.text     "description"
+    t.text     "attendee_ids"
     t.date     "day"
-    t.datetime "created_at",  :null => false
-    t.datetime "updated_at",  :null => false
+    t.datetime "created_at",   :null => false
+    t.datetime "updated_at",   :null => false
     t.string   "startup_ids"
   end
 
@@ -178,6 +178,18 @@ ActiveRecord::Schema.define(:version => 20120826082039) do
     t.integer  "invite_id"
   end
 
+  create_table "questions", :force => true do |t|
+    t.string   "content"
+    t.string   "tweet_id"
+    t.text     "supporter_ids"
+    t.integer  "followers_count", :default => 0
+    t.datetime "answered_at"
+    t.integer  "startup_id"
+    t.integer  "user_id"
+    t.datetime "created_at",                     :null => false
+    t.datetime "updated_at",                     :null => false
+  end
+
   create_table "rails_admin_histories", :force => true do |t|
     t.text     "message"
     t.string   "username"
@@ -260,28 +272,29 @@ ActiveRecord::Schema.define(:version => 20120826082039) do
     t.integer  "growth_model"
     t.integer  "company_goal"
     t.string   "intro_video_url"
-    t.integer  "onboarding_step", :default => 1
-    t.integer  "team_size",       :default => 1
-    t.boolean  "active",          :default => true
-    t.boolean  "public",          :default => true
+    t.integer  "onboarding_step",   :default => 1
+    t.integer  "team_size",         :default => 1
+    t.boolean  "active",            :default => true
+    t.boolean  "public",            :default => true
     t.datetime "launched_at"
     t.integer  "main_contact_id"
     t.integer  "meeting_id"
-    t.datetime "created_at",                         :null => false
-    t.datetime "updated_at",                         :null => false
+    t.datetime "created_at",                           :null => false
+    t.datetime "updated_at",                           :null => false
     t.text     "elevator_pitch"
     t.string   "logo"
     t.float    "rating"
-    t.boolean  "checkins_public", :default => false
+    t.boolean  "checkins_public",   :default => false
     t.string   "pitch_video_url"
     t.integer  "setup"
-    t.boolean  "investable",      :default => false
+    t.boolean  "investable",        :default => false
     t.integer  "week"
     t.integer  "intro_video_id"
     t.integer  "pitch_video_id"
     t.text     "business_model"
     t.date     "founding_date"
     t.string   "market_size"
+    t.string   "tokbox_session_id"
   end
 
   add_index "startups", ["public"], :name => "index_startups_on_public"
@@ -373,6 +386,7 @@ ActiveRecord::Schema.define(:version => 20120826082039) do
     t.integer  "email_on"
     t.integer  "setup"
     t.integer  "intro_video_id"
+    t.integer  "followers_count"
   end
 
   add_index "users", ["email"], :name => "index_users_on_email", :unique => true
