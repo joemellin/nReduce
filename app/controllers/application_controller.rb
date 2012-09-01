@@ -84,7 +84,7 @@ class ApplicationController < ActionController::Base
   def redirect_for_setup_and_onboarding
     controller_action_arr = [controller_name.to_sym, action_name.to_sym]
     # Don't redirect if here for demo day
-    return true if [:question, :demo_day].include?(controller_action_arr.first)
+    return true if [:questions, :demo_day].include?(controller_action_arr.first)
 
     if current_user.account_setup?
       return true
