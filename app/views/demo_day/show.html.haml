@@ -78,6 +78,7 @@
 
         function loadQuestions(){
           last = lastPolledAt.toISOString();
+          console.log('polling');
           $.ajax({
             url: '#{startup_questions_path(@startup)}.js?last=' + last,
             dataType: 'script',
@@ -106,7 +107,9 @@
   .tabbable
     %ul.nav.nav-tabs
       %li#questions_tab
-        %a{:href => '#questions', 'data-toggle' => 'tab'} Questions
+        %a{:href => '#questions', 'data-toggle' => 'tab'}
+          Questions
+          %span.badge.badge-info= @questions.size
       %li.active#profile_tab
         %a{:href => '#profile', 'data-toggle' => 'tab'} Startup Profile
     .tab-content

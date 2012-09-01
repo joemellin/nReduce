@@ -27,11 +27,15 @@ class QuestionsController < ApplicationController
     @question.user = current_user
     @question.startup = @startup
     @created_question = @question
-    load_questions_for_startup(@startup) if @question.save
-      # JS will render page that redirects to url
-    respond_to do |format|
-      format.js { render :action => :list }
-      format.html { render :nothing => true }
+    if @question.save
+      load_questions_for_startup(@startup) 
+        # JS will render page that redirects to url
+      respond_to do |format|
+        format.js { render :action => :list }
+        format.html { render :nothing => true }
+      end
+    else
+      render :nothing => true
     end
   end
 
