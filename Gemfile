@@ -52,6 +52,8 @@ gem "obfuscate_id", :git => 'git://github.com/geeosh/obfuscate_id.git'
 gem 'twitter'
 gem 'opentok' # tokbox gem
 
+#gem 'mechanize'
+
 
 
 group :test, :development do
