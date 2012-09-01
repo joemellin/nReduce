@@ -45,10 +45,13 @@ gem 'bitmask_attributes'
 gem 'paper_trail', '~> 2.6.3'
 gem 'slope_one'
 gem 'rails_autolink'
+gem 'viddler-ruby'
+gem 'vimeo'
 gem "obfuscate_id", :git => 'git://github.com/geeosh/obfuscate_id.git'
 
 gem 'twitter'
 gem 'opentok' # tokbox gem
+
 
 
 group :test, :development do

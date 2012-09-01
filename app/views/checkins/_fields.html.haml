@@ -5,6 +5,12 @@
   - unless @hide_time
     .control-group
       %strong You have #{verbose_distance_until_time_from_now(Checkin.next_before_checkin)} to make any changes
+  
+  = f.fields_for :before_video do |bv|
+    = bv.hidden_field :type
+    = bv.hidden_field :external_id, :id => 'before_video_external_id'
+    = render 'videos/viddler_recorder', :external_id_element_id => 'before_video_external_id'
+
   .control-group{error_css(@checkin, :start_focus)}
     = f.label :start_focus, "This week's focus", :maxlength => 255, :class => 'control-label'
     .controls
@@ -32,6 +38,24 @@
     .control-group
       %strong You have #{verbose_distance_until_time_from_now(Checkin.next_after_checkin)} to make any changes
 
+  = f.fields_for :after_video do |av|
+    - unless av.object.new_record?
+      %strong Current video:
+      %br/
+      != av.object.embed_code
+      %br/
+      %strong Record a new version:
+    = av.hidden_field :type
+    = av.hidden_field :external_id, :id => 'after_video_external_id'
+    = render 'videos/viddler_recorder', :external_id_element_id => 'after_video_external_id'
+
+  .control-group{error_css(@checkin, :end_video_url)}
+    = f.label :end_video_url, "'After' Video URL", :class => 'control-label'
+    .controls
+      = f.text_field :end_video_url, :class => "span4", :placeholder => 'http://www.youtube.com/watch?v=088YM4pB9lM'
+      %span.help-inline Unlisted Youtube URL
+      = f.semantic_errors :end_video_url
+  
   .control-group
     = label_tag 'startup', 'Startup Status', :class => 'control-label'
     .controls
@@ -74,13 +98,6 @@
     .controls
       = f.text_area :end_comments, :size => '120x4', :class => "span4"
       = f.semantic_errors :end_comments
-
-  .control-group{error_css(@checkin, :end_video_url)}
-    = f.label :end_video_url, "'After' Video URL", :class => 'control-label'
-    .controls
-      = f.text_field :end_video_url, :class => "span4", :placeholder => 'http://www.youtube.com/watch?v=088YM4pB9lM'
-      %span.help-inline Unlisted Youtube URL
-      = f.semantic_errors :end_video_url
 
 .form-actions
   = f.submit "Submit Video", :class => "btn btn-primary btn-large"

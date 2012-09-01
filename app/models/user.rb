@@ -5,6 +5,7 @@ class User < ActiveRecord::Base
   has_paper_trail
   belongs_to :startup
   belongs_to :meeting
+  belongs_to :intro_video, :class_name => 'Video', :dependent => :destroy
   has_many :authentications, :dependent => :destroy
   has_many :organized_meetings, :class_name => 'Meeting', :foreign_key => 'organizer_id'
   has_many :sent_messages, :foreign_key => 'sender_id', :class_name => 'Message'
@@ -33,6 +34,8 @@ class User < ActiveRecord::Base
   attr_accessible :twitter, :email, :email_on, :password, :password_confirmation, :remember_me, :name, :skill_list, :industry_list, :startup, :mentor, :investor, :location, :phone, :startup_id, :settings, :meeting_id, :one_liner, :bio, :facebook_url, :linkedin_url, :github_url, :dribbble_url, :blog_url, :pic, :remote_pic_url, :pic_cache, :remove_pic, :intro_video_url
   attr_accessor :profile_fields_required
 
+  accepts_nested_attributes_for :intro_video, :reject_if => proc {|attributes| attributes.all? {|k,v| v.blank?} }, :allow_destroy => true
+  
   serialize :settings, Hash
 
   validates_presence_of :name
@@ -195,8 +198,8 @@ class User < ActiveRecord::Base
     self.mentor? and !self.roles?(:nreduce_mentor) and [4,5].include?(step)
   end
 
-  def has_startup_or_is_mentor?
-    !self.startup_id.blank? or self.mentor?
+  def has_startup_or_is_mentor_or_investor?
+    !self.startup_id.blank? || self.mentor? || self.investor?
   end
 
   def received_nudges

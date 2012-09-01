@@ -111,6 +111,8 @@ class CheckinsController < ApplicationController
     end
     @instrument = @startup.instruments.first || Instrument.new(:startup => @startup)
     @checkin.measurement = Measurement.new(:instrument => @instrument) if @checkin.measurement.blank?
+    @checkin.before_video = ViddlerVideo.new if @checkin.before_video.blank?
+    @checkin.after_video = ViddlerVideo.new if @checkin.after_video.blank?
   end
 
   def load_obfuscated_checkin
