@@ -17,6 +17,10 @@ class Question < ActiveRecord::Base
 
   attr_accessor :unseen
 
+  def unseen?
+    self.unseen == true
+  end
+
   def is_supporter?(user)
     return true if self.user_id == user.id
     return true if self.supporter_ids.include?(user.id) if self.supporter_ids.present?
