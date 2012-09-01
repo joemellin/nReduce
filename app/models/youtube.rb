@@ -58,6 +58,35 @@ class Youtube < Video
     Youtube.embed_url_for_id(self.external_id)
   end
 
+  def watch_url
+    "http://www.youtube.com/watch?v=#{self.external_id}"
+  end
+
+  def save_external_video_locally
+    self.save_file_locally
+  end
+
+  # Overwriting this because we need to use python script to save video
+  def save_file_locally
+    new_file_name = self.tmp_file_name('flv')
+    local_path_to_file = File.join(Video.tmp_file_dir, new_file_name)
+
+    # Make sure dir exists
+    FileUtils.mkdir_p(Video.tmp_file_dir) unless File.exists?(Video.tmp_file_dir)
+
+    # simple one-liner because using net/http just doesn't seem to work
+    system("#{Rails.root}/script/youtube-dl.py -o #{local_path_to_file} '#{self.watch_url}'")
+
+    self.local_file_path = local_path_to_file if File.exists?(local_path_to_file)
+    if self.local_file_path.blank?
+      raise "Local file could not be saved" 
+    else
+      return true
+    end
+  end
+
+
+  # LOTS OF OLD attempts at tryig to download youtube video
   # Generates download link from external id and then triggers super method to save video locally
   def save_external_video_locally_old
     # First we have to get the token from youtube to download the video
@@ -107,69 +136,59 @@ class Youtube < Video
     response = http.request(Net::HTTP::Get.new(uri.request_uri))
     puts response.inspect
     self.save_file_locally(Youtube.download_url_for_id(self.external_id), 'flv')
-  end
 
-  def save_external_video_locally
+
+
     # First we have to get the valid urls
     # http://stackoverflow.com/questions/4602956/youtube-get-video-not-working
+    m = Mechanize.new
+    page = m.get('http://www.youtube.com/get_video_info?&video_id=' + self.external_id)
+    puts m.cookie_jar.inspect
+    body = CGI.parse(page.body) unless page.body.blank?
+    urls_tmp = body['url_encoded_fmt_stream_map'].first.split(',').map{|url| url.sub(/^url=/, '') }
+    c = 0
+    urls_tmp.each do |u|
+      begin
+        puts CGI.unescape(u)
+        m.get(CGI.unescape(u)).save_as "/Users/josh/Projects/nreduce/tmp#{c}.flv"
+        puts m.cookie_jar.inspect
+      rescue
+        # nothing
+      end
+      c += 1
+    end
+    return 'done'
+
+
+
     uri = URI.parse('http://www.youtube.com/get_video_info?&video_id=' + self.external_id)
     http = Net::HTTP.new(uri.host, uri.port)
     response = http.request(Net::HTTP::Get.new(uri.request_uri))
+    cookie = response.response['set-cookie']
+    puts "Cookie: #{cookie}"
     body = CGI.unescape(response.body) unless response.body.blank?
     body = CGI::parse(response.body) unless body.blank?
     raise "Youtube: could not get url to download from video response" if body.blank? || body['url_encoded_fmt_stream_map'].blank?
-    urls_tmp = body['url_encoded_fmt_stream_map'].first.split(',').map{|url| CGI::unescape(url.sub(/^url=/, '')) }
+    urls_tmp = body['url_encoded_fmt_stream_map'].first.split(',').map{|url| url.sub(/^url=/, '') }
     puts urls_tmp.first
-    self.save_file_locally(urls_tmp.first, 'flv')
+    download_file = open('/Users/josh/Projects/nreduce/tmp.flv', "wb")
+    url = URI.parse(urls_tmp.first)
+    request = Net::HTTP.start(url.host, url.port)
+    request.request_get(url.path, {"Cookie" => cookie}) do |resp|
+      resp.read_body do |segment|
+        download_file.write(segment)
+        # hack to allow buffer to fille writes
+        sleep 0.005
+      end
+    end
+    download_file.close
+    return
+
+    self.save_file_locally(urls_tmp.first, 'flv', {"Cookie" => cookie})
     #raise "Youtube: could not get token for video with id #{self.external_id}" if token.blank?
     # Now we can get the video
     # Youtube quality formats: http://en.wikipedia.org/wiki/Youtube#Quality_and_codecs
     # fmt=18 is mp4 360p
     # fmt=22 is mp4 720p
   end
- #      if(!preg_match('/fmt_url_map=(.*?)&/',$html,$match))
- #      {
- #          $this->error = "Error Locating Downlod URL's";
- #          return false;
- #      }
- #
- #
- #      $fmt_url =  urldecode($match[1]);
- #
- #
- #      if(preg_match('/^(.*?)\\\\u0026/',$fmt_url,$match))
- #      {
- #          $fmt_url = $match[1];
- #      }
- #
- #      $urls = explode(',',$fmt_url);
- #      $foundArray = array();
- #
- #      foreach($urls as $url)
- #      {
- #          $format = explode('|',$url,2);
- #          $foundArray[$format[0]] = $format[1];
- #      }
- #
- #
- #      $formats = array(
- #          '13'=>array('3gp','Low Quality'),
- #          '17'=>array('3gp','Medium Quality'),
- #          '36'=>array('3gp','High Quality'),
- #          '5'=>array('flv','Low Quality'),
- #          '6'=>array('flv','Low Quality'),
- #          '34'=>array('flv','High Quality (320p)'),
- #          '35'=>array('flv','High Quality (480p)'),
- #          '18'=>array('mp4','High Quality (480p)'),
- #          '22'=>array('mp4','High Quality (720p)'),
- #          '37'=>array('mp4','High Quality (1080p)'),
- #      );
- #
- #      foreach ($formats as $format => $meta) {
- #          if (isset($foundArray[$format])) {
- #              $videos[] = array('ext' => $meta[0], 'type' => $meta[1], 'url' => $foundArray[$format]);
- #          } 
- #      }
-
-
 end
