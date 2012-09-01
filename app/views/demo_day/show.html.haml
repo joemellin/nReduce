@@ -7,7 +7,7 @@
     .span6
       %center
         %h1 #{@startup.name}
-        %p= h(@startup.one_liner)
+        %p{:style => 'margin-bottom: 2px'}= h(@startup.one_liner)
         - if @startup.website_url.present?
           %p= link_to_external @startup.website_url, @startup.website_url
     / .span3
@@ -36,6 +36,8 @@
 
             // Record Session
             // session.startRecording()
+
+            $('.loading').remove();
           }
       - else
         :javascript
@@ -55,6 +57,7 @@
             streamsContainer.appendChild(div);
             var divProps = {width: 500, height:315};
             subscriber = session.subscribe(stream, 'stream' + stream.streamId, divProps);
+            $('.loading').remove();
           }
 
       :javascript
@@ -98,15 +101,15 @@
 
   .tabbable
     %ul.nav.nav-tabs
-      %li.active
-        %a{:href => '#questions', 'data-toggle' => 'tab'} Questions
       %li
+        %a{:href => '#questions', 'data-toggle' => 'tab'} Questions
+      %li.active
         %a{:href => '#profile', 'data-toggle' => 'tab'} Startup Profile
     .tab-content
-      .tab-pane.active#questions
+      .tab-pane#questions
         .questions
           = render 'questions/list'
-      .tab-pane#profile
+      .tab-pane.active#profile
         = render 'startups/profile'
 
   .modal.questions_modal.hide
