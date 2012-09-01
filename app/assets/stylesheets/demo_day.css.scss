@@ -25,12 +25,13 @@
   margin-top: 10px;
   font-family: "myriad-pro",sans-serif;
   .attendees {
-    margin-top: 10px;
+    margin-top: 20px;
+    margin-bottom: 20px;
   }
   .attendee, .supporter {
-    width: 50px; 
-    height: 50px; 
-    margin: 0 10px 10px 0;
+    width: 48px; 
+    height: 48px; 
+    margin: 0;
   }
   #video {
     width: 500px;
@@ -49,6 +50,7 @@
     margin: 30px;
   }
   .current_question{
+    margin-top: 25px;
     .content {
       margin: 25px 0 50px 0px;
       font-size: 1.9em;
@@ -71,13 +73,17 @@
     }
     .content {
       margin-bottom: 20px;
-      font-size: 1.5em;
+      font-size: 1.8em;
       font-weight: 600;
     }
-    border-bottom: 1px solid #ccc;
-    margin-top: 5px;
+    border-bottom: 1px solid #efefef;
+    margin-top: 20px;
     margin-bottom: 10px;
     padding-bottom: 15px;
+    .asked_by img, .supporter, .supporter img {
+      width: 25px;
+      height: 25px;
+    }
   }
   .tabbable {
     li {

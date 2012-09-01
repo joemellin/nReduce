@@ -44,9 +44,19 @@
         - if user_signed_in? && @demo_day.is_attendee?(current_user)
           You're Attending
         - else
-          = link_to_login "I am here!", attend_demo_day_path(@demo_day), :method => :post, :class => 'btn'
+          = link_to_login "#{image_tag('twitter_grey.png')} I am here!".html_safe, '#', :onclick => "$('.attend_modal').modal('show'); return false;", :class => 'btn btn-large'
   .row
     .span12
       - @demo_day.attendees.each do |u|
         .left.attendee= link_to image_tag(user_avatar_url(u), :title => u.name, :alt => u.name), url_for_twitter(u.twitter), :target => '_blank'
       .clear
+
+  .modal.attend_modal.hide
+    .modal-header
+      %button.close{:type => 'button', 'data-dismiss' => 'modal'} x
+      %h2{:style => 'margin-bottom: 5px'} Record that you attended the first nReduce Demo Day
+    .modal-body
+      %p
+        %strong "#{DemoDay.tweet_content}"
+    .modal-footer
+      %center= link_to "#{image_tag('twitter_white.png')} Tweet This!".html_safe, attend_demo_day_path(@demo_day), :method => :post, :class => 'btn btn-large btn-success'
