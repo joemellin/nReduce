@@ -72,13 +72,15 @@ class Youtube < Video
     # fmt=18 is mp4 360p
     # fmt=22 is mp4 720p
 
-    url = "http://www.youtube.com/get_video?video_id=#{self.external_id}&t=#{token}&fmt=18&l=#{body['l'].first}&sk=#{body['sk'].first}"
+    # http://www.longtailvideo.com/support/forums/jw-player/setup-issues-and-embedding/10404/youtube-blocked-httpyoutubecomgetvideo
+    url = "http://www.youtube.com/get_video?video_id=#{self.external_id}&t=#{token}&fmt=18" #&l=#{body['l'].first}&sk=#{body['sk'].first}"
 
     uri = URI.parse(url)
     puts url
     http = Net::HTTP.new(uri.host, uri.port)
     response = http.request(Net::HTTP::Get.new(uri.request_uri))
-    puts response.inspect
+    return response.headers
+
     rh = CGI::parse(response)
     rh.each do |k,v|
       puts "#{k} -- #{v}"
@@ -109,13 +111,17 @@ class Youtube < Video
 
   def save_external_video_locally
     # First we have to get the valid urls
+    # http://stackoverflow.com/questions/4602956/youtube-get-video-not-working
     uri = URI.parse('http://www.youtube.com/get_video_info?&video_id=' + self.external_id)
     http = Net::HTTP.new(uri.host, uri.port)
     response = http.request(Net::HTTP::Get.new(uri.request_uri))
-    body = CGI::parse(response.body) unless response.body.blank?
-    urls_tmp = body['url_encoded_fmt_stream_map'].first.split(',')
-    return urls_tmp.map{|url| CGI::unescape(url.sub(/^url=/, '')) }
-    raise "Youtube: could not get token for video with id #{self.external_id}" if token.blank?
+    body = CGI.unescape(response.body) unless response.body.blank?
+    body = CGI::parse(response.body) unless body.blank?
+    raise "Youtube: could not get url to download from video response" if body.blank? || body['url_encoded_fmt_stream_map'].blank?
+    urls_tmp = body['url_encoded_fmt_stream_map'].first.split(',').map{|url| CGI::unescape(url.sub(/^url=/, '')) }
+    puts urls_tmp.first
+    self.save_file_locally(urls_tmp.first, 'flv')
+    #raise "Youtube: could not get token for video with id #{self.external_id}" if token.blank?
     # Now we can get the video
     # Youtube quality formats: http://en.wikipedia.org/wiki/Youtube#Quality_and_codecs
     # fmt=18 is mp4 360p

@@ -11,7 +11,6 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-
 ActiveRecord::Schema.define(:version => 20120831153150) do
 
   create_table "authentications", :force => true do |t|
@@ -288,7 +287,7 @@ ActiveRecord::Schema.define(:version => 20120831153150) do
     t.boolean  "checkins_public",   :default => false
     t.string   "pitch_video_url"
     t.integer  "setup"
-    t.boolean  "investable",      :default => false
+    t.boolean  "investable",        :default => false
     t.integer  "week"
     t.integer  "intro_video_id"
     t.integer  "pitch_video_id"
@@ -388,7 +387,6 @@ ActiveRecord::Schema.define(:version => 20120831153150) do
     t.integer  "setup"
     t.integer  "intro_video_id"
     t.integer  "followers_count"
-    t.boolean  "admin"
   end
 
   add_index "users", ["email"], :name => "index_users_on_email", :unique => true
