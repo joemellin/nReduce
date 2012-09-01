@@ -50,6 +50,9 @@ class Video < ActiveRecord::Base
     new_file_name = self.tmp_file_name(extension)
     local_path_to_file = File.join(Video.tmp_file_dir, new_file_name)
 
+    # Make sure dir exists
+    FileUtils.mkdir_p(Video.tmp_file_dir) unless File.exists?(Video.tmp_file_dir)
+
     # simple one-liner because using net/http just doesn't seem to work
     system("wget -O #{local_path_to_file} #{remote_url_str}")
 

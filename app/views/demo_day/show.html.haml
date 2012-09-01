@@ -101,6 +101,8 @@
       Have a question?
       &nbsp;
       = link_to_login "#{image_tag('twitter_white.png')} Ask the Founders!".html_safe, '#', :onclick => "$('.questions_modal').modal('show'); return false;", :class => 'btn btn-large btn-success'
+      &nbsp;
+      = link_to image_tag('question_mark.png'), '#', :onclick => "$('.how_it_works').modal('show'); return false;"
 
 
   .tabbable
@@ -125,3 +127,20 @@
     .modal-body
       .question_form
         = render 'questions/form'
+
+  .modal.how_it_works.hide
+    .modal-header
+      %button.close{:type => 'button', 'data-dismiss' => 'modal'} x
+      %h2{:style => 'margin-bottom: 5px'} How it Works
+    .modal-body
+      %h3 When you ask a question it is tweeted from your Twitter account.
+      %p We do this so that people only ask questions that they think are good. Also, the point of demo day is to bring attention to great founders. This rewards the founders you are interested in by sharing with your followers.
+
+      %h3 Questions are ranked by the number of followers who saw it.
+      %p When a question is asked, it gets ranked based on the number of followers of the asker. After a question is asked (and before it is answered) other people can support the question (re-tweet it).
+
+      %h3 Supporting a question upvotes it (and gets it answered sooner).
+      %p When a question is "supported", that question is seen by their followers and therefore gets added to the sum of followers who have seen it. That will re-rank the question and move it up in the queue so that it gets answered sooner.
+    .modal-footer
+      %center
+        = link_to_login "#{image_tag('twitter_white.png')} Ask a question!".html_safe, '#', :onclick => "$('.how_it_works').modal('hide'); $('.questions_modal').modal('show'); return false;", :class => 'btn btn-large btn-success'
