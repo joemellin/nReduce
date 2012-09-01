@@ -1,12 +1,10 @@
 = form_for [@startup, @question], :remote => true do |f|
   = f.hidden_field :startup_id
 
-  %p Tweet a question to #{@startup.name}:
-
   = f.text_area :content, :size => '120x3', :class => 'span5', :id => 'question_content'
 
   %div{:align => 'center', :style => 'margin-top: 20px'}
-    = f.submit 'Submit Question', :class => 'btn btn-success btn-large'
+    = link_to "#{image_tag('twitter_white.png')} Tweet Question".html_safe, '#', :onclick => "$('#new_question').submit(); return false;", :class => 'btn btn-success btn-large'
 
   :javascript
     $(function() {

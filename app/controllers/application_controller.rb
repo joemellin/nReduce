@@ -14,7 +14,7 @@ class ApplicationController < ActionController::Base
   def capture_and_login
     session[:password_not_required] = true
     session[:redirect_to] = params[:redirect_to]
-    authenticate_user!
+    redirect_to '/auth/twitter'
   end
 
   protected
@@ -45,7 +45,6 @@ class ApplicationController < ActionController::Base
         root_path
       end
     else
-      logger.info "AFTER REDIRECT HERE #{session[:user_return_to]}"
       if session[:redirect_to].present?
         tmp = session[:redirect_to]
         session[:redirect_to] = nil
@@ -86,6 +85,7 @@ class ApplicationController < ActionController::Base
     controller_action_arr = [controller_name.to_sym, action_name.to_sym]
     # Don't redirect if here for demo day
     return true if [:question, :demo_day].include?(controller_action_arr.first)
+
     if current_user.account_setup?
       return true
     else
@@ -242,6 +242,8 @@ class ApplicationController < ActionController::Base
       else # Otherwise redirect to main page to then render before/after pages
         redirect_to demo_day_index_path unless [controller_name.to_sym, action_name.to_sym] == [:demo_day, :index]
       end
+    else
+      @no_twitter = true if user_signed_in? && current_user.twitter_authentication.blank?
     end
   end
 

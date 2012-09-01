@@ -18,7 +18,7 @@
       - else
         &nbsp;
     .span4
-      - unless user_signed_in?
+      - unless user_signed_in? || @demo_day
         .right{:style => 'margin-left: 5px'}= link_to image_tag('nstarlink_s.png'), nstar_path
       .right
         %ul.nav.nav-pills
@@ -67,7 +67,7 @@
                     %li= link_to "Job Queue", "/admin/resque"
                   %li.divider
                   %li= link_to "Log out", logout_path, :method => :delete
-          - else
+          - elsif !@demo_day
             %li= link_to "Login", login_path
       .clear
 %hr

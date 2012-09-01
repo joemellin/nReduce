@@ -1,18 +1,28 @@
 - unless @current_question.blank?
-  .content= h(@current_question.content)
-
   .right
-    - twitter = @current_question.user.twitter.gsub('@', '')
-    :plain
-      <a href="https://twitter.com/#{twitter}" class="twitter-follow-button" data-show-count="false">Follow @#{twitter}</a>
-      <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+    - if can? :manage, @startup
+      = link_to "We've answered it!", answer_startup_question_path(@startup, @current_question), :method => :post, :remote => :true, :class => 'btn'
+    - else
+      &nbsp;
+  .left
+    %p Current Question:
+  .clear
+
+  .content= h(@current_question.content)
       
   .left
     .asked_by
       %div Asked by:
       .left.image= image_tag user_avatar_url(@current_question.user)
       .left
-        .name= @current_question.user.name
+        .name
+          .left= @current_question.user.name
+          .left{:style => 'margin-left: 10px'}
+            - twitter = @current_question.user.twitter.gsub('@', '')
+            :plain
+              <a href="https://twitter.com/#{twitter}" class="twitter-follow-button" data-show-count="false">Follow @#{twitter}</a>
+              <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
         - unless @current_question.user.followers_count.blank?
           .followers
             = number_with_delimiter(@current_question.user.followers_count) 
@@ -26,5 +36,4 @@
       .clear
   .clear
 
-  - if can? :manage, @startup
-    = link_to "We've answered it!", answer_startup_question_path(@startup, @current_question), :method => :post, :remote => :true, :class => 'btn'
+  

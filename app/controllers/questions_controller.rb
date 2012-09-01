@@ -25,6 +25,7 @@ class QuestionsController < ApplicationController
   def create
     @question.user = current_user
     @question.startup = @startup
+    @created_question = @question
     load_questions_for_startup(@startup) if @question.save
       # JS will render page that redirects to url
     respond_to do |format|

@@ -9,6 +9,10 @@ class DemoDay < ActiveRecord::Base
     DemoDay.where(['day >= ?', Date.today]).order('day ASC').first
   end
 
+  def self.tweet_content
+    "I'm checking out some awesome companies in the nReduce Demo Day! #nReduce http://nreduce.com/demo_day"
+  end
+
   def startups
     return [] if self.startup_ids.blank?
     Startup.find(self.startup_ids)
@@ -55,7 +59,7 @@ class DemoDay < ActiveRecord::Base
     # Tweet from supporter's account
     unless dont_tweet
       tw = user.twitter_client
-      tw.update("I'm checking out some awesome companies in the nReduce Demo Day! #nReduce") if Rails.env.production? && tw.present?
+      tw.update(DemoDay.tweet_content) if Rails.env.production? && tw.present?
     end
 
     save

@@ -7,7 +7,7 @@ class Question < ActiveRecord::Base
   attr_accessible :content, :startup, :startup_id
 
   validates :user_id, :startup_id, :presence => true
-  validates :content, :length => { :maximum => 100 }
+  validates :content, :length => { :maximum => 100, :minimum => 10 }
 
   after_create :tweet_question
   before_create :update_followers_and_attendees
