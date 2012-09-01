@@ -60,7 +60,7 @@ class Question < ActiveRecord::Base
   end
 
   def tweet_content
-    "#{self.content.first(90)} #nReduce http://nreduce.com/demo_day/#{self.startup.to_param}"
+    "#{self.content.first(90)} #demoday http://nreduce.com/demo_day/#{self.startup.to_param}"
   end
 
   # Tweets question from creator's account
