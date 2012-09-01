@@ -4,7 +4,6 @@ class DemoDayController < ApplicationController
   before_filter :load_and_validate_demo_day
 
   def index
-    logger.info "RETURN TO: #{session[:user_return_to]}"
     if @before || @after
       render :action => :before if @before
       render :action => :after if @after
