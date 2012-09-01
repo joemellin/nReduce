@@ -13,5 +13,8 @@
     var q = $('#question_#{@created_question.id}');
     $("html, body").animate({ scrollTop: q.offset().top }, "slow");
     q.effect("highlight", {color: '#bfebff'}, 3000);
+- else
+  - # Highlight any new questions
+  $('.question.unseen').effect("highlight", {color: '#bfebff'}, 3000);
 
   

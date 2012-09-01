@@ -15,6 +15,8 @@ class Question < ActiveRecord::Base
   scope :unanswered, where('answered_at IS NULL')
   scope :ordered, order('followers_count DESC')
 
+  attr_accessor :unseen
+
   def is_supporter?(user)
     return true if self.user_id == user.id
     return true if self.supporter_ids.include?(user.id) if self.supporter_ids.present?
@@ -60,7 +62,7 @@ class Question < ActiveRecord::Base
   end
 
   def tweet_content
-    "#{self.content.first(90)} #demoday http://nreduce.com/demo_day/#{self.startup.to_param}"
+    "#{self.content.first(90)} #demoday http://nreduce.com/d/#{DemoDay.next_or_current.index_of(self.startup)}"
   end
 
   # Tweets question from creator's account

@@ -14,7 +14,12 @@ class DemoDayController < ApplicationController
 
     # Show a specific company
   def show
-    @startup = Startup.find_by_obfuscated_id(params[:id])
+    if @demo_day.startup_ids[params[:id].to_i].present?
+      @startup = Startup.find(@demo_day.startup_ids[params[:id].to_i])
+    else
+      redirect_to :action => :index
+      return
+    end
     
     # Initialize tokbox session
     @tokbox = OpenTok::OpenTokSDK.new Settings.apis.tokbox.key, Settings.apis.tokbox.secret
@@ -39,8 +44,6 @@ class DemoDayController < ApplicationController
     @tokbox_token = @tokbox.generateToken :session_id => @tokbox_session_id, :role => role, :connection_data => user_signed_in? ? "uid=#{current_user.id}" : ''
 
     load_questions_for_startup(@startup)
-
-    redirect_to :action => :index && return unless @demo_day.startup_ids.include?(@startup.id)
   end
 
   # Register that you've attended demo day
