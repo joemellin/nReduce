@@ -78,7 +78,6 @@
 
         function loadQuestions(){
           last = lastPolledAt.toISOString();
-          console.log('polling');
           $.ajax({
             url: '#{startup_questions_path(@startup)}.js?last=' + last,
             dataType: 'script',
