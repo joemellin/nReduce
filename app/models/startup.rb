@@ -2,10 +2,12 @@ class Startup < ActiveRecord::Base
   obfuscate_id :spin => 29406582
   include Connectable # methods for relationships
   has_paper_trail
-  has_many :team_members, :class_name => 'User'
-  has_many :checkins, :dependent => :destroy
   belongs_to :main_contact, :class_name => 'User'
   belongs_to :meeting
+  belongs_to :intro_video, :class_name => 'Video', :dependent => :destroy
+  belongs_to :pitch_video, :class_name => 'Video', :dependent => :destroy
+  has_many :team_members, :class_name => 'User'
+  has_many :checkins, :dependent => :destroy
   has_many :awesomes, :through => :checkins
   has_many :invites, :dependent => :destroy
   has_many :nudges, :dependent => :destroy
@@ -23,6 +25,8 @@ class Startup < ActiveRecord::Base
   attr_accessible :name, :investable, :team_size, :website_url, :main_contact_id, :phone, :growth_model, :stage, :company_goal, :meeting_id, :one_liner, :active, :launched_at, :industry_list, :technology_list, :ideology_list, :industry, :intro_video_url, :elevator_pitch, :logo, :remote_logo_url, :logo_cache, :remove_logo, :checkins_public, :pitch_video_url, :investable, :screenshots_attributes, :business_model, :founding_date, :market_size
 
   accepts_nested_attributes_for :screenshots, :reject_if => proc {|attributes| attributes.all? {|k,v| v.blank?} }, :allow_destroy => true
+  accepts_nested_attributes_for :intro_video, :reject_if => proc {|attributes| attributes.all? {|k,v| v.blank?} }, :allow_destroy => true
+  accepts_nested_attributes_for :pitch_video, :reject_if => proc {|attributes| attributes.all? {|k,v| v.blank?} }, :allow_destroy => true
 
   #validates_presence_of :intro_video_url, :if => lambda {|startup| startup.onboarding_complete? }
   validates_presence_of :name

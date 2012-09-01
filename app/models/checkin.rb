@@ -3,18 +3,23 @@ class Checkin < ActiveRecord::Base
   belongs_to :startup
   belongs_to :user # the user logged in who created check-in
   belongs_to :measurement
+  belongs_to :before_video, :class_name => 'Video', :dependent => :destroy
+  belongs_to :after_video, :class_name => 'Video', :dependent => :destroy
   has_many :comments, :dependent => :destroy
   has_many :awesomes, :as => :awsm, :dependent => :destroy
   has_many :notifications, :as => :attachable
   has_many :user_actions, :as => :attachable
 
-  attr_accessible :start_focus, :start_why, :start_video_url, :end_video_url, :end_comments, :startup_id, :start_comments, :startup, :measurement_attributes
+  attr_accessible :start_focus, :start_why, :start_video_url, :end_video_url, :end_comments, :startup_id, :start_comments, :startup, :measurement_attributes, :before_video_attributes, :after_video_attributes
 
   accepts_nested_attributes_for :measurement, :reject_if => proc {|attributes| attributes.all? {|k,v| v.blank?} }, :allow_destroy => true
 
   after_validation :check_submitted_completed_times
   before_save :notify_user
   before_create :assign_week
+
+  accepts_nested_attributes_for :before_video, :reject_if => proc {|attributes| attributes.all? {|k,v| v.blank?} }, :allow_destroy => true
+  accepts_nested_attributes_for :after_video, :reject_if => proc {|attributes| attributes.all? {|k,v| v.blank?} }, :allow_destroy => true
 
   validates_presence_of :startup_id
   validates_presence_of :start_focus, :message => "can't be blank", :if => lambda { Checkin.in_before_time_window? }
