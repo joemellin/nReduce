@@ -10,7 +10,12 @@ class DemoDay < ActiveRecord::Base
   end
 
   def self.tweet_content
-    "I'm checking out some awesome companies in the nReduce #demoday! http://nreduce.com/demo_day"
+    "I'm checking out some awesome companies in the nReduce #demoday! http://nreduce.com/d"
+  end
+
+  def index_of(startup)
+    return nil if self.startup_ids.blank?
+    self.startup_ids.index(startup.id)
   end
 
   def startups

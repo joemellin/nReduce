@@ -156,10 +156,6 @@ Nreduce::Application.routes.draw do
     end
   end
 
-  resources :demo_day, :only => [:index, :show] do
-    post 'attend', :on => :member
-  end
-
   match '/mentors/new' => "pages#mentor"
   match '/investors/new' => "pages#investor"
   match '/community_guidelines' => "pages#community_guidelines", :as => :community_guidelines
@@ -169,6 +165,9 @@ Nreduce::Application.routes.draw do
 
   match '/capture_and_login' => 'application#capture_and_login', :as => :capture_and_login
 
+  resources :demo_day, :only => [:index, :show], :path => :d do
+    post 'attend', :on => :member
+  end
 
   root :to => 'pages#home'
 end

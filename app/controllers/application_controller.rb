@@ -222,6 +222,9 @@ class ApplicationController < ActionController::Base
     # limit to questions only since a certain time
     return false if @questions.where(['updated_at > ?', only_if_any_since]).count == 0 if only_if_any_since.present?
     @questions = @questions.includes(:user, :startup)
+    # Mark questions as unseen
+    @questions.each{|q| q.unseen = true if q.updated_at > only_of_any_since } if only_if_any_since.present?
+    # Extract current question
     @current_question = @questions.shift if @questions.present?
     true
   end

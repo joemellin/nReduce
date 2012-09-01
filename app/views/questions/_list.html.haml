@@ -11,7 +11,7 @@
 
 - @questions.each do |q|
   - c += 1
-  .row.question{:id => "question_#{q.id}"}
+  .row.question{:id => "question_#{q.id}", :class => q.unseen == true ? 'unseen' : ''}
     .span1{:align => 'center'}
       %h2= c
     .span1
