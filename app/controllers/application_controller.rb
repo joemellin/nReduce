@@ -220,7 +220,7 @@ class ApplicationController < ActionController::Base
     @new_question = true
     @questions = startup.questions.unanswered.ordered
     # limit to questions only since a certain time
-    return false if @questions.where(['created_at > ?', only_if_any_since]).count == 0 if only_if_any_since.present?
+    return false if @questions.where(['updated_at > ?', only_if_any_since]).count == 0 if only_if_any_since.present?
     
     @current_question = @questions.shift if @questions.present?
     true
