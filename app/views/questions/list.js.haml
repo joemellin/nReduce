@@ -2,6 +2,7 @@
   $('#questions_tab a:first').tab('show');
   $('.question_form').html("#{escape_javascript(render('questions/form'))}");
   $('.questions').html("#{escape_javascript(render('questions/list'))}");
+  $('#question_count').text(#{@questions.size});
   $('.current_question').html("#{escape_javascript(render('questions/current_question'))}");
 - if @new_question.present?
   :plain
@@ -9,7 +10,7 @@
 -# User just saved new question
 - if @created_question.present?
   :plain
-    var q = $('#question_#{@created_question.id}')
+    var q = $('#question_#{@created_question.id}');
     $("html, body").animate({ scrollTop: q.offset().top }, "slow");
     q.effect("highlight", {color: '#bfebff'}, 3000);
 
