@@ -78,7 +78,11 @@
 
         function loadQuestions(){
           last = lastPolledAt.toISOString();
-          $.get('#{startup_questions_path(@startup)}.js?last=' + last);
+          $.ajax({
+            url: '#{startup_questions_path(@startup)}.js?last=' + last,
+            dataType: 'script',
+            type: 'GET'
+          });
           lastPolledAt = new Date();
           setTimeout(function(){
             loadQuestions();

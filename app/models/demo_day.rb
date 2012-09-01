@@ -10,7 +10,7 @@ class DemoDay < ActiveRecord::Base
   end
 
   def self.tweet_content
-    "I'm checking out some awesome companies in the nReduce Demo Day! #nReduce http://nreduce.com/demo_day"
+    "I'm checking out some awesome companies in the nReduce #demoday! http://nreduce.com/demo_day"
   end
 
   def startups

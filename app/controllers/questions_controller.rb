@@ -4,7 +4,7 @@ class QuestionsController < ApplicationController
   before_filter :load_obfuscated_startup_nested
   load_and_authorize_resource :startup
   load_and_authorize_resource :through => :startup
-  protect_from_forgery :except => [:index]
+  #protect_from_forgery :except => [:index]
 
   def index
     if params[:last]
