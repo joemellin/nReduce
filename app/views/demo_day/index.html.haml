@@ -32,7 +32,8 @@
               = link_to 'Start Your Video Chat', this_startup_url, :class => 'btn btn-primary'
             - else
               = link_to 'Meet the Founders', this_startup_url, :class => 'btn btn-success'
-            %p= pluralize(@question_count[s.id], 'question')
+            - unless @question_count[s.id].blank?
+              %p= pluralize(@question_count[s.id], 'question')
   %hr/
   .row.attendees
     .span3
