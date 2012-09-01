@@ -38,13 +38,13 @@
     .span3
       %h2 Attendees
     .span5
-      %p To record that you attended the first nReduce Demo Day simply ask a question of a team, or click the “I am here!”. Attendees will be visible on the nStar Demo Day page for all time.
+      %p To record that you attended the first nReduce Demo Day simply ask a question of a team, or click the “I attended!”. Attendees will be visible on the nStar Demo Day page for all time.
     .span4{:align => 'right'}
       %h3
         - if user_signed_in? && @demo_day.is_attendee?(current_user)
           You're Attending
         - else
-          = link_to_login "#{image_tag('twitter_grey.png')} I am here!".html_safe, '#', :onclick => "$('.attend_modal').modal('show'); return false;", :class => 'btn btn-large'
+          = link_to_login "#{image_tag('twitter_grey.png')} I attended!".html_safe, '#', :onclick => "$('.attend_modal').modal('show'); return false;", :class => 'btn btn-large'
   .row
     .span12
       - @demo_day.attendees.each do |u|
