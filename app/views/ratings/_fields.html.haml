@@ -6,11 +6,9 @@
   .controls= f.semantic_errors :startup_id
 
 .control-group{error_css(f.object, :explanation)}
-  %p
-    %i Optional:&nbsp;
-    What is one suggestion you can give to the founders to improve this business?
+  %p Please share your feedback with the startup to help them build a better business:
   .controls
-    = f.text_area :explanation, :size => '140x5', :class => 'span6', :placeholder => 'This is a great problem to solve! From my perspective it seems you have a problem with _________ and if I were you I would do _________'
+    = f.text_area :explanation, :size => '140x5', :class => 'span6'
     = f.semantic_errors :explanation  
     %p{:style => 'font-size: 1.1em;'}
       This will be shared
