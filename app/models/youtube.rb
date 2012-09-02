@@ -74,8 +74,9 @@ class Youtube < Video
     # Make sure dir exists
     FileUtils.mkdir_p(Video.tmp_file_dir) unless File.exists?(Video.tmp_file_dir)
 
-    # simple one-liner because using net/http just doesn't seem to work
-    system("#{Rails.root}/script/youtube-dl.py -o #{local_path_to_file} -f 22 '#{self.watch_url}'")
+    # simple one-liner using this great python script
+    # doc: http://rg3.github.com/youtube-dl/documentation.html   I was passing -f 22 but not all videos are available in that format
+    system("#{Rails.root}/script/youtube-dl.py -o #{local_path_to_file} '#{self.watch_url}'")
 
     self.local_file_path = local_path_to_file if File.exists?(local_path_to_file)
     if self.local_file_path.blank?
