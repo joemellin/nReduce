@@ -6,6 +6,7 @@ class Video < ActiveRecord::Base
   attr_accessible :external_id, :user_id, :type, :vimeo_id, :image, :remote_image_url, :image_cache
 
   after_create :queue_transfer_to_vimeo
+  after_destroy :remove_from_vimeo_and_delete_local_file
 
   validates_presence_of :external_id
   validate :video_is_unique
@@ -200,5 +201,15 @@ class Video < ActiveRecord::Base
     else
       true
     end
+  end
+
+  def remove_from_vimeo_and_delete_local_file
+    # Remove video from vimeo
+    if self.vimeo_id.present?
+      video = Vimeo::Advanced::Video.new(Settings.apis.vimeo.client_id, Settings.apis.vimeo.client_secret, :token => Settings.apis.vimeo.access_token, :secret => Settings.apis.vimeo.access_token_secret)
+      video.delete(self.vimeo_id)
+    end
+
+    FileUtils.rm(self.local_file_path) if self.local_file_path.present?
   end
 end
