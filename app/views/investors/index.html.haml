@@ -91,8 +91,10 @@
             %br
             %p Complete your investment profile by August 8th to be considered for our September 5th Demo Day.
             %br
-            %p= link_to 'View Your Investment Profile', investment_profile_startup_path
-
+            %h3
+              = link_to 'View Your Investment Profile', investment_profile_startup_path
+              &nbsp;&nbsp;|&nbsp;&nbsp;
+              = link_to 'View Investor Feedback', startup_ratings_path(@startup)
             %br/
             %h3 To Dos:
             %br/
