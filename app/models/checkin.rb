@@ -233,7 +233,7 @@ class Checkin < ActiveRecord::Base
 
   # Takes youtube urls and converts to our new db-backed format (and uploads to vimeo)
   def convert_to_new_video_format
-    return true if self.before_video.present? && self.before_video.vimeo_id.present? && self.after_video.present? && self.after_video.vimeo_id.present?
+    return true if self.before_video.present? && self.after_video.present?
     if self.start_video_url.present? && self.before_video.blank?
       y = Youtube.new
       y.external_id = Youtube.id_from_url(self.start_video_url)
