@@ -68,14 +68,14 @@ class Youtube < Video
 
   # Overwriting this because we need to use python script to save video
   def save_file_locally
-    new_file_name = self.tmp_file_name('flv')
+    new_file_name = self.tmp_file_name('mp4')
     local_path_to_file = File.join(Video.tmp_file_dir, new_file_name)
 
     # Make sure dir exists
     FileUtils.mkdir_p(Video.tmp_file_dir) unless File.exists?(Video.tmp_file_dir)
 
     # simple one-liner because using net/http just doesn't seem to work
-    system("#{Rails.root}/script/youtube-dl.py -o #{local_path_to_file} '#{self.watch_url}'")
+    system("#{Rails.root}/script/youtube-dl.py -o #{local_path_to_file} -f 22 '#{self.watch_url}'")
 
     self.local_file_path = local_path_to_file if File.exists?(local_path_to_file)
     if self.local_file_path.blank?
