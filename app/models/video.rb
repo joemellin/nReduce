@@ -170,7 +170,7 @@ class Video < ActiveRecord::Base
     # Set as transcoded if it has completed
     self.vimeod = true if details['is_transcoding'].to_i == 0
     # Save image thumbnails
-    if details['thumbnails'].present? && details['thumbnails']['thumbnail'].present? && details['thumbnails']['thumbnail'].match(/default\..*\.jpg/) == nil
+    if details['thumbnails'].present? && details['thumbnails']['thumbnail'].present? && details['thumbnails']['thumbnail'].last['_content'].match(/default\..*\.jpg/) == nil
       self.remote_image_url = details['thumbnails']['thumbnail'].last['_content']
       self.save
     else
