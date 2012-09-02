@@ -3,7 +3,7 @@
   .row
     .span4= link_to image_tag('nreduce_s.png'), "/"
     .span4.countdown_and_checkin{:align => 'center'}
-      - if @demo_day
+      - if @demo_day && !@home
         - if @before
           %p Demo Day Starts In
           = render 'layouts/countdown', :time => @demo_day.starts_at

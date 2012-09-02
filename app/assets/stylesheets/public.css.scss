@@ -1,3 +1,38 @@
+
+.home_page.demo_day {
+  .background-field {
+    background: image-url('background-pattern-blue.png');
+  }
+  h2 {
+    color: #666;
+    font-weight: 600;
+    font-size: 2.5em;
+  }
+  .enter_button {
+    a {
+      font-size: 1.8em;
+    }
+  }
+  #countdown {
+    text-align: center;
+    margin: 0px auto;
+    width: 580px;
+    overflow: hidden;
+    .number_block {
+      font-size: 2em;
+      line-height: 1em;
+      p { 
+        margin: 10px;
+      }
+      .numbers {
+        font-size: 3.2em;
+        font-weight: 600;
+        margin: 20px;
+      }
+    }
+  }
+}
+
 .home_page {
   margin-top: -12px;
 
@@ -39,7 +74,7 @@
   }
 
   .background-field{
-    background: url(background-pattern.png);
+    background: image-url('background-pattern.png');
   }
 
   .headspacing {
@@ -47,7 +82,7 @@
   }
 
   .share_btns {
-    padding: 25px 0px 0px 50px
+    padding: 0px 0px 12px 50px
   }
   .linkedintxt {
     color: #aaa;
