@@ -235,23 +235,27 @@ class Checkin < ActiveRecord::Base
   def convert_to_new_video_format
     return true if self.before_video.present? && self.after_video.present?
     if self.start_video_url.present? && self.before_video.blank?
-      y = Youtube.new
-      y.external_id = Youtube.id_from_url(self.start_video_url)
+      ext_id = Youtube.id_from_url(self.start_video_url)
+      y = Youtube.where(:external_id => ext_id)
+      y ||= Youtube.new
+      y.external_id = ext_id
       y.user = self.user
       if y.save
         self.before_video = y
-        self.save
+        self.save(:validate => false)
       else
         puts "Couldn't save before video: #{y.errors.full_messages}"
       end
     end
     if self.end_video_url.present? && self.after_video.blank?
-      y = Youtube.new
-      y.external_id = Youtube.id_from_url(self.end_video_url)
+      ext_id = Youtube.id_from_url(self.end_video_url)
+      y = Youtube.where(:external_id => ext_id)
+      y ||= Youtube.new
+      y.external_id = ext_id
       y.user = self.user
       if y.save
         self.after_video = y
-        self.save
+        self.save(:validate => false)
       else
         puts "Couldn't save after video: #{y.errors.full_messages}"
       end
