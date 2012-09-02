@@ -238,17 +238,23 @@ class Checkin < ActiveRecord::Base
       y = Youtube.new
       y.external_id = Youtube.id_from_url(self.start_video_url)
       y.user = self.user
-      y.save
-      self.before_video = y
-      self.save
+      if y.save
+        self.before_video = y
+        self.save
+      else
+        puts "Couldn't save before video: #{y.errors.full_messages}"
+      end
     end
     if self.end_video_url.present? && self.after_video.blank?
       y = Youtube.new
       y.external_id = Youtube.id_from_url(self.end_video_url)
       y.user = self.user
-      y.save
-      self.after_video = y
-      self.save
+      if y.save
+        self.after_video = y
+        self.save
+      else
+        puts "Couldn't save after video: #{y.errors.full_messages}"
+      end
     end
     true
   end
