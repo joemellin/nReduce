@@ -131,7 +131,10 @@ class Video < ActiveRecord::Base
     end
 
     # Remove local file
-    FileUtils.rm(self.local_file_path) if delete_on_success if !self.vimeo_id.blank?
+    if delete_on_success && self.vimeo_id.present?
+      FileUtils.rm(self.local_file_path)
+      self.local_file_path = nil
+    end
 
     self.vimeo_id.blank? ? false : true
   end
@@ -210,6 +213,6 @@ class Video < ActiveRecord::Base
       video.delete(self.vimeo_id)
     end
 
-    FileUtils.rm(self.local_file_path) if self.local_file_path.present?
+    FileUtils.rm(self.local_file_path) if self.local_file_path.present? && File.exists?(self.local_file_path)
   end
 end
