@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120831153150) do
+ActiveRecord::Schema.define(:version => 20120902004250) do
 
   create_table "authentications", :force => true do |t|
     t.string   "provider"
@@ -189,6 +189,8 @@ ActiveRecord::Schema.define(:version => 20120831153150) do
     t.datetime "created_at",                     :null => false
     t.datetime "updated_at",                     :null => false
   end
+
+  add_index "questions", ["startup_id", "answered_at", "updated_at"], :name => "startup_answered_updated", :unique => true
 
   create_table "rails_admin_histories", :force => true do |t|
     t.text     "message"
@@ -418,5 +420,7 @@ ActiveRecord::Schema.define(:version => 20120831153150) do
     t.integer  "startup_id"
     t.string   "image"
   end
+
+  add_index "videos", ["external_id", "type"], :name => "index_videos_on_external_id_and_type", :unique => true
 
 end
