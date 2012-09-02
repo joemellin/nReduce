@@ -12,6 +12,10 @@ class ViddlerVideo < Video
   def self.record_token
     self.client.record_token
   end
+  
+  def self.perform(video_id)
+    super(video_id)
+  end
 
   # Returns html for the embedded flash recorder
   # max_length in seconds allowed for the video
