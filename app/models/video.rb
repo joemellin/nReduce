@@ -8,6 +8,7 @@ class Video < ActiveRecord::Base
   after_create :queue_transfer_to_vimeo
 
   validates_presence_of :external_id
+  validate :video_is_unique
 
   mount_uploader :image, BaseUploader # carrierwave file uploads
 
@@ -188,4 +189,16 @@ class Video < ActiveRecord::Base
   end
 
   # END VIMEO-SPECIFIC METHODS
+
+  protected
+
+  # Make sure there isn't another video already stored with same external id
+  def video_is_unique
+    if self.new_record? && Video.where(:external_id => self.external_id, :type => self.class.to_s).count > 0
+      self.errors.add(:external_id, 'is not unique')
+      false
+    else
+      true
+    end
+  end
 end
