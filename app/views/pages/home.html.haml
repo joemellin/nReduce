@@ -1,34 +1,57 @@
-.home_page
-  .row
-    .span12.background-field
-      %h2.headspacing
-        An
-        %B Alliance of Founders
-        Providing 
-      %h1.myriad_bold.feedback Feedback & Accountability
-      %h3.headspacing
-        Join our 
-        %b Free Online Startup Incubator 
-        and 
-        %b Build an Awesome Company!
-      %br/
-      %br/
+.home_page{:class => @demo_day ? 'demo_day' : ''}
+  - if @demo_day
+    .row
+      .span12.background-field{:align => 'center'}
+        = image_tag 'nstar_halo.png'
 
-      .center.linkedintxt 
-        %b Join Us
-      .center.linkedinbtn= link_to image_tag('linkedinjoin.png'), "/auth/linkedin"
-      %br/
-      %br/
-      .left.share_btns
-        :plain
-          <a href="https://twitter.com/share" class="twitter-share-button" data-url="http://www.nreduce.com" data-text="An alliance of founders working together to build Amazing Companies" data-via="nReduce">Tweet</a>
-          <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
-          <div class="fb-like" data-href="http://www.nreduce.com" data-send="false" data-layout="button_count" data-width="150" data-show-faces="false" data-font="lucida grande"></div>
-      .right.newslogo= image_tag('venturebeat.png')
-      .right.newslogo= link_to image_tag('pando.png'), 'http://pandodaily.com/2012/07/27/virtual-incubator-to-all-nreduce-adds-mentors-and-demo-days-is-it-the-pre-angellist/', :target => '_blank'
-      .right.newslogo= image_tag('xoconomy.png')
-      .clear
-  %hr
+        %h2 The first nStar Demo Day will start in:
+
+        = render 'layouts/countdown', :time => @demo_day.starts_at
+        %br/
+        .enter_button= link_to "#{image_tag('twitter_grey.png')} Enter Demo Day".html_safe, "#", :class => 'btn btn-large disabled'
+        %br/
+        %br/
+        .left.share_btns
+          :plain
+            <a href="https://twitter.com/share" class="twitter-share-button" data-url="http://www.nreduce.com" data-text="An alliance of founders working together to build Amazing Companies" data-via="nReduce">Tweet</a>
+            <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+            <div class="fb-like" data-href="http://www.nreduce.com" data-send="false" data-layout="button_count" data-width="150" data-show-faces="false" data-font="lucida grande"></div>
+        .right.newslogo= image_tag('venturebeat.png')
+        .right.newslogo= link_to image_tag('pando.png'), 'http://pandodaily.com/2012/07/27/virtual-incubator-to-all-nreduce-adds-mentors-and-demo-days-is-it-the-pre-angellist/', :target => '_blank'
+        .right.newslogo= image_tag('xoconomy.png')
+        .clear
+    %hr
+  - else
+    .row
+      .span12.background-field
+        %h2.headspacing
+          An
+          %B Alliance of Founders
+          Providing 
+        %h1.myriad_bold.feedback Feedback & Accountability
+        %h3.headspacing
+          Join our 
+          %b Free Online Startup Incubator 
+          and 
+          %b Build an Awesome Company!
+        %br/
+        %br/
+
+        .center.linkedintxt 
+          %b Join Us
+        .center.linkedinbtn= link_to image_tag('linkedinjoin.png'), "/auth/linkedin"
+        %br/
+        %br/
+        .left.share_btns
+          :plain
+            <a href="https://twitter.com/share" class="twitter-share-button" data-url="http://www.nreduce.com" data-text="An alliance of founders working together to build Amazing Companies" data-via="nReduce">Tweet</a>
+            <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+            <div class="fb-like" data-href="http://www.nreduce.com" data-send="false" data-layout="button_count" data-width="150" data-show-faces="false" data-font="lucida grande"></div>
+        .right.newslogo= image_tag('venturebeat.png')
+        .right.newslogo= link_to image_tag('pando.png'), 'http://pandodaily.com/2012/07/27/virtual-incubator-to-all-nreduce-adds-mentors-and-demo-days-is-it-the-pre-angellist/', :target => '_blank'
+        .right.newslogo= image_tag('xoconomy.png')
+        .clear
+    %hr
   
   .middle_container
     .row
