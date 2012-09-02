@@ -236,7 +236,7 @@ class Checkin < ActiveRecord::Base
     return true if self.before_video.present? && self.after_video.present?
     if self.start_video_url.present? && self.before_video.blank?
       ext_id = Youtube.id_from_url(self.start_video_url)
-      y = Youtube.where(:external_id => ext_id)
+      y = Youtube.where(:external_id => ext_id).first
       y ||= Youtube.new
       y.external_id = ext_id
       y.user = self.user
@@ -249,7 +249,7 @@ class Checkin < ActiveRecord::Base
     end
     if self.end_video_url.present? && self.after_video.blank?
       ext_id = Youtube.id_from_url(self.end_video_url)
-      y = Youtube.where(:external_id => ext_id)
+      y = Youtube.where(:external_id => ext_id).first
       y ||= Youtube.new
       y.external_id = ext_id
       y.user = self.user
