@@ -23,7 +23,7 @@
             %h3 #{r.user.name} would like to connect with you.
           .clear
         - else
-          %h3 Anonymous Investor
+          %h3 Anonymous Investor saw you #{distance_of_time_in_words_to_now(r.created_at)} ago
           .left
             %strong Result:
             - if r.contact_never?
@@ -38,7 +38,7 @@
             %strong Suggestion:
             %h3 #{simple_format(h(r.explanation))}
           .right!= render_awesome_button(r)
-          .left{:style => 'font-size: .9em'}
+          .right{:style => 'font-size: .85em; margin-right: 10px;', :align => 'right'}
             Did this feedback help your startup?
             %br/
             %small Thank the investor by giving them a "#{Awesome.label_for_type('Rating')}"
