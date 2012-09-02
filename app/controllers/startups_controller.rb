@@ -159,7 +159,7 @@ class StartupsController < ApplicationController
 
   def intro_video
     @startups = Startup.with_intro_video.limit(6).order("RAND()")
-    @startup.intro_video.build if @startup.intro_video.blank?
+    @startup.intro_video = ViddlerVideo.new if @startup.intro_video.blank?
     if !params[:startup].blank? && !params[:startup][:intro_video_url].blank?
       @startup.intro_video_url = params[:startup][:intro_video_url]
       if @startup.save
