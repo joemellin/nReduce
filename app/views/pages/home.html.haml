@@ -1,5 +1,5 @@
 .home_page{:class => @demo_day ? 'demo_day' : ''}
-  - if @demo_day
+  - if @demo_day.present?
     .row
       .span12.background-field{:align => 'center'}
         = image_tag 'nstar_halo.png'
