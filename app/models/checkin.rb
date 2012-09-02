@@ -241,7 +241,6 @@ class Checkin < ActiveRecord::Base
       y.save
       self.before_video = y
       self.save
-      y.transfer_to_vimeo!
     end
     if self.end_video_url.present? && self.after_video.blank?
       y = Youtube.new
@@ -250,7 +249,6 @@ class Checkin < ActiveRecord::Base
       y.save
       self.after_video = y
       self.save
-      y.transfer_to_vimeo!
     end
     true
   end
