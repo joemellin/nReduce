@@ -27,11 +27,11 @@
   .span6{:style => 'text-align: center', :align => 'right'}
     %div
       %strong BEFORE
-    != display_checkin_video(@checkin, :before_video, false, 500, 315)
+    = display_checkin_video(@checkin, :before_video, false, 500, 315).html_safe
   .span6{:style => 'text-align: center;'}
     %div
       %strong AFTER
-    != display_checkin_video(@checkin, :after_video, false, 500, 315)
+    = display_checkin_video(@checkin, :after_video, false, 500, 315).html_safe
 .row
   .span5{:align => 'right'}
     %p{:style => 'margin-bottom: 0'}

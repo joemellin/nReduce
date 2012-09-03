@@ -18,7 +18,7 @@
     .span3
       %p
         %small Before Video:
-      != display_checkin_video(c, :before_video, false, 250, 188)
+      = display_checkin_video(c, :before_video, false, 250, 188).html_safe
       / - if c.start_video_url.blank?
       /   = image_tag('novideo_s.png')
       / - else
@@ -26,7 +26,7 @@
     .span3
       %p
         %small After Video:
-      != display_checkin_video(c, :after_video, false, 250, 188)
+      = display_checkin_video(c, :after_video, false, 250, 188).html_safe
       / - if c.end_video_url.blank?
       /   = image_tag('novideo_s.png')
       / - else
