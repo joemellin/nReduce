@@ -51,7 +51,7 @@ class Youtube < Video
   end
 
   def embed_code_html(width = 500, height = 315)
-    '<iframe width="' + width.to_s + '" height="' + height.to_s + '" src="' + self.embed_url + '" frameborder="0" allowFullScreen></iframe>'
+    '<iframe width="' + width.to_s + '" height="' + height.to_s + '" src="' + self.embed_url + '" frameborder="0" allowFullScreen="true"></iframe>'
   end
 
   def embed_url
