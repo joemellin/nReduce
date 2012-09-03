@@ -36,6 +36,6 @@ module CheckinsHelper
   def display_video_from_youtube_url(youtube_url, width = 500, height = 315)
     embed_url = Youtube.embed_url(youtube_url)
     return '' if embed_url.blank?
-    tag(:iframe, {:width => width, :height => height, :src => embed_url, :frameborder => 0, :allowfullscreen => true})
+    Youtube.embed_code_html(embed_url, width, height)
   end
 end
