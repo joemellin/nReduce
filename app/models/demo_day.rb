@@ -24,11 +24,12 @@ class DemoDay < ActiveRecord::Base
   end
 
   def starts_at
-    Time.now - 10.minutes
-    #Time.parse("#{self.day} 11:00:00 -0700")
+    return Time.now - 10.minutes if self.day.to_s == "2012-10-03"
+    Time.parse("#{self.day} 11:00:00 -0700")
   end
 
   def ends_at
+    return Time.now + 1.hour if self.day.to_s == "2012-10-03"
     Time.parse("#{self.day} 13:00:00 -0700")
   end
 
