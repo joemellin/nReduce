@@ -1,7 +1,7 @@
 = form_for [@startup, @question], :remote => true do |f|
   = f.hidden_field :startup_id
 
-  = f.text_field :content, :class => 'span5', :id => 'question_content' # :size => '120x3',
+  = f.text_field :content, :class => 'span5', :id => 'question_content'
 
   %div{:align => 'center', :style => 'margin-top: 20px'}
     = link_to "#{image_tag('twitter_white.png')} Tweet Question".html_safe, '#', :onclick => "$('#new_question').submit(); return false;", :class => 'btn btn-success btn-large'
