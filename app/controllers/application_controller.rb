@@ -1,6 +1,6 @@
 class ApplicationController < ActionController::Base
   before_filter :show_nstar_banner
-  #before_filter :authenticate_if_staging
+  before_filter :authenticate_if_staging
   protect_from_forgery
 
   # Visit an external site
@@ -233,7 +233,11 @@ class ApplicationController < ActionController::Base
 
     # Loads the demo day, and redirects to the before or after page if it's not in the time window
   def load_and_validate_demo_day
-    @demo_day = DemoDay.next_or_current
+    if is_staging?
+      @demo_day = DemoDay.where(:day => "2012-10-03").first
+    else
+      @demo_day = DemoDay.next_or_current
+    end
     if Time.now < @demo_day.starts_at
       @before = true
     elsif Time.now > @demo_day.ends_at
