@@ -28,6 +28,8 @@
             = number_with_delimiter(@current_question.user.followers_count) 
             #{@current_question.user.followers_count == 1 ? 'follower' : 'followers'}
       .clear
+      - unless @current_question.user.bio.blank?
+        %p= simple_format(h(truncate(@current_question.user.bio, :length => 250)))
     - supporters = @current_question.supporters(true)
     - unless supporters.blank?
       %div Supporters:
