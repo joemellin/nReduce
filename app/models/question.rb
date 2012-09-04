@@ -9,13 +9,28 @@ class Question < ActiveRecord::Base
   validates :user_id, :startup_id, :presence => true
   validates :content, :length => { :maximum => 100, :minimum => 10 }
 
-  after_create :tweet_question
+  after_create :tweet_question_and_update_cache
   before_create :update_followers_and_attendees
 
   scope :unanswered, where('answered_at IS NULL')
   scope :ordered, order('followers_count DESC')
 
   attr_accessor :unseen
+
+  def self.last_changed_at_for_startup(startup)
+    last_changed = Cache.get(['questions_changed_at', startup], nil, true){
+      q = startup.questions.unanswered.ordered.first
+      q.present? ? q.updated_at.to_s : Time.now.to_s
+    }
+    Time.parse(last_changed)
+  end
+
+  def self.unanswered_for_startup(startup)
+    question_ids = Cache.get(['question_ids', startup]){
+      startup.questions.unanswered.ordered.map{|q| q.id }
+    }
+    Question.where(:id => question_ids)
+  end
 
   def unseen?
     self.unseen == true
@@ -63,6 +78,7 @@ class Question < ActiveRecord::Base
   def answer!
     self.answered_at = Time.now
     self.save
+    Cache.set(['questions_changed_at', self.startup], Time.now.to_s, nil, true)
   end
 
   def tweet_content
@@ -70,7 +86,8 @@ class Question < ActiveRecord::Base
   end
 
   # Tweets question from creator's account
-  def tweet_question
+  def tweet_question_and_update_cache
+    Cache.set(['questions_changed_at', self.startup], Time.now.to_s, nil, true)
     return true unless Rails.env.production?
     tw = self.user.twitter_client
     return false if tw.blank?

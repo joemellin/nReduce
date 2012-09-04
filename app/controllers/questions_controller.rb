@@ -28,7 +28,7 @@ class QuestionsController < ApplicationController
     @question.startup = @startup
     @created_question = @question
     if @question.save
-      load_questions_for_startup(@startup) 
+      load_questions_for_startup(@startup)
         # JS will render page that redirects to url
       respond_to do |format|
         format.js { render :action => :list }

@@ -219,11 +219,11 @@ class ApplicationController < ActionController::Base
   # Pass in a time object to only_if_any_since to load only if there are any new questions since that time
   def load_questions_for_startup(startup, only_if_any_since = nil)
     @question = Question.new(:startup => startup)
-    @new_question = true
-    @questions = startup.questions.unanswered.ordered
-    # limit to questions only since a certain time
-    return false if @questions.where(['updated_at > ?', only_if_any_since]).count == 0 if only_if_any_since.present?
-    @questions = @questions.includes(:user, :startup)
+    if only_if_any_since.present?
+      # limit to questions only since a certain time
+      return false if Question.last_changed_at_for_startup(startup) < only_if_any_since
+    end
+    @questions = Question.unanswered_for_startup(startup).includes(:user, :startup)
     # Mark questions as unseen
     @questions.each{|q| q.unseen = true if q.updated_at > only_if_any_since } if only_if_any_since.present?
     # Extract current question
