@@ -1,5 +1,4 @@
 :plain
-  $('#questions_tab a:first').tab('show');
   $('.questions').html("#{escape_javascript(render('questions/list'))}");
   $('#question_count').text(#{@questions.size});
   $('.current_question').html("#{escape_javascript(render('questions/current_question'))}");
@@ -10,7 +9,8 @@
     var q = $('#question_#{@created_question.id}');
     $("html, body").animate({ scrollTop: q.offset().top }, "slow");
     q.effect("highlight", {color: '#bfebff'}, 3000);
-    $('.question_form').reset();
+    $('#new_question')[0].reset();
+    $('#questions_tab a:first').tab('show');
 - else
   - # Highlight any new questions
   $('.question.unseen').effect("highlight", {color: '#bfebff'}, 3000);
