@@ -221,11 +221,11 @@ class ApplicationController < ActionController::Base
     @question = Question.new(:startup => startup)
     if only_if_any_since.present?
       # limit to questions only since a certain time
-      return false if Question.last_changed_at_for_startup(startup) < only_if_any_since
+      return false if Question.last_changed_at_for_startup(startup).utc < only_if_any_since
     end
     @questions = Question.unanswered_for_startup(startup).includes(:user, :startup)
     # Mark questions as unseen
-    @questions.each{|q| q.unseen = true if q.updated_at > only_if_any_since } if only_if_any_since.present?
+    @questions.each{|q| q.unseen = true if q.updated_at.utc > only_if_any_since } if only_if_any_since.present?
     # Extract current question
     @current_question = @questions.shift if @questions.present?
     true
