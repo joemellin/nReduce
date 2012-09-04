@@ -100,7 +100,7 @@
     %h2
       Have a question?
       &nbsp;
-      = link_to_login "#{image_tag('twitter_white.png')} Ask the Founders!".html_safe, '#', :onclick => "$('.questions_modal').modal('show'); return false;", :class => 'btn btn-large btn-success'
+      = link_to_login "#{image_tag('twitter_white.png')} Ask the Founders!".html_safe, '#', :onclick => "$('.questions_modal').modal('show'); $('#question_content').focus(); return false;", :class => 'btn btn-large btn-success'
       &nbsp;
       = link_to image_tag('question_mark.png'), '#', :onclick => "$('.how_it_works').modal('show'); return false;"
 
