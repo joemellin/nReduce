@@ -41,12 +41,12 @@
       %h3
         .support
           - if user_signed_in? && q.user_id == current_user.id
-            .supported= link_to '<i class="icon-ok"></i> Supported'.html_safe, '#', :class => 'btn btn-large disabled', :onclick => 'return false;'
+            .supported= link_to '<i class="icon-ok"></i> Upvoted'.html_safe, '#', :class => 'btn btn-large disabled', :onclick => 'return false;'
           - elsif !user_signed_in? || (user_signed_in? && q.user_id != current_user.id)
             - supporter = user_signed_in? && q.is_supporter?(current_user)
-            .supported{:class => supporter ? '' : 'hide'}= link_to '<i class="icon-ok"></i> Supported'.html_safe, '#', :class => 'btn btn-large disabled'
+            .supported{:class => supporter ? '' : 'hide'}= link_to '<i class="icon-ok"></i> Upvoted'.html_safe, '#', :class => 'btn btn-large disabled'
             .unsupported{:class => supporter ? 'hide' : ''}
-              = link_to_login "#{image_tag('twitter_grey.png')} Support".html_safe, '#', :onclick => "$('#question_#{q.id} .modal').modal('show'); return false;", :class => 'btn btn-large'
+              = link_to_login "#{image_tag('twitter_grey.png')} Upvote".html_safe, '#', :onclick => "$('#question_#{q.id} .modal').modal('show'); return false;", :class => 'btn btn-large'
               %p 
                 %small Get this answered sooner
     .modal.hide

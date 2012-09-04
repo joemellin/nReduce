@@ -1,7 +1,7 @@
 - unless @current_question.blank?
   .right
     - if can? :manage, @startup
-      = link_to "We've answered it!", answer_startup_question_path(@startup, @current_question), :method => :post, :remote => :true, :class => 'btn'
+      = link_to "Next Question", answer_startup_question_path(@startup, @current_question), :method => :post, :remote => :true, :class => 'btn btn-large'
     - else
       &nbsp;
   .left
