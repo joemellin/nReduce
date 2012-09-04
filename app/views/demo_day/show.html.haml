@@ -67,7 +67,7 @@
         var sessionId = '#{@tokbox_session_id}';
         var token = '#{@tokbox_token}';        
          
-        TB.setLogLevel(TB.DEBUG);     
+        #{user_signed_in? && current_user.admin? ? 'TB.setLogLevel(TB.DEBUG);' : ''}
 
         var session = TB.initSession(sessionId);    
         session.addEventListener('sessionConnected', sessionConnectedHandler);
@@ -142,4 +142,4 @@
       %p When a question is "supported", that question is seen by their followers and therefore gets added to the sum of followers who have seen it. That will re-rank the question and move it up in the queue so that it gets answered sooner.
     .modal-footer
       %center
-        = link_to_login "#{image_tag('twitter_white.png')} Ask a question!".html_safe, '#', :onclick => "$('.how_it_works').modal('hide'); $('.questions_modal').modal('show'); return false;", :class => 'btn btn-large btn-success'
+        = link_to_login "#{image_tag('twitter_white.png')} Ask a question!".html_safe, '#', :onclick => "$('.how_it_works').modal('hide'); $('.questions_modal').modal('show'); $('#question_content').focus(); return false;", :class => 'btn btn-large btn-success'
