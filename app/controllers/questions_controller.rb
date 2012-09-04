@@ -35,7 +35,10 @@ class QuestionsController < ApplicationController
         format.html { render :nothing => true }
       end
     else
-      render :nothing => true
+      respond_to do |format|
+        format.js { render :action => :edit }
+        format.html { render :nothing => true }
+      end
     end
   end
 
