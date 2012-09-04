@@ -1,6 +1,5 @@
 :plain
   $('#questions_tab a:first').tab('show');
-  $('.question_form').html("#{escape_javascript(render('questions/form'))}");
   $('.questions').html("#{escape_javascript(render('questions/list'))}");
   $('#question_count').text(#{@questions.size});
   $('.current_question').html("#{escape_javascript(render('questions/current_question'))}");
@@ -14,6 +13,7 @@
   - if @new_question.present?
     :plain
       $('.questions_modal').modal('hide');
+      $('.question_form').html("#{escape_javascript(render('questions/form'))}");
 - else
   - # Highlight any new questions
   $('.question.unseen').effect("highlight", {color: '#bfebff'}, 3000);
