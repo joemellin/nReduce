@@ -287,6 +287,9 @@ class Ability
 
     can [:new, :create, :support], Question
     can :manage, Question, :user_id => user.id
+    can :answer, Question do |q|
+      user.startup_id == q.startup_id
+    end
 
     can [:new, :create], Rsvp
     can :manage, Rsvp do |r|
