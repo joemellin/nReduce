@@ -88,6 +88,7 @@ class Question < ActiveRecord::Base
   # Tweets question from creator's account
   def tweet_question_and_update_cache
     Cache.set(['questions_changed_at', self.startup], Time.now.to_s, nil, true)
+    Cache.delete(['question_ids', startup])
     return true unless Rails.env.production?
     tw = self.user.twitter_client
     return false if tw.blank?
