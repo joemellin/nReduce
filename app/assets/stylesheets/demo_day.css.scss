@@ -90,6 +90,9 @@
     .supported {
       a { height: 24px;}
     }
+    .unsupported, .supported {
+      a { min-width: 90px; }
+    }
   }
   .tabbable {
     li {

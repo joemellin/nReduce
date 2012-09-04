@@ -76,6 +76,9 @@
         // Start polling for questions
         var lastPolledAt = new Date();
 
+        // can count number of people connected
+        // http://www.tokbox.com/opentok/api/tools/js/documentation/api/ConnectionEvent.html
+
         function loadQuestions(){
           last = lastPolledAt.toISOString();
           $.ajax({
@@ -90,7 +93,6 @@
         }
 
         loadQuestions();
-      
 
     .span6
       .current_question
