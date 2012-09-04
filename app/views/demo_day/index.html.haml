@@ -13,27 +13,32 @@
     .span3= image_tag 'nstar_s.png', :style => 'width: 75px; height: 63px'
   %hr/
   %br/
-  .relationships.row.teams
-    - startups.each do |s|
-      - this_startup_url = demo_day_path(:id => @demo_day.index_of(s))
-      - logo_path = s.logo_url(:square)
-      - owner = (user_signed_in? && !current_user.startup_id.blank? && (s.id == current_user.startup_id))
-      .span3{:align => 'center'}
-        .team_name= link_to owner ? 'You' : truncate(s.name, :length => 20), this_startup_url
-        .one_liner= s.one_liner
-        .team
-          .top{:align => 'center', :onclick => "window.location = '#{this_startup_url}';"}
-            .background{:style => "background-image: url('#{logo_path}'); cursor: pointer;"} &nbsp;
-            .members{:align => 'center'}
-              - s.team_members.shuffle.first(3).each do |tm|
-                .inline-block{:style => 'margin-left: 4px'}= image_tag(user_avatar_url(tm), :title => tm.name, :style => 'width: 50px; height: 50px;')
-          .bottom{:align => 'center'}
-            - if owner
-              = link_to 'Start Your Video Chat', this_startup_url, :class => 'btn btn-primary'
-            - else
-              = link_to 'Meet the Founders', this_startup_url, :class => 'btn btn-success'
-            - unless @question_count[s.id].blank?
-              %p= pluralize(@question_count[s.id], 'question')
+  .relationships.teams
+    .row
+      - c = 0
+      - startups.each do |s|
+        - this_startup_url = demo_day_path(:id => @demo_day.index_of(s))
+        - logo_path = s.logo_url(:square)
+        - owner = (user_signed_in? && !current_user.startup_id.blank? && (s.id == current_user.startup_id))
+        .span3{:align => 'center'}
+          .team_name= link_to owner ? 'You' : truncate(s.name, :length => 20), this_startup_url
+          .one_liner= s.one_liner
+          .team
+            .top{:align => 'center', :onclick => "window.location = '#{this_startup_url}';"}
+              .background{:style => "background-image: url('#{logo_path}'); cursor: pointer;"} &nbsp;
+              .members{:align => 'center'}
+                - s.team_members.shuffle.first(3).each do |tm|
+                  .inline-block{:style => 'margin-left: 4px'}= image_tag(user_avatar_url(tm), :title => tm.name, :style => 'width: 50px; height: 50px;')
+            .bottom{:align => 'center'}
+              - if owner
+                = link_to 'Start Your Video Chat', this_startup_url, :class => 'btn btn-primary'
+              - else
+                = link_to 'Meet the Founders', this_startup_url, :class => 'btn btn-success'
+              - unless @question_count[s.id].blank?
+                %p= pluralize(@question_count[s.id], 'question')
+        - c += 1
+        - if c != 0 && (c % 4 == 0)
+          .row
   %hr/
   .row.attendees
     .span3

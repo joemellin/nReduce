@@ -21,8 +21,8 @@ class CheckinsController < ApplicationController
   end
 
   def new
-    set_disabled_states_and_add_measurement(@checkin)
     @checkin.startup = current_user.startup
+    set_disabled_states_and_add_measurement(@checkin)
     render :action => :edit
   end
 
@@ -111,6 +111,8 @@ class CheckinsController < ApplicationController
     end
     @instrument = @startup.instruments.first || Instrument.new(:startup => @startup)
     @checkin.measurement = Measurement.new(:instrument => @instrument) if @checkin.measurement.blank?
+    # Set startup as launched if they have established an instrument
+    @checkin.startup.launched_at = Time.now unless @instrument.new_record?
     @checkin.before_video = ViddlerVideo.new if @checkin.before_video.blank?
     @checkin.after_video = ViddlerVideo.new if @checkin.after_video.blank?
   end
