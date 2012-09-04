@@ -9,7 +9,7 @@
     var q = $('#question_#{@created_question.id}');
     $("html, body").animate({ scrollTop: q.offset().top }, "slow");
     q.effect("highlight", {color: '#bfebff'}, 3000);
-    $('#new_question')[0].reset();
+    $('#question_form').replaceWith("#{escape_javascript(render('questions/form'))}");
     $('#questions_tab a:first').tab('show');
 - else
   - # Highlight any new questions

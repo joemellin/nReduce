@@ -9,8 +9,10 @@ class Question < ActiveRecord::Base
   validates :user_id, :startup_id, :presence => true
   validates :content, :length => { :maximum => 100, :minimum => 10 }
 
-  after_create :tweet_question_and_update_cache
   before_create :update_followers_and_attendees
+  before_create :tweet_question
+  after_create :update_cache
+  
 
   scope :unanswered, where('answered_at IS NULL')
   scope :ordered, order('followers_count DESC')
@@ -86,21 +88,27 @@ class Question < ActiveRecord::Base
   end
 
   # Tweets question from creator's account
-  def tweet_question_and_update_cache
-    Cache.set(['questions_changed_at', self.startup], Time.now.to_s, nil, true)
-    Cache.delete(['question_ids', startup])
+  def tweet_question
     return true unless Rails.env.production?
     tw = self.user.twitter_client
     return false if tw.blank?
-    tweet = tw.update(self.tweet_content)
-    # Save tweet id
-    if tweet.present?
-      self.tweet_id = tweet.id 
-      self.save
+    begin
+      tweet = tw.update(self.tweet_content)
+    rescue Twitter::Error::Forbidden
+      self.errors.add(:startup_id, 'has already been asked this same question by you -- please rephrase it')
+      return false
     end
+    # Save tweet id
+    self.tweet_id = tweet.id if tweet.present?
+    true
   end
 
   protected
+
+  def update_cache
+    Cache.set(['questions_changed_at', self.startup], Time.now.to_s, nil, true)
+    Cache.delete(['question_ids', startup])
+  end
 
   def add_attendee_to_demo_day(attendee)
     dd = DemoDay.next_or_current

@@ -225,7 +225,7 @@ class ApplicationController < ActionController::Base
     end
     @questions = Question.unanswered_for_startup(startup).includes(:user, :startup)
     # Mark questions as unseen
-    @questions.each{|q| q.unseen = true if q.updated_at.utc > only_if_any_since } if only_if_any_since.present?
+    @questions.each{|q| q.unseen = true if q.updated_at.utc > only_if_any_since && (user_signed_in? ? current_user.id != q.user_id : true) } if only_if_any_since.present?
     # Extract current question
     @current_question = @questions.shift if @questions.present?
     true
