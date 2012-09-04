@@ -19,9 +19,10 @@
           .left= @current_question.user.name
           .left{:style => 'margin-left: 10px'}
             - twitter = @current_question.user.twitter.gsub('@', '')
+            -# Need to use iframe version of twitter follow button so it works on AJAX render
             :plain
-              <a href="https://twitter.com/#{twitter}" class="twitter-follow-button" data-show-count="false">Follow @#{twitter}</a>
-              <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+              <iframe allowtransparency="true" frameborder="0" scrolling="no" src="//platform.twitter.com/widgets/follow_button.html?screen_name=#{twitter}&dnt=true&show_count=false" style="width:225px; height:20px;"></iframe>
+            
 
         - unless @current_question.user.followers_count.blank?
           .followers
