@@ -11,8 +11,7 @@ class Question < ActiveRecord::Base
 
   before_create :update_followers_and_attendees
   before_create :tweet_question
-  after_create :update_cache
-  
+  after_save :update_cache
 
   scope :unanswered, where('answered_at IS NULL')
   scope :ordered, order('followers_count DESC')
@@ -80,7 +79,6 @@ class Question < ActiveRecord::Base
   def answer!
     self.answered_at = Time.now
     self.save
-    Cache.set(['questions_changed_at', self.startup], Time.now.to_s, nil, true)
   end
 
   def tweet_content
