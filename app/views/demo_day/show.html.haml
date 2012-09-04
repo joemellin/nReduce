@@ -49,7 +49,7 @@
           }
       - else
         :javascript
-          function sessionConnectedHandler(event) {
+          function streamCreated(event) {
             for (var i = 0; i < event.streams.length; i++) {
               var stream = event.streams[i];
               displayStream(stream);
@@ -64,22 +64,26 @@
             streamsContainer.appendChild(div);
             var divProps = {width: 500, height:315};
             subscriber = session.subscribe(stream, 'stream' + stream.streamId, divProps);
-            $('.loading').remove();
-            // Listen if stream gets created again - to display in case publisher loses connection
-            session.addEventListenter('streamCreated', sessionConnectedHandler);
+            $('.loading').hide();
+          }
+
+          function streamDestroyed(event) {
+            $('.loading').show();
           }
 
       :javascript
+
         // Tokbox chat
         // http://www.tokbox.com/opentok/api/documentation/gettingstarted
         var apiKey = '#{Settings.apis.tokbox.key}';
         var sessionId = '#{@tokbox_session_id}';
         var token = '#{@tokbox_token}';        
          
-        #{user_signed_in? && current_user.admin? ? 'TB.setLogLevel(TB.DEBUG);' : ''}
-
-        var session = TB.initSession(sessionId);    
-        session.addEventListener('sessionConnected', sessionConnectedHandler);
+        //TB.setLogLevel(TB.DEBUG);
+        var session = TB.initSession(sessionId);
+        // Listen if stream gets created again - to display in case publisher loses connection
+        #{@owner ? "session.addEventListener('sessionConnected', sessionConnectedHandler);" : "session.addEventListener('streamCreated', streamCreated); session.addEventListener('streamCreated', streamDestroyed);"}
+        
         session.connect(apiKey, token);
 
         // Start polling for questions

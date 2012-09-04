@@ -39,7 +39,7 @@ class User < ActiveRecord::Base
   serialize :settings, Hash
 
   validates_presence_of :name
-  #validate :email_is_not_nreduce
+  validate :email_is_not_nreduce
   validate :check_video_urls_are_valid
   validates_length_of :bio, :minimum => 100, :too_short => "needs to be at least 100 characters", :if => :profile_fields_required?
   validates_presence_of :pic, :if => :profile_fields_required?
@@ -570,7 +570,7 @@ class User < ActiveRecord::Base
   protected
 
   def email_is_not_nreduce
-    if !self.email.blank? and self.email.match(/\@\w+\.nreduce\.com$/) != nil
+    if self.roles.present? && !self.email.blank? and self.email.match(/\@\w+\.nreduce\.com$/) != nil
       self.errors.add(:email, 'is not valid')
       false
     else
