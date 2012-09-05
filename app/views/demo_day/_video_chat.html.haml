@@ -14,20 +14,20 @@
   var session;
   var apiKey = '#{Settings.apis.tokbox.key}';
   var sessionId = '#{@tokbox_session_id}';
-  var token = '#{@tokbox_token}';    
+  var token = '#{@tokbox_token}';
 
   // Show loading if stream gets killed
   function streamDestroyed(event) {
     $('.loading').show();
   }
 
-  function exceptionHandler(event) {
-    // Retry session connect
-    if (event.code === 1006 || event.code === 1008 || event.code === 1014) {
-      alert('There was an error connecting. Trying again.');
-      session.connect(apiKey, token);
-    }
-  }
+  / function exceptionHandler(event) {
+  /   // Retry session connect
+  /   if (event.code === 1006 || event.code === 1008 || event.code === 1014) {
+  /     alert('There was an error connecting. Trying again.');
+  /     session.connect(apiKey, token);
+  /   }
+  / }
 
 - if @owner
   :plain
@@ -113,8 +113,10 @@
       $('.loading').hide();
     }
 
+- if user_signed_in? && current_user.admin?
+  :plain
+    TB.setLogLevel(TB.DEBUG);
 :plain
-  //TB.setLogLevel(TB.DEBUG);
   session = TB.initSession(sessionId);
 
 -# Listen if stream gets created again - to display in case publisher loses connection
@@ -135,7 +137,7 @@
 
 :plain
   // Listen for exceptions to try and reconnect
-  TB.addEventListener("exception", exceptionHandler);
+  //TB.addEventListener("exception", exceptionHandler);
   
   session.connect(apiKey, token);
   </script>
