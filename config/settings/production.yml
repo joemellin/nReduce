@@ -11,7 +11,7 @@ apis:
   mailchimp:
     enabled: true
     api_key: "cf1fbea231f5330dbda47c72f151077e-us5"
-    everyone_list_id: "e67395ae74"
+    everyone_list_id: "25e7e5578c"
     startup_list_id: ""
     mentor_list_id: ""
     investor_list_id: ""

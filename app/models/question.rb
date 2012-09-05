@@ -7,7 +7,7 @@ class Question < ActiveRecord::Base
   attr_accessible :content, :startup, :startup_id
 
   validates :user_id, :startup_id, :presence => true
-  validates :content, :length => { :maximum => 100, :minimum => 10 }
+  validates :content, :length => { :maximum => 90, :minimum => 10 }
 
   before_create :update_followers_and_attendees
   before_create :tweet_question
@@ -82,7 +82,7 @@ class Question < ActiveRecord::Base
   end
 
   def tweet_content
-    "#{self.content.first(100)} #demoday http://nreduce.com/d/#{DemoDay.next_or_current.index_of(self.startup)}"
+    "#{self.content.first(90)} #{Settings.demo_day.hashtag} http://nreduce.com/d/#{DemoDay.next_or_current.index_of(self.startup)}"
   end
 
   # Tweets question from creator's account

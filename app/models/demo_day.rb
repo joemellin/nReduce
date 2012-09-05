@@ -10,7 +10,7 @@ class DemoDay < ActiveRecord::Base
   end
 
   def self.tweet_content
-    "I'm checking out some awesome companies in the nReduce #demoday! http://nreduce.com/d"
+    "I'm checking out some awesome companies in the #{Settings.demo_day.hashtag}! http://nreduce.com/d"
   end
 
   def index_of(startup)

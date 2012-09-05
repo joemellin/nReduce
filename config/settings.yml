@@ -1,3 +1,6 @@
+demo_day:
+  hashtag: '#nReduceDemoDay'
+
 staging:
   username: 'nreduce'
   password: 'sep5th'
