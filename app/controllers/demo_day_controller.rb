@@ -16,6 +16,8 @@ class DemoDayController < ApplicationController
   def show
     if @demo_day.startup_ids[params[:id].to_i].present?
       @startup = Startup.find(@demo_day.startup_ids[params[:id].to_i])
+      # Load all checkins made before demo day
+      @checkins = @startup.checkins.where(['created_at < ?', "#{@demo_day.day} 00:00:00"]).ordered.includes(:before_video, :after_video)
     else
       redirect_to :action => :index
       return

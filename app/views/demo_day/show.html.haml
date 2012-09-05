@@ -134,6 +134,23 @@
       .tab-pane.active#profile
         = render 'startups/profile'
 
+        - @checkins.each do |c|
+          %center
+            %h3 Week of #{c.time_label}
+            %p Goal: #{h(c.start_focus)}
+          .row{:style => 'margin-bottom: 20px;'}
+            .span6
+              .right{:style => 'width: 425px', :align => 'right'}
+                = display_checkin_video(c, :before_video, false, 425, 268).html_safe
+                %center
+                  %p Before
+              .clear
+            .span6
+              %div{:style => 'width: 425px'}
+                = display_checkin_video(c, :after_video, false, 425, 268).html_safe
+                %center
+                  %p After
+
   .modal.questions_modal.hide
     .modal-header
       %button.close{:type => 'button', 'data-dismiss' => 'modal'} x
