@@ -28,6 +28,7 @@
       - if @owner
         :javascript
           var publisher;
+          var archive;
           function sessionConnectedHandler(event) {
             // Put my webcam in a div
             var publishProps = {width:500, height:315};
@@ -47,6 +48,11 @@
               //stream.startRecording();
             }
           }
+
+          function archiveCreatedHandler(event) {
+            archive = event.archives[0];
+          }
+
       - else
         :javascript
           function streamCreated(event) {
@@ -71,6 +77,14 @@
             $('.loading').show();
           }
 
+          function exceptionHandler(event) {
+            // Retry session connect
+            if (event.code === 1006 || event.code === 1008 || event.code === 1014) {
+              alert('There was an error connecting. Trying again.');
+              session.connect(apiKey, token);
+            }
+          }
+
       :javascript
 
         // Tokbox chat
@@ -83,6 +97,12 @@
         var session = TB.initSession(sessionId);
         // Listen if stream gets created again - to display in case publisher loses connection
         #{@owner ? "session.addEventListener('sessionConnected', sessionConnectedHandler);" : "session.addEventListener('streamCreated', streamCreated); session.addEventListener('streamCreated', streamDestroyed);"}
+
+        session.addEventListener("archiveCreated", archiveCreatedHandler);
+        session.createArchive(#{Settings.apis.tokbox.key}, "perSession", '#{@startup.name}');
+
+        // Listen for exceptions to try and reconnect
+        TB.addEventListener("exception", exceptionHandler);
         
         session.connect(apiKey, token);
 
@@ -175,3 +195,21 @@
     .modal-footer
       %center
         = link_to_login "#{image_tag('twitter_white.png')} Ask a question!".html_safe, '#', :onclick => "$('.how_it_works').modal('hide'); $('.questions_modal').modal('show'); $('#question_content').focus(); return false;", :class => 'btn btn-large btn-success'
+
+:plain
+  <script src="http://js.pusher.com/1.12/pusher.min.js" type="text/javascript"></script>
+  <script type="text/javascript">
+    // Enable pusher logging - don't include this in production
+    Pusher.log = function(message) {
+      if (window.console && window.console.log) window.console.log(message);
+    };
+
+    // Flash fallback logging - don't include this in production
+    WEB_SOCKET_DEBUG = true;
+
+    var pusher = new Pusher('ac5c6f2c099277e5739f');
+    var channel = pusher.subscribe('test_channel');
+    channel.bind('my_event', function(data) {
+      alert(data);
+    });
+  </script>

@@ -167,6 +167,11 @@ apis:
     access_token_secret: '2346d1c724bd6503c4891461f0a26663d4bb7332'
     preset_id: 214008
 
+  pusher:
+    key: 'ac5c6f2c099277e5739f'
+    secret: 'eac83a0926956e45aa5c'
+    app_id: '26883'
+
 aws:
   s3:
     access_key_id: 'AKIAIBBRV3NRIKHCXYYQ'

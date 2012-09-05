@@ -357,6 +357,38 @@ class Startup < ActiveRecord::Base
     nil
   end
 
+   # Takes youtube urls and converts to our new db-backed format (and uploads to vimeo)
+  def convert_to_new_video_format
+    return true if self.pitch_video.present? && self.intro_video.present?
+    if self.intro_video_url.present? && self.intro_video.blank?
+      ext_id = Youtube.id_from_url(self.intro_video_url)
+      y = Youtube.where(:external_id => ext_id).first
+      y ||= Youtube.new
+      y.external_id = ext_id
+      y.user = self.user
+      if y.save
+        self.intro_video = y
+        self.save(:validate => false)
+      else
+        puts "Couldn't save intro video: #{y.errors.full_messages}"
+      end
+    end
+    if self.pitch_video_url.present? && self.pitch_video.blank?
+      ext_id = Youtube.id_from_url(self.pitch_video_url)
+      y = Youtube.where(:external_id => ext_id).first
+      y ||= Youtube.new
+      y.external_id = ext_id
+      y.user = self.user
+      if y.save
+        self.pitch_video = y
+        self.save(:validate => false)
+      else
+        puts "Couldn't save pitch video: #{y.errors.full_messages}"
+      end
+    end
+    true
+  end
+
   protected
 
   # If they were invited by another startup, establish a relationship
