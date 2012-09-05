@@ -24,7 +24,7 @@ class DemoDay < ActiveRecord::Base
   end
 
   def starts_at
-    Time.parse("#{self.day} 10:50:00 -0700")
+    Time.parse("#{self.day} 11:15:00 -0700")
   end
 
   def ends_at
