@@ -33,7 +33,7 @@
       subscriber = session.subscribe(stream, 'stream' + stream.streamId, divProps);
       $('.loading').remove();
       // Listen if stream gets created again - to display in case publisher loses connection
-      session.addEventListenter('streamCreated', sessionConnectedHandler);
+      session.addEventListener('streamCreated', sessionConnectedHandler);
     }
 
 :javascript
