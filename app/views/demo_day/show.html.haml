@@ -62,7 +62,7 @@
           %a{:href => '#questions', 'data-toggle' => 'tab'}
             Questions
             %span.badge.badge-warning#question_count= @questions.size
-      %li#profile_tab
+      %li#profile_tab{:class => @after ? 'active' : ''}
         %a{:href => '#profile', 'data-toggle' => 'tab'} Startup Profile
     .tab-content
       - unless @after
@@ -118,7 +118,7 @@
 
                 - c = 0
                 - @screenshots.each do |s|
-                  .screenshot.screenshot_modal.left{'data-id' => c}= link_to image_tag(s.image_url(:small)), '#'
+                  .screenshot.screenshot_modal.left{'data-id' => c, :style => 'margin-right: 15px; border: 1px solid #ccc;'}= link_to image_tag(s.image_url(:small)), '#'
                   - c += 1
                 .clear
 
@@ -199,27 +199,28 @@
       %center
         = link_to_login "#{image_tag('twitter_white.png')} Ask a question!".html_safe, '#', :onclick => "$('.how_it_works').modal('hide'); $('.questions_modal').modal('show'); $('#question_content').focus(); return false;", :class => 'btn btn-large btn-success'
 
-:plain
-  <script type="text/javascript">
-  // Start polling for questions
-  var lastPolledAt = new Date();
+- unless @before || @after
+  :plain
+    <script type="text/javascript">
+    // Start polling for questions
+    var lastPolledAt = new Date();
 
-  // can count number of people connected
-  // http://www.tokbox.com/opentok/api/tools/js/documentation/api/ConnectionEvent.html
+    // can count number of people connected
+    // http://www.tokbox.com/opentok/api/tools/js/documentation/api/ConnectionEvent.html
 
-  function loadQuestions(){
-    last = lastPolledAt.toISOString();
-    $.ajax({
-      url: '#{startup_questions_path(@startup)}.js?last=' + last,
-      dataType: 'script',
-      type: 'GET'
-    });
-    lastPolledAt = new Date();
-    setTimeout(function(){
-      loadQuestions();
-    }, 10000);
-  }
+    function loadQuestions(){
+      last = lastPolledAt.toISOString();
+      $.ajax({
+        url: '#{startup_questions_path(@startup)}.js?last=' + last,
+        dataType: 'script',
+        type: 'GET'
+      });
+      lastPolledAt = new Date();
+      setTimeout(function(){
+        loadQuestions();
+      }, 10000);
+    }
 
-  loadQuestions();
+    loadQuestions();
 
-  </script>
+    </script>
