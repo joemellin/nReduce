@@ -10,150 +10,153 @@
         %p{:style => 'margin-bottom: 2px'}= h(@startup.one_liner)
         - if @startup.website_url.present?
           %p= link_to_external @startup.website_url, @startup.website_url
-    / .span3
-    /   %center
-    /     Investors Only
-    /     %br/
-    /     = link_to "Contact #{@startup.name}", '#', :class => 'btn btn-large'
+    .span3
+      %center
+        Investors Only
+        %br/
+        = link_to "<i class=\"icon-envelope\"></i> Contact #{@startup.name}".html_safe, '#', :class => 'btn btn-large', :onclick => "$('.investor_contact').modal('show');"
+        .modal.hide.investor_contact
+          .modal-header
+            %button.close{:type => 'button', 'data-dismiss' => 'modal'} x
+            %h2{:style => 'margin-bottom: 5px'} Interested in meeting #{@startup.name}?
+          .modal-body
+            %h3
+              Please send an email to 
+              = mail_to('joe@nReduce.com')
+              %br/
+              and he will personally introduce you.
+            %br/
+            %br/
+            %h3 Thanks for your support of nReduce!
   %hr/
 
   .row
-    .span6
-      %div{:style => 'width: 500px'}
+    - if @after
+      .span12
         %center
-          %h3 Live Q&A with the founders of #{@startup.name}
-      .video_wrapper
-        #video
-          .loading Loading Live Stream...
-      - if @owner
-        :javascript
-          var publisher;
-          var archive;
-          function sessionConnectedHandler(event) {
-            // Put my webcam in a div
-            var publishProps = {width:500, height:315};
-            publisher = TB.initPublisher(apiKey, 'video', publishProps);
-            // Send my stream to the session
-            session.publish(publisher);
-
-            // Show video
-            $('.loading').remove();
-
-            // Record Session
-            stream = null;
-            for (var i = 0; i < event.streams; i++) {
-              var stream = event.streams[i];
-            }
-            if(stream != null){
-              //stream.startRecording();
-            }
-          }
-
-          function archiveCreatedHandler(event) {
-            archive = event.archives[0];
-          }
-
-      - else
-        :javascript
-          function streamCreated(event) {
-            for (var i = 0; i < event.streams.length; i++) {
-              var stream = event.streams[i];
-              displayStream(stream);
-            }
-            streams = event.streams;
-          }
-
-          function displayStream(stream) {
-            var div = document.createElement('div');
-            div.setAttribute('id', 'stream' + stream.streamId);
-            var streamsContainer = document.getElementById('video');
-            streamsContainer.appendChild(div);
-            var divProps = {width: 500, height:315};
-            subscriber = session.subscribe(stream, 'stream' + stream.streamId, divProps);
-            $('.loading').hide();
-          }
-
-          function streamDestroyed(event) {
-            $('.loading').show();
-          }
-
-          function exceptionHandler(event) {
-            // Retry session connect
-            if (event.code === 1006 || event.code === 1008 || event.code === 1014) {
-              alert('There was an error connecting. Trying again.');
-              session.connect(apiKey, token);
-            }
-          }
-
-      :javascript
-
-        // Tokbox chat
-        // http://www.tokbox.com/opentok/api/documentation/gettingstarted
-        var apiKey = '#{Settings.apis.tokbox.key}';
-        var sessionId = '#{@tokbox_session_id}';
-        var token = '#{@tokbox_token}';        
-         
-        //TB.setLogLevel(TB.DEBUG);
-        var session = TB.initSession(sessionId);
-        // Listen if stream gets created again - to display in case publisher loses connection
-        #{@owner ? "session.addEventListener('sessionConnected', sessionConnectedHandler);" : "session.addEventListener('streamCreated', streamCreated); session.addEventListener('streamCreated', streamDestroyed);"}
-
-        session.addEventListener("archiveCreated", archiveCreatedHandler);
-        session.createArchive(#{Settings.apis.tokbox.key}, "perSession", '#{@startup.name}');
-
-        // Listen for exceptions to try and reconnect
-        TB.addEventListener("exception", exceptionHandler);
-        
-        session.connect(apiKey, token);
-
-        // Start polling for questions
-        var lastPolledAt = new Date();
-
-        // can count number of people connected
-        // http://www.tokbox.com/opentok/api/tools/js/documentation/api/ConnectionEvent.html
-
-        function loadQuestions(){
-          last = lastPolledAt.toISOString();
-          $.ajax({
-            url: '#{startup_questions_path(@startup)}.js?last=' + last,
-            dataType: 'script',
-            type: 'GET'
-          });
-          lastPolledAt = new Date();
-          setTimeout(function(){
-            loadQuestions();
-          }, 10000);
-        }
-
-        loadQuestions();
-
-    .span6
-      .current_question
-        - unless @current_question.blank?
-          = render 'questions/current_question'
-  .ask_a_question{:align => 'center'}
-    %h2
-      Have a question?
-      &nbsp;
-      = link_to_login "#{image_tag('twitter_white.png')} Ask the Founders!".html_safe, '#', :onclick => "$('.questions_modal').modal('show'); $('#question_content').focus(); return false;", :class => 'btn btn-large btn-success'
-      &nbsp;
-      = link_to image_tag('question_mark.png'), '#', :onclick => "$('.how_it_works').modal('show'); return false;"
+          %h3 Q&A with the founders of #{@startup.name}
+          .video_wrapper
+            #video
+              .loading Demo Day Video available soon...
+    - else
+      .span6
+        %h3 Live Q&A with the founders of #{@startup.name}
+        = render :partial => 'demo_day/video_chat'
+      .span6
+        .current_question
+          - unless @current_question.blank?
+            = render 'questions/current_question'
+  - unless @after
+    .ask_a_question{:align => 'center'}
+      %h2
+        Have a question?
+        &nbsp;
+        = link_to_login "#{image_tag('twitter_white.png')} Ask the Founders!".html_safe, '#', :onclick => "$('.questions_modal').modal('show'); $('#question_content').focus(); return false;", :class => 'btn btn-large btn-success'
+        &nbsp;
+        = link_to image_tag('question_mark.png'), '#', :onclick => "$('.how_it_works').modal('show'); return false;"
 
   .tabbable
     %ul.nav.nav-tabs
-      %li#questions_tab
-        %a{:href => '#questions', 'data-toggle' => 'tab'}
-          Questions
-          %span.badge.badge-warning#question_count= @questions.size
-      %li.active#profile_tab
+      - unless @after
+        %li.active#questions_tab
+          %a{:href => '#questions', 'data-toggle' => 'tab'}
+            Questions
+            %span.badge.badge-warning#question_count= @questions.size
+      %li#profile_tab
         %a{:href => '#profile', 'data-toggle' => 'tab'} Startup Profile
     .tab-content
-      .tab-pane#questions
-        .questions
-          = render 'questions/list'
-      .tab-pane.active#profile
-        = render 'startups/profile'
+      - unless @after
+        .tab-pane.active#questions
+          .questions
+            = render 'questions/list'
+      .tab-pane#profile{:class => @after ? 'active' : ''}
+        - #display_video(video, show_image = false, width = 500, height = 315)
+        .row
+          .span12.well{:style => 'padding: 0'}
+            .row{:style => 'padding: 19px'}
+              .span3
+                - vid_url = Youtube.embed_url(@startup.pitch_video_url)
+                - if vid_url.blank?
+                  [ no pitch video ]
+                - else
+                  %iframe{:width => '250', :height => '188', :src => vid_url, :frameborder => 0, :allowfullscreen => true}
+              .span5
+                %h1= h(@startup.name)
+                - unless @startup.one_liner.blank?
+                  %h3= h(@startup.one_liner)
+                - unless @startup.website_url_to_uri.blank?
+                  %h3
+                    %small= link_to_external @startup.website_url_to_uri.hostname, @startup.website_url
+                .row
+                  .span2
+                    - unless @startup.company_goal.blank?
+                      %p
+                        %small Goal: #{Startup.company_goals[@startup.company_goal.to_i]}
+                    %p
+                      %small Industry: #{h(@startup.industry_list)}
+                    %p
+                      Checkins:
+                      %span.badge.badge-warning #{@num_checkins}
+                  .span2
+                    - unless @startup.stage.blank?
+                      %p
+                        %small Idea Stage: #{Startup.stages[@startup.stage.to_i]}
+                    - unless @startup.growth_model.blank?
+                      %p
+                        %small Growth Model: #{Startup.growth_models[@startup.growth_model.to_i]}
+                    %p
+                      Awesomes:
+                      %span.badge.badge-warning #{@num_awesomes}
+              .span3
+                %p
+                  %small Elevator Pitch
+                %p= simple_format(h(@startup.elevator_pitch))
+          
+            - unless @screenshots.blank?
+              .product_screenshots
+                %h3 Product Screenshots
 
+                - c = 0
+                - @screenshots.each do |s|
+                  .screenshot.screenshot_modal.left{'data-id' => c}= link_to image_tag(s.image_url(:small)), '#'
+                  - c += 1
+                .clear
+
+                #screenshots_modal.modal.hide
+                  .modal-body
+                    #screenshots_carousel.carousel.slide
+                      .carousel-inner
+                        - c = 0
+                        - @screenshots.each do |s|
+                          .item{:class => c == 0 ? 'active' : ''}= image_tag s.image_url
+                          - c += 1
+                      %a.carousel-control.left{:href => '#screenshots_carousel', 'data-slide' => 'prev'} &lsaquo;
+                      %a.carousel-control.right{:href => '#screenshots_carousel', 'data-slide' => 'next'} &rsaquo;
+          
+        .row
+          .span12
+            %h4 Team #{h(@startup.name)}
+            %hr
+            %br
+        .row
+          .span12
+            - @startup.team_members.each do |team_member|
+              .left
+                .span1{:align => 'right', :style => 'margin-left: 0'}= link_to(image_tag(user_avatar_url(team_member)), team_member.linkedin_url, :target => '_blank')
+                .span2
+                  %h4= link_to team_member.name, team_member.linkedin_url, :target => '_blank'
+                  %p
+                    %small
+                      Skills: #{team_member.skill_list}
+                      %br/
+                      Located: #{team_member.location}
+            .clear
+            %hr
+            %br
+
+
+        %center
+          %h2{:style => 'font-weight: 600'} #{@startup.name.possessive} Timeline
         - @checkins.each do |c|
           %center
             %h3 Week of #{c.time_label}
@@ -197,19 +200,26 @@
         = link_to_login "#{image_tag('twitter_white.png')} Ask a question!".html_safe, '#', :onclick => "$('.how_it_works').modal('hide'); $('.questions_modal').modal('show'); $('#question_content').focus(); return false;", :class => 'btn btn-large btn-success'
 
 :plain
-  <script src="http://js.pusher.com/1.12/pusher.min.js" type="text/javascript"></script>
   <script type="text/javascript">
-    // Enable pusher logging - don't include this in production
-    Pusher.log = function(message) {
-      if (window.console && window.console.log) window.console.log(message);
-    };
+  // Start polling for questions
+  var lastPolledAt = new Date();
 
-    // Flash fallback logging - don't include this in production
-    WEB_SOCKET_DEBUG = true;
+  // can count number of people connected
+  // http://www.tokbox.com/opentok/api/tools/js/documentation/api/ConnectionEvent.html
 
-    var pusher = new Pusher('ac5c6f2c099277e5739f');
-    var channel = pusher.subscribe('test_channel');
-    channel.bind('my_event', function(data) {
-      alert(data);
+  function loadQuestions(){
+    last = lastPolledAt.toISOString();
+    $.ajax({
+      url: '#{startup_questions_path(@startup)}.js?last=' + last,
+      dataType: 'script',
+      type: 'GET'
     });
+    lastPolledAt = new Date();
+    setTimeout(function(){
+      loadQuestions();
+    }, 10000);
+  }
+
+  loadQuestions();
+
   </script>

@@ -1,4 +1,5 @@
 class ApplicationController < ActionController::Base
+  before_filter :hc_url_fix
   before_filter :show_nstar_banner
   before_filter :authenticate_if_staging
   protect_from_forgery
@@ -18,6 +19,10 @@ class ApplicationController < ActionController::Base
   end
 
   protected
+
+  def hc_url_fix
+    request.format = :html if request.format.to_s.include? 'hc/url'
+  end
 
   def show_nstar_banner
     @show_nstar_banner = (controller_name == 'pages' and action_name != 'community_guidelines')

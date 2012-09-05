@@ -4,9 +4,9 @@ class DemoDayController < ApplicationController
   before_filter :load_and_validate_demo_day
 
   def index
-    if @before || @after
+    if @before
       render :action => :before if @before
-      render :action => :after if @after
+      #render :action => :after if @after
       return
     end
     @question_count = Question.group('startup_id').unanswered.count
@@ -44,8 +44,12 @@ class DemoDayController < ApplicationController
       role = OpenTok::RoleConstants::SUBSCRIBER
     end
     @tokbox_token = @tokbox.generateToken :session_id => @tokbox_session_id, :role => role, :connection_data => user_signed_in? ? "uid=#{current_user.id}" : ''
-
+    
     load_questions_for_startup(@startup)
+    
+    @num_checkins = @startup.checkins.count
+    @num_awesomes = @startup.awesomes.count
+    @screenshots = @startup.screenshots.ordered
   end
 
   # Register that you've attended demo day
