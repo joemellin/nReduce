@@ -43,13 +43,6 @@
 
       // Show video
       $('.loading').remove();
-
-      // Add event listeners
-      session.addEventListener("archiveCreated", archiveCreatedHandler);
-      session.addEventListener("archiveClosed", archiveClosedHandler);
-      session.addEventListener("sessionRecordingStarted", recordingStartedHandler);
-      session.addEventListener("sessionRecordingStopped", recordingStoppedHandler);
-      session.addEventListener("sessionRecordingInProgress", recordingInProgressHandler);
     }
 
     function initiateArchiveForRecording(){
@@ -127,7 +120,13 @@
 -# Listen if stream gets created again - to display in case publisher loses connection
 - if @owner
   :plain
+    // Add event listeners
     session.addEventListener('sessionConnected', sessionConnectedHandler);
+    session.addEventListener("archiveCreated", archiveCreatedHandler);
+    session.addEventListener("archiveClosed", archiveClosedHandler);
+    session.addEventListener("sessionRecordingStarted", recordingStartedHandler);
+    session.addEventListener("sessionRecordingStopped", recordingStoppedHandler);
+    session.addEventListener("sessionRecordingInProgress", recordingInProgressHandler);
 
 - else
   :plain
