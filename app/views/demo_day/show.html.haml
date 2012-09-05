@@ -80,6 +80,27 @@
                   [ no pitch video ]
                 - else
                   %iframe{:width => '250', :height => '188', :src => vid_url, :frameborder => 0, :allowfullscreen => true}
+                - unless @screenshots.blank?
+                  .product_screenshots
+                    %h3 Product Screenshots
+
+                    - c = 0
+                    - @screenshots.each do |s|
+                      .screenshot.screenshot_modal.left{'data-id' => c, :style => 'margin-right: 15px; border: 1px solid #ccc;'}= link_to image_tag(s.image_url(:small)), '#'
+                      - c += 1
+                    .clear
+
+                    #screenshots_modal.modal.hide
+                      .modal-body
+                        #screenshots_carousel.carousel.slide
+                          .carousel-inner
+                            - c = 0
+                            - @screenshots.each do |s|
+                              .item{:class => c == 0 ? 'active' : ''}= image_tag s.image_url
+                              - c += 1
+                          %a.carousel-control.left{:href => '#screenshots_carousel', 'data-slide' => 'prev'} &lsaquo;
+                          %a.carousel-control.right{:href => '#screenshots_carousel', 'data-slide' => 'next'} &rsaquo;
+                      
               .span5
                 %h1= h(@startup.name)
                 - unless @startup.one_liner.blank?
@@ -111,27 +132,6 @@
                 %p
                   %small Elevator Pitch
                 %p= simple_format(h(@startup.elevator_pitch))
-          
-            - unless @screenshots.blank?
-              .product_screenshots
-                %h3 Product Screenshots
-
-                - c = 0
-                - @screenshots.each do |s|
-                  .screenshot.screenshot_modal.left{'data-id' => c, :style => 'margin-right: 15px; border: 1px solid #ccc;'}= link_to image_tag(s.image_url(:small)), '#'
-                  - c += 1
-                .clear
-
-                #screenshots_modal.modal.hide
-                  .modal-body
-                    #screenshots_carousel.carousel.slide
-                      .carousel-inner
-                        - c = 0
-                        - @screenshots.each do |s|
-                          .item{:class => c == 0 ? 'active' : ''}= image_tag s.image_url
-                          - c += 1
-                      %a.carousel-control.left{:href => '#screenshots_carousel', 'data-slide' => 'prev'} &lsaquo;
-                      %a.carousel-control.right{:href => '#screenshots_carousel', 'data-slide' => 'next'} &rsaquo;
           
         .row
           .span12
