@@ -4,9 +4,9 @@
       .span12.background-field{:align => 'center'}
         = image_tag 'nstar_halo.png', :style => 'width: 184px; height: 165px;'
 
-        %h2 The first nStar Demo Day will start in:
+        / %h2 The first nStar Demo Day will start in:
 
-        = render 'layouts/countdown', :time => @demo_day.starts_at
+        / = render 'layouts/countdown', :time => @demo_day.starts_at
         %br/
         - if Time.now > @demo_day.starts_at
           .enter_button= link_to "#{image_tag('twitter_white.png')} Enter Demo Day".html_safe, 'http://www.nreduce.com/d', :class => 'btn btn-large btn-success'
