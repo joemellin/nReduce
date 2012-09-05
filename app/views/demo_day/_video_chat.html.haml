@@ -1,30 +1,9 @@
 .video_wrapper
   #video
     .loading Loading Live Stream...
-
-- if 1 == 2 #@owner
-  %div{:style => 'margin-top: 10px;'}
-    = link_to 'Start Recording', '#', :onclick => "initiateArchiveForRecording(); return false;", :class => 'btn btn-success'
-    &nbsp;&nbsp;
-    = link_to 'Stop Recording', '#', :onclick => "stopRecordingSession(); return false;", :class => 'btn btn-danger'
-
-:plain
-  <script type="text/javascript">
-  // http://www.tokbox.com/opentok/api/documentation/gettingstarted
-  var apiKey = '#{Settings.apis.tokbox.key}';
-  var sessionId = '#{@tokbox_session_id}';
-  var token = '#{@tokbox_token}';
-
-  // Show loading if stream gets killed
-  function streamDestroyed(event) {
-    $('.loading').show();
-  }
-
 - if @owner
-  :plain
+  :javascript
     var publisher;
-    var archive;
-
     function sessionConnectedHandler(event) {
       // Put my webcam in a div
       var publishProps = {width:500, height:315};
@@ -35,10 +14,9 @@
       // Show video
       $('.loading').remove();
     }
-
 - else
-  :plain
-    function streamCreated(event) {
+  :javascript
+    function sessionConnectedHandler(event) {
       for (var i = 0; i < event.streams.length; i++) {
         var stream = event.streams[i];
         displayStream(stream);
@@ -53,28 +31,21 @@
       streamsContainer.appendChild(div);
       var divProps = {width: 500, height:315};
       subscriber = session.subscribe(stream, 'stream' + stream.streamId, divProps);
-      $('.loading').hide();
+      $('.loading').remove();
+      // Listen if stream gets created again - to display in case publisher loses connection
+      session.addEventListenter('streamCreated', sessionConnectedHandler);
     }
 
+:javascript
+  // Tokbox chat
+  // http://www.tokbox.com/opentok/api/documentation/gettingstarted
+  var apiKey = '#{Settings.apis.tokbox.key}';
+  var sessionId = '#{@tokbox_session_id}';
+  var token = '#{@tokbox_token}';
 
-:plain
-  TB.setLogLevel(TB.DEBUG);
+  #{user_signed_in? && current_user.admin? ? 'TB.setLogLevel(TB.DEBUG);' : ''}
+
   var session = TB.initSession(sessionId);
-
--# Listen if stream gets created again - to display in case publisher loses connection
-- if @owner
-  :plain
-    // Add event listeners
-    session.addEventListener('sessionConnected', streamCreated);
-
-- else
-  :plain
-    session.addEventListener('streamCreated', streamCreated);
-    session.addEventListener('streamCreated', streamDestroyed);
-
-:plain
-  // Listen for exceptions to try and reconnect
-  //TB.addEventListener("exception", exceptionHandler);
-  
+  session.addEventListener('sessionConnected', sessionConnectedHandler);
   session.connect(apiKey, token);
-  </script>
+
