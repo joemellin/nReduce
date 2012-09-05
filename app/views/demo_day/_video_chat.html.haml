@@ -11,7 +11,6 @@
 :plain
   <script type="text/javascript">
   // http://www.tokbox.com/opentok/api/documentation/gettingstarted
-  var session;
   var apiKey = '#{Settings.apis.tokbox.key}';
   var sessionId = '#{@tokbox_session_id}';
   var token = '#{@tokbox_token}';
@@ -20,14 +19,6 @@
   function streamDestroyed(event) {
     $('.loading').show();
   }
-
-  / function exceptionHandler(event) {
-  /   // Retry session connect
-  /   if (event.code === 1006 || event.code === 1008 || event.code === 1014) {
-  /     alert('There was an error connecting. Trying again.');
-  /     session.connect(apiKey, token);
-  /   }
-  / }
 
 - if @owner
   :plain
@@ -43,54 +34,6 @@
 
       // Show video
       $('.loading').remove();
-    }
-
-    function initiateArchiveForRecording(){
-      if(archive == undefined || archive == null){
-        var d = new Date();
-        session.createArchive(#{Settings.apis.tokbox.key}, "perSession", '#{@startup.name} - ' + d.valueOf());
-      }else{
-        session.closeArchive(archive);
-        session.addEventListener("archiveClosed", archiveClosedStartRecordingAgainHandler);
-      }
-    }
-
-    function archiveClosedStartRecordingAgainHandler(){
-      archive = null;
-      initiateArchiveForRecording();
-    }
-
-    function startRecordingSession(){
-      session.startRecording(archive);
-    }
-
-    function stopRecordingSession(){
-      
-      session.stopRecording(archive);
-      session.closeArchive(archive);
-    }
-
-    function recordingInProgressHandler(event) {
-      alert("There is a recording in progress already.");
-    }
-
-    function recordingStartedHandler(event) {
-      alert("The session is being recorded.");
-    }
-
-    function recordingStoppedHandler(event) {
-      alert("The session recording has stopped.");
-    }
-
-    function archiveCreatedHandler(event) {
-      console.log('archive created');
-      archive = event.archives[0];
-      console.log("Recording archive has been created");
-      startRecordingSession();
-    }
-
-    function archiveClosedHandler(event){
-      console.log("The archive has been successfully closed");
     }
 
 - else
@@ -113,22 +56,16 @@
       $('.loading').hide();
     }
 
-- if user_signed_in? && current_user.admin?
-  :plain
-    TB.setLogLevel(TB.DEBUG);
+
 :plain
-  session = TB.initSession(sessionId);
+  TB.setLogLevel(TB.DEBUG);
+  var session = TB.initSession(sessionId);
 
 -# Listen if stream gets created again - to display in case publisher loses connection
 - if @owner
   :plain
     // Add event listeners
-    session.addEventListener('sessionConnected', sessionConnectedHandler);
-    session.addEventListener("archiveCreated", archiveCreatedHandler);
-    session.addEventListener("archiveClosed", archiveClosedHandler);
-    session.addEventListener("sessionRecordingStarted", recordingStartedHandler);
-    session.addEventListener("sessionRecordingStopped", recordingStoppedHandler);
-    session.addEventListener("sessionRecordingInProgress", recordingInProgressHandler);
+    session.addEventListener('sessionConnected', streamCreated);
 
 - else
   :plain
