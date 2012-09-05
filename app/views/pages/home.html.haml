@@ -11,7 +11,7 @@
         - if Time.now > @demo_day.starts_at
           .enter_button= link_to "#{image_tag('twitter_white.png')} Enter Demo Day".html_safe, 'http://www.nreduce.com/d', :class => 'btn btn-large btn-success'
         - else
-          .enter_button= link_to "#{image_tag('twitter_grey.png')} Enter Demo Day".html_safe, '#', :class => 'btn btn-large disabled'
+          .enter_button= link_to "#{image_tag('twitter_grey.png')} Enter Demo Day".html_safe, '#', :class => 'btn btn-large disabled'        
         %br/
         %br/
         .left.share_btns
