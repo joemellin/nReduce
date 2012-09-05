@@ -7,8 +7,12 @@ class QuestionsController < ApplicationController
   #protect_from_forgery :except => [:index]
 
   def index
-    if params[:last]
-      last_polled_at = Time.parse(params[:last])
+    if params[:last].present?
+      begin
+        last_polled_at = Time.parse(params[:last])
+      rescue
+        last_polled_at = nil
+      end
     else
       last_polled_at = nil
     end
