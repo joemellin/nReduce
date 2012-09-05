@@ -28,7 +28,7 @@ class DemoDay < ActiveRecord::Base
   end
 
   def ends_at
-    Time.parse("#{self.day} 13:00:00 -0700")
+    Time.parse("#{self.day} 12:30:00 -0700")
   end
 
   # Returns true if it's currently the time window for this demo day
