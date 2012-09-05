@@ -154,25 +154,25 @@
             %hr
             %br
 
-
-        %center
-          %h2{:style => 'font-weight: 600'} #{@startup.name.possessive} Timeline
-        - @checkins.each do |c|
+        - unless @demo_day.hide_checkins?(@startup)
           %center
-            %h3 Week of #{c.time_label}
-            %p Goal: #{h(c.start_focus)}
-          .row{:style => 'margin-bottom: 20px;'}
-            .span6
-              .right{:style => 'width: 425px', :align => 'right'}
-                = display_checkin_video(c, :before_video, false, 425, 268).html_safe
-                %center
-                  %p Before
-              .clear
-            .span6
-              %div{:style => 'width: 425px'}
-                = display_checkin_video(c, :after_video, false, 425, 268).html_safe
-                %center
-                  %p After
+            %h2{:style => 'font-weight: 600'} #{@startup.name.possessive} Timeline
+          - @checkins.each do |c|
+            %center
+              %h3 Week of #{c.time_label}
+              %p Goal: #{h(c.start_focus)}
+            .row{:style => 'margin-bottom: 20px;'}
+              .span6
+                .right{:style => 'width: 425px', :align => 'right'}
+                  = display_checkin_video(c, :before_video, false, 425, 268).html_safe
+                  %center
+                    %p Before
+                .clear
+              .span6
+                %div{:style => 'width: 425px'}
+                  = display_checkin_video(c, :after_video, false, 425, 268).html_safe
+                  %center
+                    %p After
 
   .modal.questions_modal.hide
     .modal-header

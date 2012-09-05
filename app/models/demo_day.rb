@@ -18,6 +18,11 @@ class DemoDay < ActiveRecord::Base
     self.startup_ids.index(startup.id)
   end
 
+  def hide_checkins?(startup)
+    return true if startup.id == 742
+    false
+  end
+
   def startups
     return [] if self.startup_ids.blank?
     Startup.find(self.startup_ids)
