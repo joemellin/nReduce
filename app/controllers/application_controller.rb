@@ -259,7 +259,7 @@ class ApplicationController < ActionController::Base
         if request.xhr?
           render :nothing => true
         else # Otherwise redirect to main page to then render before/after pages
-          redirect_to demo_day_index_path unless [controller_name.to_sym, action_name.to_sym] == [:demo_day, :index]
+          redirect_to demo_day_index_path unless [[:demo_day, :index], [:demo_day, :show]].include?([controller_name.to_sym, action_name.to_sym])
         end
       else
         @no_twitter = true if user_signed_in? && current_user.twitter_authentication.blank?
