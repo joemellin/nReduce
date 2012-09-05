@@ -125,4 +125,32 @@
       }
     }
   }
+  .product_screenshots {
+    padding: 0 0 19px 20px;
+    
+    #screenshots_modal.modal {
+      margin: -340px 0 0 -530px;
+      width: 1054px;
+      height: 680px;
+      #screenshots_carousel, .modal-body {
+        width: 1024px;
+        height: 650px;
+        max-height: 650px;
+      }
+      .carousel {
+        .item {
+          img {
+            margin-left: auto;
+            margin-right: auto;
+            display: block;
+            max-height: 650px;
+          }
+        }
+      }
+    }
+    .screenshot {
+      margin-right: 15px;
+      border: 1px solid #ccc;
+    }
+  }
 }
