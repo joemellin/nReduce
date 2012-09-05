@@ -8,7 +8,7 @@
           %p Demo Day Starts In
           = render 'layouts/countdown', :time => @demo_day.starts_at
         - elsif @after && @next_demo_day
-          %p #{@next_demo_day.name} starts in
+          %p Next #{@next_demo_day.name} starts in
           = render 'layouts/countdown', :time => @next_demo_day.starts_at
         - else
           %p #{@demo_day.name} ends in
