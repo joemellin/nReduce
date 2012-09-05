@@ -228,7 +228,7 @@ class ApplicationController < ActionController::Base
       # limit to questions only since a certain time
       return false if Question.last_changed_at_for_startup(startup).utc < only_if_any_since
     end
-    @questions = Question.unanswered_for_startup(startup).includes(:user, :startup)
+    @questions = Question.unanswered_for_startup(startup).order('followers_count DESC').includes(:user, :startup)
     # Mark questions as unseen
     @questions.each{|q| q.unseen = true if q.updated_at.utc > only_if_any_since && (user_signed_in? ? current_user.id != q.user_id : true) } if only_if_any_since.present?
     # Extract current question
