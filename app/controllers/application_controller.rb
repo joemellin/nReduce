@@ -238,26 +238,32 @@ class ApplicationController < ActionController::Base
 
     # Loads the demo day, and redirects to the before or after page if it's not in the time window
   def load_and_validate_demo_day
-    if is_staging?
-      @demo_day = DemoDay.where(:day => "2012-10-03").first
+    # if is_staging?
+    #   @demo_day = DemoDay.where(:day => "2012-10-03").first
+    # else
+    #   @demo_day = DemoDay.next_or_current
+    # end
+    @demo_day = DemoDay.where(:day => "2012-09-05").first
+    # if admin or demo day participant let them in early
+    if user_signed_in? && (current_user.admin? || (current_user.startup_id.present? && @demo_day.startup_ids.include?(current_user.startup_id)))
+      @next_demo_day = @demo_day.next_demo_day if Time.now > @demo_day.ends_at
     else
-      @demo_day = DemoDay.next_or_current
-    end
-    if Time.now < @demo_day.starts_at
-      @before = true
-    elsif Time.now > @demo_day.ends_at
-      @after = true
-      @next_demo_day = @demo_day.next_demo_day
-    end
-    if @before || @after
-      # If ajax request do nothing
-      if request.xhr?
-        render :nothing => true
-      else # Otherwise redirect to main page to then render before/after pages
-        redirect_to demo_day_index_path unless [controller_name.to_sym, action_name.to_sym] == [:demo_day, :index]
+      if Time.now < @demo_day.starts_at
+        @before = true
+      elsif Time.now > @demo_day.ends_at
+        @after = true
+        @next_demo_day = @demo_day.next_demo_day
       end
-    else
-      @no_twitter = true if user_signed_in? && current_user.twitter_authentication.blank?
+      if @before || @after
+        # If ajax request do nothing
+        if request.xhr?
+          render :nothing => true
+        else # Otherwise redirect to main page to then render before/after pages
+          redirect_to demo_day_index_path unless [controller_name.to_sym, action_name.to_sym] == [:demo_day, :index]
+        end
+      else
+        @no_twitter = true if user_signed_in? && current_user.twitter_authentication.blank?
+      end
     end
   end
 
