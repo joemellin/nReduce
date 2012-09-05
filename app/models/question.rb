@@ -1,4 +1,7 @@
 class Question < ActiveRecord::Base
+  @@pusher_socket = nil
+  @@pusher_channel = nil
+
   belongs_to :user
   belongs_to :startup
 
@@ -101,11 +104,26 @@ class Question < ActiveRecord::Base
     true
   end
 
+  def self.pusher_socket
+    if @@pusher_socket.blank?
+      @@pusher_socket = PusherClient::Socket.new(Settings.apis.pusher.key, {:secret => Settings.apis.pusher.secret})
+    end
+    @@pusher_socket
+  end
+
+  def self.pusher_channel
+    if @@pusher_channel.blank?
+      @@pusher_channel = Question.pusher_socket.subscribe('test_channel')
+    end
+    @@pusher_channel
+  end
+
   protected
 
   def update_cache
     Cache.set(['questions_changed_at', self.startup], Time.now.to_s, nil, true)
     Cache.delete(['question_ids', startup])
+    Question.pusher_channel.dispatch('test', 'test2')
   end
 
   def add_attendee_to_demo_day(attendee)

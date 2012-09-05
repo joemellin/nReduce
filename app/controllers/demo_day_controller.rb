@@ -38,7 +38,7 @@ class DemoDayController < ApplicationController
     #  role = OpenTok::RoleConstants::MODERATOR
     #  @owner = true
     if user_signed_in? && @startup.id == current_user.startup_id
-      role = OpenTok::RoleConstants::PUBLISHER
+      role = OpenTok::RoleConstants::MODERATOR #OpenTok::RoleConstants::PUBLISHER
       @owner = true
     else
       role = OpenTok::RoleConstants::SUBSCRIBER
