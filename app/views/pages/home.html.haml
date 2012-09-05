@@ -4,14 +4,16 @@
       .span12.background-field{:align => 'center'}
         = image_tag 'nstar_halo.png', :style => 'width: 184px; height: 165px;'
 
-        / %h2 The first nStar Demo Day will start in:
+        %h2 The first nStar Demo Day was a smashing success!
+        %br/
+        .enter_button= link_to "View Winners".html_safe, 'http://www.nreduce.com/d', :class => 'btn btn-large btn-success'
 
         / = render 'layouts/countdown', :time => @demo_day.starts_at
-        %br/
-        - if Time.now > @demo_day.starts_at
-          .enter_button= link_to "#{image_tag('twitter_white.png')} Enter Demo Day".html_safe, 'http://www.nreduce.com/d', :class => 'btn btn-large btn-success'
-        - else
-          .enter_button= link_to "#{image_tag('twitter_grey.png')} Enter Demo Day".html_safe, '#', :class => 'btn btn-large disabled'        
+        /%br/
+        /- if Time.now > @demo_day.starts_at
+        /  .enter_button= link_to "View Winners".html_safe, 'http://www.nreduce.com/d', :class => 'btn btn-large btn-success'
+        /- else
+        /  .enter_button= link_to "#{image_tag('twitter_grey.png')} Enter Demo Day".html_safe, '#', :class => 'btn btn-large disabled'        
         %br/
         %br/
         .left.share_btns
@@ -19,9 +21,9 @@
             <a href="https://twitter.com/share" class="twitter-share-button" data-url="http://www.nreduce.com" data-text="An alliance of founders working together to build Amazing Companies" data-via="nReduce">Tweet</a>
             <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
             <div class="fb-like" data-href="http://www.nreduce.com" data-send="false" data-layout="button_count" data-width="150" data-show-faces="false" data-font="lucida grande"></div>
-        .right.newslogo= link_to image_tag('venturebeat.png'), 'http://venturebeat.com/2012/09/05/nreduce-demo-day/', :target => '_blank'
+        .right.newslogo{:style => 'margin-bottom: 10px'}= link_to image_tag('venturebeat.png'), 'http://venturebeat.com/2012/09/05/nreduce-demo-day/', :target => '_blank'
         .right.newslogo= link_to image_tag('pando.png'), 'http://pandodaily.com/2012/07/27/virtual-incubator-to-all-nreduce-adds-mentors-and-demo-days-is-it-the-pre-angellist/', :target => '_blank'
-        .right.newslogo= image_tag('xoconomy.png')
+        / .right.newslogo= image_tag('xoconomy.png')
         .clear
     %hr
   - else
