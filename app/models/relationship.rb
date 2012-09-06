@@ -110,7 +110,12 @@ class Relationship < ActiveRecord::Base
     if self.suggested?
       self.status = Relationship::PENDING
       self.pending_at = Time.now
-      self.save
+      if self.save
+        self.notify_users unless self.silent == true
+        true
+      else
+        false
+      end
     else
       begin
         Relationship.transaction do

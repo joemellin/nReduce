@@ -74,6 +74,7 @@ group :test, :development do
   gem 'spork'
   gem 'guard-spork'
   gem 'debugger'
+  gem 'terminal-notifier-guard' # instead of growl for mountain lion notifications
   #gem 'jasmine-rails' # also need to do: brew install qt
 end
 
