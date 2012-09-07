@@ -30,6 +30,15 @@ class Awesome < ActiveRecord::Base
     self.awsm_type == 'Checkin'
   end
 
+  def self.label_for_type(type)
+    case type
+    when 'Checkin' then 'Awesome'
+    when 'Rating' then 'Value Add'
+    when 'Comment' then 'Helpful'
+    else 'Awesome'
+    end
+  end
+
   protected
 
   def check_user_doesnt_own_object
@@ -43,9 +52,12 @@ class Awesome < ActiveRecord::Base
 
   def update_awesome_count
     obj = self.awsm
+    # Reset awesome cache for user
+    Cache.delete(['awesome_ids', self.user])
+    # Check if we need to update cached awesome count on object
+    return true unless obj && obj.respond_to?(:awesome_count)
     obj.awesome_count = obj.awesomes.count
     obj.save(:validate => false)
-    Cache.delete(['awesome_ids', self.user])
   end
 
   def notify_users

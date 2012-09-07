@@ -2,8 +2,10 @@ class StartupsController < ApplicationController
   around_filter :record_user_action, :except => [:onboard_next, :stats]
   before_filter :login_required
   before_filter :load_requested_or_users_startup, :except => [:index, :invite, :stats]
-  load_and_authorize_resource :except => [:index, :stats, :invite, :show, :wait_for_next_class, :current_class]
-  before_filter :redirect_if_no_startup, :except => [:index, :invite, :show, :wait_for_next_class, :current_class]
+  load_and_authorize_resource :except => [:index, :stats, :invite, :show, :invite_team_members, :intro_video]
+  before_filter :load_obfuscated_startup, :only => [:show, :invite_team_members, :before_video, :intro_video]
+  authorize_resource :only => [:show, :invite_team_members, :before_video, :intro_video]
+  before_filter :redirect_if_no_startup, :except => [:index, :invite]
 
   def index
     redirect_to '/'
@@ -26,6 +28,11 @@ class StartupsController < ApplicationController
         else
           flash[:alert] = "#{@invite.errors.full_messages.join('. ')}."
         end
+        @modal = true if request.xhr?
+        respond_to do |format|
+          format.js { render :action => 'update_invite_modal' }
+          format.html
+        end
       end
       # They're in setup, and said they're done inviting
       if params[:done]
@@ -35,6 +42,26 @@ class StartupsController < ApplicationController
       end
     end
     @invites = current_user.sent_invites
+  end
+
+  # Two-step invite
+  # 1) Check email to see if they are already in the system and have a startup - if so just create relationship
+  # 2) Otherwise do traditional path
+  def invite_with_confirm
+    @invite = Invite.new(params[:invite])
+    @invite.from = current_user
+    # run validations to assign from/to
+    @invite.valid?
+    logger.info @invite.inspect
+    if !@invite.from.blank? && !@invite.from.startup.blank? && !@invite.to.blank? && !@invite.to.startup.blank?
+      @relationship = Relationship.new(:entity => @invite.from.startup, :connected_with => @invite.to.startup)
+      @relationship.context << :startup_startup
+    end
+    @modal = true
+    respond_to do |format|
+      format.js { render :action => 'update_invite_modal' }
+      format.html
+    end
   end
 
   def create
@@ -53,19 +80,11 @@ class StartupsController < ApplicationController
   end
 
   def show
-    begin
-      @startup ||= Startup.find_by_obfuscated_id(params[:id])
-    rescue ActiveRecord::RecordNotFound
-      redirect_to '/'
-      return
-    end
-    redirect_if_no_startup
-    authorize! :read, @startup
     @owner = true if user_signed_in? and (@startup.id == current_user.startup_id)
     @can_view_checkin_details = can? :read, Checkin.new(:startup => @startup)
     @num_checkins = @startup.checkins.count
     @num_awesomes = @startup.awesomes.count
-    @checkins = @startup.checkins.ordered
+    @checkins = @startup.checkins.ordered.includes(:before_video, :after_video)
     if current_user.entrepreneur?
       @entity = current_user.startup unless current_user.startup.blank?
     else
@@ -98,6 +117,8 @@ class StartupsController < ApplicationController
     @screenshots = @startup.screenshots.ordered
     # Build up to 4 screenshots
     @screenshots.size.upto(Startup::NUM_SCREENSHOTS - 1).each{|i| @startup.screenshots.build }
+    @startup.intro_video = ViddlerVideo.new if @startup.intro_video.blank?
+    @startup.pitch_video = ViddlerVideo.new if @startup.pitch_video.blank?
   end
 
   def update
@@ -127,19 +148,19 @@ class StartupsController < ApplicationController
 
    # Start of setup flow - to get startup to post initial before video
   def before_video
-    #if can? :before_video, @startup
-      @before_disabled = false
-      @after_disabled = true
-      @hide_time = true
-      @checkin = Checkin.new
-      unless params[:checkin].blank?
-        @checkin.attributes = params[:checkin]
-        @checkin.startup = @startup
-        if @checkin.before_completed? and @checkin.check_video_urls_are_valid and @checkin.save(:validate => false)
-          redirect_to '/'
-          return
-        end
+  #if can? :before_video, @startup
+    @before_disabled = false
+    @after_disabled = true
+    @hide_time = true
+    @checkin = Checkin.new
+    unless params[:checkin].blank?
+      @checkin.attributes = params[:checkin]
+      @checkin.startup = @startup
+      if @checkin.before_completed? and @checkin.check_video_urls_are_valid and @checkin.save(:validate => false)
+        redirect_to '/'
+        return
       end
+    end
     #else
     #  redirect_to '/'
     #  return
@@ -148,7 +169,7 @@ class StartupsController < ApplicationController
 
   def intro_video
     @startups = Startup.with_intro_video.limit(6).order("RAND()")
-    if !params[:startup].blank? && !params[:startup][:intro_video_url].blank?
+    if params[:startup].present? && params[:startup][:intro_video_url].present?
       @startup.intro_video_url = params[:startup][:intro_video_url]
       if @startup.save
         redirect_to '/'
@@ -176,6 +197,8 @@ class StartupsController < ApplicationController
   def investment_profile
     @checkin_history = Checkin.history_for_startup(@startup)
     @screenshots = @startup.screenshots.ordered
+    @instrument = @startup.instruments.first
+    @measurements = @instrument.measurements.ordered_asc.all unless @instrument.blank?
   end
 
   #

@@ -31,3 +31,44 @@ body.apply > .container .onboard hr {
     max-width: 150px;
   }
 }
+
+.countdown_and_checkin {
+  position: relative;
+  height: 90px;
+  .checkin_button {
+    margin-right: 20px;
+  }
+  h4 {
+    font-size: 1em;
+    margin-right: 30px;
+  }
+  #countdown {
+    max-width: 300px;
+    margin-top: -10px;
+    margin-left: 40px;
+    .number_block{
+      padding: 0 12px;
+      margin: 0 0 0 4px;
+      height: 60px;
+      text-align: center;
+      .numbers {
+        position: relative;
+        overflow: hidden;
+        font-size: 22px;
+        line-height: 26px;
+        padding: 12px 0 0;
+        span {
+          position: relative;
+        }
+        height: 34px;
+      }
+      p {
+        margin-top: -10px;
+        padding: 0;
+        font-weight: normal;
+        font-size: .9em;
+        color: #999;
+      }
+    }
+  }
+}

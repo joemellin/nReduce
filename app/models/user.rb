@@ -2,9 +2,10 @@ class User < ActiveRecord::Base
   obfuscate_id :spin => 94062493
   include Connectable # methods for relationships
   acts_as_mappable
-  has_paper_trail
+  has_paper_trail :ignore => [:unread_nc]
   belongs_to :startup
   belongs_to :meeting
+  belongs_to :intro_video, :class_name => 'Video', :dependent => :destroy
   has_many :authentications, :dependent => :destroy
   has_many :organized_meetings, :class_name => 'Meeting', :foreign_key => 'organizer_id'
   has_many :sent_messages, :foreign_key => 'sender_id', :class_name => 'Message'
@@ -20,6 +21,8 @@ class User < ActiveRecord::Base
   has_many :relationships, :as => :entity, :dependent => :destroy
   has_many :connected_with_relationships, :as => :connected_with, :class_name => 'Relationship', :dependent => :destroy
   has_many :screenshots
+  has_many :ratings
+  has_many :questions
 
   # Include default devise modules. Others available are:
   # :token_authenticatable, :confirmable,
@@ -31,12 +34,13 @@ class User < ActiveRecord::Base
   attr_accessible :twitter, :email, :email_on, :password, :password_confirmation, :remember_me, :name, :skill_list, :industry_list, :startup, :mentor, :investor, :location, :phone, :startup_id, :settings, :meeting_id, :one_liner, :bio, :facebook_url, :linkedin_url, :github_url, :dribbble_url, :blog_url, :pic, :remote_pic_url, :pic_cache, :remove_pic, :intro_video_url
   attr_accessor :profile_fields_required
 
+  accepts_nested_attributes_for :intro_video, :reject_if => proc {|attributes| attributes.all? {|k,v| v.blank?} }, :allow_destroy => true
+  
   serialize :settings, Hash
-
   validates_presence_of :name
-  validate :email_is_not_nreduce
   validate :check_video_urls_are_valid
   validates_length_of :bio, :minimum => 100, :too_short => "needs to be at least 100 characters", :if => :profile_fields_required?
+  validate :email_is_not_nreduce, :if => :profile_fields_required?
   validates_presence_of :pic, :if => :profile_fields_required?
   validates_presence_of :location, :if => :profile_fields_required?
   validates_presence_of :skill_list, :if => :profile_fields_required?
@@ -193,8 +197,8 @@ class User < ActiveRecord::Base
     self.mentor? and !self.roles?(:nreduce_mentor) and [4,5].include?(step)
   end
 
-  def has_startup_or_is_mentor?
-    !self.startup_id.blank? or self.mentor?
+  def has_startup_or_is_mentor_or_investor?
+    !self.startup_id.blank? || self.mentor? || self.investor?
   end
 
   def received_nudges
@@ -357,10 +361,13 @@ class User < ActiveRecord::Base
     save!
   end
 
-  def setup_complete!
+  def setup_complete!(dont_suggest_startups = false)
     self.setup << :welcome
     if self.save
-      self.startup.generate_suggested_connections(10) unless self.startup.blank?
+      self.startup.generate_suggested_connections(10) if !dont_suggest_startups && !self.startup.blank?
+      true
+    else
+      false
     end
   end
 
@@ -381,6 +388,20 @@ class User < ActiveRecord::Base
 
   def can_connect_with_startups?
     (self.num_startups_connected_with_this_week < User::INVESTOR_STARTUPS_PER_WEEK) && self.roles?(:approved_investor) 
+  end
+
+  def twitter_authentication
+    self.authentications.provider('twitter').ordered.first
+  end
+
+  def twitter_client
+    return @twitter_client if @twitter_client.present?
+    auth = self.twitter_authentication
+    return nil if auth.blank?
+    @twitter_client = Twitter::Client.new(
+      :oauth_token => auth.token,
+      :oauth_token_secret => auth.secret
+    )
   end
 
   #
@@ -428,11 +449,11 @@ class User < ActiveRecord::Base
     begin
       # TWITTER
       if omniauth['provider'] == 'twitter'
-        logger.info omniauth['info'].inspect
         self.name = omniauth['info']['name'] if name.blank? and !omniauth['info']['name'].blank?
-        #self.external_pic_url = omniauth['info']['image'] unless omniauth['info']['image'].blank?
+        self.remote_pic_url = omniauth['info']['image'] if !self.pic? && omniauth['info']['image'].present?
         self.location = omniauth['info']['location'] if !omniauth['info']['location'].blank?
         self.twitter = omniauth['info']['nickname']
+        self.followers_count = omniauth['extra']['raw_info']['followers_count'] if omniauth['extra'].present? && omniauth['extra']['raw_info'].present?
       elsif omniauth['provider'] == 'linkedin'
         self.linkedin_authentication = auth
         self.name = omniauth['info']['name'] if name.blank? and !omniauth['info']['name'].blank?
@@ -556,7 +577,7 @@ class User < ActiveRecord::Base
   protected
 
   def email_is_not_nreduce
-    if !self.email.blank? and self.email.match(/\@\w+\.nreduce\.com$/) != nil
+    if self.roles.present? && !self.email.blank? and self.email.match(/\@\w+\.nreduce\.com$/) != nil
       self.errors.add(:email, 'is not valid')
       false
     else

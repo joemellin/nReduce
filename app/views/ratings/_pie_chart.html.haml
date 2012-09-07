@@ -1,0 +1,49 @@
+- chart_id ||= 'chart'
+-# Data should be passed in as an array of arrays, ex: [['Traction', 23], ['Team', 3]]
+- data ||= []
+- title ||= ''
+.chart{:id => chart_id}
+:plain
+  <script type="text/javascript">
+  var chart;
+  $(document).ready(function() {
+    chart = new Highcharts.Chart({
+      chart: {
+        renderTo: '#{chart_id}'
+      },
+      title: {
+        text: '#{title}'
+      },
+      credits: {
+        enabled: false
+      },
+      legend: {
+        enabled: false
+      },
+      plotOptions: {
+        pie: {
+          allowPointSelect: true,
+          cursor: 'pointer',
+          dataLabels: {
+            enabled: true,
+            color: '#000000',
+            connectorColor: '#000000',
+            formatter: function() {
+              return '<b>'+ this.point.name +'</b>: '+ this.percentage +' %';
+            }
+          }
+        }
+      },
+      tooltip: {
+        enabled: false
+      },
+      series: [{
+      type: 'pie',
+      name: '#{title}',
+      data: [
+        #{data.map{|label, value| "['#{label}', #{value}]" }.join(',')}
+        ]
+      }]
+    });
+  });
+  </script>

@@ -110,7 +110,12 @@ class Relationship < ActiveRecord::Base
     if self.suggested?
       self.status = Relationship::PENDING
       self.pending_at = Time.now
-      self.save
+      if self.save
+        self.notify_users unless self.silent == true
+        true
+      else
+        false
+      end
     else
       begin
         Relationship.transaction do
@@ -127,7 +132,10 @@ class Relationship < ActiveRecord::Base
           self.reset_cache_for_entities_involved
         end
       rescue ActiveRecord::RecordNotUnique
-        # Already approved don't need to do anything
+        # Relationship exists - check to see if it's in the right state
+        # It could've been a previously suggested relationship that the entity wants to approve now (changed mind)
+        r = Relationship.where(:entity_id => self.entity_id, :entity_type => self.entity_type, :connected_with_id => self.connected_with_id, :connected_with_type => self.connected_with_type).first
+        r.approve! if !r.blank? and !r.approved?
       end
       true
     end
@@ -135,16 +143,12 @@ class Relationship < ActiveRecord::Base
 
   # Reject the friendship (or pass on a suggestion), but don't delete records
   def reject_or_pass!
-    begin
-      Relationship.transaction do
-        new_status = self.suggested? ? PASSED : REJECTED
-        self.update_attributes(:status => new_status, :rejected_at => Time.now) unless self.rejected?
-        inv = self.inverse_relationship
-        inv.update_attributes(:status => new_status, :rejected_at => Time.now) unless inv.blank? or (inv.rejected? or inv.passed?)
-        self.reset_cache_for_entities_involved
-      end
-    rescue ActiveRecord::RecordNotUnique
-      # Already rejected don't need to do anything
+    Relationship.transaction do
+      new_status = self.suggested? ? PASSED : REJECTED
+      self.update_attributes(:status => new_status, :rejected_at => Time.now) unless self.rejected?
+      inv = self.inverse_relationship
+      inv.update_attributes(:status => new_status, :rejected_at => Time.now) unless inv.blank? or (inv.rejected? or inv.passed?)
+      self.reset_cache_for_entities_involved
     end
     true
   end
@@ -212,6 +216,7 @@ class Relationship < ActiveRecord::Base
       self.errors.add(:connected_with, "hasn't approved your request yet") if existing.pending?
       self.errors.add(:entity, "is already connected to #{connected_with.name}") if existing.approved?
       self.errors.add(:connected_with, "has ignored your request") if existing.rejected?
+      self.errors.add(:entity, "is already suggested") if existing.suggested? || existing.passed?
     end
 
     # Now check if these two types can be connected

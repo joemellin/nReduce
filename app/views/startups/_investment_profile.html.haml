@@ -1,4 +1,3 @@
-- hide_chart ||= false
 .startup
   .headline
     .left.name
@@ -6,7 +5,7 @@
     .left.details
       %h2= @startup.one_liner
       - unless @startup.website_url.blank?
-        = link_to @startup.website_url, @startup.website_url, :target => '_blank'
+        = link_to_external @startup.website_url, @startup.website_url
       - industries = @startup.industry_list
       - unless industries.blank?
         = industries.size == 1 ? 'Industry: ' : 'Industries: '
@@ -14,27 +13,17 @@
     .clear
   .left.video
     - vid_url = Youtube.embed_url(@startup.pitch_video_url)
-    - vid_url = Youtube.embed_url(@startup.intro_video_url) if vid_url.blank?
     - if vid_url.blank?
       [ no pitch video ]
     - else
       %iframe{:width => '500', :height => '315', :src => vid_url, :frameborder => 0, :allowfullscreen => true}
-  .left.checkin_history
-    %p Checkins
-    - @checkin_history.each do |status|
-      .left.checkin{:class => status.first == true ? 'done' : ''} &nbsp;
-      .left.checkin{:class => status.last == true ? 'done' : ''} &nbsp;
-      .clear
-  .left
-    - unless hide_chart
-      = render 'investors/chart'
 
     - unless @screenshots.blank?
       %h3 Product Screenshots
 
       - c = 0
       - @screenshots.each do |s|
-        .screenshot.left= link_to image_tag(s.image_url(:small)), '#', :onclick => "$('#screenshots_modal').modal(); $('#screenshots_carousel').carousel(#{c}); return false;"
+        .screenshot.screenshot_modal.left{'data-id' => c}= link_to image_tag(s.image_url(:small)), '#'
         - c += 1
       .clear
 
@@ -44,18 +33,48 @@
             .carousel-inner
               - c = 0
               - @screenshots.each do |s|
-                .item{:class => c == 0 ? 'active' : '' }= image_tag s.image_url
+                .item{:class => c == 0 ? 'active' : ''}= image_tag s.image_url
                 - c += 1
             %a.carousel-control.left{:href => '#screenshots_carousel', 'data-slide' => 'prev'} &lsaquo;
             %a.carousel-control.right{:href => '#screenshots_carousel', 'data-slide' => 'next'} &rsaquo;
+  .left.checkin_history
+    %p{:style => 'font-size: 1em'}
+      Checkin
+      %br/
+      History:
+    - @checkin_history.each do |status|
+      .left.checkin{:class => status.first == true ? 'done' : ''} &nbsp;
+      .left.checkin{:class => status.last == true ? 'done' : ''} &nbsp;
+      .clear
+  .left.traction
+    %h3 Traction
+    - if !@instrument.blank? && !@measurements.blank?
+      = render 'investors/chart', :measurements => @measurements
+    - else
+      = image_tag 'prelaunch_chart.png'
+
+    %h3 Business Model
+    = simple_format(h(@startup.business_model))
+
+    - unless @startup.market_size.blank?
+      %p
+        %strong Market Size:
+        $#{@startup.market_size}
+        %i (self reported)
+    - unless @startup.founding_date.blank?
+      %p
+        %strong Date Founded:
+        #{@startup.founding_date.strftime('%B %d, %Y')}
+
   .clear
 
   .team_members
+    %h3 Team
     - @startup.team_members.each do |team_member|
       .team_member.left
         .top
           - if !team_member.intro_video_url.blank?
-            %iframe{:width => '200', :height => '126', :src => Youtube.embed_url(team_member.intro_video_url), :frameborder => 0, :allowfullscreen => true}
+            %iframe{:width => '225', :height => '160', :src => Youtube.embed_url(team_member.intro_video_url), :frameborder => 0, :allowfullscreen => true}
           - else
             = link_to(image_tag(user_avatar_url(team_member)), team_member)
         .bottom
@@ -63,7 +82,7 @@
             = link_to team_member.name, team_member
             - unless team_member.linkedin_url.blank?
               &nbsp;
-              = link_to image_tag('linkedin_32.png'), team_member.linkedin_url, :target => '_blank'
+              = link_to_external image_tag('linkedin_32.png'), team_member.linkedin_url
           %p
             %small
               Skills: #{team_member.skill_list}

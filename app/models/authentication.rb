@@ -4,6 +4,7 @@ class Authentication < ActiveRecord::Base
   attr_accessible :provider, :uid, :token, :secret
 
   scope :provider, lambda{ |prov| where(:provider => prov) }
+  scope :ordered, order('created_at DESC')
   
   def provider_name
     if provider == 'open_id'

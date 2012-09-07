@@ -1,4 +1,3 @@
 :plain
-  $('#rating_modal').html("#{escape_javascript(render('ratings/modal'))}");
-  $('#rating_modal').modal();
-  $('.rating-form textarea').autosize();
+  $('form.rating').replaceWith("#{escape_javascript(render('ratings/form'))}");
+  $('form.rating textarea').autosize();

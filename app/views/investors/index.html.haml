@@ -8,7 +8,35 @@
 
     - if current_user.roles?(:approved_investor)
       - if can? :investor_connect_with_startups, current_user
-        %h2= link_to 'Show me a startup!', show_startup_investors_path, :class => 'btn btn-large btn-success', :style => 'font-size: 60px;'
+        %br/
+        %br/
+        %br/
+        %h1.center Thank you for being willing to judge startups.
+        %br/
+        %br/
+        %br/
+        .row
+          .span3
+            &nbsp;
+          .span6
+            %p The goal of this process is to determine which startups are most investible for the 100 investors that will see the startups on Demo Day. We are doing that by taking a sample of investors and which teams appeal to investors most.
+            %br/
+            %p Please imagine that these startups are actually pitching you. Respond with your level of interest by indicating whether you'd like to be talk with them now, later, or if at all.
+            %br/
+            %p Also if you would like to you can give one piece of constructive feedback to each startup that will be shared with them anonymously.
+            %br/
+            %p When you are ready to start please click "Judge Startups" button below. You can stop at any time and then return later.
+          .span3
+            &nbsp;
+        %br/
+        %p.center You have reviewed #{@num_startups_left} of #{@total_suggested_startups} startups.
+        %div{:style => 'position: relative;'}
+          .progress{:style => 'width: 40%; margin-left: auto; margin-right: auto;'}
+            .bar{:style => "width: #{@pct_complete}%"}
+        %br/
+        %h2.center= link_to 'Judge Startups!', show_startup_investors_path, :class => 'btn btn-large btn-success', :style => 'font-size: 60px;'
+        %br/
+        %br/
       - else
         %p You have already connected with one startup this week. Please come back next Tuesday at 4pm PST to see more startups, or upgrade your account.
     - else
@@ -63,8 +91,10 @@
             %br
             %p Complete your investment profile by August 8th to be considered for our September 5th Demo Day.
             %br
-            %p= link_to 'View Your Investment Profile', investment_profile_startup_path
-
+            %h3
+              = link_to 'View Your Investment Profile', investment_profile_startup_path
+              &nbsp;&nbsp;|&nbsp;&nbsp;
+              = link_to 'View Investor Feedback', startup_ratings_path(@startup)
             %br/
             %h3 To Dos:
             %br/
@@ -116,6 +146,20 @@
             %br/
             %h2 3) Product Shots
             %p Upload #{Startup::NUM_SCREENSHOTS} screenshots or photos of your product. To do so visit your #{link_to('edit startup page', edit_startup_path(@startup))}.
+            %br/
+            %h2 4) What is your business model?
+            = f.text_area :business_model, :size => '80x5', :style => 'width: 350px; height: 100px;'
+            %br/
+            %br/
+            %h2 5) What is the size of your market?
+            $
+            = f.text_field :market_size, :placeholder => '2.5 billion'
+            %br/
+            %br/
+            %h2 6) When did you start working on this company?
+            = f.date_select :founding_date, :end_year => Time.now.year, :use_short_month => true, :order => [:month, :day, :year]
+            .control-group
+              .controls= f.submit 'Save', :class => 'btn btn-large btn-success'
           .span1
             %p  
           .span3

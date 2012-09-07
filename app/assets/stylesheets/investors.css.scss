@@ -3,17 +3,6 @@
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
 .investors {
-  p {
-    font-size: 20px;
-    line-height: 130%;
-  }
-  h2 {
-    font-size: 30px;
-  }
-  h1 {
-    font-size: 30px;
-    font-weight: 600;
-  }
   .startup {
     .well {
       width: 90%;
@@ -23,7 +12,7 @@
     }
     .headline {
       .name {
-        h2 {
+        h2 { 
           font-weight: 600;
         }
         padding: 10px;
@@ -37,6 +26,9 @@
       height: 315px;
       margin: 0 15px 15px 0;
     }
+    .traction {
+      width: 500px;
+    }
     .chart {
       width: 500px;
       height: 300px;
@@ -47,12 +39,23 @@
       }
     }
     #screenshots_modal.modal {
-      margin: -450px 0 0 -530px;
+      margin: -340px 0 0 -530px;
       width: 1054px;
-      height: 798px;
+      height: 680px;
       #screenshots_carousel, .modal-body {
         width: 1024px;
-        height: 768px;
+        height: 650px;
+        max-height: 650px;
+      }
+      .carousel {
+        .item {
+          img {
+            margin-left: auto;
+            margin-right: auto;
+            display: block;
+            max-height: 650px;
+          }
+        }
       }
     }
     .screenshot {
@@ -78,4 +81,17 @@
       }
     }
   }
+  .weakest_element, .contact_in { min-width: 124px;}
+  .contact_in_description {
+    width: 116px;
+    padding: 2px;
+    margin: 0px;
+    font-size: .8em;
+    vertical-align:text-top;
+    text-align: center
+  }
+}
+
+.investor_profile {
+  select { width: 100px; }
 }

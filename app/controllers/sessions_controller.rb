@@ -1,7 +1,7 @@
 class SessionsController < Devise::SessionsController
   def new
-    @show_sign_in = true if params[:s] and params[:s].to_s == '1'
     super
+    @show_sign_in = true if params[:s].present? and params[:s].to_s == '1'
   end
 
   protected

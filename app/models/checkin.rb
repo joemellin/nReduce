@@ -2,22 +2,31 @@ class Checkin < ActiveRecord::Base
   obfuscate_id :spin => 284759320
   belongs_to :startup
   belongs_to :user # the user logged in who created check-in
+  belongs_to :measurement
+  belongs_to :before_video, :class_name => 'Video', :dependent => :destroy
+  belongs_to :after_video, :class_name => 'Video', :dependent => :destroy
   has_many :comments, :dependent => :destroy
   has_many :awesomes, :as => :awsm, :dependent => :destroy
   has_many :notifications, :as => :attachable
   has_many :user_actions, :as => :attachable
 
-  attr_accessible :start_focus, :start_why, :start_video_url, :end_video_url, :end_comments, :startup_id, :start_comments, :startup
+  attr_accessible :start_focus, :start_why, :start_video_url, :end_video_url, :end_comments, :startup_id, :start_comments, :startup, :measurement_attributes, :before_video_attributes, :after_video_attributes
+
+  accepts_nested_attributes_for :measurement, :reject_if => proc {|attributes| attributes.all? {|k,v| v.blank?} }, :allow_destroy => true
 
   after_validation :check_submitted_completed_times
   before_save :notify_user
   before_create :assign_week
+
+  accepts_nested_attributes_for :before_video, :reject_if => proc {|attributes| attributes.all? {|k,v| v.blank?} }, :allow_destroy => true
+  accepts_nested_attributes_for :after_video, :reject_if => proc {|attributes| attributes.all? {|k,v| v.blank?} }, :allow_destroy => true
 
   validates_presence_of :startup_id
   validates_presence_of :start_focus, :message => "can't be blank", :if => lambda { Checkin.in_before_time_window? }
   validates_presence_of :start_video_url, :message => "can't be blank", :if => lambda { Checkin.in_before_time_window? }
   validates_presence_of :end_video_url, :message => "can't be blank", :if =>  lambda { Checkin.in_after_time_window? }
   validate :check_video_urls_are_valid
+  validate :measurement_is_present_if_launched
 
   scope :ordered, order('created_at DESC')
   scope :completed, where('completed_at IS NOT NULL')
@@ -135,7 +144,7 @@ class Checkin < ActiveRecord::Base
     users_with_startups = User.where('email IS NOT NULL').where(:startup_id => Startup.select('id').account_complete.map{|s| s.id })
 
     users_with_startups.each do |u|
-      Resque.enqueue(Checkin, :before, u.id) if u.email_for?('docheckin')
+      Resque.enqueue(Checkin, :before, u.id) if u.account_setup? && u.email_for?('docheckin')
     end
   end
 
@@ -144,7 +153,7 @@ class Checkin < ActiveRecord::Base
     users_with_startups = User.where('email IS NOT NULL').where(:startup_id => Startup.select('id').account_complete.map{|s| s.id })
 
     users_with_startups.each do |u|
-      Resque.enqueue(Checkin, :after, u.id) if u.email_for?('docheckin')
+      Resque.enqueue(Checkin, :after, u.id) if u.account_setup? && u.email_for?('docheckin')
     end
   end
 
@@ -167,9 +176,11 @@ class Checkin < ActiveRecord::Base
     return arr if checkins.blank?
     # add blank elements at the beginning until they've done a checkin - start at end of prev after checkin
     current_week = Checkin.week_integer_for_time(Checkin.prev_after_checkin)
-    while(current_week != checkins.first.week)
-      arr << [false, false]
-      current_week = Week.previous(current_week)
+    if checkins.first.week < current_week
+      while(current_week != checkins.first.week)
+        arr << [false, false]
+        current_week = Checkin.previous_week(current_week)
+      end
     end
     checkins.each do |c|
       if current_week == c.week
@@ -205,6 +216,38 @@ class Checkin < ActiveRecord::Base
     # If streak was never broken need to populate longest streak
     longest_streak = consecutive_checkins if consecutive_checkins > longest_streak
     longest_streak
+  end
+
+  # Takes youtube urls and converts to our new db-backed format (and uploads to vimeo)
+  def convert_to_new_video_format
+    return true if self.before_video.present? && self.after_video.present?
+    if self.start_video_url.present? && self.before_video.blank?
+      ext_id = Youtube.id_from_url(self.start_video_url)
+      y = Youtube.where(:external_id => ext_id).first
+      y ||= Youtube.new
+      y.external_id = ext_id
+      y.user = self.user
+      if y.save
+        self.before_video = y
+        self.save(:validate => false)
+      else
+        puts "Couldn't save before video: #{y.errors.full_messages}"
+      end
+    end
+    if self.end_video_url.present? && self.after_video.blank?
+      ext_id = Youtube.id_from_url(self.end_video_url)
+      y = Youtube.where(:external_id => ext_id).first
+      y ||= Youtube.new
+      y.external_id = ext_id
+      y.user = self.user
+      if y.save
+        self.after_video = y
+        self.save(:validate => false)
+      else
+        puts "Couldn't save after video: #{y.errors.full_messages}"
+      end
+    end
+    true
   end
 
   # Cache # of comments
@@ -266,6 +309,16 @@ class Checkin < ActiveRecord::Base
     if self.errors.blank?
       self.submitted_at = Time.now if !self.submitted? and self.before_completed?
       self.completed_at = Time.now if !self.completed? and self.after_completed?
+    end
+    true
+  end
+
+  def measurement_is_present_if_launched
+    if self.after_completed? && self.startup.launched?
+      if self.measurement.blank? || self.measurement.value.blank?
+        self.errors.add(:measurement, 'needs to be added since you are launched - to measure traction & progress')
+        return false
+      end
     end
     true
   end

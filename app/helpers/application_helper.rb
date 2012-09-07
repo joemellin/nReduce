@@ -49,7 +49,11 @@ module ApplicationHelper
 
   def link_to_twitter(handle = '', opts = {})
     return '' if handle.blank?
-    link_to(handle, "https://twitter.com/#!/#{handle.sub('@', '')}", opts)
+    link_to(handle, url_for_twitter(handle), opts)
+  end
+
+  def url_for_twitter(handle)
+    "https://twitter.com/#!/#{handle.sub('@', '')}"
   end
 
   def is_controller_action?(controller_name, action_name = nil)
@@ -90,7 +94,7 @@ module ApplicationHelper
       when :new_checkin then link_to("#{obj.entity.name} completed their 'after' checkin", obj)
       when :relationship_request then link_to("#{obj.entity.name} would like to connect with you", relationships_path)
       when :relationship_approved then link_to("#{obj.connected_with.name} is now connected to you", startup_path(:id => obj.connected_with_id))
-      when :new_comment then link_to("#{obj.user.name} commented on your #{obj.checkin.time_label} checkin", checkin_path(:id => obj.checkin_id))
+      when :new_comment then link_to("#{obj.user.name} commented on your #{obj.checkin.time_label} checkin", checkin_path(obj.checkin))
       when :new_nudge then link_to("#{obj.from.name} nudged you to complete your check-in", relationships_path)
       when :mentorship_approved then link_to("#{obj.entity.name} is now a mentor for you!", obj.entity)
       else link_to(title, '#')
@@ -152,5 +156,16 @@ module ApplicationHelper
     return true unless @setup or current_user.blank?
     return true if @setup and current_user.required_profile_elements.include?(field)
     return false
+  end
+
+  def external_url(url)
+    url_for(ciao_path(:url => Base64.encode64(url)))
+  end
+
+  def link_to_external(title, url, options = {})
+    # show modal to investors
+    options.merge!(:target => '_blank')
+    options.merge!(:class => 'external') if user_signed_in? && current_user.investor?
+    link_to(title, external_url(url), options)
   end
 end

@@ -9,6 +9,8 @@ class PagesController < ApplicationController
   end
 
   def home
+    @demo_day = DemoDay.next_or_current
+    @home = true
     if user_signed_in?
       redirect_to relationships_path
       return

@@ -1,8 +1,15 @@
 class RatingsController < ApplicationController
   around_filter :record_user_action, :except => [:cancel_edit]
   before_filter :login_required
-  load_and_authorize_resource
+  before_filter :load_obfuscated_startup_nested
   load_and_authorize_resource :startup
+  load_and_authorize_resource :through => :startup
+  
+  def index
+    @ratings = @ratings.ordered
+    @weakest_element_data = Rating.weakest_element_arr_from_ratings(@ratings)
+    @contact_in_data = Rating.contact_in_arr_from_ratings(@ratings)
+  end
 
   def new
     @rating.interested = params[:interested] unless params[:interested].blank?
@@ -14,19 +21,19 @@ class RatingsController < ApplicationController
   end
 
   def create
-    @rating.investor = current_user
+    @rating.user = current_user
     if @rating.save
-      flash[:notice] = "Your rating has been stored!"
+      #flash[:notice] = "Your rating has been stored!"
       # They are done rating startups
       if params[:commit].match(/stop/i) != nil
         @redirect_to = investors_path
       else # They want to continue
         # Check if they are above their limit
         if current_user.can_connect_with_startups?
+          @redirect_to = show_startup_investors_path
+        else
           flash[:alert] = "You've already contacted a startup this week, please come back later or upgrade your account to connect with more startups."
           @redirect_to = investors_path
-        else
-          @redirect_to = show_startup_investors_path
         end
       end
       # JS will render page that redirects to url

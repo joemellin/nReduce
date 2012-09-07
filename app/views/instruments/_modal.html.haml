@@ -1,0 +1,6 @@
+#instrument_modal.modal.hide
+  .modal-header
+    %button.close{:type => 'button', 'data-dismiss' => 'modal'} x
+    %h2{:style => 'margin-bottom: 5px'} What is the most important non-vanity metric that you use to measure the health of your business?
+  .modal-body
+    = render 'instruments/form'

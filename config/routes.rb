@@ -87,6 +87,7 @@ Nreduce::Application.routes.draw do
       match 'welcome'
       get 'current_class'
       get 'wait_for_next_class'
+      get 'change_password'
     end
     resources :notifications
   end
@@ -103,6 +104,9 @@ Nreduce::Application.routes.draw do
   get '/tags/:context(/:term)' => "tags#search"
   
   resources :relationships, :only => [:create, :index] do
+    collection do
+      get 'add_teams'
+    end
     member do
       post 'approve'
       post 'reject'
@@ -116,6 +120,7 @@ Nreduce::Application.routes.draw do
       get 'current_class'
       get 'stats'
       match 'invite'
+      post 'invite_with_confirm'
     end
     member do
       match 'intro_video'
@@ -127,8 +132,15 @@ Nreduce::Application.routes.draw do
       get 'latest' => "checkins#show", :checkin_id => 'latest', :on => :collection
     end
     resources :invites, :only => [:create, :destroy, :show]
-    resources :ratings, :only => [:new, :create]
+    resources :ratings, :only => [:index, :new, :create]
     resources :screenshots, :only => [:create, :update, :destroy]
+    resources :instruments, :except => [:index, :destroy]
+    resources :questions, :except => [:update, :destroy] do
+      member do
+        post 'support'
+        post 'answer'
+      end
+    end
   end
 
   # onboarding
@@ -152,6 +164,14 @@ Nreduce::Application.routes.draw do
   match '/investors/new' => "pages#investor"
   match '/community_guidelines' => "pages#community_guidelines", :as => :community_guidelines
 
+  # Url redirection
+  match '/ciao/:url' => "application#ciao", :as => :ciao
+
+  match '/capture_and_login' => 'application#capture_and_login', :as => :capture_and_login
+
+  resources :demo_day, :only => [:index, :show], :path => :d do
+    post 'attend', :on => :member
+  end
 
   root :to => 'pages#home'
 end
