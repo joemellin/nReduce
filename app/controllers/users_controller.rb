@@ -2,8 +2,8 @@ class UsersController < ApplicationController
   around_filter :record_user_action, :except => [:reset_hipchat_account]
   before_filter :login_required
   before_filter :load_user_if_me_or_current
-  before_filter :load_obfuscated_user
-  load_and_authorize_resource
+  before_filter :load_obfuscated_user, :only => [:show, :edit, :change_password, :account_type, :update, :welcome]
+  authorize_resource
 
   def index
     redirect_to '/'
@@ -13,13 +13,6 @@ class UsersController < ApplicationController
   end
 
   def show
-    begin
-      @user = User.find_by_obfuscated_id(params[:id])
-    rescue ActiveRecord::RecordNotFound
-      redirect_to '/'
-      return
-    end
-    authorize! :read, @user
     # Load current invite if they have one  - don't search by email because that opens security hole where a user can sign up with an email they don't own and get invite - really should be verifying email
     if @user.id == current_user.id
       @current_invite = Invite.not_accepted.where(:to_id => current_user.id).first
@@ -41,6 +34,7 @@ class UsersController < ApplicationController
   end
 
   def edit
+    @user.intro_video = ViddlerVideo.new if @user.intro_video.blank?
     @profile_elements = @user.profile_elements
     @profile_completeness_percent = (@user.profile_completeness_percent * 100).round
   end
@@ -82,6 +76,11 @@ class UsersController < ApplicationController
     @conversion = true
   end
 
+  def change_password
+    @change_password = true
+    render 'devise/registrations/edit'
+  end
+
   protected
 
   def load_obfuscated_user
@@ -97,13 +96,5 @@ class UsersController < ApplicationController
     @user = current_user if params[:id].blank?
     @user = current_user if params[:id] == 'me'
     
-  end
-
-  def redirect_unless_authorized_for_user(user)
-    unless current_user.id == user.id or current_user.admin?
-      redirect_to '/'
-      return false
-    end
-    true
   end
 end

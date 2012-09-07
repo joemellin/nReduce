@@ -2,7 +2,11 @@
   - show_sign_in = true
 - else
   - show_sign_in = false
-.row#sign_up.hide
+- if @show_join
+  - show_join = true
+- else
+  - show_join = false
+.row#sign_up{:class => show_join ? '' : 'hide'}
   .span3
     %p &nbsp;
   .span6.well

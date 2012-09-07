@@ -1,8 +1,8 @@
 class RelationshipsController < ApplicationController
   around_filter :record_user_action
   before_filter :login_required
-  before_filter :load_requested_or_users_startup, :only => :index
-  load_and_authorize_resource :except => :index
+  before_filter :load_requested_or_users_startup, :only => [:index, :add_teams]
+  load_and_authorize_resource :except => [:index, :add_teams]
 
   def index
     no_startups = false
@@ -11,7 +11,6 @@ class RelationshipsController < ApplicationController
       @entity = current_user
     elsif @startup
       @entity = @startup
-      @current_checkin = @entity.current_checkin
     end
     unless can? :read, Relationship.new(:entity => @entity)
       redirect_to current_user
@@ -61,11 +60,24 @@ class RelationshipsController < ApplicationController
     @num_blank_spots = current_user.mentor? ? 4 : 8
 
     @show_mentor_message = true if current_user.roles?(:nreduce_mentor) && no_startups == true
-    
-    # Suggested, pending relationships and invited startups
-    @suggested_startups = @startup.suggested_startups(3) unless @startup.blank?
+  end
+
+  def add_teams
+    if current_user.mentor?
+      @entity = current_user
+    elsif @startup
+      @entity = @startup
+    end
+     # Suggested, pending relationships and invited startups
+    @suggested_startups = @startup.suggested_startups(10) unless @startup.blank?
     @pending_relationships = @entity.pending_relationships
-    @invited_startups = current_user.sent_invites.to_startups.not_accepted
+    @invited_startups = current_user.sent_invites.to_startups.not_accepted.ordered
+    @modal = true
+    if session[:checkin_completed] == true && !@startup.blank?
+      @checkin_completed = true
+      @number_of_consecutive_checkins = @startup.number_of_consecutive_checkins
+      session[:checkin_completed] = false
+    end
   end
 
   def create
@@ -80,7 +92,7 @@ class RelationshipsController < ApplicationController
     end
     logger.info flash.inspect
     respond_to do |format|
-      format.html { redirect_to '/' }
+      format.html { redirect_to add_teams_relationships_path }
       format.js { render :action => 'update_modal' }
     end
   end
@@ -89,6 +101,11 @@ class RelationshipsController < ApplicationController
     @relationship.message = params[:relationship][:message] if !params[:relationship].blank? and !params[:relationship][:message].blank?
     suggested = true if @relationship.suggested?
     if @relationship.approve!
+      # Update rating to say investor connected if so
+      unless params[:rating_id].blank?
+        r = Rating.find(params[:rating_id])
+        r.update_attribute('connected', true) if !r.startup_relationship.blank? && (r.startup_relationship == @relationship)
+      end
       if suggested
         flash[:notice] = "Your connection has been requested with #{@relationship.connected_with.name}"
       else
@@ -102,7 +119,7 @@ class RelationshipsController < ApplicationController
         format.js { render :action => 'update_modal' }
       end
     else
-      redirect_to relationships_path
+      redirect_to add_teams_relationships_path
     end
   end
 
@@ -112,6 +129,11 @@ class RelationshipsController < ApplicationController
     if @relationship.reject_or_pass!
       removed = @relationship.entity if (@relationship.connected_with == current_user) or (!current_user.startup.blank? and (@relationship.connected_with == current_user.startup))
       removed ||= @relationship.connected_with
+      # Update rating to say startup didn't connect
+      unless params[:rating_id].blank?
+        r = Rating.find(params[:rating_id])
+        r.update_attribute('connected', false) if !r.startup_relationship.blank? && (r.startup_relationship == @relationship)
+      end
       if prev_status_pending
         flash[:notice] = "You have ignored the connection request from #{removed.name}."
       elsif prev_status_suggested
@@ -122,6 +144,6 @@ class RelationshipsController < ApplicationController
     else
       flash[:alert] = "Sorry but the relationship couldn't be removed at this time."
     end
-    redirect_to relationships_path
+    redirect_to add_teams_relationships_path
   end
 end

@@ -1,29 +1,31 @@
-.control-group{error_css(resource, :name)}
-  = f.label :name, 'Your Name', :class => 'control-label'
-  .controls
-    = f.email_field :name
-    = f.semantic_errors :name
-.control-group{error_css(resource, :email)}
-  = f.label :email, :class => 'control-label'
-  .controls
-    = f.email_field :email
-    = f.semantic_errors :email
-.control-group{error_css(resource, :password)}
-  = f.label :password, 'Create a Password', :class => 'control-label'
-  .controls
-    = f.password_field :password
-    = f.semantic_errors :password
-.control-group{error_css(resource, :password_confirmation)}
-  = f.label :password_confirmation, "Confirm Password", :class => 'control-label'
-  .controls
-    = f.password_field :password_confirmation
-    = f.semantic_errors :password_confirmation
-- unless resource.new_record?
-  .control-group{error_css(resource, :current_password)}
-    = f.label :current_password, :class => 'control-label'
+- unless @change_password
+  .control-group{error_css(f.object, :name)}
+    = f.label :name, 'Your Name', :class => 'control-label'
+    .controls
+      = f.email_field :name
+      = f.semantic_errors :name
+  .control-group{error_css(f.object, :email)}
+    = f.label :email, :class => 'control-label'
+    .controls
+      = f.email_field :email
+      = f.semantic_errors :email
+- unless @password_not_required
+  .control-group{error_css(@user, :password)}
+    = f.label :password, 'New Password', :class => 'control-label'
+    .controls
+      = f.password_field :password
+      = f.semantic_errors :password
+  .control-group{error_css(@user, :password_confirmation)}
+    = f.label :password_confirmation, "Confirm New Password", :class => 'control-label'
+    .controls
+      = f.password_field :password_confirmation
+      = f.semantic_errors :password_confirmation
+- unless @user.new_record?
+  .control-group{error_css(@user, :current_password)}
+    = f.label :current_password, 'What is your current password?', :class => 'control-label'
     .controls
       = f.password_field :current_password
       = f.semantic_errors :current_password
       %p.help-block (we need your current password to confirm your changes)
 .control-group
-  .controls= f.submit "Sign up", :class => 'btn btn-large btn-primary'
+  .controls= f.submit "Save", :class => 'btn btn-large btn-primary'

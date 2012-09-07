@@ -3,6 +3,9 @@
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
 .relationships {
+  .invite_form {
+    padding-top: 10px;
+  }
   .team {
     .top {
       position: relative;
@@ -55,14 +58,22 @@
     margin-bottom: 25px;
   }
 
-  .countdown_and_checkin {
-    position: relative;
-    height: 70px;
-    .checkin_button {
-      height: 70px;
-      position: relative;
-      right: 0;
-      top: 30%;
+  .teams {
+    .header {
+        text-align: center;
+        padding: 10px;
+      }
+    .suggested {
+      .block{
+        margin-left: -10px;
+        margin-bottom: 20px;
+        .team{
+          width: 240px;
+        }
+        .team_details {
+          width: 290px;
+        }
+      }
     }
   }
 }

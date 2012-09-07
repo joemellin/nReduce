@@ -284,7 +284,7 @@ RailsAdmin.config do |config|
   #   create do; end
   #   update do; end
   # end
-  # config.model User do
+  config.model User do
   #   # Found associations:
   #     configure :startup, :belongs_to_association 
   #     configure :authentications, :has_many_association 
@@ -333,11 +333,47 @@ RailsAdmin.config do |config|
   #     configure :phone, :string 
   #     configure :hipchat_username, :string 
   #     configure :hipchat_password, :string   #   # Sections:
-  #   list do; end
+    list do
+      field :id
+      field :name
+      field :email
+      field :location
+      field :startup
+      field :twitter
+      field :linkedin_url
+      field :angellist_url
+      field :facebook_url
+      field :github_url
+      field :dribbble_url
+      field :blog_url
+      field :meeting
+      field :one_liner
+      field :bio
+      field :phone
+      field :intro_video_url
+    end
   #   export do; end
   #   show do; end
-  #   edit do; end
+    edit do
+      field :id
+      field :name
+      field :email
+      field :location
+      field :startup
+      field :twitter
+      field :linkedin_url
+      field :angellist_url
+      field :facebook_url
+      field :github_url
+      field :dribbble_url
+      field :blog_url
+      field :meeting
+      field :one_liner
+      field :phone
+      field :bio
+      field :intro_video_url
+    end
   #   create do; end
   #   update do; end
-  # end
+  end
 end

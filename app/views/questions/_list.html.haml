@@ -1,0 +1,63 @@
+- c = 0
+.row{:style => 'border-bottom: 1px solid #efefef; padding-bottom: 10px'}
+  .span1{:style => 'color: #ccc; font-size: 1.8em;', :align => 'center'}
+    %h3 Rank
+  .span1
+    %br/
+  .span7{:style => 'color: #ccc; font-size: 1.8em;'}
+    %h3 Question
+  .span2{:style => 'color: #ccc; font-size: 1.8em;'}
+    %h3 Support It!
+
+- @questions.each do |q|
+  - c += 1
+  .row.question{:id => "question_#{q.id}", :class => q.unseen? ? 'unseen' : ''}
+    .span1{:align => 'center'}
+      %h2= c
+    .span1
+      .well
+        %center
+          %div{:style => 'font-size: 1.4em'}= number_with_delimiter(q.followers_count)
+          Followers
+    .span7
+      .content
+        %span{:style => 'color: #ccc; padding-right: 5px'} Q:
+        = h(q.content)
+      .row
+        .span2.asked_by
+          Asked By:
+          %br/
+          = image_tag user_avatar_url(q.user)
+          = q.user.name
+        .span5
+          - supporters = q.supporters(true)
+          - unless supporters.blank?
+            Supporters:
+            %br/
+            - supporters.each do |u|
+              .supporter.left= image_tag user_avatar_url(u)
+            .clear
+    .span2
+      %h3
+        - if q.tweet_id.present?
+          .support
+            - if user_signed_in? && q.user_id == current_user.id
+              .supported= link_to '<i class="icon-ok"></i> Supported'.html_safe, '#', :class => 'btn btn-large disabled', :onclick => 'return false;'
+            - elsif !user_signed_in? || (user_signed_in? && q.user_id != current_user.id)
+              - supporter = user_signed_in? && q.is_supporter?(current_user)
+              .supported{:class => supporter ? '' : 'hide'}= link_to '<i class="icon-ok"></i> Supported'.html_safe, '#', :class => 'btn btn-large disabled'
+              .unsupported{:class => supporter ? 'hide' : ''}
+                = link_to_login "#{image_tag('twitter_grey.png')} Upvote".html_safe, '#', :onclick => "$('#question_#{q.id} .modal').modal('show'); return false;", :class => 'btn btn-large'
+                %p 
+                  %small Get this answered sooner
+        - else
+          &nbsp;
+    .modal.hide
+      .modal-header
+        %button.close{:type => 'button', 'data-dismiss' => 'modal'} x
+        %h2{:style => 'margin-bottom: 5px'} Re-Tweet This Question
+      .modal-body
+        %h3 "#{h(q.tweet_content)}"
+      .modal-footer
+        %center
+          = link_to "#{image_tag('twitter_white.png')} Re-Tweet This".html_safe, support_startup_question_path(@startup, q), :method => :post, :remote => true, :class => 'btn btn-large btn-success'

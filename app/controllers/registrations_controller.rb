@@ -7,7 +7,11 @@ class RegistrationsController < Devise::RegistrationsController
 
   def create
     super
-    session[:omniauth] = nil unless @user.new_record?
+    session[:omniauth] = session[:password_not_required] = nil unless @user.new_record?
+  end
+
+  def edit
+    redirect_to edit_user_path(current_user)
   end
   
   private
@@ -22,5 +26,6 @@ class RegistrationsController < Devise::RegistrationsController
     @user.email = session[:sign_in_up_email] unless @user.blank? or session[:sign_in_up_email].blank?
     @user.geocode_from_ip(request.remote_ip) if @user.location.blank?
     @hide_twitter = true if !session[:invite_id].blank?
+    @password_not_required = session[:password_not_required]
   end
 end

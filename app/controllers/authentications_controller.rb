@@ -13,28 +13,40 @@ class AuthenticationsController < ApplicationController
     authentication = Authentication.find_by_provider_and_uid(omniauth['provider'], omniauth['uid'])
     if authentication
       authentication.update_attributes(:token => omniauth['credentials']['token'], :secret => omniauth['credentials']['secret']) if omniauth['credentials'] && !omniauth['credentials']['token'].blank?
-      #flash[:notice] = "Signed in successfully."
       remember_me(authentication.user) # set remember me cookie
       sign_in_and_redirect(:user, authentication.user)
     elsif current_user # already a signed in user
       current_user.apply_omniauth(omniauth)
       current_user.geocode_from_ip(request.remote_ip) if current_user.location.blank?
       if current_user.save
-        flash[:notice] = "Authentication successful."
+        flash[:notice] = "#{omniauth['provider']} authentication successful."
       else
         flash[:alert] = "Sorry but you could't be authenticated. Please try again:"
       end
-      redirect_to current_user
+      if session[:redirect_to]
+        tmp = session[:redirect_to]
+        session[:redirect_to] = nil
+        redirect_to tmp
+      else
+        redirect_to current_user
+      end
     else
       user = User.new
       user.apply_omniauth(omniauth)
+      user.email = "#{user.twitter}@users.nreduce.com" if omniauth['provider'] == 'twitter'
       if user.save
-        #flash[:notice] = "Signed in successfully."
         remember_me(user) # set remember me cookie
         sign_in_and_redirect(:user, user)
       else
-        logger.info "user inspect: #{user.inspect} with errors #{user.errors.full_messages}"
-        session[:omniauth] = omniauth.except('extra')
+        # Extra details are too much to store, so we have to grab just followers count
+        begin
+          fc = omniauth['extra']['raw_info']['followers_count']
+          omniauth.delete('extra')
+          omniauth['extra'] = {'raw_info' => {'followers_count' => fc}}
+        rescue
+          omniauth.delete('extra')
+        end
+        session[:omniauth] = omniauth
         redirect_to new_user_registration_url
       end
     end

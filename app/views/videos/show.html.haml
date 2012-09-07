@@ -1,0 +1,8 @@
+%h1 Video
+
+
+/.js-vimeo{'data-url' => "https://vimeo.com/#{@video.vimeo_id}"} Loading Video...
+!= @video.embed_code
+
+- if @video.image?
+  = image_tag @video.image.url(:medium)
