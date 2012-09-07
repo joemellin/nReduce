@@ -65,7 +65,7 @@
                     %li= link_to "Job Queue", "/admin/resque"
                   %li.divider
                   %li= link_to "Log out", logout_path, :method => :delete
-          - elsif !@demo_day || @home
+          - else
             %li= link_to "Login", login_path
       .clear
 %hr
