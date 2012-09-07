@@ -96,11 +96,9 @@ module Connectable
   end
 
    def generate_suggested_connections(limit = 10)
-    startups = []
     # See if they are over limit of suggested connections
     suggested = self.suggested_startups(limit + 5)
     return false if !suggested.blank? and (suggested.size >= limit)
-    num_suggested = suggested.size
 
     # Find all startups this person is connected to, has been suggested, and has rejected
     ignore_startup_ids = (self.received_relationships.where(:entity_type => 'Startup') + self.initiated_relationships.where(:connected_with_type => 'Startup')).map{|r| r.connected_with_id }
@@ -108,28 +106,27 @@ module Connectable
     ignore_startup_ids << Startup.nreduce_id # hide nreduce from suggested startups
     ignore_startup_ids.uniq!
 
-     # Create lambda to add startups that will create a suggested relationship when passed an array of startups
-    suggest_startup = Proc.new {|startup, message|
-      return if num_suggested >= limit
-      Relationship.suggest_connection(self, startup, :startup_startup, message)
-      num_suggested += 1
-    }
-
     # Find all startups that checked in last week
     end_after = Checkin.prev_after_checkin
     start_after = end_after - 24.hours
     checkins = Checkin.completed.where(['completed_at >= ? AND completed_at <= ?', start_after, end_after]).includes(:startup).all
-    
+
     return startups if checkins.blank?
 
-    1.upto(limit).each do |i|
+    1.upto(checkins.size) do
+      break if suggested.size >= limit
+      # Randomly get a startup from one that checked in last week
       s = checkins.sample.startup
+      # Make sure startup still exists
       next if s.blank?
-      startups << s
-      suggest_startup.call(s, nil)
+      # Don't add if they're already connected or we're going to suggest them
+      next if ignore_startup_ids.include?(s.id) || startups.include?(s)
+      # Suggest connection
+      Relationship.suggest_connection(self, s, :startup_startup)
+      suggested << s
     end
 
-    startups
+    suggested
   end
 
     # Generate suggestion connections that this startup might like to connect to - based on similar industries and company goal
