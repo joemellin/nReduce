@@ -120,7 +120,7 @@ module Connectable
       # Make sure startup still exists
       next if s.blank?
       # Don't add if they're already connected or we're going to suggest them
-      next if ignore_startup_ids.include?(s.id) || startups.include?(s)
+      next if ignore_startup_ids.include?(s.id) || suggested.include?(s)
       # Suggest connection
       Relationship.suggest_connection(self, s, :startup_startup)
       suggested << s
