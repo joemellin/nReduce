@@ -96,6 +96,7 @@ class ApplicationController < ActionController::Base
     if current_user.account_setup?
       return true
     else
+      # Account is not set up
       # temporary time travel
       if !params[:travel].blank? && params[:travel].to_s == '1'
         Timecop.return
@@ -115,23 +116,31 @@ class ApplicationController < ActionController::Base
         redirect_to '/'
         return
       end
-      # if we're in the right place, don't do anything
-      return true if controller_action_arr == @account_setup_action
-      # Allow them to choose account type again / invite team members
-      return true if [[:users, :account_type], [:invites, :create]].include?(controller_action_arr)
-      # Allow create/update actions
-      if controller_action_arr.first == @account_setup_action.first
-        return true if @account_setup_action.last == :edit and action_name.to_sym == :update
-        return true if @account_setup_action.last == :new and [:create, :edit].include?(controller_action_arr.last)
+      # If entrepreneur redirect them to class join page (unless ajax request to complete something)
+      if current_user.entrepreneur? && !request.xhr?
+        # They are on join page
+        return true if controller_action_arr == [:classes, :show] && params[:id].to_s == current_user.weekly_class_id.to_s
+        # Redirect to join page
+        redirect_to current_user.weekly_class
+      else
+        # if we're in the right place, don't do anything
+        return true if controller_action_arr == @account_setup_action
+        # Allow them to choose account type again / invite team members
+        return true if [[:users, :account_type], [:invites, :create]].include?(controller_action_arr)
+        # Allow create/update actions
+        if controller_action_arr.first == @account_setup_action.first
+          return true if @account_setup_action.last == :edit and action_name.to_sym == :update
+          return true if @account_setup_action.last == :new and [:create, :edit].include?(controller_action_arr.last)
+        end
+        # onboarding has a few actions involved, so if they're in onboarding don't change action
+        return true if [controller_action_arr.first, @account_setup_action.first] == [:onboard, :onboard]
+        # otherwise redirect to correct controller/action
+        prms = {:controller => @account_setup_action.first, :action => @account_setup_action.last}
+        # use obfuscated id
+        prms[:id] = current_user.to_param if prms[:controller] == :users
+        prms[:id] = current_user.startup.to_param if prms[:controller] == :startups
+        redirect_to prms
       end
-      # onboarding has a few actions involved, so if they're in onboarding don't change action
-      return true if [controller_action_arr.first, @account_setup_action.first] == [:onboard, :onboard]
-      # otherwise redirect to correct controller/action
-      prms = {:controller => @account_setup_action.first, :action => @account_setup_action.last}
-      # use obfuscated id
-      prms[:id] = current_user.to_param if prms[:controller] == :users
-      prms[:id] = current_user.startup.to_param if prms[:controller] == :startups
-      redirect_to prms
     end
     false
   end

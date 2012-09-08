@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120902004250) do
+ActiveRecord::Schema.define(:version => 20120907231314) do
 
   create_table "authentications", :force => true do |t|
     t.string   "provider"
@@ -422,5 +422,18 @@ ActiveRecord::Schema.define(:version => 20120902004250) do
   end
 
   add_index "videos", ["external_id", "type"], :name => "index_videos_on_external_id_and_type", :unique => true
+
+  create_table "weekly_classes", :force => true do |t|
+    t.integer  "week"
+    t.integer  "num_startups"
+    t.integer  "num_users"
+    t.integer  "num_countries"
+    t.integer  "num_industries"
+    t.text     "user_ids"
+    t.datetime "created_at",     :null => false
+    t.datetime "updated_at",     :null => false
+  end
+
+  add_index "weekly_classes", ["week"], :name => "index_weekly_classes_on_week", :unique => true
 
 end

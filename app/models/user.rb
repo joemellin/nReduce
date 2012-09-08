@@ -6,6 +6,7 @@ class User < ActiveRecord::Base
   belongs_to :startup
   belongs_to :meeting
   belongs_to :intro_video, :class_name => 'Video', :dependent => :destroy
+  belongs_to :weekly_class
   has_many :authentications, :dependent => :destroy
   has_many :organized_meetings, :class_name => 'Meeting', :foreign_key => 'organizer_id'
   has_many :sent_messages, :foreign_key => 'sender_id', :class_name => 'Message'
@@ -561,7 +562,12 @@ class User < ActiveRecord::Base
     # end
   end
 
-  def geocode_from_ip(ip_address)
+  def geocoded?
+    self.lat.present? && self.lng.present?
+  end
+
+  def geocode_from_ip(ip_address = nil)
+    ip_address ||= self.current_sign_in_ip
     begin
       res = User.geocode(ip_address)
       unless res.blank?

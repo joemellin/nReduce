@@ -121,6 +121,7 @@ GEM
     formatador (0.2.3)
     formtastic (2.2.1)
       actionpack (>= 3.0)
+    geoip (1.1.2)
     geokit (1.6.5)
       multi_json
     geokit-rails3 (0.1.5)
@@ -396,6 +397,7 @@ DEPENDENCIES
   factory_girl_rails
   fog
   formtastic
+  geoip
   geokit-rails3
   guard
   guard-livereload
