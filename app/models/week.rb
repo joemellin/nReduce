@@ -1,12 +1,12 @@
 class Week
   # THIS IS REALLY A DIFFERENT CLASS - TIME WINDOWS
   
-  def self.time_windows
+  def self.time_window_offsets
     {
       # type => [offset from beginning of week, length]
       :after_checkin => [1.day + 16.hours, 24.hours],
       :before_checkin => [2.days + 16.hours, 24.hours],
-      :join_class => [2.days + 12.hours, 2.hours]
+      :join_class => [2.days + 11.hours, 2.hours]
     }
   end
 
@@ -22,7 +22,7 @@ class Week
   def self.next_window_for(type, dont_skip_if_in_window = false)
     t = Time.now
     beginning_of_week = t.beginning_of_week
-    window_info = Week.time_windows[type]
+    window_info = Week.time_window_offsets[type]
     window_start = beginning_of_week + window_info.first
     # We're after the beginning of this time window, so add a week unless we're suppressing that
     window_start += 1.week if (t > window_start) && !dont_skip_if_in_window
@@ -48,8 +48,27 @@ class Week
   end
 
     # returns the week integer for this timestamp, ex: 201223
-  def self.integer_for_time(time)
-    time.strftime("%Y%W").to_i
+    # can accomodate time-shifted weeks if you pass in an offset name, ex: :join_class
+  def self.integer_for_time(time, offset = nil)
+    week = time.strftime("%Y%W").to_i
+    return week if offset.blank?
+    # subtract one week if we're actually before the week 'starts'
+    return Week.previous(week) if (time.beginning_of_week + Week.time_window_offsets[offset].first) > time
+    week
+  end
+
+   # Pass in a week integer, ex: 201223, and it will pass back an array of the start time and end time for that week
+  def self.window_for_integer(week, offset = nil)
+    offset = Week.time_window_offsets[:join_class].first unless offset.blank?
+    week = week.to_s
+    year = week.slice!(0..3)
+    return [] if year.blank? || week.blank?
+    start_date = Time.parse("#{year}-01-01 00:00:00").beginning_of_week
+    start_date += (week.to_i * 7).days
+    start_date += offset if offset.present?
+    end_date = start_date.end_of_week
+    end_date += offset if offset.present?
+    [start_date, end_date]
   end
 
   # Pass in a week integer (ex: 20126) and this will pass back the week before, 20125
