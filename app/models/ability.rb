@@ -15,7 +15,7 @@ class Ability
 
     # Users who have a startup or are a mentor
     elsif !user.new_record? and user.has_startup_or_is_mentor_or_investor?
-
+    
       # Abilities if user has a startup
       if !user.startup_id.blank?
         can [:manage, :onboard, :onboard_next, :remove_team_member], Startup, :id => user.startup_id
@@ -50,6 +50,7 @@ class Ability
         can :read, Rating, :startup_id => user.startup_id if user.startup.investable?
 
         can :manage, Video, :startup_id => user.startup_id
+
       end
 
       # Can destroy if they were assigned as receiver or created it
@@ -204,6 +205,9 @@ class Ability
     #
     # All Users
     #
+
+    cannot :all, WeeklyClass
+    can :read, WeeklyClass, :id => user.weekly_class_id
 
     # Can only create a startup if registration is open and they don't have a current startup
     can [:new, :create, :edit], Startup do |startup|

@@ -119,9 +119,11 @@ class ApplicationController < ActionController::Base
       # If entrepreneur redirect them to class join page (unless ajax request to complete something)
       if current_user.entrepreneur? && !request.xhr?
         # They are on join page
-        return true if controller_action_arr == [:classes, :show] && params[:id].to_s == current_user.weekly_class_id.to_s
+        return true if controller_action_arr == [:weekly_classes, :show]
         # Redirect to join page
+        current_user.assign_weekly_class! unless current_user.weekly_class.present?
         redirect_to current_user.weekly_class
+        return
       else
         # if we're in the right place, don't do anything
         return true if controller_action_arr == @account_setup_action
