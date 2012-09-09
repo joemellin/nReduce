@@ -96,17 +96,7 @@ class StartupsController < ApplicationController
       @relationship = Relationship.between(@startup, @entity)
     end
   end
-
-  def current_class
-
-  end
-
-  def wait_for_next_class
-    @waiting_for_next_class = true
-    window = Week.next_window_for(:join_class)
-    @other_startups = Startup.where(:week => Week.integer_for_time(window.first))
-  end
-
+  
   #
   # Actions for user's startup
   #

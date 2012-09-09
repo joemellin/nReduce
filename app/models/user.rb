@@ -2,7 +2,7 @@ class User < ActiveRecord::Base
   obfuscate_id :spin => 94062493
   include Connectable # methods for relationships
   acts_as_mappable
-  has_paper_trail :ignore => [:unread_nc]
+  has_paper_trail :ignore => [:unread_nc, :weekly_class_id, :setup]
   belongs_to :startup
   belongs_to :meeting
   belongs_to :intro_video, :class_name => 'Video', :dependent => :destroy
@@ -487,7 +487,7 @@ class User < ActiveRecord::Base
   end
 
   def password_required?
-    (authentications.empty? || !password.blank?) && super
+    (!password.blank? || authentications.empty?) && super
   end
   
   def uses_password_authentication?
@@ -572,12 +572,18 @@ class User < ActiveRecord::Base
       res = User.geocode(ip_address)
       unless res.blank?
         self.location = [res.city, res.state, res.country_code].delete_if{|i| i.blank? }.join(', ')
+        self.lat, self.lng, self.country = res.lat, res.lng, res.country_code
         return true
       end
     rescue
       # do nothing
     end
     false
+  end
+
+  def assign_weekly_class!
+    self.weekly_class = WeeklyClass.class_for_user(self)
+    save
   end
 
   protected
@@ -593,13 +599,14 @@ class User < ActiveRecord::Base
 
   def set_default_settings
     self.email_on = User.default_email_on
+    self.weekly_class = WeeklyClass.current_class
   end
 
   def geocode_location
     return true if !Rails.env.production? or self.location.blank? or (!self.location_changed? and !self.lat.blank?)
     begin
       res = User.geocode(self.location)
-      self.lat, self.lng = res.lat, res.lng
+      self.lat, self.lng, self.country = res.lat, res.lng, res.country_code
     rescue
       self.errors.add(:location, "could not be geocoded")
     end

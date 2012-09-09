@@ -1,27 +1,37 @@
 class WeeklyClass < ActiveRecord::Base
-  attr_accessible :week, :user_ids
+  has_many :users
+  has_many :startups, :through => :users
 
-  serialize :user_ids
+  attr_accessible :week
+
   serialize :clusters
 
   before_save :calculate_cached_fields
 
   def self.populate_for_past_weeks
     return unless WeeklyClass.count == 0
-    classes = []
+    weekly_classes = []
+    all_users = []
     num_users_left = User.count
     curr_week = Week.integer_for_time(Time.now.beginning_of_week)
     while(num_users_left > 0) do
-      w = WeeklyClass.new(:week => curr_week)
-      users = User.where(['created_at >= ? AND created_at <= ?', w.time_window.first, w.time_window.last]).all
+      wc = WeeklyClass.new(:week => curr_week)
+      wc.save
+      users = User.where(['created_at >= ? AND created_at <= ?', wc.time_window.first, wc.time_window.last]).all
       num_users_left -= users.size
-      w.users = users
-      classes << w
+      wc.users = users
+      weekly_classes << wc
       curr_week = Week.previous(curr_week) # calculate previous week
     end
-    # Save in reverse order to get id right
-    classes.reverse.each{|wc| wc.save }
-    classes
+    weekly_classes.each do |wc| 
+      # Add weekly class id to all users
+      #User.transaction do
+      #  wc.users.each{|u| u.save(:validate => false) }
+      #end
+      # Update cached stats
+      wc.save
+    end
+    weekly_classes
   end
 
   def self.current_class
@@ -36,25 +46,22 @@ class WeeklyClass < ActiveRecord::Base
     Week.window_for_integer(week, :join_class)
   end
 
+  def self.class_for_user(user)
+    week = Week.integer_for_time(user.created_at, :join_class)
+    WeeklyClass.find_or_create_by_week(:week => week)
+  end
+
+  def description
+    tw = self.time_window
+    "#{tw.first.strftime('%b %-d')} - #{tw.last.strftime('%b %-d')}"
+  end
+
   def time_window
     WeeklyClass.time_window_for_week(self.week)
   end
 
-  def users
-    return @users if @users.present?
-    @users = User.find(self.user_ids)
-  end
-
-  def users=(users)
-    self.user_ids ||= []
-    self.user_ids += users.map{|u| u.id }
-    self.user_ids.uniq!
-  end
-
   # Distance calculation and clustering
-  def create_clusters(max_radius = 100.0)
-    # Load all users
-    users = self.users
+  def self.create_clusters(users, max_radius = 250.0)
     # Ensure all users are geocoded
     User.transaction do
       users.each{|u| u.geocode_from_ip unless u.geocoded? }
@@ -87,18 +94,25 @@ class WeeklyClass < ActiveRecord::Base
       added_users.each{|e| users.delete(e) }
       clusters.push(c)
     end
-    clusters
+    # Sort by clusters that are biggest first
+    clusters.sort{|a,b| a.user_ids.size <=> b.user_ids.size }.reverse
   end
-  
+
+  def create_clusters
+    self.clusters = WeeklyClass.create_clusters(self.users)
+  end
+
   protected
 
   def calculate_cached_fields
-    if self.user_ids.present? && self.user_ids_changed?
-      self.num_users = self.user_ids.size
-      self.num_startups = self.users.map{|u| u.startup_id }.uniq.size
-      self.num_countries = 0
-      self.num_industries = ActsAsTaggableOn::Tagging.where(:taggable_type => 'User', :taggable_id => self.user_ids).group(:tag_id).count.keys.size
-      self.location_clusters = self.create_clusters
+    us = self.users
+    if us.present? && us.size != self.num_users
+      self.num_users = us.size
+      self.num_startups = us.map{|u| u.startup_id }.uniq.size
+      self.num_countries = us.map{|u| u.country }.uniq.size
+      self.num_industries = ActsAsTaggableOn::Tagging.where(:taggable_type => 'User', :taggable_id => us.map{|u| u.id }).group(:tag_id).count.keys.size
+      self.clusters = WeeklyClass.create_clusters(us)
     end
+    true
   end
 end

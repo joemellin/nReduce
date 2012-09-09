@@ -1,0 +1,2 @@
+module WeeklyClassesHelper
+end

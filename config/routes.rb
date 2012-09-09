@@ -143,6 +143,8 @@ Nreduce::Application.routes.draw do
     end
   end
 
+  resources :weekly_classes, :only => [:show]
+
   # onboarding
   get '/onboard/start(/:type)' => "onboard#start", :as => :onboard_start
   get '/onboard/' => "onboard#current_step", :as => :onboard

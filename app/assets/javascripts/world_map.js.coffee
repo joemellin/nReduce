@@ -26,10 +26,14 @@ class WorldMap
     for p in @points
       @renderPoint(p)
 
+  getRadiusForPoint: (point) ->
+    num = point.num_users
+    return 5 + (Math.log(num) * 2)
+
   # You have to call @renderMap() first to define @raphael.
   renderPoint: (point) ->
     attr = @getXY(point.lat, point.lng)
-    radius = if @scale > 0.5 then 5 else 3
+    radius = if @scale > 0.5 then @getRadiusForPoint(point) else 3
     fill = '#000'
     opacity = 0.8
     # dot = @raphael.circle().attr({fill: "r#FE7727:50-#F57124:100", stroke: "#fff", "stroke-width": 2, r: 0})
@@ -46,19 +50,21 @@ class WorldMap
     #   'font-weight': 'bold'
     #   'font-family': 'Helvetica, Arial, sans-serif'
     # })
-    if @scale > 0.5
-      popoverView = new DExp.Views.Popover({el: dot.node, model: point, radius: radius})
-      popoverView.render()
-    else if point.startup and @scale <= 0.5
+    
+    # if @scale > 0.5
+    #   popoverView = new DExp.Views.Popover({el: dot.node, model: point, radius: radius})
+    #   popoverView.render()
+    if point.location #and @scale <= 0.5
       $(dot.node).tooltip({
-        title: 'You'
+        title: "#{point.num_users} founder#{if point.num_users == 1 then '' else 's'} in #{point.location}"
         placement: if attr.cy < 400 * @scale * 0.5 then 'bottom' else 'top'
-        trigger: 'manual'
+        trigger: 'hover'
         manualleft: radius + 1
         manualtop: if attr.cy < 400 * @scale * 0.5 then radius + 4 else 0
       })
-      $(dot.node).tooltip('show')
 
   getXY: (lat, lon) ->
     cx: (lon * 2.6938 + 465.4) * @scale
     cy: (lat * -2.6938 + 227.066) * @scale
+
+window.WorldMap = WorldMap
