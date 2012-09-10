@@ -8,6 +8,7 @@ class RegistrationsController < Devise::RegistrationsController
   def create
     super
     session[:omniauth] = session[:password_not_required] = nil unless @user.new_record?
+    logger.info @user.errors.full_messages
   end
 
   def edit
@@ -27,5 +28,11 @@ class RegistrationsController < Devise::RegistrationsController
     @user.geocode_from_ip(request.remote_ip) if @user.location.blank?
     @hide_twitter = true if !session[:invite_id].blank?
     @password_not_required = session[:password_not_required]
+    if params[:sjf].present?
+      @startup_join_flow = true
+      @user.startup = Startup.new unless @user.startup.present?
+      @user.startup.attributes = params[:startup] if params[:startup].present?
+      @user.roles << :entrepreneur
+    end
   end
 end

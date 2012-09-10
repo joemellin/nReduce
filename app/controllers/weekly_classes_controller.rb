@@ -4,5 +4,6 @@ class WeeklyClassesController < ApplicationController
 
   def show
     @waiting_for_next_class = true
+    @stats = WeeklyClass.top_stats
   end
 end

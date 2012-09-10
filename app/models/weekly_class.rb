@@ -51,6 +51,10 @@ class WeeklyClass < ActiveRecord::Base
     WeeklyClass.find_or_create_by_week(:week => week)
   end
 
+  def self.top_stats
+    WeeklyClass.select('MAX(weekly_classes.num_users) AS max_users, MAX(weekly_classes.num_startups) AS max_startups, MAX(weekly_classes.num_countries) AS max_countries, MAX(weekly_classes.num_industries) as max_industries').all.first
+  end
+
   def description
     tw = self.time_window
     "#{tw.first.strftime('%b %-d')} - #{tw.last.strftime('%b %-d')}"
@@ -58,6 +62,10 @@ class WeeklyClass < ActiveRecord::Base
 
   def time_window
     WeeklyClass.time_window_for_week(self.week)
+  end
+
+  def join_time
+    self.time_window.last
   end
 
   # Distance calculation and clustering
