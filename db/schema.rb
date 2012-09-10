@@ -48,6 +48,7 @@ ActiveRecord::Schema.define(:version => 20120820070322) do
     t.datetime "created_at",                     :null => false
     t.datetime "updated_at",                     :null => false
     t.integer  "awesome_count",   :default => 0
+    t.text     "before_comments"
     t.text     "start_comments"
     t.integer  "comment_count",   :default => 0
     t.integer  "week"
@@ -151,13 +152,13 @@ ActiveRecord::Schema.define(:version => 20120820070322) do
 
   create_table "notifications", :force => true do |t|
     t.string   "message"
-    t.string   "action"
     t.integer  "attachable_id"
     t.string   "attachable_type"
     t.integer  "user_id"
     t.boolean  "emailed",         :default => false
     t.datetime "read_at"
     t.datetime "created_at"
+    t.string   "action"
   end
 
   add_index "notifications", ["user_id", "read_at"], :name => "index_notifications_on_user_id_and_read_at"
@@ -206,7 +207,6 @@ ActiveRecord::Schema.define(:version => 20120820070322) do
     t.string   "connected_with_type"
     t.text     "message"
     t.integer  "context"
-    t.string   "reason"
     t.datetime "pending_at"
   end
 
@@ -274,17 +274,6 @@ ActiveRecord::Schema.define(:version => 20120820070322) do
 
   add_index "startups", ["public"], :name => "index_startups_on_public"
 
-  create_table "suggested_startups", :force => true do |t|
-    t.string   "entity_type"
-    t.string   "suggested_entity_type"
-    t.integer  "entity_id"
-    t.integer  "state"
-    t.string   "reason"
-    t.datetime "decided_at"
-    t.datetime "created_at",            :null => false
-    t.datetime "updated_at",            :null => false
-  end
-
   create_table "taggings", :force => true do |t|
     t.integer  "tag_id"
     t.integer  "taggable_id"
@@ -337,7 +326,6 @@ ActiveRecord::Schema.define(:version => 20120820070322) do
     t.string   "location"
     t.float    "lat"
     t.float    "lng"
-    t.boolean  "admin",                  :default => false
     t.boolean  "mailchimped",            :default => false
     t.integer  "startup_id"
     t.datetime "created_at",                                :null => false
@@ -360,10 +348,8 @@ ActiveRecord::Schema.define(:version => 20120820070322) do
     t.boolean  "admin"
     t.integer  "email_on"
     t.integer  "setup"
-    t.integer  "intro_video_id"
   end
 
-  add_index "users", ["email"], :name => "index_users_on_email", :unique => true
   add_index "users", ["reset_password_token"], :name => "index_users_on_reset_password_token", :unique => true
   add_index "users", ["roles"], :name => "index_users_on_roles"
   add_index "users", ["startup_id"], :name => "index_users_on_startup_id"
