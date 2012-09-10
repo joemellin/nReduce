@@ -1,6 +1,7 @@
 class WeeklyClass < ActiveRecord::Base
   has_many :users
   has_many :startups, :through => :users
+  has_many :invites
 
   attr_accessible :week
 

@@ -3,7 +3,7 @@
     %p Welcome to nReduce
     %h1 Meet Your #{@weekly_class.join_time.strftime('%b %d')} Class of Amazing Founders!
     %br/
-    %p About Your Class
+    %h3 About Your Class
   .row
     .span3
       %h2 Next Steps
@@ -28,7 +28,7 @@
             %h3= @stats.send("max_#{e}")
             Previous Record
       .clear
-
+      %br/
       %center
         %h3 Meet Your Classmates
 
@@ -38,9 +38,30 @@
 
     .span3
       %h2 Grow Your Class!
-      = text_field_tag 'email', '', :placeholder => 'awesome@founder.com'
-      = text_area_tag 'user', '', :placeholder => "your message", :size => '80x5'
-      = link_to 'Invite Founder', '#', :class => 'btn btn-large'
+      = semantic_form_for @invite, :url => [@startup, @invite] do |f|
+        = f.hidden_field :invite_type
+        = f.hidden_field :from_id
+        = f.hidden_field :weekly_class_id
+        .control-group{error_css(f.object, :email)}
+          .controls
+            = f.text_field :email, :class => "span2", :placeholder => 'awesome@founder.com'
+            = f.semantic_errors :email
+
+        .control-group{error_css(f.object, :msg)}
+          .controls
+            = f.text_area :msg, :size => '80x5', :placeholder => 'your message'
+            = f.semantic_errors :msg
+              
+        = f.submit 'Invite Founder', :class => 'btn btn-large'
+
+      - if @sent_invites.present?
+        %h3 Sent Invites
+        - @sent_invites.each do |i|
+          = i.email
+          - if i.to_id.present?
+            (Joined)
+          - else
+            (Not joined yet)
 
   
 

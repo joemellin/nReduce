@@ -10,7 +10,9 @@ class Checkin < ActiveRecord::Base
   has_many :notifications, :as => :attachable
   has_many :user_actions, :as => :attachable
 
-  attr_accessible :start_focus, :start_why, :start_video_url, :end_video_url, :end_comments, :startup_id, :start_comments, :startup, :measurement_attributes, :before_video_attributes, :after_video_attributes
+  attr_accessible :start_focus, :start_why, :start_video_url, :end_video_url, :end_comments, 
+    :startup_id, :start_comments, :startup, :measurement_attributes, 
+    :before_video_attributes, :after_video_attributes
 
   accepts_nested_attributes_for :measurement, :reject_if => proc {|attributes| attributes.all? {|k,v| v.blank?} }, :allow_destroy => true
 

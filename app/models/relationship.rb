@@ -5,7 +5,8 @@ class Relationship < ActiveRecord::Base
   has_many :notifications, :as => :attachable
   has_many :user_actions, :as => :attachable
 
-  attr_accessible :context, :entity, :entity_id, :entity_type, :connected_with, :connected_with_id, :connected_with_type, :status, :approved_at, :rejected_at, :silent, :message, :pending_at
+  attr_accessible :context, :entity, :entity_id, :entity_type, :connected_with, :connected_with_id, 
+    :connected_with_type, :status, :approved_at, :rejected_at, :silent, :message, :pending_at
 
   attr_accessor :silent
 

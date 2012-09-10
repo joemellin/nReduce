@@ -22,7 +22,11 @@ class Startup < ActiveRecord::Base
   has_many :ratings
   has_many :questions
 
-  attr_accessible :name, :investable, :team_size, :website_url, :main_contact_id, :phone, :growth_model, :stage, :company_goal, :meeting_id, :one_liner, :active, :launched_at, :industry_list, :technology_list, :ideology_list, :industry, :intro_video_url, :elevator_pitch, :logo, :remote_logo_url, :logo_cache, :remove_logo, :checkins_public, :pitch_video_url, :investable, :screenshots_attributes, :business_model, :founding_date, :market_size
+  attr_accessible :name, :investable, :team_size, :website_url, :main_contact_id, :phone, 
+    :growth_model, :stage, :company_goal, :meeting_id, :one_liner, :active, :launched_at, 
+    :industry_list, :technology_list, :ideology_list, :industry, :intro_video_url, :elevator_pitch, 
+    :logo, :remote_logo_url, :logo_cache, :remove_logo, :checkins_public, :pitch_video_url, 
+    :investable, :screenshots_attributes, :business_model, :founding_date, :market_size
 
   accepts_nested_attributes_for :screenshots, :reject_if => proc {|attributes| attributes.all? {|k,v| v.blank?} }, :allow_destroy => true
   accepts_nested_attributes_for :intro_video, :reject_if => proc {|attributes| attributes.all? {|k,v| v.blank?} }, :allow_destroy => true

@@ -1,3 +1,6 @@
+.home_page
+  = render 'weekly_classes/map'
+
 .home_page{:class => @demo_day ? 'demo_day' : ''}
   - if @demo_day.present?
     .row

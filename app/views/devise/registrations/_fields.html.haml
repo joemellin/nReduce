@@ -8,11 +8,10 @@
         = s.text_field :name
         = s.semantic_errors :name
     .control-group{error_css(s.object, :industry_list)}
-      = s.label :industry_list, "Markets", :class => 'control-label'
+      = s.label :industry_list, "Market(s)", :class => 'control-label'
       .controls
-        = text_field_tag 'user[startup_attributes][industry_list]', s.object.industry_list.map{|i| i.titleize }.join(', '), :class => 'span4 industries_list_autocomplete', :placeholder => 'ex: mobile games, education'
+        = text_field_tag 'user[startup_attributes][industry_list]', s.object.industry_list.map{|i| i.titleize }.join(', '), :class => ' industries_list_autocomplete', :placeholder => 'ex: mobile games, education'
         = s.semantic_errors :industry_list
-        %p.help-block List at least one market that your startup is in
 
 - unless @change_password
   .control-group{error_css(f.object, :name)}
