@@ -206,6 +206,8 @@ class Ability
     # All Users
     #
 
+    can [:new, :create], Invite
+
     cannot :all, WeeklyClass
     can :read, WeeklyClass, :id => user.weekly_class_id
 

@@ -13,7 +13,7 @@
         - else
           %p #{@demo_day.name} ends in
           = render 'layouts/countdown', :time => @demo_day.ends_at
-      - elsif user_signed_in? && !current_user.roles?(:approved_investor)
+      - elsif @weekly_class.blank? && user_signed_in? && !current_user.roles?(:approved_investor)
         = render 'startups/countdown_and_checkin'
       - else
         &nbsp;

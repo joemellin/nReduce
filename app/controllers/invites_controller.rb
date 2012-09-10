@@ -1,8 +1,8 @@
 class InvitesController < ApplicationController
   around_filter :record_user_action
   before_filter :login_required, :except => :accept
+  before_filter :load_obfuscated_startup, :only => :create
   load_and_authorize_resource :startup, :only => :create
-  #load_and_authorize_resource :invite, :through => :startup, :only => :create
   load_and_authorize_resource :only => :destroy
 
   def create
@@ -22,7 +22,12 @@ class InvitesController < ApplicationController
     if @startup.blank? and current_user.admin?
       redirect_to admin_mentors_path
     else
-      redirect_to edit_startup_path(@startup)
+      # They came from weekly class invite
+      if @invite.weekly_class && !current_user.account_setup?
+        redirect_to @invite.weekly_class
+      else # They invited from startup edit page
+        redirect_to edit_startup_path(@startup)
+      end
     end
   end
 

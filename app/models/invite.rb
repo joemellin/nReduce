@@ -2,6 +2,7 @@ class Invite < ActiveRecord::Base
   belongs_to :startup
   belongs_to :from, :class_name => 'User'
   belongs_to :to, :class_name => 'User'
+  belongs_to :weekly_class
   before_save :generate_code
   has_many :notifications, :as => :attachable
   has_many :user_actions, :as => :attachable
@@ -13,7 +14,8 @@ class Invite < ActiveRecord::Base
 
   after_create :notify_recipient
 
-  attr_accessible :from_id, :to_id, :email, :msg, :startup, :startup_id, :invite_type, :name
+  attr_accessible :from_id, :to_id, :email, :msg, :startup, 
+    :startup_id, :invite_type, :name, :weekly_class_id, :weekly_class
 
   @queue = :invites
 
@@ -64,6 +66,7 @@ class Invite < ActiveRecord::Base
     relationship_role = nil
     if self.invite_type == TEAM_MEMBER
       user.startup_id = self.startup_id if !self.startup_id.blank? or !user.startup_id.blank?
+      user.weekly_class = self.weekly_class if self.weekly_class.present?
     # Add user as mentor to startup
     elsif self.invite_type == MENTOR or self.invite_type == NREDUCE_MENTOR
       user.set_account_type(:mentor)
@@ -92,8 +95,8 @@ class Invite < ActiveRecord::Base
     # Only suggest startups if invite is for a new startup
     dont_suggest_startups = (self.invite_type != STARTUP)
     
-    # Let user skip approval step
-    if user.setup_complete!(dont_suggest_startups)
+    # Let user skip approval step - unless weekly class is assigned
+    if self.weekly_class.present? || (!self.weekly_class.present? && user.setup_complete!(dont_suggest_startups))
       self.to = user
       self.accepted_at = Time.now
       self.save
