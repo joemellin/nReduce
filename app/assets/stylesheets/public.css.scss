@@ -34,7 +34,7 @@
 }
 
 .home_page {
-  margin-top: -12px;
+  margin-top: 20px;
 
   h2 {
     font-size: 40px;
@@ -54,11 +54,14 @@
     text-rendering: optimizelegibility;
   }
 
-  h1.feedback {
-    font-size: 80px;
+  .headline {
+    font-size: 50px;
     color: #26A9EB;
     line-height: 70px;
-    padding-left: 50px;
+  }
+  .subhead {
+    font-size: 18px;
+    color: #999999;
   }
 
   h1.alliance strong{
@@ -82,7 +85,10 @@
   }
 
   .share_btns {
-    padding: 0px 0px 12px 50px
+    padding: 0px 0px 6px 50px;
+    .twitter {
+      padding-top: 0px;
+    }
   }
   .linkedintxt {
     color: #aaa;
@@ -114,7 +120,7 @@
 
   .newslogo {
     display:inline-block;
-    margin: 0 35px 0 0;
+    margin: 0 35px 15px 0;
 
   }
 

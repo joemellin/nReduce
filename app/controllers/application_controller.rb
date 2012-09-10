@@ -18,6 +18,11 @@ class ApplicationController < ActionController::Base
     redirect_to '/auth/twitter'
   end
 
+  # Path for people joining from homepage - so we can do any custom redirects
+  def join
+    redirect_to '/auth/linkedin'
+  end
+
   protected
 
   def hc_url_fix

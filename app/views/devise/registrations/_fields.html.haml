@@ -56,6 +56,7 @@
       Add your teammates:
       .teammates
         = f.semantic_errors :sent_invites
+        - f.object.sent_invites.build if f.object.sent_invites.blank?
         - f.object.sent_invites.each do |i|
           = text_field_tag 'user[teammate_emails][]', i.email, :placeholder => 'founder@email.com'
           = link_to '<i class="icon-plus"></i>'.html_safe, '#', :class => 'btn add_teammate_btn'
