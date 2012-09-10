@@ -26,7 +26,7 @@
         .row
           .span2.center{:style => 'margin-top: 15px'}
             = link_to 'Enroll Now!', join_path, :class => 'btn btn-large btn-success', :style => 'font-size: 2em; margin-bottom: 10px'
-            %i Starts #{@weekly_class.time_window.last.strftime('%a, %b %d')}
+            %b Class starts #{@weekly_class.join_time.strftime('%A, %B %d')} at 1PM PST
     .left
       #world_map
     .clear
