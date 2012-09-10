@@ -51,16 +51,16 @@
       = f.email_field :location
       = f.semantic_errors :location
 
-  .control-group
-    .controls
-      Add your teammates:
-      .teammates
-        = f.semantic_errors :sent_invites
-        - f.object.sent_invites.build if f.object.sent_invites.blank?
-        - f.object.sent_invites.each do |si|
-          = text_field_tag 'user[teammate_emails][]', si.email, :placeholder => 'founder@email.com'
-          = link_to '<i class="icon-plus"></i>'.html_safe, '#', :class => 'btn add_teammate_btn'
-          /= si.semantic_errors :email
+  / .control-group
+  /   .controls
+  /     Add your teammates:
+  /     .teammates
+  /       = f.semantic_errors :sent_invites
+  /       - f.object.sent_invites.build if f.object.sent_invites.blank?
+  /       - f.object.sent_invites.each do |si|
+  /         = text_field_tag 'user[teammate_emails][]', si.email, :placeholder => 'founder@email.com'
+  /         = link_to '<i class="icon-plus"></i>'.html_safe, '#', :class => 'btn add_teammate_btn'
+  /         /= si.semantic_errors :email
 
 .control-group
   .controls= f.submit "Save", :class => 'btn btn-large btn-primary'
