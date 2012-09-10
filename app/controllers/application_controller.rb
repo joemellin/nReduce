@@ -103,10 +103,10 @@ class ApplicationController < ActionController::Base
     else
       # Account is not set up
       # temporary time travel
-      if !params[:travel].blank? && params[:travel].to_s == '1'
-        Timecop.return
-        Timecop.travel(Week.next_window_for(:join_class).first + 1.hour)
-      end
+      # if !params[:travel].blank? && params[:travel].to_s == '1'
+      #   Timecop.return
+      #   Timecop.travel(Week.next_window_for(:join_class).first + 1.hour)
+      # end
       @hide_nav = true
       @account_setup_action = current_user.account_setup_action
       if @account_setup_action.blank?
