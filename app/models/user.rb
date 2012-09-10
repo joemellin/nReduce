@@ -52,7 +52,7 @@ class User < ActiveRecord::Base
   validates_presence_of :location, :if => :profile_fields_required?
   validates_presence_of :skill_list, :if => :profile_fields_required?
   validates_presence_of :linkedin_url, :if => :profile_fields_required?
-  #validates_presence_of :startup_id, :if => :new_entrepreneur?
+  validates_presence_of :startup, :if => :new_entrepreneur?
 
   before_create :set_default_settings
   after_create :mailchimp!

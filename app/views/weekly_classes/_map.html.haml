@@ -4,11 +4,11 @@
       .well.join_stats
         .row
           .span2.center
-            - if @weekly_class.num_startups < 5
-              %h3 Enroll in the next class
-            - else
+            - if @weekly_class.num_startups >= 5
               %h3 Already enrolled in the next class
-        - if @weekly_class.num_startups > 5
+            - else
+              %h3 Enroll in the next class
+        - if @weekly_class.num_startups >= 5
           .row
             .span1.center
               %h2= @weekly_class.num_startups

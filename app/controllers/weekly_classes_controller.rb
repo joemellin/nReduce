@@ -3,6 +3,7 @@ class WeeklyClassesController < ApplicationController
   load_and_authorize_resource
 
   def show
+    @weekly_class.save #recalc stats
     @waiting_for_next_class = true
     @stats = WeeklyClass.top_stats
     @invite = Invite.new(:weekly_class => @weekly_class, :from_id => current_user.id, :invite_type => Invite::STARTUP)
