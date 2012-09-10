@@ -32,11 +32,15 @@ class User < ActiveRecord::Base
          :recoverable, :rememberable, :trackable, :validatable #, :confirmable #, :omniauthable
 
   # Setup accessible (or protected) attributes for your model
-  attr_accessible :twitter, :email, :email_on, :password, :password_confirmation, :remember_me, :name, :skill_list, :industry_list, :startup, :mentor, :investor, :location, :phone, :startup_id, :settings, :meeting_id, :one_liner, :bio, :facebook_url, :linkedin_url, :github_url, :dribbble_url, :blog_url, :pic, :remote_pic_url, :pic_cache, :remove_pic, :intro_video_url
+  attr_accessible :twitter, :email, :email_on, :password, :password_confirmation, :remember_me, :name, 
+    :skill_list, :industry_list, :startup, :mentor, :investor, :location, :phone, :startup_id, :settings, 
+    :meeting_id, :one_liner, :bio, :facebook_url, :linkedin_url, :github_url, :dribbble_url, :blog_url, 
+    :pic, :remote_pic_url, :pic_cache, :remove_pic, :intro_video_url, :intro_video_attributes, :startup_attributes
   attr_accessor :profile_fields_required
 
   accepts_nested_attributes_for :intro_video, :reject_if => proc {|attributes| attributes.all? {|k,v| v.blank?} }, :allow_destroy => true
-  
+  accepts_nested_attributes_for :startup, :reject_if => proc {|attributes| attributes.all? {|k,v| v.blank?} }
+
   serialize :settings, Hash
   validates_presence_of :name
   validate :check_video_urls_are_valid

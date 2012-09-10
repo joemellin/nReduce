@@ -1,28 +1,46 @@
-%h2 Class of #{@weekly_class.description}
+.weekly_classes
+  %center
+    %p Welcome to nReduce
+    %h1 Meet Your #{@weekly_class.join_time.strftime('%b %d')} Class of Amazing Founders!
+    %br/
+    %p About Your Class
+  .row
+    .span3
+      %h2 Next Steps
+      %ul
+        %li Grow Your Class
+        %li Return to nReduce in #{distance_of_time_in_words_to_now(@weekly_class.join_time)}
+        %li You will connect with 8 other startups
+        %li #{link_to('Joe', team_path)} will answer questions in real time
+        %li Your amazing experience will begin!
+    .span6
+      - %w(startups users industries countries).each do |e|
+        .left
+          - if @weekly_class.send("num_#{e}") > @stats.send("max_#{e}")
+            YELLOW star
+          - else
+            Grey star
+          %h2{:style => 'font-size: 2.5em'}= @weekly_class.send("num_#{e}")
+          %p= e.to_s.titleize
+          - if @weekly_class.send("num_#{e}") > @stats.send("max_#{e}")
+            nReduce Record!
+          - else
+            %h3= @stats.send("max_#{e}")
+            Previous Record
+      .clear
 
-.left
-  #world_map
-.left
-  .well
-    .row
-      .span1.center
-        %h2= @weekly_class.num_startups
-        Startups
-      .span1.center
-        %h2= @weekly_class.num_users
-        Founders
-    .row
-      .span1.center
-        %h2= @weekly_class.num_countries
-        Countries
-      .span1.center
-        %h2= @weekly_class.num_industries
-        Industries
-    .row
-      .span2.center{:style => 'margin-top: 15px'}= link_to 'Join Now!', '#', :class => 'btn btn-large btn-success', :style => 'font-size: 2em'
-.clear
+      %center
+        %h3 Meet Your Classmates
 
-:javascript
-  points = #{@weekly_class.clusters.map{|c| {:num_users => c.user_ids.size, :lat => c.lat, :lng => c.lng, :location => c.location} }.to_json};
-  wm = new WorldMap('world_map', points);
-  wm.render();
+      - @weekly_class.users.each do |u|
+        .left.attendee= image_tag(user_avatar_url(u))
+      .clear
+
+    .span3
+      %h2 Grow Your Class!
+      = text_field_tag 'email', '', :placeholder => 'awesome@founder.com'
+      = text_area_tag 'user', '', :placeholder => "your message", :size => '80x5'
+      = link_to 'Invite Founder', '#', :class => 'btn btn-large'
+
+  
+

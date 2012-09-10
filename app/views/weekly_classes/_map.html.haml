@@ -1,0 +1,34 @@
+.weekly_classes
+  %h2 Class of #{@weekly_class.description}
+
+  .left
+    #world_map
+  .left
+    .well.join_stats
+      .row
+        .span2.center
+          %h3 Already enrolled in the next class
+      .row
+        .span1.center
+          %h2= @weekly_class.num_startups
+          #{@weekly_class.num_startups == 1 ? 'Startup' : 'Startups'}
+        .span1.center
+          %h2= @weekly_class.num_users
+          #{@weekly_class.num_users == 1 ? 'Founder' : 'Founders'}
+      .row
+        .span1.center
+          %h2= @weekly_class.num_industries
+          #{@weekly_class.num_industries == 1 ? 'Industry' : 'Industries'}
+        .span1.center
+          %h2= @weekly_class.num_countries
+          #{@weekly_class.num_countries == 1 ? 'Country' : 'Countries'}
+      .row
+        .span2.center{:style => 'margin-top: 15px'}
+          = link_to 'Join Now!', '#', :class => 'btn btn-large btn-success', :style => 'font-size: 2em; margin-bottom: 10px'
+          %i Starts #{@weekly_class.time_window.last.strftime('%a, %b %d')}
+  .clear
+
+  :javascript
+    points = #{@weekly_class.clusters.map{|c| {:num_users => c.user_ids.size, :lat => c.lat, :lng => c.lng, :location => c.location} }.to_json};
+    wm = new WorldMap('world_map', points);
+    wm.render();

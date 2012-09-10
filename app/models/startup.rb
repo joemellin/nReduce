@@ -31,12 +31,12 @@ class Startup < ActiveRecord::Base
   #validates_presence_of :intro_video_url, :if => lambda {|startup| startup.onboarding_complete? }
   validates_presence_of :name
   validate :check_video_urls_are_valid
-  validates_presence_of :one_liner, :if => :new_record?
-  validates_presence_of :elevator_pitch, :if => :new_record?
-  validates_presence_of :industry_list, :if => :new_record?
-  validates_presence_of :growth_model, :if => :new_record?
-  validates_presence_of :stage, :if => :new_record?
-  validates_presence_of :company_goal, :if => :new_record?
+  validates_presence_of :one_liner, :if => :created_but_not_setup_yet?
+  validates_presence_of :elevator_pitch, :if => :created_but_not_setup_yet?
+  validates_presence_of :industry_list, :if => :created_but_not_setup_yet?
+  validates_presence_of :growth_model, :if => :created_but_not_setup_yet?
+  validates_presence_of :stage, :if => :created_but_not_setup_yet?
+  validates_presence_of :company_goal, :if => :created_but_not_setup_yet?
 
   before_save :format_url
   after_create :initiate_relationships_from_invites
@@ -390,6 +390,10 @@ class Startup < ActiveRecord::Base
   end
 
   protected
+
+  def created_but_not_setup_yet?
+    !self.new_record? && !self.account_setup?
+  end
 
   # If they were invited by another startup, establish a relationship
   # TODO: Bug: if this user was invited by a startup in the past, this will always connect them to every startup they got invited from
