@@ -2,7 +2,10 @@
   .row{:style => 'margin-top: 20px'}
     .span12
       %center
-        %h3 Welcome Team #{@startup.name} to nReduce
+        - if @startup.present?
+          %h3 Welcome Team #{@startup.name} to nReduce
+        - else
+          %h3 Welcome to nReduce
         %h1{:style => 'font-size: 4em; margin: 20px 0 30px 0'} Meet Your Class of Amazing Founders!
         %br/
         %h3{:style => 'font-weight: 300'} About Your Class
