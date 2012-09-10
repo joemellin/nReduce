@@ -5,7 +5,8 @@ class CreateWeeklyClasses < ActiveRecord::Migration
     add_index :users, :weekly_class_id
 
     create_table :weekly_classes do |t|
-      t.integer :week, :num_startups, :num_users, :num_countries, :num_industries
+      t.integer :week
+      t.integer :num_startups, :num_users, :num_countries, :num_industries, :default => 0
       t.text :clusters
       t.timestamps
     end
