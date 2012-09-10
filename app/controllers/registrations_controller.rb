@@ -8,7 +8,6 @@ class RegistrationsController < Devise::RegistrationsController
   def create
     super
     session[:omniauth] = session[:password_not_required] = nil unless @user.new_record?
-    logger.info @user.errors.full_messages
   end
 
   def edit

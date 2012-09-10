@@ -55,8 +55,10 @@
     .controls
       Add your teammates:
       .teammates
-        = text_field_tag 'teammate_emails[]', '', :placeholder => 'founder@email.com'
-        = link_to '<i class="icon-plus"></i>'.html_safe, '#', :class => 'btn add_teammate_btn'
+        = f.semantic_errors :sent_invites
+        - f.object.sent_invites.each do |i|
+          = text_field_tag 'user[teammate_emails][]', i.email, :placeholder => 'founder@email.com'
+          = link_to '<i class="icon-plus"></i>'.html_safe, '#', :class => 'btn add_teammate_btn'
 
 .control-group
   .controls= f.submit "Save", :class => 'btn btn-large btn-primary'

@@ -12,5 +12,25 @@
         margin: 10px 0 0px 0;
       }
     }
+
+    #countdown {
+      height: 140px;
+      text-align: center;
+      margin: 0px auto;
+      width: 700px;
+      line-height: 2em;
+      .number_block {
+        font-size: 2em;
+        line-height: 1em;
+        p { 
+          margin: 10px;
+        }
+        .numbers {
+          font-size: 2.8em;
+          font-weight: 600;
+          margin: 20px;
+        }
+      }
+    }
   }
 }
