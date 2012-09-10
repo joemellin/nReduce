@@ -3,32 +3,74 @@
 // You can use Sass (SCSS) here: http://sass-lang.com/
 .container {
   .weekly_classes {
-    #world_map { 
-      width: 780px;
-      height: 312px;
-    }
-    .join_stats {
-      h2 {
-        margin: 10px 0 0px 0;
+    .letter {
+      h3 {
+        margin-top: 30px;
       }
     }
-
-    #countdown {
-      height: 140px;
-      text-align: center;
-      margin: 0px auto;
-      width: 700px;
-      line-height: 2em;
-      .number_block {
-        font-size: 2em;
-        line-height: 1em;
-        p { 
-          margin: 10px;
+    .map {
+      #world_map {
+        margin-left: 50px;
+        width: 900px;
+        height: 360px;
+      }
+      .join_stats {
+        h2 {
+          margin: 10px 0 0px 0;
         }
-        .numbers {
-          font-size: 2.8em;
+      }
+      #countdown {
+        height: 140px;
+        text-align: center;
+        margin: 0px auto;
+        width: 700px;
+        line-height: 1em;
+        .number_block {
+          font-size: 2em;
+          line-height: 1em;
+          p { 
+            margin: 10px;
+          }
+          .numbers {
+            font-size: .8em;
+            font-weight: 600;
+            margin: 20px;
+          }
+        }
+      }
+    }
+    .stats {
+      .stat {
+        text-align: center;
+        padding: 5px 10px 5px 10px;
+        position: relative;
+        .number {
+          font-size: 4em;
+          line-height: 1.5em;
           font-weight: 600;
-          margin: 20px;
+          color: #29adf0;
+        }
+        .number_below {
+          font-size: 1.5em;
+        }
+        .star {
+          margin-left: auto;
+          margin-right: auto;
+          width: 58px;
+          height: 54px;
+          background: image-url('star_grey.png') no-repeat;
+        }
+        .previous_record {
+          color: #999;
+          font-size: .9em;
+          .pr {
+            font-size: .9em;
+          }
+        }
+      }
+      .record {
+        .star {
+          background-image: image-url('star_yellow.png');
         }
       }
     }

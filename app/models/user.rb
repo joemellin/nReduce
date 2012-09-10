@@ -465,7 +465,7 @@ class User < ActiveRecord::Base
       elsif omniauth['provider'] == 'linkedin'
         self.linkedin_authentication = auth
         self.name = omniauth['info']['name'] if name.blank? and !omniauth['info']['name'].blank?
-        #self.external_pic_url = omniauth['info']['image'] unless omniauth['info']['image'].blank?
+        self.external_pic_url = omniauth['info']['image'] unless omniauth['info']['image'].blank?
         self.linkedin_url = omniauth['info']['urls']['public_profile'] unless omniauth['info']['urls'].blank? or omniauth['info']['urls']['public_profile'].blank?
         # Fetch profile from API
         profile = self.linkedin_profile

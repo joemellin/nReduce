@@ -162,6 +162,8 @@ Nreduce::Application.routes.draw do
     end
   end
 
+  match '/join' => 'application#join', :as => :join
+
   match '/mentors/new' => "pages#mentor"
   match '/investors/new' => "pages#investor"
   match '/community_guidelines' => "pages#community_guidelines", :as => :community_guidelines

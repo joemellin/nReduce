@@ -27,7 +27,9 @@ class RegistrationsController < Devise::RegistrationsController
     @user.geocode_from_ip(request.remote_ip) if @user.location.blank?
     @hide_twitter = true if !session[:invite_id].blank?
     @password_not_required = session[:password_not_required]
-    if params[:sjf].present?
+    if params[:ojf].present?
+      @other_join_flow = true
+    else
       @startup_join_flow = true
       @user.startup = Startup.new unless @user.startup.present?
       @user.startup.attributes = params[:startup] if params[:startup].present?
