@@ -25,7 +25,7 @@
           #{@weekly_class.num_countries == 1 ? 'Country' : 'Countries'}
       .row
         .span2.center{:style => 'margin-top: 15px'}
-          = link_to 'Join Now!', '#', :class => 'btn btn-large btn-success', :style => 'font-size: 2em; margin-bottom: 10px'
+          = link_to 'Join Now!', sign_up_path(:sjf => 1), :class => 'btn btn-large btn-success', :style => 'font-size: 2em; margin-bottom: 10px'
           %i Starts #{@weekly_class.time_window.last.strftime('%a, %b %d')}
   .clear
 

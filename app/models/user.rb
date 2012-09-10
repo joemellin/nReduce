@@ -35,8 +35,10 @@ class User < ActiveRecord::Base
   attr_accessible :twitter, :email, :email_on, :password, :password_confirmation, :remember_me, :name, 
     :skill_list, :industry_list, :startup, :mentor, :investor, :location, :phone, :startup_id, :settings, 
     :meeting_id, :one_liner, :bio, :facebook_url, :linkedin_url, :github_url, :dribbble_url, :blog_url, 
-    :pic, :remote_pic_url, :pic_cache, :remove_pic, :intro_video_url, :intro_video_attributes, :startup_attributes
+    :pic, :remote_pic_url, :pic_cache, :remove_pic, :intro_video_url, :intro_video_attributes, :startup_attributes,
+    :teammate_emails
   attr_accessor :profile_fields_required
+  attr_accessor :teammate_emails
 
   accepts_nested_attributes_for :intro_video, :reject_if => proc {|attributes| attributes.all? {|k,v| v.blank?} }, :allow_destroy => true
   accepts_nested_attributes_for :startup, :reject_if => proc {|attributes| attributes.all? {|k,v| v.blank?} }
@@ -55,6 +57,7 @@ class User < ActiveRecord::Base
   after_create :mailchimp!
   before_save :geocode_location
   before_save :ensure_roles_exist
+  after_save :initialize_teammate_invites_from_emails
 
   acts_as_taggable_on :skills, :industries
 
@@ -590,7 +593,28 @@ class User < ActiveRecord::Base
     save
   end
 
+  def geocode_location
+    return true if Rails.env.test? or self.location.blank? or (!self.location_changed? and !self.lat.blank?)
+    begin
+      res = User.geocode(self.location)
+      self.lat, self.lng, self.country = res.lat, res.lng, res.country_code
+    rescue
+      self.errors.add(:location, "could not be geocoded")
+    end
+  end
+
   protected
+
+  def initialize_teammate_invites_from_emails
+    return true
+    if self.entrepreneur? && self.teammate_emails.present?
+      self.teammate_emails.each do |e|
+        next if e.blank?
+        Invite.create(:email => e, :weekly_class_id => self.weekly_class_id, :from_id => self.id, :startup_id => self.startup_id, :invite_type => Invite::TEAM_MEMBER)
+      end
+    end
+    true
+  end
 
   def email_is_not_nreduce
     if self.roles.present? && !self.email.blank? and self.email.match(/\@\w+\.nreduce\.com$/) != nil
@@ -603,17 +627,7 @@ class User < ActiveRecord::Base
 
   def set_default_settings
     self.email_on = User.default_email_on
-    self.weekly_class = WeeklyClass.current_class
-  end
-
-  def geocode_location
-    return true if !Rails.env.production? or self.location.blank? or (!self.location_changed? and !self.lat.blank?)
-    begin
-      res = User.geocode(self.location)
-      self.lat, self.lng, self.country = res.lat, res.lng, res.country_code
-    rescue
-      self.errors.add(:location, "could not be geocoded")
-    end
+    self.weekly_class = WeeklyClass.current_class unless self.weekly_class.present?
   end
 
   def check_video_urls_are_valid
