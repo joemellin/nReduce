@@ -38,7 +38,7 @@ class WorldMap
     attr = @getXY(point.lat, point.lng)
     radius = if @scale > 0.5 then @getRadiusForPoint(point) else 3
     fill = '#ff9900'
-    opacity = 0.7
+    opacity = 0.54
     # dot = @raphael.circle().attr({fill: "r#FE7727:50-#F57124:100", stroke: "#fff", "stroke-width": 2, r: 0})
     dot = @raph.circle().attr({fill: fill, "stroke-width": 0, r: radius, opacity: opacity})
     dot.stop().attr(attr)
