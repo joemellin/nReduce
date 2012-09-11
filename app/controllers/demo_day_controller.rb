@@ -50,6 +50,8 @@ class DemoDayController < ApplicationController
     @num_checkins = @startup.checkins.count
     @num_awesomes = @startup.awesomes.count
     @screenshots = @startup.screenshots.ordered
+
+    @video = @demo_day.video_for_startup(@startup)
   end
 
   # Register that you've attended demo day
