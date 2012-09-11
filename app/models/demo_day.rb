@@ -3,6 +3,7 @@ class DemoDay < ActiveRecord::Base
 
   serialize :startup_ids
   serialize :attendee_ids
+  serialize :video_ids
 
   # Returns next demo day or current (current is demo day on this day)
   def self.next_or_current
@@ -16,6 +17,12 @@ class DemoDay < ActiveRecord::Base
   def index_of(startup)
     return nil if self.startup_ids.blank?
     self.startup_ids.index(startup.id)
+  end
+
+  def video_for_startup(startup)
+    i = self.index_of(startup)
+    return Video.find(self.video_ids[i]) if self.video_ids[i].present?
+    return nil
   end
 
   def hide_checkins?(startup)

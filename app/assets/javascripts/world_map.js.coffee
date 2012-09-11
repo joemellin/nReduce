@@ -31,7 +31,7 @@ class WorldMap
 
   getRadiusForPoint: (point) ->
     num = point.num_users
-    return 5 + (Math.log(num) * 2)
+    return 10 + (Math.log(num) * 2)
 
   # You have to call @renderMap() first to define @raphael.
   renderPoint: (point, show_tooltip = false) ->

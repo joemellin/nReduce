@@ -35,9 +35,12 @@
       .span12
         %center
           %h3 Q&A with the founders of #{@startup.name}
-          .video_wrapper
-            #video
-              .loading Demo Day Video available soon...
+          - if @video
+            = display_video(@video, false, 500, 315)
+          - else
+            .video_wrapper
+              #video
+                .loading Demo Day Video available soon...
     - else
       .span6
         %h3 Live Q&A with the founders of #{@startup.name}
