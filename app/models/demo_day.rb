@@ -21,7 +21,7 @@ class DemoDay < ActiveRecord::Base
 
   def video_for_startup(startup)
     i = self.index_of(startup)
-    return Video.find(self.video_ids[i]) if self.video_ids[i].present?
+    return Video.find(self.video_ids[i]) if self.video_ids.present? && self.video_ids[i].present?
     return nil
   end
 
