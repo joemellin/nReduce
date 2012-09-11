@@ -590,7 +590,7 @@ class User < ActiveRecord::Base
   end
 
   def assign_weekly_class!
-    self.weekly_class = WeeklyClass.class_for_user(self)
+    self.weekly_class = WeeklyClass.current_class
     save
   end
 
