@@ -36,7 +36,7 @@
         %center
           %h3 Q&A with the founders of #{@startup.name}
           - if @video
-            = display_video(@video, false, 500, 315)
+            %div{:style => 'padding: 20px'}!= display_video(@video, false, 500, 315)
           - else
             .video_wrapper
               #video
