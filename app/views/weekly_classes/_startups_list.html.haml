@@ -14,4 +14,4 @@
     .bottom{:align => 'center'}
       %h3= link_to owner ? 'You' : truncate(s.name, :length => 20), this_startup_url, :target => '_blank', :remote => true
       - unless owner
-        = render 'relationships/buttons', :entity => s, :connected_with => @startup, :relationship => @relationships_by_startup[s.id]
+        = render 'relationships/buttons', :entity => @startup, :connected_with => s, :relationship => @relationships_by_startup[s.id]

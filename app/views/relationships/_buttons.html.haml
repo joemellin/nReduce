@@ -13,7 +13,7 @@
       &nbsp;&nbsp;
       = link_to '<i class="icon-ok icon-white"></i> Approve Request'.html_safe, approve_relationship_path(relationship), :class => 'btn btn-large btn-success', :method => :post
     - else # This is the person who initiated
-      = link_to '<i class="icon-remove icon-white"></i> Cancel Request'.html_safe, reject_relationship_path(relationship), :class => 'btn btn-large', :method => :post
+      = link_to '<i class="icon-remove"></i> Cancel Request'.html_safe, reject_relationship_path(relationship), :class => 'btn btn-large', :method => :post
   - elsif !relationship.blank? and relationship.suggested?
     /= link_to '<i class="icon-refresh"></i> Pass'.html_safe, reject_relationship_path(relationship), :class => 'btn btn-large', :method => :post
     /&nbsp;&nbsp;
@@ -23,7 +23,7 @@
   - relationship ||= Relationship.new(:entity => entity, :connected_with => connected_with)
   / Clear out message if it's a suggested relationship
   - relationship.message = nil if relationship && relationship.suggested?
-  .modal.hide{:id => form_id, :align => 'left'}
+  .modal.relationship_request.hide{:id => form_id, :align => 'left'}
     .modal-header
       %button.close{:type => 'button', 'data-dismiss' => 'modal'} x
       %h3 Connect with #{connected_with.name}

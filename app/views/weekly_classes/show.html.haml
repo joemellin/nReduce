@@ -61,13 +61,16 @@
   // http://www.tokbox.com/opentok/api/tools/js/documentation/api/ConnectionEvent.html
 
   function updateState(){
-    last = lastPolledAt.toISOString();
-    $.ajax({
-      url: '#{update_state_weekly_class_path(@weekly_class)}.js?last=' + last,
-      dataType: 'script',
-      type: 'GET'
-    });
-    lastPolledAt = new Date();
+    // Don't reload if relationship request modal is open
+    if($('.relationship_request.modal :visible').length == 0){
+      last = lastPolledAt.toISOString();
+      $.ajax({
+        url: '#{update_state_weekly_class_path(@weekly_class)}.js?last=' + last,
+        dataType: 'script',
+        type: 'GET'
+      });
+      lastPolledAt = new Date();
+    }
     setTimeout(function(){
       updateState();
     }, 10000);

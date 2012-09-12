@@ -4,7 +4,10 @@
   .right.well
     .left
       %h3
-        %small #{title} #{@profile_completeness_percent}% Complete
+        %small 
+          #{title} 
+          %span.percent #{@profile_completeness_percent}%
+          Complete
     .clear
     
     .progress{:align => 'left'}
