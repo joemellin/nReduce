@@ -8,15 +8,15 @@
     .span3{:align => 'right'}= image_tag 'nstar_s.png', :style => 'width: 75px; height: 63px'
     .span6
       %center
-        %h1 nStar Demo Day Winners
+        %h1 The Amazing nStars
         -# %h1 Welcome to the #{@demo_day.name}
-        %p Celebrating the Best Startups of nReduce
+        %p{:style => 'padding-top: 10px'} Meet the Best nReduce Startups the First Wendesday of Each Month
     .span3= image_tag 'nstar_s.png', :style => 'width: 75px; height: 63px'
   %hr/
   %br/
   - if @after
     %center
-      %h3 #{Time.parse("#{@demo_day.day} 11:00:00").strftime('%B %d, %Y')}
+      %h3 The #{Time.parse("#{@demo_day.day} 11:00:00").strftime('%B %Y')} nStars
   .relationships.teams
     .row
       - c = 0
@@ -64,7 +64,7 @@
         .left{:style => 'padding-left: 20px'}
           %h3 Nathaniel Mott
           %h4.small PandoDaily
-          %p{:style => 'padding-top: 7px'}
+          %p{:style => 'padding-top: 10px'}
             :plain
               <a href="https://twitter.com/nathanielmott" class="twitter-follow-button" data-show-count="false">Follow @nathanielmott</a>
               <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
@@ -80,7 +80,7 @@
         .left{:style => 'padding-left: 20px'}
           %h3 Jolie O'Dell
           %h4.small VentureBeat
-          %p{:style => 'padding-top: 7px'}
+          %p{:style => 'padding-top: 10px'}
             :plain
               <a href="https://twitter.com/jolieodell" class="twitter-follow-button" data-show-count="false">Follow @jolieodell</a>
               <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>

@@ -5,6 +5,7 @@
         .row
           .span2.center
             - if @weekly_class.num_startups < 5
+              %h2{:style => 'padding-bottom: 15px'} Founders
               %h3 Enroll in the next class
             - else
               %h3 Already enrolled in the next class
