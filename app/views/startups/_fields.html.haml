@@ -1,3 +1,4 @@
+- hide_screenshots ||= false
 .control-group{error_css(@startup, :name)}
   = f.label :name, "Startup Name", :class => 'control-label'
   .controls
@@ -121,7 +122,7 @@
     = f.select :company_goal, options_for_select(Startup.company_goal_select_options, @startup.company_goal), :include_blank => true
     = f.semantic_errors :company_goal
 
-- unless @startup.new_record?
+- unless @startup.new_record? || hide_screenshots
   %hr/
   %br/
   %h3 Product Screenshots

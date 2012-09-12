@@ -117,9 +117,9 @@ class ApplicationController < ActionController::Base
         return
       end
       # If entrepreneur redirect them to class join page (unless ajax request to complete something)
-      if current_user.entrepreneur? && !request.xhr?
+      if current_user.entrepreneur?
         # They are on join page
-        return true if [[:weekly_classes, :show], [:invites, :create], [:questions, :index], [:questions, :create]].include?(controller_action_arr)
+        return true if [[:weekly_classes, :show], [:invites, :create], [:questions, :index], [:questions, :create], [:users, :update], [:startups, :update]].include?(controller_action_arr)
         # Redirect to join page
         current_user.assign_weekly_class! unless current_user.weekly_class.present?
         redirect_to current_user.weekly_class

@@ -5,6 +5,16 @@
 // Some styles are stored as extensions of other classes in demo_day.css and relationships.css
 .container {
   .weekly_classes {
+    position: relative;
+    .profile_completeness {
+      .well {
+        width: 800px;
+        .progress {
+          width: 800px;
+        }
+      }
+      margin-right: 100px;
+    }
     .team {
       .status {
         margin-left: 20px;
