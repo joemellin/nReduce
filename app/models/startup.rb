@@ -38,9 +38,9 @@ class Startup < ActiveRecord::Base
   validates_presence_of :one_liner, :if => :created_but_not_setup_yet?
   validates_presence_of :elevator_pitch, :if => :created_but_not_setup_yet?
   validates_presence_of :industry_list, :if => :created_but_not_setup_yet?
-  validates_presence_of :growth_model, :if => :created_but_not_setup_yet?
-  validates_presence_of :stage, :if => :created_but_not_setup_yet?
-  validates_presence_of :company_goal, :if => :created_but_not_setup_yet?
+  #validates_presence_of :growth_model, :if => :created_but_not_setup_yet?
+  #validates_presence_of :stage, :if => :created_but_not_setup_yet?
+  #validates_presence_of :company_goal, :if => :created_but_not_setup_yet?
 
   before_save :format_url
   after_create :initiate_relationships_from_invites
