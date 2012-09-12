@@ -71,10 +71,11 @@ class WeeklyClass < ActiveRecord::Base
 
   # Distance calculation and clustering
   def self.create_clusters(users, max_radius = 250.0)
+    return nil if users.blank?
+    # need to dupe or else array gets modified
+    users = users.dup 
     # Ensure all users are geocoded
-    User.transaction do
-      users.each{|u| u.geocode_from_ip unless u.geocoded? }
-    end
+    users.each{|u| u.geocode_from_ip unless u.geocoded? }
 
     clusters = []
     while users.size > 0

@@ -3,7 +3,7 @@ class WorldMap
   @raph = null
 
   constructor: (@target, @points, @scale) ->
-    @scale = @scale || 0.78
+    @scale = @scale || 0.90
     @target = @target || 'world_map'
 
   initializeRaphael: ->
@@ -15,27 +15,30 @@ class WorldMap
     for country of countryData.shapes
       @raph.path(countryData.shapes[country]).attr({
         stroke: if @scale < 0.5 then "none" else "#aaa"
-        fill: "#fff"
-        "stroke-opacity": 0.25
+        fill: "#fafafa"
+        "stroke-opacity": 0.2
       })
     world = @raph.setFinish()
     world.scale(@scale, @scale, 0, 0)
 
   render: ->
     @initializeRaphael()
+    c = 0
     for p in @points
-      @renderPoint(p)
+      show_tooltip = if c == 0 then true else false
+      @renderPoint(p, show_tooltip)
+      c += 1
 
   getRadiusForPoint: (point) ->
     num = point.num_users
     return 5 + (Math.log(num) * 2)
 
   # You have to call @renderMap() first to define @raphael.
-  renderPoint: (point) ->
+  renderPoint: (point, show_tooltip = false) ->
     attr = @getXY(point.lat, point.lng)
     radius = if @scale > 0.5 then @getRadiusForPoint(point) else 3
-    fill = '#000'
-    opacity = 0.8
+    fill = '#29adf0'
+    opacity = 0.4
     # dot = @raphael.circle().attr({fill: "r#FE7727:50-#F57124:100", stroke: "#fff", "stroke-width": 2, r: 0})
     dot = @raph.circle().attr({fill: fill, "stroke-width": 0, r: radius, opacity: opacity})
     dot.stop().attr(attr)
@@ -62,6 +65,7 @@ class WorldMap
         manualleft: radius + 1
         manualtop: if attr.cy < 400 * @scale * 0.5 then radius + 4 else 0
       })
+      $(dot.node).tooltip('show') if show_tooltip
 
   getXY: (lat, lon) ->
     cx: (lon * 2.6938 + 465.4) * @scale
