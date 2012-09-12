@@ -12,7 +12,7 @@ class WeeklyClassesController < ApplicationController
     if @in_time_window
       if @startup.blank?
         s = Startup.new
-        s.name = "#{s.current_user.name.possessive} Startup"
+        s.name = "#{current_user.name.possessive} Startup"
         s.save
         current_user.startup = s
         current_user.save
