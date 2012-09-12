@@ -16,7 +16,7 @@ class WorldMap
       @raph.path(countryData.shapes[country]).attr({
         stroke: if @scale < 0.5 then "none" else "#aaa"
         fill: "#fafafa"
-        "stroke-opacity": 0.2
+        "stroke-opacity": 0.4
       })
     world = @raph.setFinish()
     world.scale(@scale, @scale, 0, 0)
