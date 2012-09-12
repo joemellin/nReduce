@@ -19,7 +19,7 @@
       .left
         .name
           .left= @current_question.user.name
-          - unless no_twitter_follow
+          - unless no_twitter_follow || @current_question.user.twitter.blank?
             .left{:style => 'margin-left: 10px'}
               - twitter = @current_question.user.twitter.gsub('@', '')
               -# Need to use iframe version of twitter follow button so it works on AJAX render
