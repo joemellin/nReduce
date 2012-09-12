@@ -25,7 +25,6 @@ class WeeklyClassesController < ApplicationController
     @startup = current_user.startup
     @user = current_user
     load_data
-    @profile_completeness_percent = '89'
   end
 
   protected
