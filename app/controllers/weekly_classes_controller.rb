@@ -15,7 +15,7 @@ class WeeklyClassesController < ApplicationController
         s.name = "#{current_user.name.possessive} Startup"
         s.save
         current_user.startup = s
-        current_user.save
+        current_user.save(:validate => false)
         @startup = s
       end
       # Generates session key for startup and initializes user as moderator if they are a part of the startup
