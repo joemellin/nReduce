@@ -46,6 +46,46 @@
         - c += 1
         - if c != 0 && (c % 4 == 0)
           .row
+  
+  %hr/
+  .row
+    .span12
+      %h2 Press
+  .row
+    .span1
+      %p
+    .span5
+      .row
+        %h2
+          = link_to 'Eight Companies Make Their Debut at NReduce’s First Virtual Demo Day', 'http://pandodaily.com/2012/09/05/eight-companies-make-their-debut-at-nreduces-first-virtual-demo-day/', :target => "_blank"
+      .row{:style => 'padding-top: 10px'}
+        .left{:align => 'right'}= link_to image_tag('pandosq.png'), 'http://pandodaily.com', :target => "_blank"
+        .left{:align => 'right'}= link_to image_tag('nathanielsq.png'), 'https://twitter.com/nathanielmott', :target => "_blank"
+        .left{:style => 'padding-left: 20px'}
+          %h3 Nathaniel Mott
+          %h4.small PandoDaily
+          %p{:style => 'padding-top: 7px'}
+            :plain
+              <a href="https://twitter.com/nathanielmott" class="twitter-follow-button" data-show-count="false">Follow @nathanielmott</a>
+              <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
+        .clear
+    .span5
+      .row
+        %h2 
+          = link_to 'Meet the first class of startups from the open-source Y Combinator, nReduce', 'http://venturebeat.com/2012/09/05/nreduce-demo-day/#s:nreduce-1' , :target => "_blank"
+      .row{:style => 'padding-top: 10px; padding-bottom: 20px'} 
+        .left{:align => 'right'}= link_to image_tag('vbsq.png'), 'http://venturebeat.com', :target => "_blank"
+        .left{:align => 'right'}= link_to image_tag('joliesq.png'), 'https://twitter.com/jolieodell', :target => "_blank"
+        .left{:style => 'padding-left: 20px'}
+          %h3 Jolie O'Dell
+          %h4.small VentureBeat
+          %p{:style => 'padding-top: 7px'}
+            :plain
+              <a href="https://twitter.com/jolieodell" class="twitter-follow-button" data-show-count="false">Follow @jolieodell</a>
+              <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+        .clear
+
   %hr/
   .row.attendees
     .span3

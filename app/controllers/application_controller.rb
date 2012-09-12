@@ -308,7 +308,7 @@ class ApplicationController < ActionController::Base
   private
 
   def is_staging?
-    ['localhost', 'staging.nreduce.com'].include?(request.host)
+    ['staging.nreduce.com'].include?(request.host)
   end
 
   def only_allow_in_staging
