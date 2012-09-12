@@ -18,21 +18,21 @@
             %small= link_to_external @startup.website_url_to_uri.hostname, @startup.website_url
         .row
           .span2
-            - unless @startup.company_goal.blank?
-              %p
-                %small Goal: #{Startup.company_goals[@startup.company_goal.to_i]}
+            / - unless @startup.company_goal.blank?
+            /   %p
+            /     %small Goal: #{Startup.company_goals[@startup.company_goal.to_i]}
             %p
               %small Industry: #{h(@startup.industry_list)}
             %p
               Checkins:
               %span.badge.badge-warning #{@num_checkins}
           .span2
-            - unless @startup.stage.blank?
-              %p
-                %small Idea Stage: #{Startup.stages[@startup.stage.to_i]}
-            - unless @startup.growth_model.blank?
-              %p
-                %small Growth Model: #{Startup.growth_models[@startup.growth_model.to_i]}
+            / - unless @startup.stage.blank?
+            /   %p
+            /     %small Idea Stage: #{Startup.stages[@startup.stage.to_i]}
+            / - unless @startup.growth_model.blank?
+            /   %p
+            /     %small Growth Model: #{Startup.growth_models[@startup.growth_model.to_i]}
             %p
               Awesomes:
               %span.badge.badge-warning #{@num_awesomes}

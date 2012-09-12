@@ -16,11 +16,11 @@
   .row.question{:id => "question_#{q.id}", :class => q.unseen? ? 'unseen' : ''}
     .span1{:align => 'center'}
       %h2= c
-    .span1
-      .well
-        %center
-          %div{:style => 'font-size: 1.4em'}= number_with_delimiter(q.followers_count)
-          Followers
+    / .span1
+    /   .well
+    /     %center
+    /       %div{:style => 'font-size: 1.4em'}= number_with_delimiter(q.followers_count)
+    /       Followers
     .span7
       .content
         %span{:style => 'color: #ccc; padding-right: 5px'} Q:
