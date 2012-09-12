@@ -66,7 +66,6 @@ class Invite < ActiveRecord::Base
     relationship_role = nil
     if self.invite_type == TEAM_MEMBER
       user.startup_id = self.startup_id if !self.startup_id.blank? or !user.startup_id.blank?
-      user.weekly_class = self.weekly_class if self.weekly_class.present?
     # Add user as mentor to startup
     elsif self.invite_type == MENTOR or self.invite_type == NREDUCE_MENTOR
       user.set_account_type(:mentor)
@@ -91,6 +90,9 @@ class Invite < ActiveRecord::Base
         self.errors.add(:user_id, 'could not be added to startup') unless r.approve!
       end
     end
+
+    # Assign weekly class
+    user.weekly_class = WeeklyClass.current_class
 
     # Only suggest startups if invite is for a new startup
     dont_suggest_startups = (self.invite_type != STARTUP)

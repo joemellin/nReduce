@@ -22,6 +22,13 @@
   .span6
     %div{:align => 'center'}
       %h2 Sign up
+      %br/
+      - if @startup_join_flow
+        %b= link_to('Click here if you\'re an Investor or Mentor', sign_up_path(:ojf => 1))
+      - else
+        %b= link_to('Click here if you\'re a startup founder', sign_up_path)
+      %br/
+      %br/
     = semantic_form_for(resource, :as => resource_name, :url => registration_path(resource_name), :html => { :class => 'form-horizontal' }) do |f|
       = render 'devise/registrations/fields', :f => f
     %br/

@@ -37,7 +37,7 @@ $ ->
     e.preventDefault()
     random = Math.floor((Math.random()*1000000)+1);
     id = "teammate_email_#{random}"
-    $('.teammates').append('<div class="email" id="' + id + '"><input type="text" name="teammate_emails[]" size="30" placeholder="founder@email.com" /> <a href="#" class="btn" onclick="$(\'#' + id + '\').remove(); return false;"><i class="icon-minus"></i></a></div>')
+    $('.teammates').append('<div class="email" id="' + id + '"><input type="text" name="user[teammate_emails][]" size="30" placeholder="founder@email.com" /> <a href="#" class="btn" onclick="$(\'#' + id + '\').remove(); return false;"><i class="icon-minus"></i></a></div>')
 
   split = (val) ->
     return val.split( /,\s*/ )

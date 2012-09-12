@@ -9,6 +9,7 @@ class PagesController < ApplicationController
   end
 
   def home
+    #@weekly_class = WeeklyClass.find 145
     @weekly_class = WeeklyClass.current_class
     #@demo_day = DemoDay.next_or_current
     @home = true
