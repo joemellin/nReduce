@@ -4,8 +4,9 @@
       .well.join_stats
         .row
           .span2.center
+            %h2{:style => 'padding-bottom: 15px'} Founders
             - if @weekly_class.num_startups >= 5
-              %h3 Already enrolled in the next class
+              %h3 already enrolled in the next class
             - else
               %h3 Enroll in the next class
         - if @weekly_class.num_startups >= 5

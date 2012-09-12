@@ -8,8 +8,8 @@
           %p Demo Day Starts In
           = render 'layouts/countdown', :time => @demo_day.starts_at
         - elsif @after && @next_demo_day
-          %p Next #{@next_demo_day.name} starts in
-          = render 'layouts/countdown', :time => @next_demo_day.starts_at
+          %p Next #{link_to(@next_demo_day.name, '/d')} starts on
+          %h3 #{@next_demo_day.starts_at.strftime('%B %d at %H')} AM PST
         - else
           %p #{@demo_day.name} ends in
           = render 'layouts/countdown', :time => @demo_day.ends_at
@@ -66,6 +66,9 @@
                   %li.divider
                   %li= link_to "Log out", logout_path, :method => :delete
           - else
+            %li= link_to "Investors", public_investors_path
+            %li= link_to "Mentors", public_mentors_path
+            %li= link_to "Journalists", public_press_path
             %li= link_to "Join", sign_up_path
             %li= link_to "Login", login_path
       .clear
