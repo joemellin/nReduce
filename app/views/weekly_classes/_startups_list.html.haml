@@ -1,8 +1,9 @@
+- c = 1
 - @startups.each do |s|
   - this_startup_url = mini_profile_startup_path(s)
   - logo_path = s.logo_url(:square)
   - owner = (s.id == current_user.startup_id ? true : false)
-  .team.span3{:align => 'center'}
+  .team.left{:align => 'center', :style => 'width: 270px'}
     .top{:align => 'center', :onclick => "$.get('#{this_startup_url}'); return false;"}
       .background{:style => "background-image: url('#{logo_path}'); cursor: pointer;"} &nbsp;
       .status
@@ -14,4 +15,11 @@
     .bottom{:align => 'center'}
       %h3= link_to owner ? 'You' : truncate(s.name, :length => 20), this_startup_url, :target => '_blank', :remote => true
       - unless owner
-        = render 'relationships/buttons', :entity => @startup, :connected_with => s, :relationship => @relationships_by_startup[s.id]
+        - if @pending_relationships_by_startup[s.id].present?
+          = link_to 'Pending Request', '#', :class => 'btn disabled'
+        - else
+          = render 'relationships/buttons', :entity => @startup, :connected_with => s, :relationship => @relationships_by_startup[s.id]
+
+  - if c % 3 == 0 && c != 0
+    .clear
+  - c += 1

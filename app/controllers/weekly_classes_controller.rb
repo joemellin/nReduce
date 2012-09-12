@@ -44,5 +44,6 @@ class WeeklyClassesController < ApplicationController
     @profile_elements = @startup.profile_elements
     @profile_completeness_percent = (@startup.profile_completeness_percent * 100).round
     @relationships_by_startup = Hash.by_key(Relationship.where(:connected_with_id => @startup.id, :connected_with_type => @startup.class).all, :entity_id) 
+    @pending_relationships_by_startup = Hash.by_key(Relationship.where(:entity_id => @startup.id, :entity_type => @startup.class).pending.all, :connected_with_id) 
   end
 end
