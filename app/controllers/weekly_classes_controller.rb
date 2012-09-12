@@ -10,6 +10,14 @@ class WeeklyClassesController < ApplicationController
     @user = current_user
     @in_time_window = @weekly_class.in_join_window?
     if @in_time_window
+      if @startup.blank?
+        s = Startup.new
+        s.name = "#{s.current_user.name.possessive} Startup"
+        s.save
+        current_user.startup = s
+        current_user.save
+        @startup = s
+      end
       # Generates session key for startup and initializes user as moderator if they are a part of the startup
       @nreduce = Startup.find_by_obfuscated_id(Startup.nreduce_id)
       initialize_tokbox_session(@nreduce)
