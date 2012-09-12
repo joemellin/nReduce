@@ -24,15 +24,6 @@
   }
   margin-top: 10px;
   font-family: "myriad-pro",sans-serif;
-  .attendees {
-    margin-top: 20px;
-    margin-bottom: 20px;
-  }
-  .attendee, .supporter {
-    width: 48px; 
-    height: 48px; 
-    margin: 0;
-  }
   .video_wrapper {
     background: image-url('nvideo6070glow.png') no-repeat bottom right;
     width: 500px;
@@ -50,6 +41,45 @@
       font-weight: 600;
       line-height: 315px;
     }
+  }
+  .product_screenshots {
+    padding: 0 0 19px 20px;
+    
+    #screenshots_modal.modal {
+      margin: -340px 0 0 -530px;
+      width: 1054px;
+      height: 680px;
+      #screenshots_carousel, .modal-body {
+        width: 1024px;
+        height: 650px;
+        max-height: 650px;
+      }
+      .carousel {
+        .item {
+          img {
+            margin-left: auto;
+            margin-right: auto;
+            display: block;
+            max-height: 650px;
+          }
+        }
+      }
+    }
+    .screenshot {
+      margin: 0 15px 15px 0;
+      border: 1px solid #ccc;
+    }
+  }
+}
+.demo_day, .weekly_classes {
+  .attendees {
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+  .attendee, .supporter {
+    width: 48px; 
+    height: 48px; 
+    margin: 0;
   }
   .ask_a_question {
     margin: 30px;
@@ -104,53 +134,27 @@
     padding-top: 0px;
   }
   .tabbable {
-    li {
-      line-height: 30px;
-      .badge {
-        vertical-align: middle;
-      }
-      a {
-        background-color: #efefef;
+    .nav-tabs {
+      li {
         line-height: 30px;
-        font-size: 2.25em;
-        padding-top: 12px;
-        padding-bottom: 12px;
+        .badge {
+          vertical-align: middle;
+        }
+        a {
+          background-color: #efefef;
+          line-height: 30px;
+          font-size: 2.25em;
+          padding-top: 12px;
+          padding-bottom: 12px;
+        }
+        
       }
-      
-    }
-    li.active {
-      a {
-        background-color: #fff;
-        font-weight: 600;
-      }
-    }
-  }
-  .product_screenshots {
-    padding: 0 0 19px 20px;
-    
-    #screenshots_modal.modal {
-      margin: -340px 0 0 -530px;
-      width: 1054px;
-      height: 680px;
-      #screenshots_carousel, .modal-body {
-        width: 1024px;
-        height: 650px;
-        max-height: 650px;
-      }
-      .carousel {
-        .item {
-          img {
-            margin-left: auto;
-            margin-right: auto;
-            display: block;
-            max-height: 650px;
-          }
+      li.active {
+        a {
+          background-color: #fff;
+          font-weight: 600;
         }
       }
-    }
-    .screenshot {
-      margin: 0 15px 15px 0;
-      border: 1px solid #ccc;
     }
   }
 }

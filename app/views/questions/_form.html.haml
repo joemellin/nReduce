@@ -1,4 +1,5 @@
-= semantic_form_for [@startup, @question], :remote => true, :html => {:id => 'question_form'} do |f|
+- startup ||= @startup
+= semantic_form_for [startup, @question], :remote => true, :html => {:id => 'question_form'} do |f|
   = f.hidden_field :startup_id
   .control-group{error_css(f.object, :startup_id)}
     = f.semantic_errors :startup_id
@@ -8,7 +9,8 @@
     = f.semantic_errors :content
 
   %div{:align => 'center', :style => 'margin-top: 20px'}
-    = link_to "#{image_tag('twitter_white.png')} Tweet Question".html_safe, '#', :onclick => "$('#question_form').submit(); return false;", :class => 'btn btn-success btn-large'
+    = link_to "Ask Question".html_safe, '#', :onclick => "$('#question_form').submit(); return false;", :class => 'btn btn-success btn-large'
+    /= link_to "#{image_tag('twitter_white.png')} Tweet Question".html_safe, '#', :onclick => "$('#question_form').submit(); return false;", :class => 'btn btn-success btn-large'
 
   :javascript
     $(function() {

@@ -38,11 +38,13 @@
 
 :javascript
   // Tokbox chat
+
   // http://www.tokbox.com/opentok/api/documentation/gettingstarted
   var apiKey = '#{Settings.apis.tokbox.key}';
   var sessionId = '#{@tokbox_session_id}';
   var token = '#{@tokbox_token}';
 
+  TB.setLogLevel(TB.DEBUG);
   #{user_signed_in? && current_user.admin? ? 'TB.setLogLevel(TB.DEBUG);' : ''}
 
   var session = TB.initSession(sessionId);

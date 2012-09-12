@@ -113,6 +113,7 @@ class StartupsController < ApplicationController
 
   def update
     @startup.attributes = params[:startup]
+    @dont_render_form = params[:dont_render_form].present? ? true : false
     if @startup.save
       #flash[:notice] = "Startup information has been saved. Thanks!"
       respond_to do |format|

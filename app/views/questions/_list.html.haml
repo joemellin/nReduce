@@ -1,3 +1,4 @@
+- no_upvoting ||= false
 - c = 0
 .row{:style => 'border-bottom: 1px solid #efefef; padding-bottom: 10px'}
   .span1{:style => 'color: #ccc; font-size: 1.8em;', :align => 'center'}
@@ -6,8 +7,9 @@
     %br/
   .span7{:style => 'color: #ccc; font-size: 1.8em;'}
     %h3 Question
-  .span2{:style => 'color: #ccc; font-size: 1.8em;'}
-    %h3 Support It!
+  - unless no_upvoting
+    .span2{:style => 'color: #ccc; font-size: 1.8em;'}
+      %h3 Support It!
 
 - @questions.each do |q|
   - c += 1
@@ -39,7 +41,7 @@
             .clear
     .span2
       %h3
-        - if q.tweet_id.present?
+        - if !no_upvoting && q.tweet_id.present?
           .support
             - if user_signed_in? && q.user_id == current_user.id
               .supported= link_to '<i class="icon-ok"></i> Supported'.html_safe, '#', :class => 'btn btn-large disabled', :onclick => 'return false;'

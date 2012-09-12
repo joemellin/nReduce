@@ -1,8 +1,29 @@
 // Place all the styles related to the WeeklyClasses controller here.
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
+
+// Some styles are stored as extensions of other classes in demo_day.css and relationships.css
 .container {
   .weekly_classes {
+    .team {
+      .status {
+        margin-left: 20px;
+        width: 160px;
+      }
+    }
+    #video {
+      width: 500px;
+      height: 315px;
+      background-color: #000;
+      .loading {
+        text-align: center;
+        vertical-align: middle;
+        color: #fff;
+        font-size: 1.45em;
+        font-weight: 600;
+        line-height: 315px;
+      }
+    }
     .letter {
       h3 {
         margin-top: 30px;

@@ -1,0 +1,91 @@
+.weekly_classes
+  .row{:style => 'margin-top: 20px'}
+    .span12
+      %center
+        - if @startup.present?
+          %h3 Welcome Team #{@startup.name} to nReduce
+        - else
+          %h3 Welcome to nReduce
+        %h1{:style => 'font-size: 4em; margin: 20px 0 30px 0'} Meet Your Class of Amazing Founders!
+        %br/
+        %h3{:style => 'font-weight: 300'} About Your Class
+  .row
+    .span3
+      %h2 Next Steps
+      %ul
+        %li To enroll you have to return here on #{@weekly_class.join_time.strftime('%A, %b %d')} at 1PM PST
+        %li You will connect with 8 other startups
+        %li #{link_to('Joe', team_path)} will answer questions in real time
+        %li Your amazing experience will begin!
+    .span6
+      .stats{:align => 'center'}
+        - %w(startups users industries countries).each do |e|
+          - record = @weekly_class.send("num_#{e}") > @stats.send("max_#{e}") ? true : false
+          .inline-block.stat{:class => record ? 'record' : ''}
+            .star
+            .number= @weekly_class.send("num_#{e}")
+            %p.number_below= e.to_s.titleize
+            .previous_record
+              - if record
+                nReduce Record!
+              - else
+                %b= @stats.send("max_#{e}")
+                %br/
+                .pr Previous Record
+        .clear
+
+    .span3
+      %h2 Grow Your Class!
+      = semantic_form_for @invite, :url => [@startup, @invite] do |f|
+        = f.hidden_field :invite_type
+        = f.hidden_field :from_id
+        = f.hidden_field :weekly_class_id
+        .control-group{error_css(f.object, :email)}
+          .controls
+            = f.text_field :email, :class => "span2", :placeholder => 'awesome@founder.com'
+            = f.semantic_errors :email
+
+        / .control-group{error_css(f.object, :msg)}
+        /   .controls
+        /     = f.text_area :msg, :size => '80x5', :placeholder => 'your message'
+        /     = f.semantic_errors :msg
+              
+        = f.submit 'Invite Founder', :class => 'btn btn-large'
+
+      - if @sent_invites.present?
+        %h3 Sent Invites
+        - @sent_invites.each do |i|
+          = i.email
+          - if i.to_id.present?
+            (Joined)
+          - else
+            (Not joined yet)
+
+
+  .row{:style => 'margin-top: 40px; margin-bottom: 50px'}
+    .span12
+      %center
+        %h3 Meet the Other nReducers Joining With You
+
+      %div{:align => 'center', :style => 'margin-top: 20px'}
+        - @weekly_class.users.each do |u|
+          - img = image_tag(user_avatar_url(u), :style => 'width: 50px; height: 50px')
+          .inline-block.attendee= u.linkedin_url.present? ? link_to_external(img, u.linkedin_url) : img
+        .clear
+
+
+  %hr/
+  .row.letter{:style => 'margin-top: 30px'}
+    .span3
+      %p
+    .span6
+      = render 'weekly_classes/letter'
+    .span3
+      %p
+
+
+
+
+
+
+

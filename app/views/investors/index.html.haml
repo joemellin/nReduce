@@ -52,6 +52,7 @@
     .startup
       - investor_profile_class = current_user.startup.investable? ? '' : 'hide'
       = form_for current_user.startup, :url => '/startup/', :remote => true, :html => {:class => 'form-vertical startup'} do |f|
+        = hidden_field_tag 'dont_render_form', true
         .row
           .span8
             %h1
