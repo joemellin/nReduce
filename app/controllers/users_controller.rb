@@ -43,12 +43,18 @@ class UsersController < ApplicationController
     @user.profile_fields_required = true
     if @user.update_attributes(params[:user])
       #flash[:notice] = "Your account has been updated!"
-      redirect_to :action => :show
+      respond_to do |format|
+        format.js { render :action => :update }
+        format.html { redirect_to :action => :show }
+      end
     else
       if params[:complete_account].to_s == 'true'
         render :action => :complete_account
       else
-        render :action => :edit
+        respond_to do |format|
+          format.js { render :action => :update }
+          format.html { render :action => :edit }
+        end
       end
     end
   end

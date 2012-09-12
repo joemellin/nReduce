@@ -423,6 +423,7 @@ DEPENDENCIES
   rails_autolink
   rails_config (= 0.2.5)
   rb-fsevent
+  remotipart
   resque
   rmagick
   rspec

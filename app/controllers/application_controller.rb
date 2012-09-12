@@ -102,11 +102,6 @@ class ApplicationController < ActionController::Base
       return true
     else
       # Account is not set up
-      # temporary time travel
-      # if !params[:travel].blank? && params[:travel].to_s == '1'
-      #   Timecop.return
-      #   Timecop.travel(Week.next_window_for(:join_class).first + 1.hour)
-      # end
       @hide_nav = true
       @account_setup_action = current_user.account_setup_action
       if @account_setup_action.blank?
@@ -124,7 +119,7 @@ class ApplicationController < ActionController::Base
       # If entrepreneur redirect them to class join page (unless ajax request to complete something)
       if current_user.entrepreneur? && !request.xhr?
         # They are on join page
-        return true if [[:weekly_classes, :show], [:invites, :create]].include?(controller_action_arr)
+        return true if [[:weekly_classes, :show], [:invites, :create], [:questions, :index], [:questions, :create]].include?(controller_action_arr)
         # Redirect to join page
         current_user.assign_weekly_class! unless current_user.weekly_class.present?
         redirect_to current_user.weekly_class
@@ -207,8 +202,6 @@ class ApplicationController < ActionController::Base
     res
   end
 
-  protected
-
   def load_obfuscated_user
     begin
       @user = User.find_by_obfuscated_id(params[:id])
@@ -290,6 +283,26 @@ class ApplicationController < ActionController::Base
         @no_twitter = true if user_signed_in? && current_user.twitter_authentication.blank?
       end
     end
+  end
+
+  def initialize_tokbox_session(startup, force_new_session = false)
+    # Initialize tokbox session
+    @tokbox = OpenTok::OpenTokSDK.new Settings.apis.tokbox.key, Settings.apis.tokbox.secret
+
+    # Create session id unless startup already has one
+    if startup.tokbox_session_id.blank? || force_new_session
+      startup.tokbox_session_id = @tokbox.createSession(request.remote_ip).to_s
+      startup.save
+    end
+    @tokbox_session_id = startup.tokbox_session_id
+
+    if user_signed_in? && startup.id == current_user.startup_id
+      role = OpenTok::RoleConstants::MODERATOR # Other role: OpenTok::RoleConstants::PUBLISHER
+      @owner = true
+    else
+      role = OpenTok::RoleConstants::SUBSCRIBER
+    end
+    @tokbox_token = @tokbox.generateToken :session_id => @tokbox_session_id, :role => role, :connection_data => user_signed_in? ? "uid=#{current_user.id}" : ''
   end
 
   private

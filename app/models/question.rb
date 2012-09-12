@@ -12,8 +12,8 @@ class Question < ActiveRecord::Base
   validates :user_id, :startup_id, :presence => true
   validates :content, :length => { :maximum => 90, :minimum => 10 }
 
-  before_create :update_followers_and_attendees
-  before_create :tweet_question
+  #before_create :update_followers_and_attendees
+  #before_create :tweet_question
   after_save :update_cache
 
   scope :unanswered, where('answered_at IS NULL')

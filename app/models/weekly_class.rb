@@ -56,6 +56,14 @@ class WeeklyClass < ActiveRecord::Base
     WeeklyClass.select('MAX(weekly_classes.num_users) AS max_users, MAX(weekly_classes.num_startups) AS max_startups, MAX(weekly_classes.num_countries) AS max_countries, MAX(weekly_classes.num_industries) as max_industries').all.first
   end
 
+  # This is the time window in which you join
+  def in_join_window?
+    starts = self.time_window.last + 1.second
+    duration = Week.time_window_offsets[:join_class].last
+    ends = starts + duration
+    Time.now >= starts && Time.now <= ends
+  end
+
   def description
     tw = self.time_window
     "#{tw.first.strftime('%b %-d')} - #{tw.last.strftime('%b %-d')}"

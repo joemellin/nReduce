@@ -56,6 +56,8 @@ gem 'geoip'
 #gem 'pusher'
 #gem 'mechanize'
 
+gem 'remotipart' # ajax file uploads
+
 
 
 group :test, :development do

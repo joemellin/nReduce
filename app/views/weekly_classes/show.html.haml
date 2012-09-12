@@ -1,87 +1,93 @@
 .weekly_classes
   .row{:style => 'margin-top: 20px'}
-    .span12
+    .span6
       %center
-        - if @startup.present?
-          %h3 Welcome Team #{@startup.name} to nReduce
-        - else
-          %h3 Welcome to nReduce
-        %h1{:style => 'font-size: 4em; margin: 20px 0 30px 0'} Meet Your Class of Amazing Founders!
-        %br/
-        %h3{:style => 'font-weight: 300'} About Your Class
+        %h2 Welcome from nReduce Founders
+      = render 'demo_day/video_chat'
+    .span6
+      .current_question
+        - unless @current_question.blank?
+          = render 'questions/current_question', :no_twitter_follow => true, :startup => @nreduce
   .row
-    .span3
-      %h2 Next Steps
-      %ul
-        %li To enroll you have to return here on #{@weekly_class.join_time.strftime('%A, %b %d')} at 1PM PST
-        %li You will connect with 8 other startups
-        %li #{link_to('Joe', team_path)} will answer questions in real time
-        %li Your amazing experience will begin!
-    .span6
-      .stats{:align => 'center'}
-        - %w(startups users industries countries).each do |e|
-          - record = @weekly_class.send("num_#{e}") > @stats.send("max_#{e}") ? true : false
-          .inline-block.stat{:class => record ? 'record' : ''}
-            .star
-            .number= @weekly_class.send("num_#{e}")
-            %p.number_below= e.to_s.titleize
-            .previous_record
-              - if record
-                nReduce Record!
-              - else
-                %b= @stats.send("max_#{e}")
-                %br/
-                .pr Previous Record
-        .clear
-
-    .span3
-      %h2 Grow Your Class!
-      = semantic_form_for @invite, :url => [@startup, @invite] do |f|
-        = f.hidden_field :invite_type
-        = f.hidden_field :from_id
-        = f.hidden_field :weekly_class_id
-        .control-group{error_css(f.object, :email)}
-          .controls
-            = f.text_field :email, :class => "span2", :placeholder => 'awesome@founder.com'
-            = f.semantic_errors :email
-
-        / .control-group{error_css(f.object, :msg)}
-        /   .controls
-        /     = f.text_area :msg, :size => '80x5', :placeholder => 'your message'
-        /     = f.semantic_errors :msg
-              
-        = f.submit 'Invite Founder', :class => 'btn btn-large'
-
-      - if @sent_invites.present?
-        %h3 Sent Invites
-        - @sent_invites.each do |i|
-          = i.email
-          - if i.to_id.present?
-            (Joined)
-          - else
-            (Not joined yet)
-
-
-  .row{:style => 'margin-top: 40px; margin-bottom: 50px'}
     .span12
-      %center
-        %h3 Meet the Other nReducers Joining With You
+      .ask_a_question{:align => 'center'}
+        %h2
+          Have a question?
+          &nbsp;
+          = link_to_login "Ask the Founders!".html_safe, '#', :onclick => "$('.questions_modal').modal('show'); $('#question_content').focus(); return false;", :class => 'btn btn-large btn-success'
+          &nbsp;
+      .profile_completeness= render 'users/profile_completeness', :title => 'Startup Profile'
+  .tabbable
+    %ul.nav.nav-tabs
+      %li#meet_startups_tab.active
+        %a{:href => '#meet_startups', 'data-toggle' => 'tab'} Meet Your Class!
+      %li#questions_tab
+        %a{:href => '#questions', 'data-toggle' => 'tab'}
+          Questions
+          %span.badge.badge-warning#question_count= @questions.size
+      %li#profile_tab
+        %a{:href => '#profile', 'data-toggle' => 'tab'} Your Profile
+      %li#startup_profile_tab
+        %a{:href => '#startup_profile', 'data-toggle' => 'tab'} Team Profile
+    .tab-content
+      .tab-pane.active#meet_startups
+        - @startups.each do |s|
+          - this_startup_url = startup_url(s)
+          - logo_path = s.logo_url(:square)
+          - owner = s.id == current_user.startup_id ? true : false
+          .team.span3{:align => 'center'}
+            .top{:align => 'center', :onclick => "window.location = '#{this_startup_url}';"}
+              .background{:style => "background-image: url('#{logo_path}'); cursor: pointer;"} &nbsp;
+              .status
+                .progress{:align => 'left'}
+                  .bar{:style => "width: #{(s.profile_completeness_percent * 100).round}%"}
+              .members{:align => 'center'}
+                - s.team_members.shuffle.first(3).each do |tm|
+                  .inline-block{:style => 'margin-left: 4px'}= image_tag(user_avatar_url(tm), :title => tm.name, :style => 'width: 50px; height: 50px;')
+            .bottom{:align => 'center'}
+              %h3= link_to owner ? 'You' : truncate(s.name, :length => 20), startup_path(s)
 
-      %div{:align => 'center', :style => 'margin-top: 20px'}
-        - @weekly_class.users.each do |u|
-          - img = image_tag(user_avatar_url(u), :style => 'width: 50px; height: 50px')
-          .inline-block.attendee= u.linkedin_url.present? ? link_to_external(img, u.linkedin_url) : img
-        .clear
+      .tab-pane#questions
+        .questions
+          = render 'questions/list', :no_upvoting => true
+      .tab-pane#profile
+        = render 'users/ajax_edit'
+      .tab-pane#startup_profile
+        = render 'startups/ajax_edit'
 
+  .modal.questions_modal.hide
+    .modal-header
+      %button.close{:type => 'button', 'data-dismiss' => 'modal'} x
+      %h2{:style => 'margin-bottom: 5px'} Ask the founders of #{@nreduce.name} a question
+    .modal-body
+      .question_form
+        = render 'questions/form', :startup => @nreduce
+:plain
+  <script type="text/javascript">
+  // Start polling for questions
+  var lastPolledAt = new Date();
 
-  %hr/
-  .row.letter{:style => 'margin-top: 30px'}
-    .span3
-      %p
-    .span6
-      = render 'weekly_classes/letter'
-    .span3
-      %p
+  // can count number of people connected
+  // http://www.tokbox.com/opentok/api/tools/js/documentation/api/ConnectionEvent.html
+
+  function loadQuestions(){
+    last = lastPolledAt.toISOString();
+    $.ajax({
+      url: '#{startup_questions_path(@nreduce)}.js?last=' + last,
+      dataType: 'script',
+      type: 'GET'
+    });
+    lastPolledAt = new Date();
+    setTimeout(function(){
+      loadQuestions();
+    }, 10000);
+  }
+
+  setTimeout(function(){
+    loadQuestions();
+  }, 10000);
+
+  </script>
 
 
 

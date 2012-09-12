@@ -23,28 +23,8 @@ class DemoDayController < ApplicationController
       return
     end
     
-    # Initialize tokbox session
-    @tokbox = OpenTok::OpenTokSDK.new Settings.apis.tokbox.key, Settings.apis.tokbox.secret
+    initialize_tokbox_session(@startup)
 
-    # Create session id unless startup already has one
-    if @startup.tokbox_session_id.blank?
-      @startup.tokbox_session_id = @tokbox.createSession(request.remote_ip).to_s
-      @startup.save
-    end
-    @tokbox_session_id = @startup.tokbox_session_id
-
-    # Define correct role so user has controls over video stream
-    #if user_signed_in? && current_user.admin?
-    #  role = OpenTok::RoleConstants::MODERATOR
-    #  @owner = true
-    if user_signed_in? && @startup.id == current_user.startup_id
-      role = OpenTok::RoleConstants::MODERATOR #OpenTok::RoleConstants::PUBLISHER
-      @owner = true
-    else
-      role = OpenTok::RoleConstants::SUBSCRIBER
-    end
-    @tokbox_token = @tokbox.generateToken :session_id => @tokbox_session_id, :role => role, :connection_data => user_signed_in? ? "uid=#{current_user.id}" : ''
-    
     load_questions_for_startup(@startup)
     
     @num_checkins = @startup.checkins.count
