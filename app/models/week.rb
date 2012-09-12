@@ -6,7 +6,7 @@ class Week
       # type => [offset from beginning of week, length]
       :after_checkin => [1.day + 16.hours, 24.hours],
       :before_checkin => [2.days + 16.hours, 24.hours],
-      :join_class => [2.days + 13.hours, 1.hour]
+      :join_class => [2.days + 13.hours, 90.minutes]
     }
   end
 
