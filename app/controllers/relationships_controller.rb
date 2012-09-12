@@ -144,6 +144,12 @@ class RelationshipsController < ApplicationController
     else
       flash[:alert] = "Sorry but the relationship couldn't be removed at this time."
     end
-    redirect_to add_teams_relationships_path
+    if request.xhr?
+      respond_to do |format|
+        format.js { render :action => 'update_modal' }
+      end
+    else
+      redirect_to add_teams_relationships_path
+    end
   end
 end
