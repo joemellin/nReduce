@@ -35,7 +35,9 @@
     .facebook.left
       :plain
         <div class="fb-like" data-href="http://www.nreduce.com" data-send="false" data-layout="button_count" data-width="150" data-show-faces="false" data-font="lucida grande"></div>
+    .right{:style => 'margin-left: 249px'}=link_to 'Meet the September 2012 nStars','http://www.nreduce.com/d'
     .clear
+  
   .right.newslogo{:style => 'margin-bottom: 10px'}= link_to image_tag('venturebeat.png'), 'http://venturebeat.com/2012/09/05/nreduce-demo-day/', :target => '_blank'
   .right.newslogo= link_to image_tag('pando.png'), 'http://pandodaily.com/2012/07/27/virtual-incubator-to-all-nreduce-adds-mentors-and-demo-days-is-it-the-pre-angellist/', :target => '_blank'
   / .right.newslogo= image_tag('xoconomy.png')
@@ -43,40 +45,39 @@
   %hr
   
   .middle_container
+    .row.center{:style => 'margin-bottom: 20px'}
+      %h2 How it Works for Founders
     .row
       .span4
         .benefit
-          %h3 Work with other Founders
-          %p Build an amazing community of fellow founders who you collaborate with each week. 
+          %h3 Founders Work Wednesday to Tuesday
+          %p Every nReduce startup is on the same weekly schedule.  Set a goal on Wednesday.   Show your progress on Tuesday. 
       .span4
         .benefit
-          %h3 Free and No Equity Taken
-          %p We have designed nReduce to be free to founders and it always will be. 
+          %h3 Startups Connect with Each Other
+          %p Each Startup connects with 4-8 other startups to share weekly progress and give / get feedback. 
     .row
       .span4
         .benefit
-          %h3 Build your Network
-          %p Meet and work with 1000+ other founders in the global nReduce network. 
+          %h3 Founders Earn Mentorship
+          %p Companies who are active and meet requirements earn mentorship from our amazing nReduce mentor network.
       .span4
         .benefit
-          %h3 Keep Mentors and Investors Engaged
-          %p Share your weekly progress with your existing mentors and investors. Enable them to easily give you advice. 
+          %h3 Startups Get Discovered by Investors
+          %p Startups who are interested in fundraising in the future can start to build relationships with potential investors. 
     .row
       .span4
         .benefit
-          %h3 Earn More Mentors
-          %p If you complete the mentorship requirements you can contact mentors on the nReduce mentor list. 
+          %h3 Successful Startups Become nStars
+          %p Startups who are the best in nReduce become an nStar and are featured in our monthly online demo day. 
       .span4
         .benefit
-          %h3 Become an nStar
-          %p If you meet the requirements you can compete to become an nStar and be featured in our online demo day.
-  %br/
-  %br/
+          %h3 All for $0 and No Equity
+          %p We charge investors and service providers so nReduce is free to Founders. Yep, that's right, Free! Pretty Cool, Huh? :) 
+
   %br/
   %hr
   %br/
-  %br/
-  %br/ 
   .row
     .span1
       %p
@@ -93,23 +94,7 @@
         %b courageous people
         better at what they do."
     .span1
-      %p
-  %br/
-  %br/
-  %br/
-  %br/
-  %hr
-  %br/
-  %br/
-  .row
-    .span4
-      .center=link_to image_tag('tshirtstore.png'), "http://www.printfection.com/nreduce", :target => '_blank'
-    .span4
-      .center=link_to image_tag('letterlink.png'), newmodel_path
-    .span4
-      .center=link_to image_tag('weheartsups.png'), "http://blog.nreduce.com/post/27846076429/nreduce-world-tour", :target => '_blank'
-
-  %br/
+      %ps
   %br/
 
 / FACEBOOK CONNECT
