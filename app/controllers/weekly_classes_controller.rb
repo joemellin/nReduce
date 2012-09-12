@@ -9,11 +9,6 @@ class WeeklyClassesController < ApplicationController
     @user = current_user
     @in_time_window = @weekly_class.in_join_window?
     if @in_time_window
-      if current_user.startup.blank?
-        create_startup
-      else
-        @startup = current_user.startup
-      end
       # Generates session key for startup and initializes user as moderator if they are a part of the startup
       @nreduce = Startup.find_by_obfuscated_id(Startup.nreduce_id)
       load_data
@@ -26,7 +21,6 @@ class WeeklyClassesController < ApplicationController
 
   def update_state
     @nreduce = Startup.find_by_obfuscated_id(Startup.nreduce_id)
-    @startup = current_user.startup
     @user = current_user
     load_data
   end
