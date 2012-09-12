@@ -4,7 +4,7 @@
       %center
         %h2 Welcome from nReduce Founders
       = render 'demo_day/video_chat'
-    .span6
+    .span5
       .current_question
         - unless @current_question.blank?
           = render 'questions/current_question', :no_twitter_follow => true, :startup => @nreduce
@@ -31,21 +31,9 @@
         %a{:href => '#startup_profile', 'data-toggle' => 'tab'} Team Profile
     .tab-content
       .tab-pane.active#meet_startups
-        - @startups.each do |s|
-          - this_startup_url = startup_url(s)
-          - logo_path = s.logo_url(:square)
-          - owner = s.id == current_user.startup_id ? true : false
-          .team.span3{:align => 'center'}
-            .top{:align => 'center', :onclick => "window.location = '#{this_startup_url}';"}
-              .background{:style => "background-image: url('#{logo_path}'); cursor: pointer;"} &nbsp;
-              .status
-                .progress{:align => 'left'}
-                  .bar{:style => "width: #{(s.profile_completeness_percent * 100).round}%"}
-              .members{:align => 'center'}
-                - s.team_members.shuffle.first(3).each do |tm|
-                  .inline-block{:style => 'margin-left: 4px'}= image_tag(user_avatar_url(tm), :title => tm.name, :style => 'width: 50px; height: 50px;')
-            .bottom{:align => 'center'}
-              %h3= link_to owner ? 'You' : truncate(s.name, :length => 20), startup_path(s)
+        #startup_mini_profile.hide
+        #startups
+          = render 'weekly_classes/startups_list'
 
       .tab-pane#questions
         .questions
@@ -72,21 +60,21 @@
   // can count number of people connected
   // http://www.tokbox.com/opentok/api/tools/js/documentation/api/ConnectionEvent.html
 
-  function loadQuestions(){
+  function updateState(){
     last = lastPolledAt.toISOString();
     $.ajax({
-      url: '#{startup_questions_path(@nreduce)}.js?last=' + last,
+      url: '#{update_state_weekly_class_path(@weekly_class)}.js?last=' + last,
       dataType: 'script',
       type: 'GET'
     });
     lastPolledAt = new Date();
     setTimeout(function(){
-      loadQuestions();
+      updateState();
     }, 10000);
   }
 
   setTimeout(function(){
-    loadQuestions();
+    updateState();
   }, 10000);
 
   </script>

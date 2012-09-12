@@ -119,7 +119,7 @@ class ApplicationController < ActionController::Base
       # If entrepreneur redirect them to class join page (unless ajax request to complete something)
       if current_user.entrepreneur?
         # They are on join page
-        return true if [[:weekly_classes, :show], [:invites, :create], [:questions, :index], [:questions, :create], [:users, :update], [:startups, :update]].include?(controller_action_arr)
+        return true if [[:weekly_classes, :show], [:invites, :create], [:questions, :index], [:questions, :create], [:users, :update], [:startups, :update], [:relationships, :create], [:relationships, :approve], [:relationships, :reject], [:startups, :mini_profile], [:weekly_classes, :update_state]].include?(controller_action_arr)
         # Redirect to join page
         current_user.assign_weekly_class! unless current_user.weekly_class.present?
         redirect_to current_user.weekly_class
@@ -243,7 +243,8 @@ class ApplicationController < ActionController::Base
       # limit to questions only since a certain time
       return false if Question.last_changed_at_for_startup(startup).utc < only_if_any_since
     end
-    @questions = Question.unanswered_for_startup(startup).order('followers_count DESC').includes(:user, :startup)
+    @questions = Question.unanswered_for_startup(startup).order('created_at').includes(:user, :startup)
+    #@questions = Question.unanswered_for_startup(startup).order('followers_count DESC').includes(:user, :startup)
     # Mark questions as unseen
     @questions.each{|q| q.unseen = true if q.updated_at.utc > only_if_any_since && (user_signed_in? ? current_user.id != q.user_id : true) } if only_if_any_since.present?
     # Extract current question

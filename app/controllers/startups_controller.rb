@@ -2,9 +2,9 @@ class StartupsController < ApplicationController
   around_filter :record_user_action, :except => [:onboard_next, :stats]
   before_filter :login_required
   before_filter :load_requested_or_users_startup, :except => [:index, :invite, :stats]
-  load_and_authorize_resource :except => [:index, :stats, :invite, :show, :invite_team_members, :intro_video]
-  before_filter :load_obfuscated_startup, :only => [:show, :invite_team_members, :before_video, :intro_video]
-  authorize_resource :only => [:show, :invite_team_members, :before_video, :intro_video]
+  load_and_authorize_resource :except => [:index, :stats, :invite, :show, :invite_team_members, :intro_video, :mini_profile]
+  before_filter :load_obfuscated_startup, :only => [:show, :invite_team_members, :before_video, :intro_video, :mini_profile]
+  authorize_resource :only => [:show, :invite_team_members, :before_video, :intro_video, :mini_profile]
   before_filter :redirect_if_no_startup, :except => [:index, :invite]
 
   def index
@@ -94,6 +94,22 @@ class StartupsController < ApplicationController
       @relationship = Relationship.between(@entity, @startup)
     else
       @relationship = Relationship.between(@startup, @entity)
+    end
+  end
+
+    # mini profile for ajax requests
+  def mini_profile
+    @num_checkins = @startup.checkins.count
+    @num_awesomes = @startup.awesomes.count
+    if current_user.entrepreneur?
+      @entity = current_user.startup unless current_user.startup.blank?
+    else
+      @entity = current_user
+    end
+    @relationship = Relationship.between(@startup, @entity)
+    respond_to do |format|
+      format.js
+      format.html { render :nothing => true }
     end
   end
   

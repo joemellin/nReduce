@@ -209,7 +209,7 @@ class Ability
     can [:new, :create], Invite
 
     cannot :all, WeeklyClass
-    can :read, WeeklyClass, :id => user.weekly_class_id
+    can [:read, :update_state], WeeklyClass, :id => user.weekly_class_id
 
     # Can only create a startup if registration is open and they don't have a current startup
     can [:new, :create, :edit], Startup do |startup|
@@ -281,7 +281,7 @@ class Ability
     cannot :read, Startup
 
     # Everyone can see a startup's profile unless they are private
-    can :read, Startup do |s|
+    can [:mini_profile, :read], Startup do |s|
       if s.public?
         true
       elsif !user.startup_id.blank? and s.id == user.startup_id

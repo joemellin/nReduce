@@ -127,6 +127,7 @@ Nreduce::Application.routes.draw do
       match 'before_video'
       get 'mentor_checklist'
       match 'invite_team_members'
+      get 'mini_profile'
     end
     resources :checkins do
       get 'latest' => "checkins#show", :checkin_id => 'latest', :on => :collection
@@ -143,7 +144,11 @@ Nreduce::Application.routes.draw do
     end
   end
 
-  resources :weekly_classes, :only => [:show]
+  resources :weekly_classes, :only => [:show] do
+    member do 
+      get 'update_state'
+    end
+  end
 
   # onboarding
   get '/onboard/start(/:type)' => "onboard#start", :as => :onboard_start

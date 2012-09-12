@@ -183,7 +183,6 @@ class Startup < ActiveRecord::Base
     # Returns hash of all elements + each team member's completeness as 
   def profile_elements
     elements = {
-      :intro_video => !self.intro_video_url.blank?, 
       :elevator_pitch => (!self.elevator_pitch.blank? and (self.elevator_pitch.size > 10)), 
       :industry => !self.industry_list.blank?,
     }

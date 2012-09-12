@@ -8,5 +8,5 @@
     }
     $(submit).effect("highlight", {}, 1500);
 - else
-  $('#edit_startup_#{@startup.id}').replaceWith("#{escape_javascript(render('startups/ajax_edit'))}")
+  $('#edit_startup_#{@startup.id}').replaceWith("#{escape_javascript(render('startups/ajax_edit'))}");
   $('#edit_startup_#{@startup.id}').effect("highlight", {color: '#bfebff'}, 3000);
