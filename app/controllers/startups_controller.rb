@@ -92,8 +92,10 @@ class StartupsController < ApplicationController
     end
     if params[:suggested] # we need to look for a relationship in the opposite direction if suggested
       @relationship = Relationship.between(@entity, @startup)
+      @pending_relationship = nil
     else
       @relationship = Relationship.between(@startup, @entity)
+      @pending_relationship = Relationship.between(@entity, @startup)
     end
   end
 
