@@ -595,7 +595,7 @@ class User < ActiveRecord::Base
   end
 
   def geocode_location
-    return true if Rails.env.test? or self.location.blank? or (!self.location_changed? and !self.lat.blank?)
+    return true if Rails.env.test? || (self.location.blank? && self.current_sign_in_ip.blank?) || (!self.location_changed? and !self.lat.blank?)
     begin
       res = User.geocode(self.location)
       self.lat, self.lng, self.country = res.lat, res.lng, res.country_code

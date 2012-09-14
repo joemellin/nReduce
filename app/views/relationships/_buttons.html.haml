@@ -4,7 +4,7 @@
   %div{:id => "#{form_id}_details"}
     - if (!relationship.blank? and relationship.approved?) #|| entity.connected_to?(connected_with)
       - if !relationship.blank?
-        = link_to '<i class="icon icon-remove"></i> Remove from Group'.html_safe, reject_relationship_path(:id => relationship.id), :method => :destroy, :class => 'btn', :confirm => "Are you sure you want to remove #{connected_with.name} as a connection?", :remote => true
+        = link_to '<i class="icon icon-remove"></i> Remove from Group'.html_safe, reject_relationship_path(:id => relationship.id), :method => :post, :class => 'btn', :confirm => "Are you sure you want to remove #{connected_with.name} as a connection?", :remote => true
       - else
         = link_to 'View Profile', connected_with, :class => 'btn btn-large', :style => 'margin-bottom: 12px'
     - elsif !relationship.blank? and relationship.pending?
