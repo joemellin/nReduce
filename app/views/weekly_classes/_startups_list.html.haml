@@ -1,8 +1,15 @@
 - c = 1
+- displayed_line = false
 - @startups.each do |s|
   - this_startup_url = mini_profile_startup_path(s)
   - logo_path = s.logo_url(:square)
   - owner = (s.id == current_user.startup_id ? true : false)
+  // Show line demarcating completed and not completed teams
+  - if !displayed_line && s.profile_completeness_percent == 1.0
+    .clear
+    %hr/
+    %br/
+    - displayed_line = true
   .team.left{:align => 'center', :style => 'width: 270px'}
     .top{:align => 'center', :onclick => "$.get('#{this_startup_url}'); return false;"}
       .background{:style => "background-image: url('#{logo_path}'); cursor: pointer;"} &nbsp;
@@ -14,7 +21,8 @@
           .inline-block{:style => 'margin-left: 4px'}= image_tag(user_avatar_url(tm), :title => tm.name, :style => 'width: 50px; height: 50px;')
     .bottom{:align => 'center'}
       %h3= link_to owner ? 'You' : truncate(s.name, :length => 20), this_startup_url, :target => '_blank', :remote => true
-      - unless owner
+      // Don't show relationships if they haven't completed profile or this is their startup
+      - unless owner || s.profile_completeness_percent != 1.0
         - if @pending_relationships_by_startup[s.id].present?
           = link_to 'Pending Request', '#', :class => 'btn disabled'
         - else
