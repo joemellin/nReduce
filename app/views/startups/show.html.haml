@@ -9,7 +9,7 @@
     - if @owner
       = link_to "Edit Startup", "/startup/edit", :class => "btn"
     - elsif !@entity.blank?
-      = render 'relationships/buttons', :entity => @entity, :connected_with => @startup, :relationship => @relationship
+      = render 'relationships/buttons', :entity => @entity, :connected_with => @startup, :relationship => @relationship.present? ? @relationship : @pending_relationship
 
 %hr/
 %br/
@@ -23,7 +23,7 @@
       %div{:align => 'center'}
         %h3 #{h(@startup.name.possessive)} check-ins are private. To get permission to see them:
         %br/
-        = render 'relationships/buttons', :entity => @entity, :connected_with => @startup, :relationship => @relationship
+        = render 'relationships/buttons', :entity => @entity, :connected_with => @startup, :relationship => @relationship.present? ? @relationship : @pending_relationship
 - else
   = render 'checkins_list'
 
