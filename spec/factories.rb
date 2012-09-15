@@ -50,7 +50,12 @@ FactoryGirl.define do
     factory :mentor do
       email 'mentor@famousfounder.com'
       name "Famous Founder"
-      mentor true
+      roles [:mentor]
+    end
+    factory :investor do
+      email 'investor@imrich.com'
+      name "Investor Dude"
+      roles [:investor]
     end
   end
 

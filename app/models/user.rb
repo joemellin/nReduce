@@ -56,6 +56,7 @@ class User < ActiveRecord::Base
 
   before_create :set_default_settings
   after_create :mailchimp!
+  after_destroy :remove_from_mailchimp
   before_save :geocode_location
   before_save :ensure_roles_exist
   after_save :initialize_teammate_invites_from_emails
@@ -286,6 +287,11 @@ class User < ActiveRecord::Base
   rescue => e
     Rails.logger.error "Unable put #{email} to mailchimp"
     Rails.logger.error e
+  end
+
+  def remove_from_mailchimp
+    h = Hominid::API.new(Settings.apis.mailchimp.api_key)
+    h.list_unsubscribe(Settings.apis.mailchimp.everyone_list_id, email)
   end
 
 

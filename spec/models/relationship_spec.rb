@@ -4,21 +4,24 @@ describe Relationship do
   before :each do
     @startup1 = FactoryGirl.create(:startup)
     @startup2 = FactoryGirl.create(:startup, :name => 'Facebook for Ferrets')
-    @relationship = Relationship.start_between(@startup1, @startup2, :startup_startup)
+    
   end
 
   it "should add a startup in a relationship" do
+    @relationship = Relationship.start_between(@startup1, @startup2, :startup_startup)
     @relationship.pending?.should be_true
   end
 
   it "should approve a startup in a relationship" do
+    @relationship = Relationship.start_between(@startup1, @startup2, :startup_startup)
     @relationship.approve!
     Relationship.where(:entity_id => @startup1.id, :entity_type => 'Startup', :connected_with_id => @startup2.id, :connected_with_type => 'Startup', :status => Relationship::APPROVED).count.should == 1
     @startup1.connected_to?(@startup2).should be_true
   end
 
   it "should reject a startup in a relationship" do
-    @relationship.reject!
+    @relationship = Relationship.start_between(@startup1, @startup2, :startup_startup)
+    @relationship.reject_or_pass!
     @startup1.connected_to?(@startup2).should be_false
   end
 
@@ -26,8 +29,49 @@ describe Relationship do
     mentor = FactoryGirl.create(:mentor)
     relationship = Relationship.start_between(@startup1, mentor, :startup_mentor)
     relationship.approve!.should be_true
+    puts "inverse"
+    puts relationship.inverse_relationship.inspect
     Relationship.between(@startup1, mentor).approved?.should be_true
     @startup1.connected_to?(mentor).should be_true
+  end
+
+  it "should add an investor to a startup" do
+    investor = FactoryGirl.create(:investor)
+    relationship = Relationship.start_between(investor, @startup1, :startup_investor)
+    puts 'investor relationship'
+    puts relationship.errors.full_messages
+    relationship.approve!.should be_true
+    Relationship.between(investor, @startup1).approved?.should be_true
+    # Somehow cached relationship ids are not being reset
+    @startup1.connected_to?(investor).should be_true
+  end
+
+  it "should create a suggested startup as a relationship" do
+    r = Relationship.suggest_connection(@startup1, @startup2, :startup_startup)
+    puts Relationship.between(@startup1, @startup2).inspect
+    Relationship.between(@startup1, @startup2).suggested?.should be_true
+  end
+
+  it "should not change a relationship if suggested and a relationship already exists" do
+    # Start relationship
+    Relationship.start_between(@startup1, @startup2, :startup_startup)
+    # Now suggest as a connection
+    Relationship.suggest_connection(@startup1, @startup2, :startup_startup)
+    # Relationship should still be approved
+    Relationship.between(@startup1, @startup2).approved?.should be_true
+
+    # Start a relationship and reject
+    Relationship.start_between(@startup1, @startup2, :startup_startup).reject_or_pass!
+
+    # Suggest should not change it
+    Relationship.suggest_connection(@startup1, @startup2, :startup_startup)
+    Relationship.between(@startup1, @startup2).approved?.should be_true
+  end
+
+  it "should be able to pass on a suggested startup and not be connected" do
+    r = Relationship.suggest_connection(@startup1, @startup2, :startup_startup)
+    r.reject_or_pass!
+    Relationship.between(@startup1, @startup2).passed?.should be_true
   end
 
   # it "should do a performance test" do

@@ -46,6 +46,7 @@ class Relationship < ActiveRecord::Base
 
    # Create a suggested connectino for an entity - it is created silently (no notifications)
   def self.suggest_connection(entity, connected_with, context = :startup_startup, message = nil)
+    return nil if Relationship.between(entity, connected_with).present?
     Relationship.create(:entity => entity, :connected_with => connected_with, :status => Relationship::SUGGESTED, :silent => true, :context => context, :message => message)
   end
 
