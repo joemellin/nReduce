@@ -50,6 +50,11 @@ class InvitesController < ApplicationController
   
   def accept
     @invite = Invite.find_by_code(params[:id])
+    if @invite.nil?
+      flash[:alert] = "Sorry but that invite has been canceled."
+      redirect_to '/'
+      return
+    end
     # see if the email has been registered
     if @invite && @invite.active?
       u = User.where(:email => @invite.email).first
