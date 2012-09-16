@@ -290,10 +290,16 @@ class User < ActiveRecord::Base
   end
 
   def remove_from_mailchimp
+    return true unless mailchimped?
+    return true unless Settings.apis.mailchimp.enabled
     h = Hominid::API.new(Settings.apis.mailchimp.api_key)
-    h.list_unsubscribe(Settings.apis.mailchimp.everyone_list_id, email)
+    h.list_unsubscribe(Settings.apis.mailchimp.everyone_list_id, self.email)
   end
 
+  def account_setup_steps
+    return [:onboarding, :profile] if roles?(:entrepreneur)
+    return [:onboarding, :profile, :invite_startups]
+  end
 
   # Returns true if the user has set everything up for the account (otherwise forces user to go through flow)
   def account_setup?
@@ -376,8 +382,9 @@ class User < ActiveRecord::Base
     save!
   end
 
-  def setup_complete!(dont_suggest_startups = false)
+  def setup_complete!(dont_suggest_startups = false, skip_all_steps = false)
     self.setup << :welcome
+    self.setup += self.account_setup_steps
     if self.save
       self.startup.generate_suggested_connections(10) if !dont_suggest_startups && !self.startup.blank?
       true
@@ -603,10 +610,11 @@ class User < ActiveRecord::Base
   def geocode_location
     return true if Rails.env.test? || (self.location.blank? && self.current_sign_in_ip.blank?) || (!self.location_changed? and !self.lat.blank?)
     begin
-      res = User.geocode(self.location)
+      res = User.geocode(self.location.present? ? self.location : self.current_sign_in_ip)
       self.lat, self.lng, self.country = res.lat, res.lng, res.country_code
     rescue
-      self.errors.add(:location, "could not be geocoded")
+      # Don't add errors because sometimes we don't show location on form
+      # self.errors.add(:location, "could not be geocoded")
     end
   end
 

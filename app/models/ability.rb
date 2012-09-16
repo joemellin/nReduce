@@ -60,7 +60,7 @@ class Ability
 
       # They can accept the invite if it's still active and their email matches invite email  or they are assigned as "to"
       can :accept, Invite do |invite|
-        invite.active? and (invite.to == user) || (invite.email == user.email)
+        invite.active? && (invite.to == user) || (invite.email == user.email)
       end
 
       can :read, Checkin do |checkin|

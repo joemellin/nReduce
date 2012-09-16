@@ -74,11 +74,10 @@ class InvitesController < ApplicationController
         else # they are signed in - assign invite to this account (don't check email)
           session[:invite_id] = @invite.id
           if accept_invite_for_user(current_user)
-            if !@invite.startup.blank?
-              flash[:notice] = "Thanks for joining, we'll be adding your startups shortly..."
+            flash[:notice] = "Thanks for joining!"
+            if @invite.startup.present?
               redirect_to startup_path(@invite.startup)
             else
-              flash[:notice] = "Thanks for joining!"
               redirect_to '/'
             end
           else
