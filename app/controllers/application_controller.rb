@@ -48,11 +48,11 @@ class ApplicationController < ActionController::Base
     if !session[:invite_id].blank?
       i = Invite.find(session[:invite_id])
       if current_user.email == i.email
-        accept_invite_path(:id => i.code)
+        return accept_invite_path(:id => i.code)
       else
         session[:invite_id] = nil
         flash[:alert] = "The invite you tried to use is for #{i.email} - please sign in with that account if you want to accept it."
-        root_path
+        return root_path
       end
     else
       if session[:redirect_to].present?

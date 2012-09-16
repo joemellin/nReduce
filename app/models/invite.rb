@@ -64,19 +64,20 @@ class Invite < ActiveRecord::Base
     return false unless self.active?
     # assign user to startup unless they are already part of a startup
     relationship_role = nil
-    if self.invite_type == TEAM_MEMBER
+    if self.invite_type == Invite::TEAM_MEMBER
       user.startup_id = self.startup_id if !self.startup_id.blank? or !user.startup_id.blank?
+      user.set_account_type(:entrepreneur)
     # Add user as mentor to startup
-    elsif self.invite_type == MENTOR or self.invite_type == NREDUCE_MENTOR
+    elsif self.invite_type == Invite::MENTOR || self.invite_type == Invite::NREDUCE_MENTOR
       user.set_account_type(:mentor)
-      user.roles << :nreduce_mentor if self.invite_type == NREDUCE_MENTOR
+      user.roles << :nreduce_mentor if self.invite_type == Invite::NREDUCE_MENTOR
       relationship_role = :startup_mentor
-    elsif self.invite_type == STARTUP
+    elsif self.invite_type == Invite::STARTUP
       user.set_account_type(:entrepreneur)
       relationship_role = :startup_startup
       #TODO: invite startup to connect (need to do after they create it)
       #r = Relationship.start_between(user, self.startup, :startup_mentor, true) unless self.startup.blank?
-    elsif self.invite_type == INVESTOR
+    elsif self.invite_type == Invite::INVESTOR
       user.set_account_type(:investor)
       relationship_role = :startup_investor
     end
@@ -98,7 +99,7 @@ class Invite < ActiveRecord::Base
     dont_suggest_startups = (self.invite_type != STARTUP)
     
     # Let user skip approval step - unless weekly class is assigned
-    if self.weekly_class.present? || (!self.weekly_class.present? && user.setup_complete!(dont_suggest_startups))
+    if self.weekly_class.present? || (!self.weekly_class.present? && user.setup_complete!(dont_suggest_startups, true))
       self.to = user
       self.accepted_at = Time.now
       self.save

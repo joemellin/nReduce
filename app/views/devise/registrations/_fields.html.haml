@@ -45,13 +45,13 @@
       = f.semantic_errors :current_password
       %p.help-block (we need your current password to confirm your changes)
 
-- if @startup_join_flow
-  .control-group{error_css(f.object, :location)}
-    = f.label :location, 'Your Location', :class => 'control-label'
-    .controls
-      = f.email_field :location
-      = f.semantic_errors :location
+.control-group{error_css(f.object, :location)}
+  = f.label :location, 'Your Location', :class => 'control-label'
+  .controls
+    = f.email_field :location
+    = f.semantic_errors :location
 
+- if @startup_join_flow
   .control-group
     .controls
       Add your teammates:
