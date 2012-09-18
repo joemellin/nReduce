@@ -1,6 +1,6 @@
-#questions
+.questions
   %h2 Questions
   %ul
     - for question in @questions
-      %li= question.get('content')
-  %a#load_questions{:href => '#'} Load Questions
+      != JST['backbone/templates/question'](question: question)
+  %a#load_questions{:href => '#'} Reload Questions

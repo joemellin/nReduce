@@ -25,6 +25,13 @@ class WeeklyClassesController < ApplicationController
     load_data
   end
 
+  def backbone
+    @nreduce = Startup.find_by_obfuscated_id(Startup.nreduce_id)
+    initialize_tokbox_session(@nreduce)
+    @questions = @nreduce.questions
+    @tokbox_config = {:api_key => Settings.apis.tokbox.api_key, :session_id => @tokbox_session_id, :token => @tokbox_token}
+  end
+
   protected
 
   def load_data

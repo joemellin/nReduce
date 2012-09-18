@@ -1,0 +1,1 @@
+%li{id: "question_#{@question.get('id')}"}= @question.escape('content')

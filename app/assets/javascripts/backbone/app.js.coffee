@@ -13,11 +13,19 @@
 # All App Files
 #= require_tree ./models
 #= require_tree ./views
-#= require ./router
+#= require_tree ./routers
 
 window.Nreduce =
   Models: {}
   Collections: {}
   Routers: {}
   Views: {}
+  Config: {}
+  initialize: (data = {}, config = {}) ->
+    #questions = new Nreduce.Collections.Questions()
+    Nreduce.Config = config if config?
+    new Nreduce.Routers.Application(data)
+    Backbone.history.start()
 
+# $ ->
+#   Nreduce.initialize()

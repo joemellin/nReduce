@@ -1,0 +1,15 @@
+#app
+  #weekly_class
+
+:javascript
+  $(function() {
+    data = {
+      weekly_class: #{@weekly_class.to_json},
+      questions: #{@questions.to_json}
+    };
+    config = {
+      tokbox: #{@tokbox_config.to_json}
+    };
+
+    Nreduce.initialize(data, config);
+  });

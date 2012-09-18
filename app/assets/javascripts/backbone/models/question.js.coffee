@@ -1,11 +1,11 @@
 $ ->
-  Nreduce.Question = Backbone.Model.extend(
+  Nreduce.Models.Question = Backbone.Model.extend(
     defaults:
       content: 'New Question'
   )
 
-  Nreduce.QuestionList = Backbone.Collection.extend(
-    model: Nreduce.Question
+  Nreduce.Collections.Questions = Backbone.Collection.extend(
+    model: Nreduce.Models.Question
 
     url: '/api/questions'
 
@@ -14,5 +14,5 @@ $ ->
       @bind('reset', @renderAll)
 
     renderAll: ->
-      app.questionView.render()
+      @view.render()
   )
