@@ -1,0 +1,25 @@
+:plain
+  $('.profile_completeness .progress .bar').attr('style', 'width: #{@profile_completeness_percent}%;');
+  $('.profile_completeness .percent').text('#{@profile_completeness_percent}%');
+  $('#startups').html("#{escape_javascript(render('weekly_classes/startups_list'))}");
+
+- unless @questions.blank?
+  :plain
+    $('.questions').html("#{escape_javascript(render('questions/list'))}");
+    $('#question_count').text(#{@questions.size});
+
+- unless @current_question.blank?
+  :plain
+    $('.current_question').html("#{escape_javascript(render('questions/current_question'))}");
+-# User just saved new question
+- if @created_question.present?
+  :plain
+    $('.questions_modal').modal('hide');
+    var q = $('#question_#{@created_question.id}');
+    $("html, body").animate({ scrollTop: q.offset().top }, "slow");
+    q.effect("highlight", {color: '#bfebff'}, 3000);
+    $('#question_form').replaceWith("#{escape_javascript(render('questions/form'))}");
+    $('#questions_tab a:first').tab('show');
+- else
+  - # Highlight any new questions
+  $('.question.unseen').effect("highlight", {color: '#bfebff'}, 3000);

@@ -1,0 +1,17 @@
+= semantic_form_for [@startup, @instrument], :remote => true, :html => {:class => 'form-horizontal', :id => 'instrument_form'} do |f|
+  = f.hidden_field :startup_id
+
+  - Instrument.instrument_types.each do |id, arr|
+    %div{:style => 'margin-bottom: 5px;'}
+      .left{:style => 'margin: 0 15px 0 10px'}= f.radio_button :instrument_type_id, id
+      .left
+        %label.label-class{:style => 'font-size: 1.2em; line-height: 1.2em; margin-bottom: 0'}= arr.first
+        %p{:style => 'font-size: .9em'}
+          = arr[1]
+          %br/
+          = "Ex: #{arr[2]}"
+      .clear
+     
+  = f.semantic_errors :instrument_type_id
+
+  %center= f.submit 'Save', :class => 'btn btn-large btn-success'

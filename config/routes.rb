@@ -85,6 +85,8 @@ Nreduce::Application.routes.draw do
       get 'spectator'
       post 'account_type'
       match 'welcome'
+      get 'current_class'
+      get 'wait_for_next_class'
       get 'change_password'
     end
     resources :notifications
@@ -114,6 +116,8 @@ Nreduce::Application.routes.draw do
     # Searching other startups, seeing checkins - plural resource
   resources :startups, :only => [:show, :index] do
     collection do
+      get 'wait_for_next_class'
+      get 'current_class'
       get 'stats'
       match 'invite'
       post 'invite_with_confirm'
@@ -123,13 +127,27 @@ Nreduce::Application.routes.draw do
       match 'before_video'
       get 'mentor_checklist'
       match 'invite_team_members'
+      get 'mini_profile'
     end
     resources :checkins do
       get 'latest' => "checkins#show", :checkin_id => 'latest', :on => :collection
     end
     resources :invites, :only => [:create, :destroy, :show]
-    resources :ratings, :only => [:new, :create]
+    resources :ratings, :only => [:index, :new, :create]
     resources :screenshots, :only => [:create, :update, :destroy]
+    resources :instruments, :except => [:index, :destroy]
+    resources :questions, :except => [:update, :destroy] do
+      member do
+        post 'support'
+        post 'answer'
+      end
+    end
+  end
+
+  resources :weekly_classes, :only => [:show] do
+    member do 
+      get 'update_state'
+    end
   end
 
   # onboarding
@@ -149,10 +167,21 @@ Nreduce::Application.routes.draw do
     end
   end
 
-  match '/mentors/new' => "pages#mentor"
-  match '/investors/new' => "pages#investor"
+  match '/join' => 'application#join', :as => :join
+
+  match '/mentor' => "pages#mentor", :as => :public_mentors
+  match '/investor' => "pages#investor", :as => :public_investors
+  match '/press' => "pages#press", :as => :public_press
   match '/community_guidelines' => "pages#community_guidelines", :as => :community_guidelines
 
+  # Url redirection
+  match '/ciao/:url' => "application#ciao", :as => :ciao
+
+  match '/capture_and_login' => 'application#capture_and_login', :as => :capture_and_login
+
+  resources :demo_day, :only => [:index, :show], :path => :d do
+    post 'attend', :on => :member
+  end
 
   root :to => 'pages#home'
 end

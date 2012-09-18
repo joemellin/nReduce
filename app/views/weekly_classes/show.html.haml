@@ -1,0 +1,90 @@
+.weekly_classes
+  .row{:style => 'margin-top: 20px'}
+    .span6
+      %center
+        %h2 Welcome from nReduce Founders
+      = render 'demo_day/video_chat'
+    .span5
+      .current_question
+        - unless @current_question.blank?
+          = render 'questions/current_question', :no_twitter_follow => true, :startup => @nreduce
+  .row
+    .span12
+      .ask_a_question{:align => 'center'}
+        %h2
+          Have a question?
+          &nbsp;
+          = link_to "Ask the Founders!".html_safe, '#', :onclick => "$('.questions_modal').modal('show'); $('#question_content').focus(); return false;", :class => 'btn btn-large btn-success'
+          &nbsp;
+      .profile_completeness= render 'users/profile_completeness', :title => 'Startup Profile', :align => 'center'
+  .tabbable
+    %ul.nav.nav-tabs
+      %li#meet_startups_tab.active
+        %a{:href => '#meet_startups', 'data-toggle' => 'tab'} Meet Your Class!
+      %li#questions_tab
+        %a{:href => '#questions', 'data-toggle' => 'tab'}
+          Questions
+          %span.badge.badge-warning#question_count= @questions.size
+      %li#profile_tab
+        %a{:href => '#profile', 'data-toggle' => 'tab'} Your Profile
+      %li#startup_profile_tab
+        %a{:href => '#startup_profile', 'data-toggle' => 'tab'} Team Profile
+    .tab-content
+      .tab-pane.active#meet_startups
+        #startup_mini_profile.hide
+        #startups
+          = render 'weekly_classes/startups_list'
+
+      .tab-pane#questions
+        .questions
+          = render 'questions/list', :no_upvoting => true
+      .tab-pane#profile
+        = render 'users/ajax_edit'
+      .tab-pane#startup_profile
+        = render 'startups/ajax_edit'
+
+  .modal.questions_modal.hide
+    .modal-header
+      %button.close{:type => 'button', 'data-dismiss' => 'modal'} x
+      %h2{:style => 'margin-bottom: 5px'} Ask the founders of #{@nreduce.name} a question
+    .modal-body
+      .question_form
+        = render 'questions/form', :startup => @nreduce
+
+
+:plain
+  <script type="text/javascript">
+  // Start polling for questions
+  var lastPolledAt = new Date();
+
+  // can count number of people connected
+  // http://www.tokbox.com/opentok/api/tools/js/documentation/api/ConnectionEvent.html
+
+  function updateState(){
+    // Don't reload if relationship request modal is open
+    if($('.relationship_request.modal :visible').length == 0){
+      last = lastPolledAt.toISOString();
+      $.ajax({
+        url: '#{update_state_weekly_class_path(@weekly_class)}.js?last=' + last,
+        dataType: 'script',
+        type: 'GET'
+      });
+      lastPolledAt = new Date();
+    }
+    setTimeout(function(){
+      updateState();
+    }, 15000);
+  }
+
+  setTimeout(function(){
+    updateState();
+  }, 15000);
+
+  </script>
+
+
+
+
+
+
+

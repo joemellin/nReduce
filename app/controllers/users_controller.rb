@@ -34,6 +34,7 @@ class UsersController < ApplicationController
   end
 
   def edit
+    @user.intro_video = ViddlerVideo.new if @user.intro_video.blank?
     @profile_elements = @user.profile_elements
     @profile_completeness_percent = (@user.profile_completeness_percent * 100).round
   end
@@ -42,12 +43,18 @@ class UsersController < ApplicationController
     @user.profile_fields_required = true
     if @user.update_attributes(params[:user])
       #flash[:notice] = "Your account has been updated!"
-      redirect_to :action => :show
+      respond_to do |format|
+        format.js { render :action => :update }
+        format.html { redirect_to :action => :show }
+      end
     else
       if params[:complete_account].to_s == 'true'
         render :action => :complete_account
       else
-        render :action => :edit
+        respond_to do |format|
+          format.js { render :action => :update }
+          format.html { render :action => :edit }
+        end
       end
     end
   end
@@ -81,6 +88,15 @@ class UsersController < ApplicationController
   end
 
   protected
+
+  def load_obfuscated_user
+    begin
+      @user ||= User.find_by_obfuscated_id(params[:id])
+    rescue ActiveRecord::RecordNotFound
+      redirect_to '/'
+      return
+    end
+  end
 
   def load_user_if_me_or_current
     @user = current_user if params[:id].blank?

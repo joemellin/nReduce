@@ -1,0 +1,14 @@
+:plain
+  $('#instrument_form').replaceWith("#{escape_javascript(render('instruments/form'))}");
+  // Replace instrument id with currently rendered instrument
+- unless @instrument.new_record?
+  :plain
+    $('#checkin_instrument_id').val(#{@instrument.id});
+- if @close_modal == true
+  :plain
+    $('#instrument_modal').modal('hide');
+  - unless @instrument.new_record?
+    :plain
+      $('#instrument_value').show();
+      $('#instrument_name_form').hide();
+      $('#instrument_name').text('#{@instrument.name}').show();

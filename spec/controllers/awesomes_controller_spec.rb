@@ -10,15 +10,15 @@ describe AwesomesController do
 
   it "should allow you to awesome someone else's checkin" do
     post :create, {:checkin_id => @checkin.id}, :format => :js
-    response.code.should == 200
-    response.should render_template(:button)
+    response.code.should == '302'
+    response.should redirect_to('/')
   end
 
   it "should allow you to change your mind should you think someone else's checkin is no longer awesome" do
     a = FactoryGirl.create(:awesome, :startup => @startup2)
     delete :destroy, {:id => a.id}, :format => :js
-    response.code.should == 200
-    response.should render_template(:button)
+    response.code.should == '302'
+    response.should redirect_to('/')
   end
 
   it "should not allow you to awesome your own checkin" do

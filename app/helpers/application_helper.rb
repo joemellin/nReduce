@@ -49,7 +49,11 @@ module ApplicationHelper
 
   def link_to_twitter(handle = '', opts = {})
     return '' if handle.blank?
-    link_to(handle, "https://twitter.com/#!/#{handle.sub('@', '')}", opts)
+    link_to(handle, url_for_twitter(handle), opts)
+  end
+
+  def url_for_twitter(handle)
+    "https://twitter.com/#!/#{handle.sub('@', '')}"
   end
 
   def is_controller_action?(controller_name, action_name = nil)
@@ -152,5 +156,16 @@ module ApplicationHelper
     return true unless @setup or current_user.blank?
     return true if @setup and current_user.required_profile_elements.include?(field)
     return false
+  end
+
+  def external_url(url)
+    url_for(ciao_path(:url => Base64.encode64(url)))
+  end
+
+  def link_to_external(title, url, options = {})
+    # show modal to investors
+    options.merge!(:target => '_blank')
+    options.merge!(:class => 'external') if user_signed_in? && current_user.investor?
+    link_to(title, external_url(url), options)
   end
 end

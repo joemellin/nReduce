@@ -21,6 +21,24 @@ $ ->
   $('.nstar_banner .clickable').click ->
     window.location = '/nstar';
 
+  $('.external').click (e) ->
+    e.preventDefault()
+    e.stopPropagation()
+    $('#ciao').modal()
+    $('#ciao_link').attr('href', $(this).attr('href'))
+
+  $('#ciao_link').click (e) ->
+    e.preventDefault()
+    e.stopPropagation()
+    $('#ciao').modal('hide')
+    window.open($(this).attr('href'), '_blank')
+
+  $('.add_teammate_btn').click (e) ->
+    e.preventDefault()
+    random = Math.floor((Math.random()*1000000)+1);
+    id = "teammate_email_#{random}"
+    $('.teammates').append('<div class="email" id="' + id + '"><input type="text" name="user[teammate_emails][]" size="30" placeholder="founder@email.com" /> <a href="#" class="btn" onclick="$(\'#' + id + '\').remove(); return false;"><i class="icon-minus"></i></a></div>')
+
   split = (val) ->
     return val.split( /,\s*/ )
 

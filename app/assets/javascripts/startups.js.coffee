@@ -1,3 +1,4 @@
-
 $ ->
   $('form.startup textarea').autosize()
+
+  

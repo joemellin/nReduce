@@ -2,10 +2,12 @@ class Startup < ActiveRecord::Base
   obfuscate_id :spin => 29406582
   include Connectable # methods for relationships
   has_paper_trail
-  has_many :team_members, :class_name => 'User'
-  has_many :checkins, :dependent => :destroy
   belongs_to :main_contact, :class_name => 'User'
   belongs_to :meeting
+  belongs_to :intro_video, :class_name => 'Video', :dependent => :destroy
+  belongs_to :pitch_video, :class_name => 'Video', :dependent => :destroy
+  has_many :team_members, :class_name => 'User'
+  has_many :checkins, :dependent => :destroy
   has_many :awesomes, :through => :checkins
   has_many :invites, :dependent => :destroy
   has_many :nudges, :dependent => :destroy
@@ -14,22 +16,31 @@ class Startup < ActiveRecord::Base
   has_many :initiated_relationships, :as => :entity, :class_name => 'Relationship', :dependent => :destroy # relationships this startup began
   has_many :received_relationships, :as => :connected_with, :class_name => 'Relationship', :dependent => :destroy # relationships others began with this startup
   has_many :instruments, :dependent => :destroy
+  has_many :measurements, :through => :instruments
   has_many :slide_decks, :dependent => :destroy
   has_many :screenshots, :dependent => :destroy
+  has_many :ratings
+  has_many :questions
 
-  attr_accessible :name, :investable, :team_size, :website_url, :main_contact_id, :phone, :growth_model, :stage, :company_goal, :meeting_id, :one_liner, :active, :launched_at, :industry_list, :technology_list, :ideology_list, :industry, :intro_video_url, :elevator_pitch, :logo, :remote_logo_url, :logo_cache, :remove_logo, :checkins_public, :pitch_video_url, :investable, :screenshots_attributes, :business_model, :founding_date, :market_size
+  attr_accessible :name, :investable, :team_size, :website_url, :main_contact_id, :phone, 
+    :growth_model, :stage, :company_goal, :meeting_id, :one_liner, :active, :launched_at, 
+    :industry_list, :technology_list, :ideology_list, :industry, :intro_video_url, :elevator_pitch, 
+    :logo, :remote_logo_url, :logo_cache, :remove_logo, :checkins_public, :pitch_video_url, 
+    :investable, :screenshots_attributes, :business_model, :founding_date, :market_size
 
   accepts_nested_attributes_for :screenshots, :reject_if => proc {|attributes| attributes.all? {|k,v| v.blank?} }, :allow_destroy => true
+  accepts_nested_attributes_for :intro_video, :reject_if => proc {|attributes| attributes.all? {|k,v| v.blank?} }, :allow_destroy => true
+  accepts_nested_attributes_for :pitch_video, :reject_if => proc {|attributes| attributes.all? {|k,v| v.blank?} }, :allow_destroy => true
 
   #validates_presence_of :intro_video_url, :if => lambda {|startup| startup.onboarding_complete? }
   validates_presence_of :name
   validate :check_video_urls_are_valid
-  validates_presence_of :one_liner, :if => :new_record?
-  validates_presence_of :elevator_pitch, :if => :new_record?
-  validates_presence_of :industry_list, :if => :new_record?
-  validates_presence_of :growth_model, :if => :new_record?
-  validates_presence_of :stage, :if => :new_record?
-  validates_presence_of :company_goal, :if => :new_record?
+  validates_presence_of :one_liner, :if => :created_but_not_setup_yet?
+  validates_presence_of :elevator_pitch, :if => :created_but_not_setup_yet?
+  validates_presence_of :industry_list, :if => :created_but_not_setup_yet?
+  #validates_presence_of :growth_model, :if => :created_but_not_setup_yet?
+  #validates_presence_of :stage, :if => :created_but_not_setup_yet?
+  #validates_presence_of :company_goal, :if => :created_but_not_setup_yet?
 
   before_save :format_url
   after_create :initiate_relationships_from_invites
@@ -103,6 +114,14 @@ class Startup < ActiveRecord::Base
     }
   end
 
+  def launched?
+    !self.launched_at.blank?
+  end
+
+  def launched!
+    self.update_attribute('launched_at', Time.now)
+  end
+
   def mentors
     self.connected_to('User')
   end
@@ -164,7 +183,6 @@ class Startup < ActiveRecord::Base
     # Returns hash of all elements + each team member's completeness as 
   def profile_elements
     elements = {
-      :intro_video => !self.intro_video_url.blank?, 
       :elevator_pitch => (!self.elevator_pitch.blank? and (self.elevator_pitch.size > 10)), 
       :industry => !self.industry_list.blank?,
     }
@@ -342,7 +360,43 @@ class Startup < ActiveRecord::Base
     nil
   end
 
+   # Takes youtube urls and converts to our new db-backed format (and uploads to vimeo)
+  def convert_to_new_video_format
+    return true if self.pitch_video.present? && self.intro_video.present?
+    if self.intro_video_url.present? && self.intro_video.blank?
+      ext_id = Youtube.id_from_url(self.intro_video_url)
+      y = Youtube.where(:external_id => ext_id).first
+      y ||= Youtube.new
+      y.external_id = ext_id
+      y.user = self.user
+      if y.save
+        self.intro_video = y
+        self.save(:validate => false)
+      else
+        puts "Couldn't save intro video: #{y.errors.full_messages}"
+      end
+    end
+    if self.pitch_video_url.present? && self.pitch_video.blank?
+      ext_id = Youtube.id_from_url(self.pitch_video_url)
+      y = Youtube.where(:external_id => ext_id).first
+      y ||= Youtube.new
+      y.external_id = ext_id
+      y.user = self.user
+      if y.save
+        self.pitch_video = y
+        self.save(:validate => false)
+      else
+        puts "Couldn't save pitch video: #{y.errors.full_messages}"
+      end
+    end
+    true
+  end
+
   protected
+
+  def created_but_not_setup_yet?
+    !self.new_record? && !self.account_setup?
+  end
 
   # If they were invited by another startup, establish a relationship
   # TODO: Bug: if this user was invited by a startup in the past, this will always connect them to every startup they got invited from

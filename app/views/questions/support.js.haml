@@ -1,0 +1,4 @@
+:plain
+  $('#question_#{@question.id} .modal').modal('hide');
+  $('#question_#{@question.id} .supported, #question_#{@question.id} .unsupported').toggle();
+  $('#question_#{@question.id}').effect("highlight", {color: '#bfebff'}, 2000);

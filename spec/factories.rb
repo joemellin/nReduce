@@ -14,7 +14,13 @@ end
 
 FactoryGirl.define do
   factory :startup do
-    name 'nReductionist'
+    name 'nReduce'
+    one_liner 'online startup incubator'
+    elevator_pitch 'We help founders execute better by pairing them with other companies that give weekly feedback'
+    industry_list 'startups, investing'
+    growth_model 1 
+    stage 1
+    company_goal 1
     factory :startup2 do
       name 'Facebook for Dummies'
     end
@@ -27,10 +33,13 @@ FactoryGirl.define do
     password_confirmation 'please'
     location 'Buenos Aires, Argentina'
     skill_list 'rails, firebreathing'
+    pic 'test.png'
+    setup [:account_type, :onboarding, :profile, :welcome]
+    linkedin_url 'http://www.linkedin.com/me'
     startup  { single_instances[:startup] }
     factory :user2 do
       email 'bananas@tropical.com'
-      name 'Tropical Dude'
+      name 'Tropical Bananas'
       startup  { single_instances[:startup] }
     end
     factory :admin do
@@ -41,7 +50,12 @@ FactoryGirl.define do
     factory :mentor do
       email 'mentor@famousfounder.com'
       name "Famous Founder"
-      mentor true
+      roles [:mentor]
+    end
+    factory :investor do
+      email 'investor@imrich.com'
+      name "Investor Dude"
+      roles [:investor]
     end
   end
 

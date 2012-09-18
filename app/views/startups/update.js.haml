@@ -1,8 +1,12 @@
-:plain
-  submit = $('#edit_startup_#{@startup.id} :submit');
-  if($('.save_status').length == 0){
-    submit.after('<span style="font-weight: bold; padding-left: 10px;" class="save_status">#{@message}</span>');
-  }else{
-    $('.save_status').text('#{@message}');
-  }
-  $(submit).effect("highlight", {}, 1500);
+- if @dont_render_form
+  :plain
+    submit = $('#edit_startup_#{@startup.id} :submit');
+    if($('.save_status').length == 0){
+      submit.after('<span style="font-weight: bold; padding-left: 10px;" class="save_status">#{@message}</span>');
+    }else{
+      $('.save_status').text('#{@message}');
+    }
+    $(submit).effect("highlight", {}, 1500);
+- else
+  $('#edit_startup_#{@startup.id}').replaceWith("#{escape_javascript(render('startups/ajax_edit'))}");
+  $('#edit_startup_#{@startup.id}').effect("highlight", {color: '#bfebff'}, 3000);

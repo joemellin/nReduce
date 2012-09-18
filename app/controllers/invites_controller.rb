@@ -1,8 +1,8 @@
 class InvitesController < ApplicationController
   around_filter :record_user_action
   before_filter :login_required, :except => :accept
+  before_filter :load_obfuscated_startup, :only => :create
   load_and_authorize_resource :startup, :only => :create
-  #load_and_authorize_resource :invite, :through => :startup, :only => :create
   load_and_authorize_resource :only => :destroy
 
   def create
@@ -22,7 +22,12 @@ class InvitesController < ApplicationController
     if @startup.blank? and current_user.admin?
       redirect_to admin_mentors_path
     else
-      redirect_to edit_startup_path(@startup)
+      # They came from weekly class invite
+      if @invite.weekly_class && !current_user.account_setup?
+        redirect_to @invite.weekly_class
+      else # They invited from startup edit page
+        redirect_to edit_startup_path(@startup)
+      end
     end
   end
 
@@ -45,6 +50,11 @@ class InvitesController < ApplicationController
   
   def accept
     @invite = Invite.find_by_code(params[:id])
+    if @invite.nil?
+      flash[:alert] = "Sorry but that invite has been canceled."
+      redirect_to '/'
+      return
+    end
     # see if the email has been registered
     if @invite && @invite.active?
       u = User.where(:email => @invite.email).first
@@ -64,11 +74,10 @@ class InvitesController < ApplicationController
         else # they are signed in - assign invite to this account (don't check email)
           session[:invite_id] = @invite.id
           if accept_invite_for_user(current_user)
-            if !@invite.startup.blank?
-              flash[:notice] = "Thanks for joining, we'll be adding your startups shortly..."
+            flash[:notice] = "Thanks for joining!"
+            if @invite.startup.present?
               redirect_to startup_path(@invite.startup)
             else
-              flash[:notice] = "Thanks for joining!"
               redirect_to '/'
             end
           else

@@ -1,5 +1,40 @@
+
+.home_page.demo_day {
+  .background-field {
+    background: image-url('background-pattern-blue.png');
+  }
+  h2 {
+    color: #666;
+    font-weight: 600;
+    font-size: 2.5em;
+  }
+  .enter_button {
+    a {
+      font-size: 1.8em;
+    }
+  }
+  #countdown {
+    text-align: center;
+    margin: 0px auto;
+    width: 580px;
+    overflow: hidden;
+    .number_block {
+      font-size: 2em;
+      line-height: 1em;
+      p { 
+        margin: 10px;
+      }
+      .numbers {
+        font-size: 3.2em;
+        font-weight: 600;
+        margin: 20px;
+      }
+    }
+  }
+}
+
 .home_page {
-  margin-top: -12px;
+  margin-top: 20px;
 
   h2 {
     font-size: 40px;
@@ -19,11 +54,14 @@
     text-rendering: optimizelegibility;
   }
 
-  h1.feedback {
-    font-size: 80px;
+  .headline {
+    font-size: 50px;
     color: #26A9EB;
     line-height: 70px;
-    padding-left: 50px;
+  }
+  .subhead {
+    font-size: 18px;
+    color: #999999;
   }
 
   h1.alliance strong{
@@ -39,7 +77,7 @@
   }
 
   .background-field{
-    background: url(background-pattern.png);
+    background: image-url('background-pattern.png');
   }
 
   .headspacing {
@@ -47,7 +85,10 @@
   }
 
   .share_btns {
-    padding: 25px 0px 0px 50px
+    padding: 0px 0px 6px 50px;
+    .twitter {
+      padding-top: 0px;
+    }
   }
   .linkedintxt {
     color: #aaa;
@@ -79,7 +120,7 @@
 
   .newslogo {
     display:inline-block;
-    margin: 0 35px 0 0;
+    margin: 0 35px 15px 0;
 
   }
 

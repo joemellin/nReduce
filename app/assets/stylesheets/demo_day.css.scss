@@ -1,0 +1,160 @@
+// Place all the styles related to the DemoDay controller here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: http://sass-lang.com/
+
+.demo_day {
+  .header {
+    min-height: 80px;
+  }
+  .teams {
+    margin-top: 20px;
+    .team_name {
+      font-size: 1.7em;
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+    .one_liner {
+      font-size: 1em;
+      height: 40px;
+      overflow: hidden;
+    }
+    .team {
+      margin-bottom: 50px;
+    }
+  }
+  margin-top: 10px;
+  font-family: "myriad-pro",sans-serif;
+  .video_wrapper {
+    background: image-url('nvideo6070glow.png') no-repeat bottom right;
+    width: 500px;
+    height: 315px;
+  }
+  #video {
+    width: 500px;
+    height: 315px;
+    background-color: #000;
+    .loading {
+      text-align: center;
+      vertical-align: middle;
+      color: #fff;
+      font-size: 1.45em;
+      font-weight: 600;
+      line-height: 315px;
+    }
+  }
+  .product_screenshots {
+    padding: 0 0 19px 20px;
+    
+    #screenshots_modal.modal {
+      margin: -340px 0 0 -530px;
+      width: 1054px;
+      height: 680px;
+      #screenshots_carousel, .modal-body {
+        width: 1024px;
+        height: 650px;
+        max-height: 650px;
+      }
+      .carousel {
+        .item {
+          img {
+            margin-left: auto;
+            margin-right: auto;
+            display: block;
+            max-height: 650px;
+          }
+        }
+      }
+    }
+    .screenshot {
+      margin: 0 15px 15px 0;
+      border: 1px solid #ccc;
+    }
+  }
+}
+.demo_day, .weekly_classes {
+  .attendees {
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+  .attendee, .supporter {
+    width: 48px; 
+    height: 48px; 
+    margin: 0;
+  }
+  .ask_a_question {
+    margin: 30px;
+  }
+  .current_question{
+    margin-top: 25px;
+    .content {
+      margin: 25px 0 50px 0px;
+      font-size: 1.9em;
+      line-height: 1.5em;
+      font-weight: 600;
+    }
+    .asked_by {
+      .image {
+        margin-right: 10px;
+      }
+      .name {
+        font-size: 1.4em;
+        margin-bottom: 5px;
+      }
+      margin-bottom: 10px;
+    }
+  }
+  .question {
+    .well {
+      padding: 10px;
+    }
+    .content {
+      margin-bottom: 20px;
+      font-size: 1.9em;
+      font-weight: 600;
+      line-height: 1.5em;
+    }
+    border-bottom: 1px solid #efefef;
+    padding-top: 15px;
+    margin-top: 5px;
+    margin-bottom: 10px;
+    padding-bottom: 15px;
+    .asked_by img, .supporter, .supporter img {
+      width: 25px;
+      height: 25px;
+    }
+    .supported {
+      a { height: 24px;}
+    }
+    .unsupported, .supported {
+      a { min-width: 90px; }
+    }
+  }
+  #question_form {
+    margin-top: 0px;
+    padding-top: 0px;
+  }
+  .tabbable {
+    .nav-tabs {
+      li {
+        line-height: 30px;
+        .badge {
+          vertical-align: middle;
+        }
+        a {
+          background-color: #efefef;
+          line-height: 30px;
+          font-size: 2.25em;
+          padding-top: 12px;
+          padding-bottom: 12px;
+        }
+        
+      }
+      li.active {
+        a {
+          background-color: #fff;
+          font-weight: 600;
+        }
+      }
+    }
+  }
+}

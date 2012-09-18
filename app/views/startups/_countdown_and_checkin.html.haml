@@ -1,53 +1,29 @@
-.countdown_and_checkin{:align => 'center'}
-  - nc = Checkin.next_checkin_type_and_time
-  - left = distance_until_time_from_now_arr(nc[:time])
-  - left = left.map{|d| "%02d" % d }
-  %div{:align => 'center', :style => 'overflow: hidden;'}
-    - if current_user.mentor?
-      %h4 After videos are due in
-    - else
-      %h4 Your #{nc[:type]} video is due in
-    #countdown
-      .left.number_block
-        .numbers.days
-          %span= left[0][0,1]
-          %span= left[0][1,1]
-        %p Days
-      .left.number_block
-        .numbers.hours
-          %span= left[1][0,1]
-          %span= left[1][1,1]
-        %p Hours
-      .left.number_block
-        .numbers.minutes
-          %span= left[2][0,1]
-          %span= left[2][1,1]
-        %p Minutes
-      .left.number_block
-        .numbers.seconds
-          %span= left[3][0,1]
-          %span= left[3][1,1]
-        %p Seconds
-      %br.clear/
-  - unless @startup.blank?
-    - current_checkin = @startup.current_checkin
-    .checkin_button
-      - showed_before = false
-      - if !current_checkin.blank?
-        - if current_checkin.completed?
-          = link_to 'This Week\'s Check-in', (Checkin.in_after_time_window? ? edit_checkin_path(current_checkin) : current_checkin), :class => 'btn btn-primary'
-        - elsif current_checkin.submitted?
-          - if Checkin.in_after_time_window?
-            = link_to "Submit 'After' Video", edit_checkin_path(current_checkin), :class => 'btn btn-danger'
-          - else
-            - if Checkin.in_before_time_window?
-              - showed_before = true
-              = link_to("'Before' video", edit_checkin_path(current_checkin), :class => 'btn btn-success')
-              was submitted
-            %p Keep workin!
-      - if Checkin.in_after_time_window? and current_checkin.blank?
-        = link_to "Submit 'After' Video", new_checkin_path, :class => 'btn btn-success'
-      - elsif Checkin.in_before_time_window? and !showed_before
-        = link_to "Submit 'Before' Video", new_checkin_path, :class => 'btn btn-success'
-      / - else
-      /   Come back to start your checkin by Wednesday at 4pm PST
+- nc = Checkin.next_checkin_type_and_time
+%div{:align => 'center', :style => 'overflow: hidden;'}
+  - if current_user.mentor?
+    %h4 After videos are due in
+  - else
+    %h4 Your #{nc[:type]} video is due in
+  = render 'layouts/countdown', :time => nc[:time]
+- unless @startup.blank?
+  - current_checkin = @startup.current_checkin
+  .checkin_button
+    - showed_before = false
+    - if !current_checkin.blank?
+      - if current_checkin.completed?
+        = link_to 'This Week\'s Check-in', (Checkin.in_after_time_window? ? edit_checkin_path(current_checkin) : current_checkin), :class => 'btn btn-primary'
+      - elsif current_checkin.submitted?
+        - if Checkin.in_after_time_window?
+          = link_to "Submit 'After' Video", edit_checkin_path(current_checkin), :class => 'btn btn-danger'
+        - else
+          - if Checkin.in_before_time_window?
+            - showed_before = true
+            = link_to("'Before' video", edit_checkin_path(current_checkin), :class => 'btn btn-success')
+            was submitted
+          %p Keep workin!
+    - if Checkin.in_after_time_window? and current_checkin.blank?
+      = link_to "Submit 'After' Video", new_checkin_path, :class => 'btn btn-success'
+    - elsif Checkin.in_before_time_window? and !showed_before
+      = link_to "Submit 'Before' Video", new_checkin_path, :class => 'btn btn-success'
+    / - else
+    /   Come back to start your checkin by Wednesday at 4pm PST

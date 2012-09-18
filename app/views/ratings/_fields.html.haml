@@ -5,33 +5,38 @@
 .control-group{error_css(f.object, :startup_id)}
   .controls= f.semantic_errors :startup_id
 
-%p What is the likelihood that you'd invest in this company?
-%br/
-.control-group{error_css(f.object, :value)}
-  .controls
-    - 1.upto(5).each do |c|
-      .inline-block{:style => 'width: 80px', :align => 'center'}
-        = label_tag do
-          = Rating.labels[c]
-          %br/
-          = f.radio_button :value, c
-    
 .control-group{error_css(f.object, :explanation)}
-  = f.label :explanation, 'Comments?'
+  %p Please share your feedback with the startup to help them build a better business:
   .controls
-    = f.text_area :explanation, :size => '120x5', :class => 'span4'
+    = f.text_area :explanation, :size => '140x5', :class => 'span6'
     = f.semantic_errors :explanation  
+    %p{:style => 'font-size: 1.1em;'}
+      This will be shared
+      %strong anonymously
+      with the startup.
+      %br/
+      If they find it useful they can give you a "#{Awesome.label_for_type('Rating')}" to thank you.
 
-/ .control-group{error_css(f.object, :feedback)}
-/   = f.label :feedback, f.object.interested? ? 'What is their strongest element?' : 'What is their weakest element?'
-/   .controls
-/     - Rating::FEEDBACK_OPTIONS.each do |o|
-/       / Check true by default if they say they're interested, otherwise false / whatever is selected
-/       .left{:style => 'margin-right: 10px'}
-/         = label_tag '' do
-/           = radio_button_tag "rating[feedback][]", o, f.object.feedback?(o), :class => 'btn'
-/           = o.to_s.titleize 
-
-/     .clear
-/     = f.semantic_errors :feedback
-
+%br/
+.control-group{error_css(f.object, :weakest_element)}
+  %p What is the weakest element of this startup?
+  .controls{:align => 'center'}
+    = f.hidden_field :weakest_element, :class => 'weakest_element_hidden_field'
+    .btn-group.inline-block{'data-toggle' => 'buttons-radio'}
+      - Rating.weakest_element_labels.each do |id, value|
+        %button.btn.btn-large.weakest_element{:type => 'button', :rel => id}= value
+    %p{:style => 'font-size: 1.1em'} (the biggest blocker to them being fundable)
+%br/
+.control-group{error_css(f.object, :contact_in)}
+  %p When would you be interested in meeting with this startup?
+  .controls{:align => 'center'}
+    = f.hidden_field :contact_in, :class => 'contact_in_hidden_field'
+    .btn-group.inline-block{'data-toggle' => 'buttons-radio'}
+      - Rating.contact_in_labels.each do |id, val_arr|
+        - css_class = f.object.contact_in.blank? ? 'disabled' : ''
+        - css_class += ' btn-danger' if id == 1
+        - css_class += ' btn-success' if id == 5
+        %button.btn.btn-large.contact_in{:type => 'button', :rel => id, :class => css_class}= val_arr.first
+    %br/
+    - Rating.contact_in_labels.each do |id, val_arr|
+      .contact_in_description.inline-block= val_arr.last

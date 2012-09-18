@@ -26,7 +26,32 @@ $ ->
     if $('#screenshot_modal :visible').length == 0
       $('#screenshots_modal').modal()
     $('#screenshots_carousel').carousel($(this).data('id'))
-  
+
+  addButtonSelectHandlers = (button_klass) ->
+    $(button_klass).click ->
+      # Store value in hidden field
+      $("#{button_klass}_hidden_field").val($(this).attr('rel'))
+      # Highlight this button
+      $(button_klass).removeClass('btn-primary')
+      $(this).addClass('btn-primary') unless $(this).hasClass('disabled') # don't allow people to click if weakest element hasn't been selected yet
+
+  # Turn weakest element and contact in to buttons, and change color when selected
+  for button_klass in ['.weakest_element', '.contact_in']
+    $(button_klass).button()
+    addButtonSelectHandlers(button_klass) # need closure
+
+  # Enable contact in once weakest element is selected
+  $('.weakest_element').click ->
+    $('.contact_in').removeClass('disabled')
+
+  # Enable form once weakest element is selected
+  $('.contact_in').click (e) ->
+    if $(this).hasClass('disabled')
+      e.preventDefault()
+      e.stopPropagation()
+    else
+      $('.rating :submit').removeClass('disabled').removeAttr('disabled')
+
   # Prevent remote form from submitting so we can append success message  
   $('.ssss form[data-remote=true]').submit (e) ->
     e.stopPropagation()

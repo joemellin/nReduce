@@ -1,3 +1,4 @@
 :plain
-  $("#relationship_#{@relationship.connected_with.obj_str} .modal-body, #relationship_#{@relationship.connected_with.obj_str}").html('#{escape_javascript(render('layouts/flash_messages', :no_dismiss => true))}');
+  // Relationship could have either entity on it.
+  $("#relationship_#{@relationship.connected_with.obj_str} .modal-body, #relationship_#{@relationship.entity.obj_str} .modal-body, #relationship_#{@relationship.connected_with.obj_str}, #relationship_#{@relationship.entity.obj_str}, #relationship_#{@relationship.connected_with.obj_str}_details, #relationship_#{@relationship.entity.obj_str}_details").html('#{escape_javascript(render('layouts/flash_messages', :no_dismiss => true))}');
 - flash.discard

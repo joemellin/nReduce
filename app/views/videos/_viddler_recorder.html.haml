@@ -1,0 +1,15 @@
+- external_id_element_id ||= 'video_external_id'
+%h3 Record from webcam
+
+= ViddlerVideo.embedded_recorder_html(30).html_safe
+
+/ Mac bug in Lion that won't allow you to click on allow flash recording: http://blog.mailvu.com/blog/adobe-flash-issue-on-mac-os-10-7-lion/
+/ how to change: http://blog.mailvu.com/blog/setting-flash-system-preference-on-a-mac/
+:javascript
+  // Called when recording is finished and saved to the server
+  function recordDone(username,user_video_number,video_id) {
+    // Set video id correctly
+    if(video_id != null){
+      $('##{external_id_element_id}').val(video_id);
+    }
+  }

@@ -1,14 +1,34 @@
 = render :partial => 'header'
-%h1.h1 #{@invite.startup.name} wants you!
-%br/
-%h4 (to join their team on nReduce)
-- unless @invite.msg.blank?
-  %p= simple_format(h(@invite.msg))
+- if @invite.weekly_class.present?
+  %p Hi!
+
+  %P #{@invite.from.name} is thinking about having #{@invite.from.startup.name} joining this week's nReduce class on #{@invite.weekly_class.join_time.strftime('%A, %b %d')} at 1PM PST.
+
+  %p As startups are only as strong as their team, we wanted to tell you a bit about nReduce to help you decide if you think it would be helpful for #{@invite.from.startup.name}.
+
+  %p Regardless, we wish you the best with your startup!
+
+  %p
+    Best,
+    %br/
+    :plain
+      - Joe &amp; Josh
+
+  %br/
+  %hr/
+  = render 'weekly_classes/letter'
+  
+- else
+  %h1.h1 #{@invite.startup.name} wants you!
+  %br/
+  %h4 (to join their team on nReduce)
+  - unless @invite.msg.blank?
+    %p= simple_format(h(@invite.msg))
+    %br/
+    %br/
+  %p Once you accept their invite you can join the nReduce entrepreneurial community.
   %br/
   %br/
-%p Once you accept their invite you can join the nReduce entrepreneurial community.
-%br/
-%br/
-%br/
+  %br/
 %h3= link_to("Join #{@invite.startup.name.possessive} team", accept_invite_url(:id => @invite.code))
 = render :partial => 'footer'

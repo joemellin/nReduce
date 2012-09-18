@@ -31,4 +31,6 @@ en:
       user: "You must currently be a mentor to change your mentor status."
     see_investor_page:
       user: "You don't have privileges to view the investor area."
+    index:
+      rating: "You need to set your startup as investable to see investor ratings."
 

@@ -339,7 +339,6 @@ RailsAdmin.config do |config|
       field :email
       field :location
       field :startup
-      field :phone
       field :twitter
       field :linkedin_url
       field :angellist_url
@@ -350,6 +349,7 @@ RailsAdmin.config do |config|
       field :meeting
       field :one_liner
       field :bio
+      field :phone
       field :intro_video_url
     end
   #   export do; end
@@ -360,7 +360,6 @@ RailsAdmin.config do |config|
       field :email
       field :location
       field :startup
-      field :phone
       field :twitter
       field :linkedin_url
       field :angellist_url
@@ -370,6 +369,7 @@ RailsAdmin.config do |config|
       field :blog_url
       field :meeting
       field :one_liner
+      field :phone
       field :bio
       field :intro_video_url
     end

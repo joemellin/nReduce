@@ -7,7 +7,8 @@ class Meeting < ActiveRecord::Base
   has_many :notifications, :as => :attachable
   has_many :user_actions, :as => :attachable
 
-  attr_accessible :location_name, :venue_name, :venue_address, :venue_url, :description,  :start_time, :day_of_week, :organizer_id
+  attr_accessible :location_name, :venue_name, :venue_address, :venue_url, :description,  
+    :start_time, :day_of_week, :organizer_id
 
   validates_presence_of :location_name
   validates_uniqueness_of :location_name, :on => :create, :message => "must be unique"

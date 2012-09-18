@@ -1,0 +1,4 @@
+= semantic_form_for @startup, :url => '/startup/', :remote => true, :html => {:class => "form-horizontal", :multipart => true} do |f|
+  = render 'startups/fields', :f => f, :hide_screenshots => true
+  .form-actions
+    = f.submit 'Save', :class => "btn btn-primary btn-large"

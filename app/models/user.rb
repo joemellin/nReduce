@@ -2,9 +2,11 @@ class User < ActiveRecord::Base
   obfuscate_id :spin => 94062493
   include Connectable # methods for relationships
   acts_as_mappable
-  has_paper_trail
+  has_paper_trail :ignore => [:unread_nc, :weekly_class_id, :setup]
   belongs_to :startup
   belongs_to :meeting
+  belongs_to :intro_video, :class_name => 'Video', :dependent => :destroy
+  belongs_to :weekly_class
   has_many :authentications, :dependent => :destroy
   has_many :organized_meetings, :class_name => 'Meeting', :foreign_key => 'organizer_id'
   has_many :sent_messages, :foreign_key => 'sender_id', :class_name => 'Message'
@@ -20,6 +22,8 @@ class User < ActiveRecord::Base
   has_many :relationships, :as => :entity, :dependent => :destroy
   has_many :connected_with_relationships, :as => :connected_with, :class_name => 'Relationship', :dependent => :destroy
   has_many :screenshots
+  has_many :ratings
+  has_many :questions
 
   # Include default devise modules. Others available are:
   # :token_authenticatable, :confirmable,
@@ -28,24 +32,34 @@ class User < ActiveRecord::Base
          :recoverable, :rememberable, :trackable, :validatable #, :confirmable #, :omniauthable
 
   # Setup accessible (or protected) attributes for your model
-  attr_accessible :twitter, :email, :email_on, :password, :password_confirmation, :remember_me, :name, :skill_list, :industry_list, :startup, :mentor, :investor, :location, :phone, :startup_id, :settings, :meeting_id, :one_liner, :bio, :facebook_url, :linkedin_url, :github_url, :dribbble_url, :blog_url, :pic, :remote_pic_url, :pic_cache, :remove_pic, :intro_video_url
+  attr_accessible :twitter, :email, :email_on, :password, :password_confirmation, :remember_me, :name, 
+    :skill_list, :industry_list, :startup, :mentor, :investor, :location, :phone, :startup_id, :settings, 
+    :meeting_id, :one_liner, :bio, :facebook_url, :linkedin_url, :github_url, :dribbble_url, :blog_url, 
+    :pic, :remote_pic_url, :pic_cache, :remove_pic, :intro_video_url, :intro_video_attributes, :startup_attributes,
+    :teammate_emails
   attr_accessor :profile_fields_required
+  attr_accessor :teammate_emails
+
+  accepts_nested_attributes_for :intro_video, :reject_if => proc {|attributes| attributes.all? {|k,v| v.blank?} }, :allow_destroy => true
+  accepts_nested_attributes_for :startup, :reject_if => proc {|attributes| attributes.all? {|k,v| v.blank?} }
 
   serialize :settings, Hash
-
   validates_presence_of :name
-  validate :email_is_not_nreduce
   validate :check_video_urls_are_valid
   validates_length_of :bio, :minimum => 100, :too_short => "needs to be at least 100 characters", :if => :profile_fields_required?
+  validate :email_is_not_nreduce, :if => :profile_fields_required?
   validates_presence_of :pic, :if => :profile_fields_required?
   validates_presence_of :location, :if => :profile_fields_required?
   validates_presence_of :skill_list, :if => :profile_fields_required?
   validates_presence_of :linkedin_url, :if => :profile_fields_required?
+  validates_presence_of :startup, :if => :new_entrepreneur?
 
   before_create :set_default_settings
   after_create :mailchimp!
+  after_destroy :remove_from_mailchimp
   before_save :geocode_location
   before_save :ensure_roles_exist
+  after_save :initialize_teammate_invites_from_emails
 
   acts_as_taggable_on :skills, :industries
 
@@ -193,8 +207,8 @@ class User < ActiveRecord::Base
     self.mentor? and !self.roles?(:nreduce_mentor) and [4,5].include?(step)
   end
 
-  def has_startup_or_is_mentor?
-    !self.startup_id.blank? or self.mentor?
+  def has_startup_or_is_mentor_or_investor?
+    !self.startup_id.blank? || self.mentor? || self.investor?
   end
 
   def received_nudges
@@ -275,6 +289,17 @@ class User < ActiveRecord::Base
     Rails.logger.error e
   end
 
+  def remove_from_mailchimp
+    return true unless mailchimped?
+    return true unless Settings.apis.mailchimp.enabled
+    h = Hominid::API.new(Settings.apis.mailchimp.api_key)
+    h.list_unsubscribe(Settings.apis.mailchimp.everyone_list_id, self.email)
+  end
+
+  def account_setup_steps
+    return [:onboarding, :profile] if roles?(:entrepreneur)
+    return [:onboarding, :profile, :invite_startups]
+  end
 
   # Returns true if the user has set everything up for the account (otherwise forces user to go through flow)
   def account_setup?
@@ -300,6 +325,14 @@ class User < ActiveRecord::Base
     end
     if roles?(:spectator)
       return [:users, :spectator]
+    end
+    # If it's time to start the class, then allow them to see new welcome process
+    if roles?(:entrepreneur)
+      if Week.in_time_window?(:join_class)
+        return [:startups, :current_class]
+      else
+        return [:startups, :wait_for_next_class]
+      end
     end
     if !setup?(:onboarding)
       if self.onboarded.blank?
@@ -349,8 +382,9 @@ class User < ActiveRecord::Base
     save!
   end
 
-  def setup_complete!(dont_suggest_startups = false)
+  def setup_complete!(dont_suggest_startups = false, skip_all_steps = false)
     self.setup << :welcome
+    self.setup += self.account_setup_steps
     if self.save
       self.startup.generate_suggested_connections(10) if !dont_suggest_startups && !self.startup.blank?
       true
@@ -376,6 +410,20 @@ class User < ActiveRecord::Base
 
   def can_connect_with_startups?
     (self.num_startups_connected_with_this_week < User::INVESTOR_STARTUPS_PER_WEEK) && self.roles?(:approved_investor) 
+  end
+
+  def twitter_authentication
+    self.authentications.provider('twitter').ordered.first
+  end
+
+  def twitter_client
+    return @twitter_client if @twitter_client.present?
+    auth = self.twitter_authentication
+    return nil if auth.blank?
+    @twitter_client = Twitter::Client.new(
+      :oauth_token => auth.token,
+      :oauth_token_secret => auth.secret
+    )
   end
 
   #
@@ -423,15 +471,15 @@ class User < ActiveRecord::Base
     begin
       # TWITTER
       if omniauth['provider'] == 'twitter'
-        logger.info omniauth['info'].inspect
         self.name = omniauth['info']['name'] if name.blank? and !omniauth['info']['name'].blank?
-        #self.external_pic_url = omniauth['info']['image'] unless omniauth['info']['image'].blank?
+        self.remote_pic_url = omniauth['info']['image'] if !self.pic? && omniauth['info']['image'].present?
         self.location = omniauth['info']['location'] if !omniauth['info']['location'].blank?
         self.twitter = omniauth['info']['nickname']
+        self.followers_count = omniauth['extra']['raw_info']['followers_count'] if omniauth['extra'].present? && omniauth['extra']['raw_info'].present?
       elsif omniauth['provider'] == 'linkedin'
         self.linkedin_authentication = auth
         self.name = omniauth['info']['name'] if name.blank? and !omniauth['info']['name'].blank?
-        #self.external_pic_url = omniauth['info']['image'] unless omniauth['info']['image'].blank?
+        self.external_pic_url = omniauth['info']['image'] unless omniauth['info']['image'].blank?
         self.linkedin_url = omniauth['info']['urls']['public_profile'] unless omniauth['info']['urls'].blank? or omniauth['info']['urls']['public_profile'].blank?
         # Fetch profile from API
         profile = self.linkedin_profile
@@ -460,7 +508,7 @@ class User < ActiveRecord::Base
   end
 
   def password_required?
-    (authentications.empty? || !password.blank?) && super
+    (!password.blank? || authentications.empty?) && super
   end
   
   def uses_password_authentication?
@@ -535,11 +583,17 @@ class User < ActiveRecord::Base
     # end
   end
 
-  def geocode_from_ip(ip_address)
+  def geocoded?
+    self.lat.present? && self.lng.present?
+  end
+
+  def geocode_from_ip(ip_address = nil)
+    ip_address ||= self.current_sign_in_ip
     begin
       res = User.geocode(ip_address)
       unless res.blank?
         self.location = [res.city, res.state, res.country_code].delete_if{|i| i.blank? }.join(', ')
+        self.lat, self.lng, self.country = res.lat, res.lng, res.country_code
         return true
       end
     rescue
@@ -548,10 +602,37 @@ class User < ActiveRecord::Base
     false
   end
 
+  def assign_weekly_class!
+    self.weekly_class = WeeklyClass.current_class
+    save
+  end
+
+  def geocode_location
+    return true if Rails.env.test? || (self.location.blank? && self.current_sign_in_ip.blank?) || (!self.location_changed? and !self.lat.blank?)
+    begin
+      res = User.geocode(self.location.present? ? self.location : self.current_sign_in_ip)
+      self.lat, self.lng, self.country = res.lat, res.lng, res.country_code
+    rescue
+      # Don't add errors because sometimes we don't show location on form
+      # self.errors.add(:location, "could not be geocoded")
+    end
+  end
+
   protected
 
+  def initialize_teammate_invites_from_emails
+    return true
+    if self.entrepreneur? && self.teammate_emails.present?
+      self.teammate_emails.each do |e|
+        next if e.blank?
+        Invite.create(:email => e, :weekly_class_id => self.weekly_class_id, :from_id => self.id, :startup_id => self.startup_id, :invite_type => Invite::TEAM_MEMBER)
+      end
+    end
+    true
+  end
+
   def email_is_not_nreduce
-    if !self.email.blank? and self.email.match(/\@\w+\.nreduce\.com$/) != nil
+    if self.roles.present? && !self.email.blank? and self.email.match(/\@\w+\.nreduce\.com$/) != nil
       self.errors.add(:email, 'is not valid')
       false
     else
@@ -561,16 +642,7 @@ class User < ActiveRecord::Base
 
   def set_default_settings
     self.email_on = User.default_email_on
-  end
-
-  def geocode_location
-    return true if !Rails.env.production? or self.location.blank? or (!self.location_changed? and !self.lat.blank?)
-    begin
-      res = User.geocode(self.location)
-      self.lat, self.lng = res.lat, res.lng
-    rescue
-      self.errors.add(:location, "could not be geocoded")
-    end
+    self.weekly_class = WeeklyClass.current_class unless self.weekly_class.present?
   end
 
   def check_video_urls_are_valid
@@ -584,5 +656,9 @@ class User < ActiveRecord::Base
 
   def ensure_roles_exist
     self.setup -= [:account_type] if self.roles.blank?
+  end
+
+  def new_entrepreneur?
+    self.entrepreneur? && self.new_record?
   end
 end

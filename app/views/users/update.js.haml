@@ -1,0 +1,4 @@
+// remotipart handles ajax file uploads
+:plain
+  $('#edit_user_#{@user.id}').replaceWith("#{escape_javascript(render('users/ajax_edit'))}")
+  $('#edit_user_#{@user.id}').effect("highlight", {color: '#bfebff'}, 3000);

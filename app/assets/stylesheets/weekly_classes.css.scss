@@ -1,0 +1,109 @@
+// Place all the styles related to the WeeklyClasses controller here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: http://sass-lang.com/
+
+// Some styles are stored as extensions of other classes in demo_day.css and relationships.css
+.container {
+  .weekly_classes {
+    position: relative;
+    .profile_completeness {
+      .well {
+        width: 800px;
+        .progress {
+          width: 800px;
+        }
+      }
+      margin-right: 100px;
+    }
+    .team {
+      .status {
+        margin-left: 20px;
+        width: 160px;
+      }
+    }
+    #video {
+      width: 500px;
+      height: 315px;
+      background-color: #000;
+      .loading {
+        text-align: center;
+        vertical-align: middle;
+        color: #fff;
+        font-size: 1.45em;
+        font-weight: 600;
+        line-height: 315px;
+      }
+    }
+    .letter {
+      h3 {
+        margin-top: 30px;
+      }
+    }
+    .map {
+      #world_map {
+        margin-left: 50px;
+        width: 900px;
+        height: 360px;
+      }
+      .join_stats {
+        h2 {
+          margin: 10px 0 0px 0;
+        }
+      }
+      #countdown {
+        height: 140px;
+        text-align: center;
+        margin: 0px auto;
+        width: 700px;
+        line-height: 1em;
+        .number_block {
+          font-size: 2em;
+          line-height: 1em;
+          p { 
+            margin: 10px;
+          }
+          .numbers {
+            font-size: .8em;
+            font-weight: 600;
+            margin: 20px;
+          }
+        }
+      }
+    }
+    .stats {
+      .stat {
+        text-align: center;
+        padding: 5px 10px 5px 10px;
+        position: relative;
+        .number {
+          font-size: 4em;
+          line-height: 1.5em;
+          font-weight: 600;
+          color: #29adf0;
+        }
+        .number_below {
+          font-size: 1.5em;
+        }
+        .star {
+          margin-left: auto;
+          margin-right: auto;
+          width: 58px;
+          height: 54px;
+          background: image-url('star_grey.png') no-repeat;
+        }
+        .previous_record {
+          color: #999;
+          font-size: .9em;
+          .pr {
+            font-size: .9em;
+          }
+        }
+      }
+      .record {
+        .star {
+          background-image: image-url('star_yellow.png');
+        }
+      }
+    }
+  }
+}
