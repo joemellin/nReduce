@@ -1,0 +1,38 @@
+.weekly_classes
+  .map
+    .right
+      .well.join_stats
+        .row
+          .span2.center
+            %h2{:style => 'padding-bottom: 15px'} Founders
+            - if @weekly_class.num_startups >= 5
+              %h3 already enrolled in the next class
+            - else
+              %h3 Enroll in the next class
+        - if @weekly_class.num_startups >= 5
+          .row
+            .span1.center
+              %h2= @weekly_class.num_startups
+              #{@weekly_class.num_startups == 1 ? 'Startup' : 'Startups'}
+            .span1.center
+              %h2= @weekly_class.num_users
+              #{@weekly_class.num_users == 1 ? 'Founder' : 'Founders'}
+          .row
+            .span1.center
+              %h2= @weekly_class.num_industries
+              #{@weekly_class.num_industries == 1 ? 'Industry' : 'Industries'}
+            .span1.center
+              %h2= @weekly_class.num_countries
+              #{@weekly_class.num_countries == 1 ? 'Country' : 'Countries'}
+        .row
+          .span2.center{:style => 'margin-top: 15px'}
+            = link_to 'Enroll Now!', join_path, :class => 'btn btn-large btn-success', :style => 'font-size: 2em; margin-bottom: 10px'
+            %b Class starts #{@weekly_class.join_time.strftime('%A, %B %d')} at 1PM PST
+    .left
+      #world_map
+    .clear
+
+  :javascript
+    points = #{@weekly_class.clusters.map{|c| {:num_users => c.user_ids.size, :lat => c.lat, :lng => c.lng, :location => c.location} }.to_json};
+    wm = new WorldMap('world_map', points);
+    wm.render();

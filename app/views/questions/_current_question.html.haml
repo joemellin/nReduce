@@ -1,0 +1,43 @@
+- startup ||= @startup
+- no_twitter_follow ||= false
+- unless @current_question.blank?
+  .right
+    - if can? :manage, startup
+      = link_to "Next Question", answer_startup_question_path(startup, @current_question), :method => :post, :remote => :true, :class => 'btn btn-large'
+    - else
+      &nbsp;
+  .left
+    %p Current Question:
+  .clear
+
+  .content= h(@current_question.content)
+      
+  .left
+    .asked_by
+      %div Asked by:
+      .left.image= image_tag user_avatar_url(@current_question.user)
+      .left
+        .name
+          .left= @current_question.user.name
+          - unless no_twitter_follow || @current_question.user.twitter.blank?
+            .left{:style => 'margin-left: 10px'}
+              - twitter = @current_question.user.twitter.gsub('@', '')
+              -# Need to use iframe version of twitter follow button so it works on AJAX render
+              :plain
+                <iframe allowtransparency="true" frameborder="0" scrolling="no" src="//platform.twitter.com/widgets/follow_button.html?screen_name=#{twitter}&dnt=true&show_count=false" style="width:225px; height:20px;"></iframe>
+        - unless no_twitter_follow || @current_question.user.followers_count.blank?
+          .followers
+            = number_with_delimiter(@current_question.user.followers_count) 
+            #{@current_question.user.followers_count == 1 ? 'follower' : 'followers'}
+      .clear
+      - unless @current_question.user.bio.blank?
+        %p= simple_format(h(truncate(@current_question.user.bio, :length => 250)))
+    - supporters = @current_question.supporters(true)
+    - unless supporters.blank?
+      %div Supporters:
+      - supporters.each do |u|
+        .supporter.left= image_tag user_avatar_url(u)
+      .clear
+  .clear
+
+  

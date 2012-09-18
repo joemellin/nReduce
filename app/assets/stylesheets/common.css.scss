@@ -252,3 +252,38 @@ body.apply {
   }
 
 }
+
+#countdown {
+  margin-top: -15px;
+  .number_block{
+    padding: 0 12px;
+    margin: 0 0 0 4px;
+    height: 68px;
+    text-align: center;
+    .numbers {
+      position: relative;
+      overflow: hidden;
+      font-size: 35px;
+      line-height: 40px;
+      padding: 12px 0 0;
+      span {
+        position: relative;
+      }
+      height: 46px;
+    }
+    p {
+      margin-top: -10px;
+      padding: 0;
+      font-weight: normal;
+      font-size: 1em;
+      color: #999;
+    }
+  }
+}
+
+
+.teammates {
+  .email {
+    padding: 10px 0 10px 0;
+  }
+}

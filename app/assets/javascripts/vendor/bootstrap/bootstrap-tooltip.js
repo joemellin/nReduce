@@ -130,18 +130,28 @@
         actualWidth = $tip[0].offsetWidth
         actualHeight = $tip[0].offsetHeight
 
+        // JS - manually move a tooltip
+        var manualtop = 0
+        var manualleft = 0
+        if (this.options.manualtop) {
+          manualtop = this.options.manualtop
+        }
+        if (this.options.manualleft) {
+          manualleft = this.options.manualleft
+        }
+
         switch (inside ? placement.split(' ')[1] : placement) {
           case 'bottom':
-            tp = {top: pos.top + pos.height, left: pos.left + pos.width / 2 - actualWidth / 2}
+            tp = {top: pos.top + pos.height + manualtop, left: pos.left + pos.width / 2 - actualWidth / 2 + manualleft}
             break
           case 'top':
-            tp = {top: pos.top - actualHeight, left: pos.left + pos.width / 2 - actualWidth / 2}
+            tp = {top: pos.top - actualHeight + manualtop, left: pos.left + pos.width / 2 - actualWidth / 2 + manualleft}
             break
           case 'left':
-            tp = {top: pos.top + pos.height / 2 - actualHeight / 2, left: pos.left - actualWidth}
+            tp = {top: pos.top + pos.height / 2 - actualHeight / 2 + manualtop, left: pos.left - actualWidth + manualleft}
             break
           case 'right':
-            tp = {top: pos.top + pos.height / 2 - actualHeight / 2, left: pos.left + pos.width}
+            tp = {top: pos.top + pos.height / 2 - actualHeight / 2 + manualtop, left: pos.left + pos.width + manualleft}
             break
         }
 

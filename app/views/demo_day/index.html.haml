@@ -1,0 +1,117 @@
+- content_for :subtitle do
+  #{@demo_day.name}
+
+- startups = @demo_day.startups
+
+.demo_day
+  .row.header
+    .span3{:align => 'right'}= image_tag 'nstar_s.png', :style => 'width: 75px; height: 63px'
+    .span6
+      %center
+        %h1 The Amazing nStars
+        -# %h1 Welcome to the #{@demo_day.name}
+        %p{:style => 'padding-top: 10px'} Meet the Best nReduce Startups the First Wendesday of Each Month
+    .span3= image_tag 'nstar_s.png', :style => 'width: 75px; height: 63px'
+  %hr/
+  %br/
+  - if @after
+    %center
+      %h3 The #{Time.parse("#{@demo_day.day} 11:00:00").strftime('%B %Y')} nStars
+  .relationships.teams
+    .row
+      - c = 0
+      - startups.each do |s|
+        - this_startup_url = demo_day_path(:id => @demo_day.index_of(s))
+        - logo_path = s.logo_url(:square)
+        - owner = (user_signed_in? && !current_user.startup_id.blank? && (s.id == current_user.startup_id))
+        .span3{:align => 'center'}
+          .team_name= link_to owner ? 'You' : truncate(s.name, :length => 20), this_startup_url
+          .one_liner= s.one_liner
+          .team
+            .top{:align => 'center', :onclick => "window.location = '#{this_startup_url}';"}
+              .background{:style => "background-image: url('#{logo_path}'); cursor: pointer;"} &nbsp;
+              .members{:align => 'center'}
+                - s.team_members.shuffle.first(3).each do |tm|
+                  .inline-block{:style => 'margin-left: 4px'}= image_tag(user_avatar_url(tm), :title => tm.name, :style => 'width: 50px; height: 50px;')
+            .bottom{:align => 'center'}
+              - if @after
+                = link_to 'View Startup', this_startup_url, :class => 'btn btn-success'
+              - else
+                - if owner
+                  = link_to 'Start Your Video Chat', this_startup_url, :class => 'btn btn-primary'
+                - else
+                  = link_to 'Meet the Founders', this_startup_url, :class => 'btn btn-success'
+                - unless @question_count[s.id].blank?
+                  %p= pluralize(@question_count[s.id], 'question')
+        - c += 1
+        - if c != 0 && (c % 4 == 0)
+          .row
+  
+  %hr/
+  .row
+    .span12
+      %h2 Press
+  .row
+    .span1
+      %p
+    .span5
+      .row
+        %h2
+          = link_to 'Eight Companies Make Their Debut at NReduce’s First Virtual Demo Day', 'http://pandodaily.com/2012/09/05/eight-companies-make-their-debut-at-nreduces-first-virtual-demo-day/', :target => "_blank"
+      .row{:style => 'padding-top: 10px'}
+        .left{:align => 'right'}= link_to image_tag('pandosq.png'), 'http://pandodaily.com', :target => "_blank"
+        .left{:align => 'right'}= link_to image_tag('nathanielsq.png'), 'https://twitter.com/nathanielmott', :target => "_blank"
+        .left{:style => 'padding-left: 20px'}
+          %h3 Nathaniel Mott
+          %h4.small PandoDaily
+          %p{:style => 'padding-top: 10px'}
+            :plain
+              <a href="https://twitter.com/nathanielmott" class="twitter-follow-button" data-show-count="false">Follow @nathanielmott</a>
+              <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
+        .clear
+    .span5
+      .row
+        %h2 
+          = link_to 'Meet the first class of startups from the open-source Y Combinator, nReduce', 'http://venturebeat.com/2012/09/05/nreduce-demo-day/#s:nreduce-1' , :target => "_blank"
+      .row{:style => 'padding-top: 10px; padding-bottom: 20px'} 
+        .left{:align => 'right'}= link_to image_tag('vbsq.png'), 'http://venturebeat.com', :target => "_blank"
+        .left{:align => 'right'}= link_to image_tag('joliesq.png'), 'https://twitter.com/jolieodell', :target => "_blank"
+        .left{:style => 'padding-left: 20px'}
+          %h3 Jolie O'Dell
+          %h4.small VentureBeat
+          %p{:style => 'padding-top: 10px'}
+            :plain
+              <a href="https://twitter.com/jolieodell" class="twitter-follow-button" data-show-count="false">Follow @jolieodell</a>
+              <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+        .clear
+
+  %hr/
+  .row.attendees
+    .span3
+      %h2 Attendees
+    - unless @after
+      .span5
+        %p To record that you attended the first nReduce Demo Day simply ask a question of a team, or click the “I attended!” button. Attendees will be visible on the nStar Demo Day page for all time.
+      .span4{:align => 'right'}
+        %h3
+          - if user_signed_in? && @demo_day.is_attendee?(current_user)
+            You're Attending
+          - else
+            = link_to_login "#{image_tag('twitter_grey.png')} I attended!".html_safe, '#', :onclick => "$('.attend_modal').modal('show'); return false;", :class => 'btn btn-large'
+  .row
+    .span12
+      - @demo_day.attendees.each do |u|
+        - next if u.twitter.blank?
+        .left.attendee= link_to image_tag(user_avatar_url(u), :title => u.name, :alt => u.name), url_for_twitter(u.twitter), :target => '_blank'
+      .clear
+
+  .modal.attend_modal.hide
+    .modal-header
+      %button.close{:type => 'button', 'data-dismiss' => 'modal'} x
+      %h2{:style => 'margin-bottom: 5px'} Record that you attended the first nReduce Demo Day
+    .modal-body
+      %p
+        %strong "#{DemoDay.tweet_content}"
+    .modal-footer
+      %center= link_to "#{image_tag('twitter_white.png')} Tweet This!".html_safe, attend_demo_day_path(@demo_day), :method => :post, :class => 'btn btn-large btn-success'

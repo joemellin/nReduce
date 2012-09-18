@@ -1,0 +1,10 @@
+%div{:style => 'margin-top: 20px;'}
+  .right
+    = render 'relationships/buttons', :entity => @entity, :connected_with => @startup, :relationship => @relationship
+  .left
+    = link_to '<i class="icon-chevron-left"></i> Back'.html_safe, '#', :onclick => "$('#startup_mini_profile').hide(); $('#startups').show(); return false;", :class => 'btn btn-large'
+
+  .clear
+  %hr/
+  = render 'startups/profile'
+

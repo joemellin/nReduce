@@ -6,14 +6,16 @@ class Ability
   def initialize(user, params)
     user ||= User.new
 
+    cannot :manage, Video
+
     # Admins can do anything
     if user.admin?
       can :manage, :all
       can :stats, Startup
 
     # Users who have a startup or are a mentor
-    elsif !user.new_record? and user.has_startup_or_is_mentor?
-
+    elsif !user.new_record? and user.has_startup_or_is_mentor_or_investor?
+    
       # Abilities if user has a startup
       if !user.startup_id.blank?
         can [:manage, :onboard, :onboard_next, :remove_team_member], Startup, :id => user.startup_id
@@ -38,6 +40,17 @@ class Ability
         can :manage, Invite, :startup_id => user.startup_id
 
         can :manage, Nudge, :startup_id => user.startup_id
+
+        can :manage, Instrument do |m|
+          m.startup_id == user.startup_id
+        end
+
+        can [:new, :create], Instrument
+
+        can :read, Rating, :startup_id => user.startup_id if user.startup.investable?
+
+        can :manage, Video, :startup_id => user.startup_id
+
       end
 
       # Can destroy if they were assigned as receiver or created it
@@ -47,7 +60,7 @@ class Ability
 
       # They can accept the invite if it's still active and their email matches invite email  or they are assigned as "to"
       can :accept, Invite do |invite|
-        invite.active? and (invite.to == user) || (invite.email == user.email)
+        invite.active? && (invite.to == user) || (invite.email == user.email)
       end
 
       can :read, Checkin do |checkin|
@@ -58,10 +71,28 @@ class Ability
         elsif checkin.startup.checkins_public?
           true
         # This user is a startup's mentor
-        elsif user.mentor? and user.connected_to?(checkin.startup)
+        elsif (user.mentor? || user.investor?) && user.connected_to?(checkin.startup)
           true
         # This user's startup is connected
-        elsif !user.startup.blank? and user.startup.connected_to?(checkin.startup)
+        elsif !user.startup.blank? && user.startup.connected_to?(checkin.startup)
+          true
+        else
+          false
+        end
+      end
+
+      can :read, Video do |video|
+        # From user's startup
+        if video.startup_id == user.startup_id
+          true
+        # The checkin's startup has listed all as public
+        elsif video.startup.checkins_public?
+          true
+        # This user is a startup's mentor
+        elsif (user.mentor? || user.investor?) && user.connected_to?(video.startup)
+          true
+        # This user's startup is connected
+        elsif !user.startup.blank? && user.startup.connected_to?(video.startup)
           true
         else
           false
@@ -70,8 +101,8 @@ class Ability
 
       # User with startup or mentor can create a relationship
       can :create, Relationship do |relationship|
-        if user.has_startup_or_is_mentor?
-          if user.mentor? and relationship.is_involved?(user)
+        if user.has_startup_or_is_mentor_or_investor?
+          if (user.mentor? || user.investor?) && relationship.is_involved?(user)
             true
           elsif !user.startup.blank? and relationship.is_involved?(user.startup)
             true
@@ -101,7 +132,7 @@ class Ability
 
       # Either party can reject a relationship
       can :reject, Relationship do |relationship|
-        if user.mentor? and relationship.is_involved?(user)
+        if (user.mentor? || user.investor?) && relationship.is_involved?(user)
           true
         elsif !user.startup.blank? and relationship.is_involved?(user.startup)
           true
@@ -150,8 +181,8 @@ class Ability
         end
       end
 
-      # Mentor can view relationships they are involved in (index)
-      if user.mentor?
+      # Mentor/Investor can view relationships they are involved in (index)
+      if user.mentor? || user.investor?
         can :read, Relationship do |relationship|
           relationship.is_involved?(user)
         end
@@ -175,6 +206,11 @@ class Ability
     # All Users
     #
 
+    can [:new, :create], Invite
+
+    cannot :all, WeeklyClass
+    can [:read, :update_state], WeeklyClass, :id => user.weekly_class_id
+
     # Can only create a startup if registration is open and they don't have a current startup
     can [:new, :create, :edit], Startup do |startup|
       Startup.registration_open? and user.startup_id.blank?
@@ -183,7 +219,7 @@ class Ability
     # User can only manage their own account
     can [:manage, :onboard, :onboard_next], User, :id => user.id
 
-    # Anyonen can see a screenshot
+    # Anyone can see a screenshot
     can :read, Screenshot
 
     # Have to override manage roles on user for mentors
@@ -213,8 +249,11 @@ class Ability
       end
     end
 
-    can :manage, Rating if user.investor?
-
+    if user.investor?
+      can [:new, :create], Rating
+      can :manage, Rating, :user_id => user.id 
+    end
+    
     # For now just show investor page to other investors or users with a startup
     can :see_investor_page, User do |u|
       u.investor? || (u.entrepreneur? and !u.startup_id.blank?)
@@ -233,10 +272,16 @@ class Ability
       u.can_access_chat?
     end
 
+    # Can manage video if they own it
+    can :manage, Video, :user_id => user.id
+
+    # Anyone can create a new video
+    can [:new, :record, :create], Video
+
     cannot :read, Startup
 
     # Everyone can see a startup's profile unless they are private
-    can :read, Startup do |s|
+    can [:mini_profile, :read], Startup do |s|
       if s.public?
         true
       elsif !user.startup_id.blank? and s.id == user.startup_id
@@ -244,6 +289,12 @@ class Ability
       else
         false
       end
+    end
+
+    can [:new, :create, :support], Question
+    can :manage, Question, :user_id => user.id
+    can :answer, Question do |q|
+      user.startup_id == q.startup_id
     end
 
     can [:new, :create], Rsvp

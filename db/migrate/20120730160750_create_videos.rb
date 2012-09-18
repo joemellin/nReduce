@@ -7,7 +7,6 @@ class CreateVideos < ActiveRecord::Migration
       t.string :file_url
       t.text :callback_result
       t.integer :vimeo_id
-
       t.timestamps
     end
   end

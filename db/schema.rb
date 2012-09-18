@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120820070322) do
+ActiveRecord::Schema.define(:version => 20120911204522) do
 
   create_table "authentications", :force => true do |t|
     t.string   "provider"
@@ -52,6 +52,9 @@ ActiveRecord::Schema.define(:version => 20120820070322) do
     t.text     "start_comments"
     t.integer  "comment_count",   :default => 0
     t.integer  "week"
+    t.integer  "before_video_id"
+    t.integer  "after_video_id"
+    t.integer  "measurement_id"
   end
 
   add_index "checkins", ["startup_id", "created_at"], :name => "index_checkins_on_startup_id_and_created_at"
@@ -71,19 +74,24 @@ ActiveRecord::Schema.define(:version => 20120820070322) do
 
   create_table "demo_days", :force => true do |t|
     t.string   "name"
-    t.text     "description"
+    t.text     "attendee_ids"
     t.date     "day"
-    t.datetime "created_at",  :null => false
-    t.datetime "updated_at",  :null => false
+    t.datetime "created_at",   :null => false
+    t.datetime "updated_at",   :null => false
+    t.string   "startup_ids"
+    t.text     "video_ids"
   end
 
   create_table "instruments", :force => true do |t|
-    t.datetime "created_at",  :null => false
-    t.datetime "updated_at",  :null => false
+    t.datetime "created_at",         :null => false
+    t.datetime "updated_at",         :null => false
     t.integer  "startup_id"
     t.string   "name"
     t.text     "description"
+    t.integer  "instrument_type_id"
   end
+
+  add_index "instruments", ["startup_id"], :name => "index_instruments_on_startup_id"
 
   create_table "invites", :force => true do |t|
     t.string   "email"
@@ -96,10 +104,11 @@ ActiveRecord::Schema.define(:version => 20120820070322) do
     t.integer  "to_id"
     t.integer  "from_id"
     t.integer  "startup_id"
-    t.datetime "created_at",  :null => false
-    t.datetime "updated_at",  :null => false
+    t.datetime "created_at",      :null => false
+    t.datetime "updated_at",      :null => false
     t.string   "name"
     t.datetime "emailed_at"
+    t.integer  "weekly_class_id"
   end
 
   add_index "invites", ["code"], :name => "index_invites_on_code"
@@ -172,6 +181,20 @@ ActiveRecord::Schema.define(:version => 20120820070322) do
     t.integer  "invite_id"
   end
 
+  create_table "questions", :force => true do |t|
+    t.string   "content"
+    t.string   "tweet_id"
+    t.text     "supporter_ids"
+    t.integer  "followers_count", :default => 0
+    t.datetime "answered_at"
+    t.integer  "startup_id"
+    t.integer  "user_id"
+    t.datetime "created_at",                     :null => false
+    t.datetime "updated_at",                     :null => false
+  end
+
+  add_index "questions", ["startup_id", "answered_at", "updated_at"], :name => "startup_answered_updated", :unique => true
+
   create_table "rails_admin_histories", :force => true do |t|
     t.text     "message"
     t.string   "username"
@@ -186,14 +209,16 @@ ActiveRecord::Schema.define(:version => 20120820070322) do
   add_index "rails_admin_histories", ["item", "table", "month", "year"], :name => "index_rails_admin_histories"
 
   create_table "ratings", :force => true do |t|
-    t.integer  "investor_id"
+    t.integer  "user_id"
     t.integer  "startup_id"
     t.boolean  "interested"
     t.integer  "feedback"
     t.text     "explanation"
-    t.datetime "created_at",  :null => false
-    t.datetime "updated_at",  :null => false
-    t.integer  "value"
+    t.datetime "created_at",      :null => false
+    t.datetime "updated_at",      :null => false
+    t.integer  "contact_in"
+    t.integer  "weakest_element"
+    t.boolean  "connected"
   end
 
   create_table "relationships", :force => true do |t|
@@ -251,28 +276,33 @@ ActiveRecord::Schema.define(:version => 20120820070322) do
     t.integer  "growth_model"
     t.integer  "company_goal"
     t.string   "intro_video_url"
-    t.integer  "onboarding_step", :default => 1
-    t.integer  "team_size",       :default => 1
-    t.boolean  "active",          :default => true
-    t.boolean  "public",          :default => true
+    t.integer  "onboarding_step",   :default => 1
+    t.integer  "team_size",         :default => 1
+    t.boolean  "active",            :default => true
+    t.boolean  "public",            :default => true
     t.datetime "launched_at"
     t.integer  "main_contact_id"
     t.integer  "meeting_id"
-    t.datetime "created_at",                         :null => false
-    t.datetime "updated_at",                         :null => false
+    t.datetime "created_at",                           :null => false
+    t.datetime "updated_at",                           :null => false
     t.text     "elevator_pitch"
     t.string   "logo"
     t.float    "rating"
-    t.boolean  "checkins_public", :default => false
+    t.boolean  "checkins_public",   :default => false
     t.string   "pitch_video_url"
     t.integer  "setup"
-    t.boolean  "investable",      :default => false
+    t.boolean  "investable",        :default => false
+    t.integer  "week"
+    t.integer  "intro_video_id"
+    t.integer  "pitch_video_id"
     t.text     "business_model"
     t.date     "founding_date"
     t.string   "market_size"
+    t.string   "tokbox_session_id"
   end
 
   add_index "startups", ["public"], :name => "index_startups_on_public"
+  add_index "startups", ["week"], :name => "index_startups_on_week"
 
   create_table "taggings", :force => true do |t|
     t.integer  "tag_id"
@@ -345,14 +375,18 @@ ActiveRecord::Schema.define(:version => 20120820070322) do
     t.string   "intro_video_url"
     t.integer  "roles"
     t.integer  "onboarded"
-    t.boolean  "admin"
     t.integer  "email_on"
     t.integer  "setup"
+    t.integer  "intro_video_id"
+    t.integer  "followers_count"
+    t.integer  "weekly_class_id"
+    t.string   "country"
   end
 
   add_index "users", ["reset_password_token"], :name => "index_users_on_reset_password_token", :unique => true
   add_index "users", ["roles"], :name => "index_users_on_roles"
   add_index "users", ["startup_id"], :name => "index_users_on_startup_id"
+  add_index "users", ["weekly_class_id"], :name => "index_users_on_weekly_class_id"
 
   create_table "versions", :force => true do |t|
     t.string   "item_type",  :null => false
@@ -368,13 +402,30 @@ ActiveRecord::Schema.define(:version => 20120820070322) do
   create_table "videos", :force => true do |t|
     t.integer  "user_id"
     t.string   "external_id"
-    t.integer  "video_type"
-    t.string   "file_url"
-    t.text     "callback_result"
+    t.string   "local_file_path"
     t.integer  "vimeo_id"
-    t.datetime "created_at",      :null => false
-    t.datetime "updated_at",      :null => false
+    t.datetime "created_at",                         :null => false
+    t.datetime "updated_at",                         :null => false
+    t.boolean  "vimeod",          :default => false
+    t.string   "type"
+    t.string   "title"
     t.integer  "startup_id"
+    t.string   "image"
   end
+
+  add_index "videos", ["external_id", "type"], :name => "index_videos_on_external_id_and_type", :unique => true
+
+  create_table "weekly_classes", :force => true do |t|
+    t.integer  "week"
+    t.integer  "num_startups"
+    t.integer  "num_users",      :default => 0
+    t.integer  "num_countries"
+    t.integer  "num_industries"
+    t.text     "clusters"
+    t.datetime "created_at",                    :null => false
+    t.datetime "updated_at",                    :null => false
+  end
+
+  add_index "weekly_classes", ["week"], :name => "index_weekly_classes_on_week", :unique => true
 
 end

@@ -5,7 +5,8 @@ class Relationship < ActiveRecord::Base
   has_many :notifications, :as => :attachable
   has_many :user_actions, :as => :attachable
 
-  attr_accessible :context, :entity, :entity_id, :entity_type, :connected_with, :connected_with_id, :connected_with_type, :status, :approved_at, :rejected_at, :silent, :message, :pending_at
+  attr_accessible :context, :entity, :entity_id, :entity_type, :connected_with, :connected_with_id, 
+    :connected_with_type, :status, :approved_at, :rejected_at, :silent, :message, :pending_at
 
   attr_accessor :silent
 
@@ -45,6 +46,7 @@ class Relationship < ActiveRecord::Base
 
    # Create a suggested connectino for an entity - it is created silently (no notifications)
   def self.suggest_connection(entity, connected_with, context = :startup_startup, message = nil)
+    return nil if Relationship.between(entity, connected_with).present?
     Relationship.create(:entity => entity, :connected_with => connected_with, :status => Relationship::SUGGESTED, :silent => true, :context => context, :message => message)
   end
 
@@ -110,7 +112,12 @@ class Relationship < ActiveRecord::Base
     if self.suggested?
       self.status = Relationship::PENDING
       self.pending_at = Time.now
-      self.save
+      if self.save
+        self.notify_users unless self.silent == true
+        true
+      else
+        false
+      end
     else
       begin
         Relationship.transaction do

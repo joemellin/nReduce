@@ -1,24 +1,42 @@
+- if @other_join_flow.present?
+  = hidden_field_tag 'ojf', @other_join_flow
+
+- if @startup_join_flow
+  = f.fields_for :startup do |s|
+    .control-group{error_css(s.object, :name)}
+      = s.label :name, 'Startup Name', :class => 'control-label'
+      .controls
+        = s.text_field :name
+        = s.semantic_errors :name
+    .control-group{error_css(s.object, :industry_list)}
+      = s.label :industry_list, "Market(s)", :class => 'control-label'
+      .controls
+        = text_field_tag 'user[startup_attributes][industry_list]', s.object.industry_list.map{|i| i.titleize }.join(', '), :class => ' industries_list_autocomplete', :placeholder => 'ex: mobile games, education'
+        = s.semantic_errors :industry_list
+
 - unless @change_password
-  .control-group{error_css(@user, :name)}
+  .control-group{error_css(f.object, :name)}
     = f.label :name, 'Your Name', :class => 'control-label'
     .controls
       = f.email_field :name
       = f.semantic_errors :name
-  .control-group{error_css(@user, :email)}
+
+  .control-group{error_css(f.object, :email)}
     = f.label :email, :class => 'control-label'
     .controls
       = f.email_field :email
       = f.semantic_errors :email
-.control-group{error_css(@user, :password)}
-  = f.label :password, 'New Password', :class => 'control-label'
-  .controls
-    = f.password_field :password
-    = f.semantic_errors :password
-.control-group{error_css(@user, :password_confirmation)}
-  = f.label :password_confirmation, "Confirm New Password", :class => 'control-label'
-  .controls
-    = f.password_field :password_confirmation
-    = f.semantic_errors :password_confirmation
+- unless @password_not_required
+  .control-group{error_css(@user, :password)}
+    = f.label :password, @change_password ? 'New Password' : 'Password', :class => 'control-label'
+    .controls
+      = f.password_field :password
+      = f.semantic_errors :password
+  .control-group{error_css(@user, :password_confirmation)}
+    = f.label :password_confirmation, @change_password ? "Confirm New Password" : 'Confirm Password', :class => 'control-label'
+    .controls
+      = f.password_field :password_confirmation
+      = f.semantic_errors :password_confirmation
 - unless @user.new_record?
   .control-group{error_css(@user, :current_password)}
     = f.label :current_password, 'What is your current password?', :class => 'control-label'
@@ -26,5 +44,24 @@
       = f.password_field :current_password
       = f.semantic_errors :current_password
       %p.help-block (we need your current password to confirm your changes)
+
+.control-group{error_css(f.object, :location)}
+  = f.label :location, 'Your Location', :class => 'control-label'
+  .controls
+    = f.email_field :location
+    = f.semantic_errors :location
+
+- if @startup_join_flow
+  .control-group
+    .controls
+      Add your teammates:
+      .teammates
+        = f.semantic_errors :sent_invites
+        - f.object.sent_invites.build if f.object.sent_invites.blank?
+        - f.object.sent_invites.each do |si|
+          = text_field_tag 'user[teammate_emails][]', si.email, :placeholder => 'founder@email.com'
+          = link_to '<i class="icon-plus"></i>'.html_safe, '#', :class => 'btn add_teammate_btn'
+          /= si.semantic_errors :email
+
 .control-group
   .controls= f.submit "Save", :class => 'btn btn-large btn-primary'

@@ -1,0 +1,53 @@
+.video_wrapper
+  #video
+    .loading Loading Live Stream...
+- if @owner
+  :javascript
+    var publisher;
+    function sessionConnectedHandler(event) {
+      // Put my webcam in a div
+      var publishProps = {width:500, height:315};
+      publisher = TB.initPublisher(apiKey, 'video', publishProps);
+      // Send my stream to the session
+      session.publish(publisher);
+
+      // Show video
+      $('.loading').remove();
+    }
+- else
+  :javascript
+    function sessionConnectedHandler(event) {
+      for (var i = 0; i < event.streams.length; i++) {
+        var stream = event.streams[i];
+        displayStream(stream);
+      }
+      streams = event.streams;
+    }
+
+    function displayStream(stream) {
+      var div = document.createElement('div');
+      div.setAttribute('id', 'stream' + stream.streamId);
+      var streamsContainer = document.getElementById('video');
+      streamsContainer.appendChild(div);
+      var divProps = {width: 500, height:315};
+      subscriber = session.subscribe(stream, 'stream' + stream.streamId, divProps);
+      $('.loading').remove();
+      // Listen if stream gets created again - to display in case publisher loses connection
+      session.addEventListener('streamCreated', sessionConnectedHandler);
+    }
+
+:javascript
+  // Tokbox chat
+
+  // http://www.tokbox.com/opentok/api/documentation/gettingstarted
+  var apiKey = '#{Settings.apis.tokbox.key}';
+  var sessionId = '#{@tokbox_session_id}';
+  var token = '#{@tokbox_token}';
+
+  TB.setLogLevel(TB.DEBUG);
+  #{user_signed_in? && current_user.admin? ? 'TB.setLogLevel(TB.DEBUG);' : ''}
+
+  var session = TB.initSession(sessionId);
+  session.addEventListener('sessionConnected', sessionConnectedHandler);
+  session.connect(apiKey, token);
+

@@ -6,6 +6,8 @@
 #= require "./vendor/jquery-ui-1.8.21.custom.min"
 #= require "./vendor/rails.js"
 #= require "./vendor/bootstrap"
+#= require "jquery.iframe-transport"
+#= require "jquery.remotipart"
 #= require_tree .
 
 $ = jQuery

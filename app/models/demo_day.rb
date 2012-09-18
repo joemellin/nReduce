@@ -1,6 +1,83 @@
 class DemoDay < ActiveRecord::Base
-  has_many :users
-  has_many :startups
+  attr_accessible :name, :day, :description, :startup_ids
 
-  attr_accessible :name, :day, :description
+  serialize :startup_ids
+  serialize :attendee_ids
+  serialize :video_ids
+
+  # Returns next demo day or current (current is demo day on this day)
+  def self.next_or_current
+    DemoDay.where(['day >= ?', Date.today]).order('day ASC').first
+  end
+
+  def self.tweet_content
+    "I'm checking out some awesome companies in the #{Settings.demo_day.hashtag}! http://nreduce.com/d"
+  end
+
+  def index_of(startup)
+    return nil if self.startup_ids.blank?
+    self.startup_ids.index(startup.id)
+  end
+
+  def video_for_startup(startup)
+    i = self.index_of(startup)
+    return Video.find(self.video_ids[i]) if self.video_ids.present? && self.video_ids[i].present?
+    return nil
+  end
+
+  def hide_checkins?(startup)
+    return true if startup.id == 742
+    false
+  end
+
+  def startups
+    return [] if self.startup_ids.blank?
+    Startup.find(self.startup_ids)
+  end
+
+  def starts_at
+    Time.parse("#{self.day} 11:00:00 -0700")
+  end
+
+  def ends_at
+    Time.parse("#{self.day} 12:30:00 -0700")
+  end
+
+  # Returns true if it's currently the time window for this demo day
+  def in_time_window?
+    self.starts_at <= Time.now && self.ends_at >= Time.now
+  end
+
+  # Returns next demo day in chronological order
+  def next_demo_day
+    DemoDay.where(['day > ?', self.day]).order('day ASC').first
+  end
+
+  def attendees
+    return [] if self.attendee_ids.blank?
+    User.find(self.attendee_ids)
+  end
+
+  def is_attendee?(user)
+    return true if self.attendee_ids.include?(user.id) if self.attendee_ids.present?
+    return false
+  end
+
+  # Add attendee and tweet that they attended
+  
+  def add_attendee!(user, dont_tweet = false)
+    # Return true if already a supporter
+    return true if self.is_attendee?(user)
+    self.attendee_ids ||= []
+    # Add supporter id
+    self.attendee_ids << user.id
+
+    # Tweet from supporter's account
+    unless dont_tweet
+      tw = user.twitter_client
+      tw.update(DemoDay.tweet_content) if Rails.env.production? && tw.present?
+    end
+
+    save
+  end
 end

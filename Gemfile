@@ -45,8 +45,18 @@ gem 'bitmask_attributes'
 gem 'paper_trail', '~> 2.6.3'
 gem 'slope_one'
 gem 'rails_autolink'
+gem 'viddler-ruby'
+gem 'vimeo'
 gem "obfuscate_id", :git => 'git://github.com/geeosh/obfuscate_id.git'
 
+gem 'twitter'
+gem 'opentok' # tokbox gem
+gem 'geoip'
+
+#gem 'pusher'
+#gem 'mechanize'
+
+gem 'remotipart' # ajax file uploads
 
 group :test, :development do
   # Pretty printed test output
@@ -65,6 +75,7 @@ group :test, :development do
   gem 'spork'
   gem 'guard-spork'
   gem 'debugger'
+  gem 'terminal-notifier-guard' # instead of growl for mountain lion notifications
   #gem 'jasmine-rails' # also need to do: brew install qt
 end
 

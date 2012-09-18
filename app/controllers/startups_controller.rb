@@ -2,9 +2,9 @@ class StartupsController < ApplicationController
   around_filter :record_user_action, :except => [:onboard_next, :stats]
   before_filter :login_required
   before_filter :load_requested_or_users_startup, :except => [:index, :invite, :stats]
-  load_and_authorize_resource :except => [:index, :stats, :invite, :show, :invite_team_members, :intro_video]
-  before_filter :load_obfuscated_startup, :only => [:show, :invite_team_members, :before_video, :intro_video]
-  authorize_resource :only => [:show, :invite_team_members, :before_video, :intro_video]
+  load_and_authorize_resource :except => [:index, :stats, :invite, :show, :invite_team_members, :intro_video, :mini_profile]
+  before_filter :load_obfuscated_startup, :only => [:show, :invite_team_members, :before_video, :intro_video, :mini_profile]
+  authorize_resource :only => [:show, :invite_team_members, :before_video, :intro_video, :mini_profile]
   before_filter :redirect_if_no_startup, :except => [:index, :invite]
 
   def index
@@ -84,7 +84,7 @@ class StartupsController < ApplicationController
     @can_view_checkin_details = can? :read, Checkin.new(:startup => @startup)
     @num_checkins = @startup.checkins.count
     @num_awesomes = @startup.awesomes.count
-    @checkins = @startup.checkins.ordered
+    @checkins = @startup.checkins.ordered.includes(:before_video, :after_video)
     if current_user.entrepreneur?
       @entity = current_user.startup unless current_user.startup.blank?
     else
@@ -92,11 +92,29 @@ class StartupsController < ApplicationController
     end
     if params[:suggested] # we need to look for a relationship in the opposite direction if suggested
       @relationship = Relationship.between(@entity, @startup)
+      @pending_relationship = nil
     else
       @relationship = Relationship.between(@startup, @entity)
+      @pending_relationship = Relationship.between(@entity, @startup)
     end
   end
 
+    # mini profile for ajax requests
+  def mini_profile
+    @num_checkins = @startup.checkins.count
+    @num_awesomes = @startup.awesomes.count
+    if current_user.entrepreneur?
+      @entity = current_user.startup unless current_user.startup.blank?
+    else
+      @entity = current_user
+    end
+    @relationship = Relationship.between(@startup, @entity)
+    respond_to do |format|
+      format.js
+      format.html { render :nothing => true }
+    end
+  end
+  
   #
   # Actions for user's startup
   #
@@ -107,10 +125,13 @@ class StartupsController < ApplicationController
     @screenshots = @startup.screenshots.ordered
     # Build up to 4 screenshots
     @screenshots.size.upto(Startup::NUM_SCREENSHOTS - 1).each{|i| @startup.screenshots.build }
+    @startup.intro_video = ViddlerVideo.new if @startup.intro_video.blank?
+    @startup.pitch_video = ViddlerVideo.new if @startup.pitch_video.blank?
   end
 
   def update
     @startup.attributes = params[:startup]
+    @dont_render_form = params[:dont_render_form].present? ? true : false
     if @startup.save
       #flash[:notice] = "Startup information has been saved. Thanks!"
       respond_to do |format|
@@ -157,7 +178,7 @@ class StartupsController < ApplicationController
 
   def intro_video
     @startups = Startup.with_intro_video.limit(6).order("RAND()")
-    if !params[:startup].blank? && !params[:startup][:intro_video_url].blank?
+    if params[:startup].present? && params[:startup][:intro_video_url].present?
       @startup.intro_video_url = params[:startup][:intro_video_url]
       if @startup.save
         redirect_to '/'
@@ -185,6 +206,8 @@ class StartupsController < ApplicationController
   def investment_profile
     @checkin_history = Checkin.history_for_startup(@startup)
     @screenshots = @startup.screenshots.ordered
+    @instrument = @startup.instruments.first
+    @measurements = @instrument.measurements.ordered_asc.all unless @instrument.blank?
   end
 
   #

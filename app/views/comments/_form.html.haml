@@ -8,7 +8,7 @@
     .left.content{:style => 'padding-left: 10px'}
       = f.hidden_field :checkin_id
       = f.text_area :content, :size => '50x1'
-    .left{:style => 'padding: 11px 0 0 5px;'}= f.submit (comment.new_record? ? 'Post Comment' : 'Update'), :class => 'btn primary'
+    .left{:style => 'padding: 11px 0 0 5px;'}= f.submit (comment.new_record? ? 'Post Comment' : 'Update'), :class => 'btn primary', :onclick => "$(this).addClass('disabled');"
     .left{:style => 'padding: 15px 0 0 8px;'}
       - if comment.new_record? and cancel_link
         = link_to 'Cancel', '#', :onclick => "$('#comment_#{comment.parent_id} .new_comment').remove(); return false;"
