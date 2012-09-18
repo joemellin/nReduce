@@ -30,6 +30,8 @@ class WeeklyClassesController < ApplicationController
     initialize_tokbox_session(@nreduce)
     @questions = @nreduce.questions
     @tokbox_config = {:api_key => Settings.apis.tokbox.api_key, :session_id => @tokbox_session_id, :token => @tokbox_token}
+    @user = current_user
+    @startup = current_user.startup
   end
 
   protected

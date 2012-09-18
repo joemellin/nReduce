@@ -24,7 +24,8 @@ window.Nreduce =
   initialize: (data = {}, config = {}) ->
     #questions = new Nreduce.Collections.Questions()
     Nreduce.Config = config if config?
-    new Nreduce.Routers.Application(data)
+    Nreduce.Data = data if data?
+    new Nreduce.Routers.Application()
     Backbone.history.start()
 
 # $ ->

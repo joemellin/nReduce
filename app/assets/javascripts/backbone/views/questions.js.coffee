@@ -4,7 +4,7 @@ $ ->
     className: 'questions'
     template: JST['backbone/templates/questions']
     events:
-      'click a#load_questions': 'loadQuestions'
+      'click a#reload_questions': 'loadQuestions'
 
     initialize: (options = {}) ->
       # bind 'this' context
@@ -22,10 +22,10 @@ $ ->
       $("question_#{question_id}").remove()
 
     loadQuestions: ->
-      console.log 'load questions'
       @collection.fetch()
 
     render: ->
       questions = if @collection? then @collection.models else []
+      $('#question_count').text(questions.length)
       @.$el.html(@template(questions: questions))
   )

@@ -39,10 +39,10 @@
 
       .tab-pane#questions
         != JST['backbone/templates/questions'](questions: @questions)
-      .tab-pane#profile
-        // render 'users/ajax_edit'
-      .tab-pane#startup_profile
-        // render 'startups/ajax_edit'
+      .tab-pane#user
+        != JST['backbone/templates/users/edit'](user: @user)
+      .tab-pane#startup
+        != JST['backbone/templates/startups/edit'](startup: @startup)
 
   .modal.questions_modal.hide
     .modal-header

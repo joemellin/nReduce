@@ -625,11 +625,15 @@ class User < ActiveRecord::Base
     return '/images/pic_default_small.png'
   end
 
+  def pic_url_small
+    self.pic_url(:small) if self.pic?
+  end
+
   def as_json(options = {})
     super(
       options.merge(
         :only => [:id, :name], 
-        :methods => [:user_avatar_url]
+        :methods => [:user_avatar_url, :roles, :errors, :pic_url_small, :skill_list, :industries_list]
       )
     )
   end

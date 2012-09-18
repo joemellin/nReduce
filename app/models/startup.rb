@@ -396,7 +396,7 @@ class Startup < ActiveRecord::Base
     super(
       options.merge(
         :only => [:id, :name], 
-        :methods => [:team_members, :profile_completeness_percent]
+        :methods => [:team_members, :profile_completeness_percent, :errors]
       )
     )
   end

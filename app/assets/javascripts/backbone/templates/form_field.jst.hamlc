@@ -1,0 +1,15 @@
+/ - @options = {} unless @options?
+/ - @field_type = 'text_field' unless @field_type?
+/ - error_class = if @object.errors_on(@field)? then 'with-errors' else ''
+/ .control-group{:class => error_class}
+/   %label.control-label{:for => @field}= @field
+/   .controls
+/     - if @field_type == 'text_area'
+/       - @options = {} #_.extend({:name => @field}, @options)
+/       %textarea{@options}= @object.get(@field)
+/     - else
+/       - @options = {} # _.extend({:type => 'text', :name => @field, :value => @object.get(@field)}, @options)
+/       %input{@options}
+/     - if @object.errors_on(@field)?
+/       %ul.errors
+/         %li= "#{@field} #{@object.errors_on(@field)}"

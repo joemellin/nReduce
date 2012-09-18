@@ -1,0 +1,103 @@
+.control-group{:class => "#{if @user.errors_on('name')? then 'with-errors' else ''}"}
+  %label.control-label{:for => "Name"} Name
+  .controls
+    %input.span4{:type => 'text', :name => 'name'}
+    - if @user.errors_on('name')?
+      %ul.errors
+        %li= "Name #{@user.errors_on('name')}"
+
+.control-group{:class => "#{if @user.errors_on('email')? then 'with-errors' else ''}"}
+  %label.control-label{:for => "Email"} Email
+  .controls
+    %input.span4{:type => 'text', :name => 'email', :value => @user.get('email')}
+    - if @user.errors_on('email')?
+      %ul.errors
+        %li= "Email #{@user.errors_on('email')}"
+
+.control-group{:class => "#{if @user.errors_on('pic')? then 'with-errors' else ''}"}
+  %label.control-label{:for => "pic"} Profile Picture
+  .controls
+    %input{:type => 'file', :name => 'pic'}
+    - if @user.errors_on('pic')?
+      %ul.errors
+        %li= "Picture #{@user.errors_on('pic')}"
+    - if @user.get('pic')?
+      %br/
+      Current Image:
+      - if @user.get('pic_url_small')?
+        %img{:src => @user.get('pic_url_small')}
+      &nbsp;
+      %input{:type => 'checkbox', :name => 'remove_pic', :value => 1}
+      Remove pic
+
+.control-group{:class => "#{if @user.errors_on('location')? then 'with-errors' else ''}"}
+  %label.control-label{:for => "location"} Location
+  .controls
+    %input.span4{:type => 'text', :name => 'name', :placeholder => 'City, State, Country', :value => @user.get('location')}
+    - if @user.errors_on('location')?
+      %ul.errors
+        %li= "Location #{@user.errors_on('location')}"
+%hr
+%br
+
+- if @user.is_entrepreneur
+  .control-group{:class => "#{if @user.errors_on('skill_list')? then 'with-errors' else ''}"}
+    %label.control-label{:for => "skill_list"} Skills
+    .controls
+      %input.span4.skills_list_autocomplete{:type => 'text', :name => 'skill_list', :placeholder => 'City, State, Country', :value => @user.get('skill_list'), :maxlength => 45, :placeholder => 'comma, separated'}
+      - if @user.errors_on('skill_list')?
+        %ul.errors
+          %li= "Skills #{@user.errors_on('skill_list')}"
+
+- else if @user.is_mentor || @user.is_investor
+  .control-group{:class => "#{if @user.errors_on('industry_list')? then 'with-errors' else ''}"}
+    %label.control-label{:for => "industry_list"} Industries
+    .controls
+      %input.span4.industries_list_autocomplete{:type => 'text', :name => 'industry_list', :value => @user.get('industry_list'), :maxlength => 45, :placeholder => 'comma, separated'}
+      - if @user.errors_on('industry_list')?
+        %ul.errors
+          %li= "Industries #{@user.errors_on('industry_list')}"
+
+.control-group{:class => "#{if @user.errors_on('one_liner')? then 'with-errors' else ''}"}
+  %label.control-label{:for => "one_liner"} One Liner
+  .controls
+    %input.span4{:type => 'text', :name => 'one_liner', :value => @user.get('one_liner')}
+      - if @user.errors_on('one_liner')?
+        %ul.errors
+          %li= "Location #{@user.errors_on('location')}"
+
+.control-group{:class => "#{if @user.errors_on('bio')? then 'with-errors' else ''}"}
+  %label.control-label{:for => "bio"} Bio
+  .controls
+    %textarea.span4.bio{:size => '80x4', :name => 'name'}= @user.get('bio')
+    - if @user.errors_on('bio')?
+      %ul.errors
+        %li= "Bio #{@user.errors_on('bio')}"
+    %p.help-block Minimum 100 characters
+
+%hr/
+.control-group
+  .controls
+    %h4
+      %small Me, elsewhere:
+
+.control-group{:class => "#{if @user.errors_on('twitter')? then 'with-errors' else ''}"}
+  %label.control-label{:for => "twitter"} Twitter
+  .controls
+    .input-prepend
+      %span.add-on{:style => 'margin-right: -5px'} @
+      %input.span2{:type => 'text', :name => 'twitter', :value => @user.get('twitter')}
+    - if @user.errors_on('twitter')?
+      %ul.errors
+        %li= "Twitter #{@user.errors_on('twitter')}"
+
+.control-group{:class => "#{if @user.errors_on('linkedin_url')? then 'with-errors' else ''}"}
+  %label.control-label{:for => "linkedin_url"} LinkedIn URL
+  .controls
+    %input.span3{:type => 'text', :name => 'linkedin_url', :value => @user.get('linkedin_url')}
+    - if @user.errors_on('linkedin_url')?
+      %ul.errors
+        %li= "LinkedIn URL #{@user.errors_on('linkedin_url')}"
+
+.form-actions
+  %input.btn.btn-primary.btn-large{:type => 'submit', :value => 'Save'}

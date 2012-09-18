@@ -126,7 +126,7 @@ class Question < ActiveRecord::Base
     super(
       options.merge(
         :only => [:id, :content, :created_at], 
-        :methods => [:user, :supporters_without_creator]
+        :methods => [:user, :supporters_without_creator, :errors]
       )
     )
   end

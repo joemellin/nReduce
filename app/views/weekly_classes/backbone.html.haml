@@ -5,7 +5,9 @@
   $(function() {
     data = {
       weekly_class: #{@weekly_class.to_json},
-      questions: #{@questions.to_json}
+      questions: #{@questions.to_json},
+      user: #{@user.to_json},
+      startup: #{@startup.to_json}
     };
     config = {
       tokbox: #{@tokbox_config.to_json}
