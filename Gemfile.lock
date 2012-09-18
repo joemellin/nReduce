@@ -145,6 +145,10 @@ GEM
       activesupport (~> 3.0)
       haml (~> 3.0)
       railties (~> 3.0)
+    haml_coffee_assets (1.4.9)
+      coffee-script (>= 1.0.0)
+      sprockets (>= 2.0.3)
+      tilt (>= 1.3.3)
     hashie (1.2.0)
     highline (1.6.13)
     hike (1.2.1)
@@ -394,6 +398,7 @@ DEPENDENCIES
   debugger
   devise (= 2.1.0)
   exception_notification
+  execjs
   factory_girl_rails
   fog
   formtastic
@@ -404,6 +409,7 @@ DEPENDENCIES
   guard-rspec
   guard-spork
   haml-rails
+  haml_coffee_assets
   hominid
   jquery-rails
   json (~> 1.7.3)

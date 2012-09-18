@@ -1,4 +1,11 @@
 Nreduce::Application.routes.draw do
+  # API
+  scope 'api(/:version)', :module => :api, :version => /v\d+?/ do
+    get 'questions' => 'questions#index'
+  end
+
+  # ADMIN
+
   # Admin constraint
   admin_constraint = lambda do |request|
     request.env['warden'].authenticate? and request.env['warden'].user.admin?
@@ -21,6 +28,7 @@ Nreduce::Application.routes.draw do
     mount RailsAdmin::Engine => '/db', :as => 'rails_admin'
   end
 
+  # ALL OTHER USER-FACING ROUTES
   devise_for :users, :controllers => {:registrations => 'registrations', :sessions => 'sessions'}
 
   resources :authentications, :checkins, :notifications, :rsvps

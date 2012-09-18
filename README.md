@@ -31,6 +31,9 @@ Then install imagemagick using homebrew with these flags:
 
     brew install imagemagick --disable-openmp
 
+### NPM / Javascript components
+A package.json file contains all the dependencies required for the Backbone App. Simply run "npm install" in the root directory.
+
 ### Install gems, migrate, start server
 
     bundle install

@@ -21,6 +21,7 @@ class QuestionsController < ApplicationController
     respond_to do |format|
       format.js { render :action => :list }
       format.html { render :nothing => true }
+      format.json { render :json => @questions }
     end
   end
 

@@ -75,3 +75,5 @@ module Nreduce
 end
 
 ActsAsTaggableOn.force_lowercase = true
+
+ActiveRecord::Base.include_root_in_json = false
