@@ -55,6 +55,10 @@ class Question < ActiveRecord::Base
     User.find(ids)
   end
 
+  def supporters_without_creator
+    supporters(true)
+  end
+
   def add_supporter!(user, dont_tweet = false)
     # Return true if already a supporter
     return true if self.is_supporter?(user)
@@ -117,6 +121,15 @@ class Question < ActiveRecord::Base
   #   end
   #   @@pusher_channel
   # end
+
+  def as_json(options = {})
+    super(
+      options.merge(
+        :only => [:id, :content, :created_at], 
+        :methods => [:user, :supporters_without_creator]
+      )
+    )
+  end
 
   protected
 

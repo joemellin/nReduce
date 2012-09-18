@@ -22,6 +22,7 @@ $ ->
       $("question_#{question_id}").remove()
 
     loadQuestions: ->
+      console.log 'load questions'
       @collection.fetch()
 
     render: ->

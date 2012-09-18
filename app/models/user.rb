@@ -618,6 +618,22 @@ class User < ActiveRecord::Base
     end
   end
 
+  # For use in Backbone app (that's why path is hardcoded)
+  def user_avatar_url
+    return self.pic_url(:small) if self.pic?
+    return self.external_pic_url unless self.external_pic_url.blank?
+    return '/images/pic_default_small.png'
+  end
+
+  def as_json(options = {})
+    super(
+      options.merge(
+        :only => [:id, :name], 
+        :methods => [:user_avatar_url]
+      )
+    )
+  end
+
   protected
 
   def initialize_teammate_invites_from_emails

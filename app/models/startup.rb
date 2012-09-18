@@ -392,6 +392,15 @@ class Startup < ActiveRecord::Base
     true
   end
 
+  def as_json(options = {})
+    super(
+      options.merge(
+        :only => [:id, :name], 
+        :methods => [:team_members, :profile_completeness_percent]
+      )
+    )
+  end
+
   protected
 
   def created_but_not_setup_yet?
