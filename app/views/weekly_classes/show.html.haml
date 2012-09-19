@@ -16,8 +16,16 @@
           &nbsp;
           = link_to "Ask the Founders!".html_safe, '#', :onclick => "$('.questions_modal').modal('show'); $('#question_content').focus(); return false;", :class => 'btn btn-large btn-success'
           &nbsp;
-      .profile_completeness
-        = render 'users/profile_completeness', :title => 'Startup Profile', :align => 'center'
+  .row
+    .span2
+      %p
+    .span6
+      .profile_completeness= render 'users/profile_completeness', :title => 'Startup Profile', :align => 'center'
+    .span1
+      %p
+    .span2.enter_gate{:style => 'padding-top: 10px'}= render 'weekly_classes/enter_gate'
+    .span1
+      %p
   .tabbable
     %ul.nav.nav-tabs
       %li#meet_startups_tab.active

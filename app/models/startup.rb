@@ -164,6 +164,11 @@ class Startup < ActiveRecord::Base
     (mentor_elements[:total][:passed] == true) and can_invite
   end
 
+  # They can enter from their weekly class if they have completed their profile and are connected to four other startups
+  def can_enter_nreduce?
+    self.profile_completeness_percent == 1.0 && self.connected_to_ids('Startup').size >= 4
+  end
+
     # Calculates profile completeness for all factors
     # Returns total percent out of 1 (eg: 0.25 for 25% completeness)
   def profile_completeness_percent
@@ -186,13 +191,13 @@ class Startup < ActiveRecord::Base
     # Returns hash of all elements + each team member's completeness as 
   def profile_elements
     elements = {
-      :elevator_pitch => (!self.elevator_pitch.blank? and (self.elevator_pitch.size > 10)), 
+      :elevator_pitch => (!self.elevator_pitch.blank? && (self.elevator_pitch.size > 10)), 
       :industry => !self.cached_industry_list.blank?,
     }
     self.team_members.each do |tm|
       elements[tm.name.to_url.to_sym] = tm.profile_completeness_percent
     end
-    elements[:at_least_four_connections] = self.connected_to_ids('Startup').size >= 4
+    #elements[:at_least_four_connections] = self.connected_to_ids('Startup').size >= 4
     elements
   end
 
@@ -323,6 +328,19 @@ class Startup < ActiveRecord::Base
   def invited_team_members!
     self.setup << :invite_team_members
     save
+  end
+
+  # Forces all setup complete actions to be set and saved for this startup and team members
+  def force_setup_complete!
+    self.setup = [:profile, :invite_team_members, :intro_video]
+    self.save
+    c = 0
+    self.team_members.each do |u|
+      # only suggest startups once, for first team member
+      u.setup_complete!(c == 0, true)
+      c += 1
+    end
+    true
   end
 
     # Returns true if the user has set everything up for the account (otherwise forces user to go through flow)

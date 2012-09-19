@@ -147,6 +147,7 @@ Nreduce::Application.routes.draw do
   resources :weekly_classes, :only => [:show] do
     member do 
       get 'update_state'
+      post 'graduate'
     end
   end
 

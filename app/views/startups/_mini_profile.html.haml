@@ -1,6 +1,6 @@
 %div{:style => 'margin-top: 20px;'}
   .right
-    - if @startup.profile_completeness_percent == 1.0 && current_user.profile_completeness_percent == 1.0
+    - if @startup.profile_completeness_percent == 1.0 && current_user.profile_completeness_percent == 1.0 && current_user.startup_id != @startup.id
       = render 'relationships/buttons', :entity => @entity, :connected_with => @startup, :relationship => @relationship
     - else
       %p

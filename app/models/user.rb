@@ -625,7 +625,10 @@ class User < ActiveRecord::Base
 
   def reset_cached_elements
     Cache.delete(['profile_c', self])
-    Cache.delete(['tm_ids', self.startup_id]) unless self.startup_id.blank?
+    unless self.startup_id.blank? # Reset cache for this person's startup
+      Cache.delete(['profile_c', "startup_#{self.startup_id}"])
+      Cache.delete(['tm_ids', self.startup_id])
+    end
     true
   end
 

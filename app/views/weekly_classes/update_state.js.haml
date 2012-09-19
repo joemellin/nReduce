@@ -1,6 +1,7 @@
 :plain
   $('.profile_completeness .progress .bar').attr('style', 'width: #{@profile_completeness_percent}%;');
   $('.profile_completeness .percent').text('#{@profile_completeness_percent}%');
+  $('.enter_gate').html("#{escape_javascript(render('weekly_classes/enter_gate'))}");
   $('#startups').html("#{escape_javascript(render('weekly_classes/startups_list'))}");
 
 - unless @questions.blank?
