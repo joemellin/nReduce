@@ -7,7 +7,7 @@ class WeeklyClassesController < ApplicationController
     @invite = Invite.new(:weekly_class => @weekly_class, :from_id => current_user.id, :invite_type => Invite::STARTUP)
     @sent_invites = current_user.sent_invites.to_startups.ordered
     @user = current_user
-    @in_time_window = true #@weekly_class.in_join_window?
+    @in_time_window = Rails.env.development? ? true : @weekly_class.in_join_window?
     if @in_time_window
       # Generates session key for startup and initializes user as moderator if they are a part of the startup
       @nreduce = Startup.find_by_obfuscated_id(Startup.nreduce_id)
