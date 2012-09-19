@@ -177,7 +177,7 @@ class User < ActiveRecord::Base
     {
       :email => !self.email.blank?, 
       :picture => self.pic?,
-      :bio => (!self.bio.blank? and (self.bio.size > 40)), 
+      :bio => (!self.bio.blank? and (self.bio.size > 40)),
       :linked_in => !self.linkedin_url.blank?,
       :skills => !self.cached_skill_list.blank?
     }
