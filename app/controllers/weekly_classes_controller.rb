@@ -25,6 +25,18 @@ class WeeklyClassesController < ApplicationController
     load_data
   end
 
+  # Graduate from the weekly class to enter nReduce
+  def graduate
+    @startup = current_user.startup
+    if @startup.can_enter_nreduce?
+      @startup.force_setup_complete!
+      flash[:notice] = "Welcome to your new community of founders!"
+      redirect_to '/'
+    else
+      redirect_to current_user.weekly_class
+    end
+  end
+
   protected
 
   def load_data
@@ -47,6 +59,8 @@ class WeeklyClassesController < ApplicationController
     @startups = @weekly_class.startups.sort{|a,b| a.profile_completeness_percent <=> b.profile_completeness_percent }.reverse
     team_member_ids = @startups.map{|s| s.cached_team_member_ids }.flatten
     @team_members = Hash.by_key(User.find(team_member_ids), :startup_id, nil, true) if team_member_ids.present?
+
+    @can_enter_nreduce = @startup.can_enter_nreduce?
     @profile_elements = @startup.profile_elements
     @profile_completeness_percent = (@startup.profile_completeness_percent * 100).round
     @relationships_by_startup = Hash.by_key(Relationship.where(:connected_with_id => @startup.id, :connected_with_type => @startup.class).all, :entity_id) 
