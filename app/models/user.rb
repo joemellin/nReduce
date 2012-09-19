@@ -59,7 +59,7 @@ class User < ActiveRecord::Base
   after_destroy :remove_from_mailchimp
   before_save :geocode_location
   before_save :ensure_roles_exist
-  before_save :reset_cached_elements
+  after_save :reset_cached_elements
   after_save :initialize_teammate_invites_from_emails
 
   acts_as_taggable_on :skills, :industries

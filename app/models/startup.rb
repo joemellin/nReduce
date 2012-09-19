@@ -43,7 +43,7 @@ class Startup < ActiveRecord::Base
   #validates_presence_of :company_goal, :if => :created_but_not_setup_yet?
 
   before_save :format_url
-  before_save :reset_cached_elements
+  after_save :reset_cached_elements
   after_create :initiate_relationships_from_invites
 
   acts_as_taggable_on :industries, :technologies, :ideologies
