@@ -2,7 +2,7 @@ class User < ActiveRecord::Base
   obfuscate_id :spin => 94062493
   include Connectable # methods for relationships
   acts_as_mappable
-  has_paper_trail :ignore => [:unread_nc, :weekly_class_id, :setup]
+  has_paper_trail :ignore => [:unread_nc, :weekly_class_id, :setup, :cached_skill_list, :cached_industry_list]
   belongs_to :startup
   belongs_to :meeting
   belongs_to :intro_video, :class_name => 'Video', :dependent => :destroy
@@ -59,6 +59,7 @@ class User < ActiveRecord::Base
   after_destroy :remove_from_mailchimp
   before_save :geocode_location
   before_save :ensure_roles_exist
+  after_save :reset_cached_elements
   after_save :initialize_teammate_invites_from_emails
 
   acts_as_taggable_on :skills, :industries
@@ -158,12 +159,14 @@ class User < ActiveRecord::Base
     # Calculates profile completeness for all factors
     # Returns total percent out of 1 (eg: 0.25 for 25% completeness)
   def profile_completeness_percent
-    total = completed = 0.0
-    self.profile_elements.each do |element, is_completed|
-      total += 1.0
-      completed += 1.0 if is_completed
-    end
-    (completed / total).round(2)
+    Cache.get(['profile_c', self], nil, true){
+      total = completed = 0.0
+      self.profile_elements.each do |element, is_completed|
+        total += 1.0
+        completed += 1.0 if is_completed
+      end
+      (completed / total).round(2)
+    }.to_f
   end
 
   def required_profile_elements
@@ -173,10 +176,10 @@ class User < ActiveRecord::Base
   def profile_elements
     {
       :email => !self.email.blank?, 
-      :picture => self.pic?, 
-      :bio => (!self.bio.blank? and (self.bio.size > 40)), 
+      :picture => self.pic?,
+      :bio => (!self.bio.blank? and (self.bio.size > 40)),
       :linked_in => !self.linkedin_url.blank?,
-      :skills => !self.skill_list.blank?
+      :skills => !self.cached_skill_list.blank?
     }
   end
 
@@ -292,8 +295,12 @@ class User < ActiveRecord::Base
   def remove_from_mailchimp
     return true unless mailchimped?
     return true unless Settings.apis.mailchimp.enabled
-    h = Hominid::API.new(Settings.apis.mailchimp.api_key)
-    h.list_unsubscribe(Settings.apis.mailchimp.everyone_list_id, self.email)
+    begin
+      h = Hominid::API.new(Settings.apis.mailchimp.api_key)
+      h.list_unsubscribe(Settings.apis.mailchimp.everyone_list_id, self.email)
+    rescue
+      # Do nothing
+    end
   end
 
   def account_setup_steps
@@ -484,7 +491,7 @@ class User < ActiveRecord::Base
         # Fetch profile from API
         profile = self.linkedin_profile
         unless profile.blank?
-          self.skill_list = profile.skills.all.map{|s| s.skill.name } if self.skill_list.blank? and !profile.skills.blank?
+          #self.skill_list = profile.skills.all.map{|s| s.skill.name } if self.skill_list.blank? and !profile.skills.blank?
           # applying location from IP instead for now
           #self.location = "#{profile.location.name}, #{profile.location.country.code}" if self.location.blank? and !profile.location.blank?
           self.bio = profile.summary if self.bio.blank?
@@ -619,6 +626,15 @@ class User < ActiveRecord::Base
   end
 
   protected
+
+  def reset_cached_elements
+    Cache.delete(['profile_c', self])
+    unless self.startup_id.blank? # Reset cache for this person's startup
+      Cache.delete(['profile_c', "startup_#{self.startup_id}"])
+      Cache.delete(['tm_ids', self.startup_id])
+    end
+    true
+  end
 
   def initialize_teammate_invites_from_emails
     return true

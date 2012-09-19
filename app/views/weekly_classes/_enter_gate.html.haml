@@ -1,0 +1,15 @@
+%h3 To Enter nReduce:
+%ol
+  %li
+    Complete your profile
+    - if @startup.profile_completeness_percent == 1.0
+      %i.icon-ok
+  %li
+    Connect to 4 startups
+    - if @startup.connected_to_ids('Startup').size >= 4
+      %i.icon-ok
+%br/
+- if @can_enter_nreduce
+  = link_to 'Enter nReduce', graduate_weekly_class_path(@weekly_class), :method => :post, :class => 'btn btn-large btn-success', :style => 'font-size: 1.5em'
+- else
+  = link_to 'Enter nReduce', '#', :class => 'btn btn-large disabled', :style => 'font-size: 1.5em'

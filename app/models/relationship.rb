@@ -137,7 +137,7 @@ class Relationship < ActiveRecord::Base
         # Relationship exists - check to see if it's in the right state
         # It could've been a previously suggested relationship that the entity wants to approve now (changed mind)
         r = Relationship.where(:entity_id => self.entity_id, :entity_type => self.entity_type, :connected_with_id => self.connected_with_id, :connected_with_type => self.connected_with_type).first
-        r.approve! if !r.blank? and !r.approved?
+        r.approve! if !r.blank? && r.pending?
       end
       true
     end
@@ -201,6 +201,10 @@ class Relationship < ActiveRecord::Base
   def reset_cache_for_entities_involved
     Cache.delete(['connections', "#{entity_type.downcase}_#{entity_id}"])
     Cache.delete(['connections', "#{connected_with_type.downcase}_#{connected_with_id}"])
+    if self.context == [:startup_startup]
+      Cache.delete(['profile_c', "#{entity_type.downcase}_#{entity_id}"])
+      Cache.delete(['profile_c', "#{connected_with_type.downcase}_#{connected_with_id}"])
+    end
     # Not caching suggested connections yet
     #Cache.delete(['sugg_connections', "#{entity_type.downcase}_#{entity_id}"])
     #Cache.delete(['sugg_connections', "#{connected_with_type.downcase}_#{connected_with_id}"])

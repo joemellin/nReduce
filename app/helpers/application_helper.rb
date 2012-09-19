@@ -142,7 +142,7 @@ module ApplicationHelper
         if is_complete == 1.0
           ret += "&#x2713; #{name.to_s.titleize}"
         else
-          ret += "#{name.to_s.titleize} #{(is_complete * 100).round}%"
+          ret += "#{name.to_s.titleize} #{(is_complete * 100).round}% complete"
         end
       # otherwise boolean
       else

@@ -52,8 +52,10 @@ class WeeklyClass < ActiveRecord::Base
     WeeklyClass.find_or_create_by_week(:week => week)
   end
 
-  def self.top_stats
-    WeeklyClass.select('MAX(weekly_classes.num_users) AS max_users, MAX(weekly_classes.num_startups) AS max_startups, MAX(weekly_classes.num_countries) AS max_countries, MAX(weekly_classes.num_industries) as max_industries').all.first
+  def self.top_stats(ignore_weekly_class = nil)
+    wc = WeeklyClass.select('MAX(weekly_classes.num_users) AS max_users, MAX(weekly_classes.num_startups) AS max_startups, MAX(weekly_classes.num_countries) AS max_countries, MAX(weekly_classes.num_industries) as max_industries')
+    wc = wc.where(['id != ?', ignore_weekly_class.id]) if ignore_weekly_class.present?
+    wc.all.first
   end
 
   # This is the time window in which you join

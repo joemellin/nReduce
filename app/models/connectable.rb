@@ -111,7 +111,7 @@ module Connectable
     start_after = end_after - 24.hours
     checkins = Checkin.completed.where(['completed_at >= ? AND completed_at <= ?', start_after, end_after]).includes(:startup).all
 
-    return startups if checkins.blank?
+    return suggested if checkins.blank?
 
     1.upto(checkins.size) do
       break if suggested.size >= limit

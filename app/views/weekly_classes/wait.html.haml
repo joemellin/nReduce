@@ -67,21 +67,9 @@
       %center
         %h3 Meet the Other nReducers Joining With You
 
-      %div{:align => 'center', :style => 'margin-top: 20px'}
-        - @weekly_class.users.each do |u|
-          - img = image_tag(user_avatar_url(u), :style => 'width: 50px; height: 50px')
-          .inline-block.attendee= u.linkedin_url.present? ? link_to_external(img, u.linkedin_url) : img
-        .clear
+      
 
-
-  %hr/
-  .row.letter{:style => 'margin-top: 30px'}
-    .span3
-      %p
-    .span6
-      = render 'weekly_classes/letter'
-    .span3
-      %p
+  
 
 
 

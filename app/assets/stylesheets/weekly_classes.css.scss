@@ -8,12 +8,12 @@
     position: relative;
     .profile_completeness {
       .well {
-        width: 800px;
+        width: 600px;
         .progress {
-          width: 800px;
+          width: 600px;
         }
       }
-      margin-right: 100px;
+      margin-left: 100px;
     }
     .team {
       .status {
@@ -72,8 +72,9 @@
     }
     .stats {
       .stat {
+        vertical-align: top;
         text-align: center;
-        padding: 5px 10px 5px 10px;
+        padding: 15px 10px 5px 10px;
         position: relative;
         .number {
           font-size: 4em;
