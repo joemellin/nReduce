@@ -42,7 +42,7 @@
   .control-group{error_css(@user, :skill_list)}
     = f.label :skill_list, "Skills", :class => 'control-label'
     .controls
-      = text_field_tag 'user[skill_list]', @user.skill_list.map{|i| i.titleize }.join(', '), :maxlength => 45, :placeholder => 'comma, separated', :class => 'span4 skills_list_autocomplete'
+      = text_field_tag 'user[skill_list]', @user.skill_list.map{|i| i.titleize }.join(', '), :maxlength => 80, :placeholder => 'comma, separated', :class => 'span4 skills_list_autocomplete'
       = f.semantic_errors :skill_list
 
 - if (@user.mentor? or @user.investor?) and show_user_field?(:industry_list)
