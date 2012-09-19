@@ -68,7 +68,7 @@
                 = f.submit (connected_with.is_a?(Startup) ? 'Invite to Group' : 'Connect'), :class => 'btn btn-info btn-large'
 
   
-  // Show line demarcating completed and not completed teams
+  -# Show line demarcating completed and not completed teams
   - if !displayed_line && s.profile_completeness_percent < 1.0
     - displayed_line = true
     - if c != 1
@@ -78,7 +78,7 @@
         %h3{:style => 'padding: 10px 0 10px 0'} The below teams need to complete their profile before you can connect with them:
       %hr/
       %br/
-      - c == 3
+      - c == 4
   - elsif c % 4 == 0 && c != 1
     .clear
   - c += 1
