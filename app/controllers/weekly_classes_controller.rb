@@ -15,18 +15,16 @@ class WeeklyClassesController < ApplicationController
     if @in_time_window
       # Generates session key for startup and initializes user as moderator if they are a part of the startup
       @nreduce = Startup.find_by_obfuscated_id(Startup.nreduce_id)
-      load_data
       initialize_tokbox_session(@nreduce)
-    else
-      @weekly_class.save #recalc stats
     end
-    render :action => @in_time_window ? 'show' : 'wait'
+    load_data(@in_time_window)
   end
 
   def update_state
     @nreduce = Startup.find_by_obfuscated_id(Startup.nreduce_id)
     @user = current_user
-    load_data
+    @in_time_window = @weekly_class.in_join_window?
+    load_data(@in_time_window)
   end
 
   # Graduate from the weekly class to enter nReduce
@@ -43,23 +41,27 @@ class WeeklyClassesController < ApplicationController
 
   protected
 
-  def load_data
-    if params[:last].present?
-      begin
-        last_polled_at = Time.parse(params[:last])
-      rescue
-        last_polled_at = nil
-      end
-    else
-      last_polled_at = nil
-    end
+  def load_data(live_join = false)
     if current_user.startup.blank?
       create_startup
     else
       @startup = current_user.startup
     end
+    if live_join
+      if params[:last].present?
+        begin
+          last_polled_at = Time.parse(params[:last])
+        rescue
+          last_polled_at = nil
+        end
+      else
+        last_polled_at = nil
+      end
+      load_questions_for_startup(@nreduce, last_polled_at)
+    end
+
     @setup = true
-    load_questions_for_startup(@nreduce, last_polled_at)
+    
     @startups = @weekly_class.startups.uniq.sort{|a,b| a.profile_completeness_percent <=> b.profile_completeness_percent }.reverse
     team_member_ids = @startups.map{|s| s.cached_team_member_ids }.flatten
     @team_members = Hash.by_key(User.find(team_member_ids), :startup_id, nil, true) if team_member_ids.present?
