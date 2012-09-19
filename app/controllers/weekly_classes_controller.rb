@@ -7,7 +7,7 @@ class WeeklyClassesController < ApplicationController
     @invite = Invite.new(:weekly_class => @weekly_class, :from_id => current_user.id, :invite_type => Invite::STARTUP)
     @sent_invites = current_user.sent_invites.to_startups.ordered
     @user = current_user
-    @in_time_window = @weekly_class.in_join_window?
+    @in_time_window = true #@weekly_class.in_join_window?
     if @in_time_window
       # Generates session key for startup and initializes user as moderator if they are a part of the startup
       @nreduce = Startup.find_by_obfuscated_id(Startup.nreduce_id)
@@ -42,8 +42,11 @@ class WeeklyClassesController < ApplicationController
     else
       @startup = current_user.startup
     end
+    @setup = true
     load_questions_for_startup(@nreduce, last_polled_at)
     @startups = @weekly_class.startups.sort{|a,b| a.profile_completeness_percent <=> b.profile_completeness_percent }.reverse
+    team_member_ids = @startups.map{|s| s.cached_team_member_ids }.flatten
+    @team_members = Hash.by_key(User.find(team_member_ids), :startup_id, nil, true) if team_member_ids.present?
     @profile_elements = @startup.profile_elements
     @profile_completeness_percent = (@startup.profile_completeness_percent * 100).round
     @relationships_by_startup = Hash.by_key(Relationship.where(:connected_with_id => @startup.id, :connected_with_type => @startup.class).all, :entity_id) 
