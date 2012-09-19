@@ -35,7 +35,7 @@
           Questions
           %span.badge.badge-warning#question_count= @questions.size
       %li#profile_tab
-        %a{:href => '#profile', 'data-toggle' => 'tab'} Your Profile
+        %a{:href => '#profile', 'data-toggle' => 'tab'} #{current_user.name.possessive} Profile
       %li#startup_profile_tab
         %a{:href => '#startup_profile', 'data-toggle' => 'tab'} Team Profile
     .tab-content
