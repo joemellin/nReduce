@@ -192,7 +192,8 @@ class Startup < ActiveRecord::Base
   def profile_elements
     elements = {
       :elevator_pitch => (!self.elevator_pitch.blank? && (self.elevator_pitch.size > 10)), 
-      :industry => !self.cached_industry_list.blank?,
+      :markets => !self.cached_industry_list.blank?,
+      :one_liner => self.one_liner.present?
     }
     self.team_members.each do |tm|
       elements[tm.name.to_url.to_sym] = tm.profile_completeness_percent

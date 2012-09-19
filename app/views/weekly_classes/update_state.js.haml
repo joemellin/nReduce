@@ -1,6 +1,5 @@
 :plain
-  $('.profile_completeness .progress .bar').attr('style', 'width: #{@profile_completeness_percent}%;');
-  $('.profile_completeness .percent').text('#{@profile_completeness_percent}%');
+  $('.profile_completeness').html("#{escape_javascript(render('users/profile_completeness', :title => 'Startup Profile', :align => 'center'))}");
   $('.enter_gate').html("#{escape_javascript(render('weekly_classes/enter_gate'))}");
   $('#startups').html("#{escape_javascript(render('weekly_classes/startups_list'))}");
 
