@@ -1,7 +1,7 @@
 class Startup < ActiveRecord::Base
   obfuscate_id :spin => 29406582
   include Connectable # methods for relationships
-  has_paper_trail
+  has_paper_trail :ignore => [:setup, :cached_industry_list]
   belongs_to :main_contact, :class_name => 'User'
   belongs_to :meeting
   belongs_to :intro_video, :class_name => 'Video', :dependent => :destroy
@@ -43,6 +43,7 @@ class Startup < ActiveRecord::Base
   #validates_presence_of :company_goal, :if => :created_but_not_setup_yet?
 
   before_save :format_url
+  after_save :reset_cached_elements
   after_create :initiate_relationships_from_invites
 
   acts_as_taggable_on :industries, :technologies, :ideologies
@@ -163,32 +164,41 @@ class Startup < ActiveRecord::Base
     (mentor_elements[:total][:passed] == true) and can_invite
   end
 
+  # They can enter from their weekly class if they have completed their profile and are connected to four other startups
+  def can_enter_nreduce?
+    self.profile_completeness_percent == 1.0 && self.connected_to_ids('Startup').size >= 4
+  end
+
     # Calculates profile completeness for all factors
     # Returns total percent out of 1 (eg: 0.25 for 25% completeness)
   def profile_completeness_percent
-    total = completed = 0.0
-    self.profile_elements.each do |element, is_completed|
-      total += 1.0
-      # Team member completeness %
-      if is_completed.is_a? Float
-        completed += is_completed
-      # Boolean completeness
-      else
-        completed += 1.0 if is_completed
+    Cache.get(['profile_c', self], nil, true){
+      total = completed = 0.0
+      self.profile_elements.each do |element, is_completed|
+        total += 1.0
+        # Team member completeness %
+        if is_completed.is_a? Float
+          completed += is_completed
+        # Boolean completeness
+        else
+          completed += 1.0 if is_completed
+        end
       end
-    end
-    (completed / total).round(2)
+      (completed / total).round(2)
+    }.to_f
   end
 
     # Returns hash of all elements + each team member's completeness as 
   def profile_elements
     elements = {
-      :elevator_pitch => (!self.elevator_pitch.blank? and (self.elevator_pitch.size > 10)), 
-      :industry => !self.industry_list.blank?,
+      :elevator_pitch => (!self.elevator_pitch.blank? && (self.elevator_pitch.size > 10)), 
+      :markets => !self.cached_industry_list.blank?,
+      :one_liner => self.one_liner.present?
     }
     self.team_members.each do |tm|
       elements[tm.name.to_url.to_sym] = tm.profile_completeness_percent
     end
+    #elements[:at_least_four_connections] = self.connected_to_ids('Startup').size >= 4
     elements
   end
 
@@ -321,6 +331,19 @@ class Startup < ActiveRecord::Base
     save
   end
 
+  # Forces all setup complete actions to be set and saved for this startup and team members
+  def force_setup_complete!
+    self.setup = [:profile, :invite_team_members, :intro_video]
+    self.save
+    c = 0
+    self.team_members.each do |u|
+      # only suggest startups once, for first team member
+      u.setup_complete!(c == 0, true)
+      c += 1
+    end
+    true
+  end
+
     # Returns true if the user has set everything up for the account (otherwise forces user to go through flow)
   def account_setup?
     self.setup?(:profile, :invite_team_members, :intro_video)
@@ -392,7 +415,18 @@ class Startup < ActiveRecord::Base
     true
   end
 
+  def cached_team_member_ids
+    ids = Cache.get(['tm_ids', self.id]){
+      User.where(:startup_id => self.id).map{|u| u.id }  
+    }
+  end
+
   protected
+
+  def reset_cached_elements
+    Cache.delete(['profile_c', self])
+    true
+  end
 
   def created_but_not_setup_yet?
     !self.new_record? && !self.account_setup?
