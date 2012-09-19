@@ -295,8 +295,12 @@ class User < ActiveRecord::Base
   def remove_from_mailchimp
     return true unless mailchimped?
     return true unless Settings.apis.mailchimp.enabled
-    h = Hominid::API.new(Settings.apis.mailchimp.api_key)
-    h.list_unsubscribe(Settings.apis.mailchimp.everyone_list_id, self.email)
+    begin
+      h = Hominid::API.new(Settings.apis.mailchimp.api_key)
+      h.list_unsubscribe(Settings.apis.mailchimp.everyone_list_id, self.email)
+    rescue
+      # Do nothing
+    end
   end
 
   def account_setup_steps
