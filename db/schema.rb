@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120911204522) do
+ActiveRecord::Schema.define(:version => 20120919144751) do
 
   create_table "authentications", :force => true do |t|
     t.string   "provider"
@@ -276,22 +276,22 @@ ActiveRecord::Schema.define(:version => 20120911204522) do
     t.integer  "growth_model"
     t.integer  "company_goal"
     t.string   "intro_video_url"
-    t.integer  "onboarding_step",   :default => 1
-    t.integer  "team_size",         :default => 1
-    t.boolean  "active",            :default => true
-    t.boolean  "public",            :default => true
+    t.integer  "onboarding_step",      :default => 1
+    t.integer  "team_size",            :default => 1
+    t.boolean  "active",               :default => true
+    t.boolean  "public",               :default => true
     t.datetime "launched_at"
     t.integer  "main_contact_id"
     t.integer  "meeting_id"
-    t.datetime "created_at",                           :null => false
-    t.datetime "updated_at",                           :null => false
+    t.datetime "created_at",                              :null => false
+    t.datetime "updated_at",                              :null => false
     t.text     "elevator_pitch"
     t.string   "logo"
     t.float    "rating"
-    t.boolean  "checkins_public",   :default => false
+    t.boolean  "checkins_public",      :default => false
     t.string   "pitch_video_url"
     t.integer  "setup"
-    t.boolean  "investable",        :default => false
+    t.boolean  "investable",           :default => false
     t.integer  "week"
     t.integer  "intro_video_id"
     t.integer  "pitch_video_id"
@@ -299,6 +299,7 @@ ActiveRecord::Schema.define(:version => 20120911204522) do
     t.date     "founding_date"
     t.string   "market_size"
     t.string   "tokbox_session_id"
+    t.string   "cached_industry_list"
   end
 
   add_index "startups", ["public"], :name => "index_startups_on_public"
@@ -393,6 +394,8 @@ ActiveRecord::Schema.define(:version => 20120911204522) do
     t.integer  "followers_count"
     t.integer  "weekly_class_id"
     t.string   "country"
+    t.string   "cached_skill_list"
+    t.string   "cached_industry_list"
   end
 
   add_index "users", ["email"], :name => "index_users_on_email", :unique => true
