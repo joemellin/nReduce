@@ -1,0 +1,13 @@
+.questions
+  .row{:style => 'border-bottom: 1px solid #efefef; padding-bottom: 10px'}
+    .span1{:style => 'color: #ccc; font-size: 1.8em;', :align => 'center'}
+      %h3 Rank
+    .span1
+      %br/
+    .span7{:style => 'color: #ccc; font-size: 1.8em;'}
+      %h3 Question
+  - if @questions?
+    - c = 0
+    - for question in @questions
+      != JST['backbone/templates/question'](question: question, rank: c)
+      - c += 1

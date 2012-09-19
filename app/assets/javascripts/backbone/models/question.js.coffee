@@ -5,8 +5,6 @@ $ ->
   )
 
   Nreduce.Collections.Questions = Backbone.Collection.extend(
-    model: Nreduce.Models.Question
-
     url: '/api/questions'
 
     initialize: ->
@@ -14,5 +12,16 @@ $ ->
       @bind('reset', @renderAll)
 
     renderAll: ->
-      @view.render()
+      @view.render() if @view?
+
+    # Needed for Supermodel
+    model: (attrs, options) ->
+      Nreduce.Models.Question.create(attrs, options)
   )
+
+  Nreduce.Models.Question.has().one('user',
+    model: User,
+    inverse: 'questions'
+  )
+
+  _.extend(Nreduce.Models.Question, Nreduce.Mixins.Models)

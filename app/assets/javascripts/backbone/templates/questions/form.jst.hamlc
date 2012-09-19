@@ -1,0 +1,19 @@
+%form#question_form{:action => '#'}
+  %input{:type => 'hidden', :name => 'startup_id', :value => @question.get('startup_id')}
+  
+  - if @question.errors_on('startup_id')?
+    %ul.errors
+      %li= "Startup #{@question.errors_on('startup_id')}"
+
+  .control-group{:class => "#{if @question.errors_on('content')? then 'with-errors' else ''}"}
+    %textarea.span5#question_content{:name => 'content'}= @question.get('content')
+    - if @question.errors_on('content')?
+      %ul.errors
+        %li= "Question #{@question.errors_on('content')}"
+    
+  %div{:align => 'center', :style => 'margin-top: 20px'}
+    %input.btn.btn-success.btn-large{:type => 'submit', :value => 'Ask Question'}
+  
+  :coffeescript
+    $ ->
+      $('#question_content').textareaCount(maxCharacterSize: 90, displayFormat: '#input characters (limit of 90)')

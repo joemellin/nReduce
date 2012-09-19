@@ -3,6 +3,8 @@ $ ->
     el: '#app #weekly_class'
     className: 'weekly_classes'
     template: JST['backbone/templates/weekly_class']
+    events:
+      'click .ask_a_question a': 'showQuestionForm'
 
     initialize: (data = {}) ->
       # bind 'this' context
@@ -20,6 +22,12 @@ $ ->
 
       @render()
 
+    showQuestionForm: ->
+      $('.questions_modal').modal('show')
+      $('#question_content').focus()
+
     render: ->
-      @.$el.html(@template(weekly_class: @model, user: @user, startup: @startup, questions: @questionView.collection))
+      @.$el.html(@template(weekly_class: @model, user: @user, startup: @startup))
+      @questionView.loadQuestions()
+ 
   )

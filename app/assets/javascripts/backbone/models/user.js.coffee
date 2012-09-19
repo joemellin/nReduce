@@ -11,18 +11,25 @@ $ ->
 
     is_mentor: ->
       _.include(@roles, 'mentor')
-
-    # Returns the errors for a given field name
-    errors_on: (field) ->
-      if @get('errors')?
-        @get('errors')['field']
-      else
-        null
   )
 
   Nreduce.Collections.Users = Backbone.Collection.extend(
-    model: Nreduce.Models.User
-
     url: '/api/users'
 
+    # Needed for Supermodel
+    model: (attrs, options) ->
+      Nreduce.Models.User.create(attrs, options)
+
   )
+
+  Nreduce.Models.User.has().many('questions',
+    collection: Nreduce.Models.Question,
+    inverse: 'user'
+  )
+
+  Nreduce.Models.User.has().one('weekly_class',
+    collection: Nreduce.Models.WeeklyClass,
+    inverse: 'users'
+  )
+
+  _.extend(Nreduce.Models.User, Nreduce.Mixins.Models)

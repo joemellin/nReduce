@@ -4,8 +4,17 @@ $ ->
   )
 
   Nreduce.Collections.WeeklyClasses = Backbone.Collection.extend(
-    model: Nreduce.Models.WeeklyClass
-
     url: '/api/weekly_classes'
 
+      # Needed for Supermodel
+    model: (attrs, options) ->
+      Nreduce.Models.WeeklyClass.create(attrs, options)
+
   )
+
+  Nreduce.Models.WeeklyClass.has().many('users',
+    collection: Nreduce.Models.User,
+    inverse: 'weekly_class'
+  )
+
+  _.extend(Nreduce.Models.WeeklyClass, Nreduce.Mixins.Models)

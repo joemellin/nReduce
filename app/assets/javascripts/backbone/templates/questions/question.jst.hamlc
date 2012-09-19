@@ -1,0 +1,23 @@
+.row.question{:id => "question_#{@question.get('id')}", :class => 'unseen'}
+  .span1{:align => 'center'}
+    %h2= @rank
+  .span7
+    .content
+      %span{:style => 'color: #ccc; padding-right: 5px'} Q:
+      = @question.escape('content')
+    .row
+      .span2.asked_by
+        Asked By:
+        %br/
+        %img{:src => @question.get('user').user_avatar_url}
+        = @question.get('user').name
+      .span5
+        - if @question.get('supporters')?
+          Supporters:
+          %br/
+          - for user in @question.get('supporters')
+            .supporter.left= user.user_avatar_url
+          .clear
+  .span2
+    %h3
+      &nbsp;

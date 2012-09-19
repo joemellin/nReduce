@@ -1,6 +1,0 @@
-.questions
-  %h2 Questions
-  %ul
-    - for question in @questions
-      != JST['backbone/templates/question'](question: question)
-  %a#reload_questions{:href => '#'} Reload Questions

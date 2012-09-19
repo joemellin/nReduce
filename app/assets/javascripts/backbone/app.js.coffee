@@ -4,6 +4,8 @@
 # Backbone, Underscore & Rails Sync Lib
 #= require ./lib/underscore-min
 #= require ./lib/backbone-min
+#= require ./lib/backbone-supermodel-min
+#= require ./lib/backbone-mixins
 # require ./lib/backbone-rails-sync
 
 # All Haml-Coffee Templates for Backbone (uses haml_coffee_assets gem)
@@ -21,6 +23,7 @@ window.Nreduce =
   Routers: {}
   Views: {}
   Config: {}
+  Mixins: {}
   initialize: (data = {}, config = {}) ->
     #questions = new Nreduce.Collections.Questions()
     Nreduce.Config = config if config?

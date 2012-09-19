@@ -632,7 +632,7 @@ class User < ActiveRecord::Base
   def as_json(options = {})
     super(
       options.merge(
-        :only => [:id, :name], 
+        :only => [:id, :name, :email, :one_liner, :bio, :location, :twitter, :linkedin_url], 
         :methods => [:user_avatar_url, :roles, :errors, :pic_url_small, :skill_list, :industries_list]
       )
     )

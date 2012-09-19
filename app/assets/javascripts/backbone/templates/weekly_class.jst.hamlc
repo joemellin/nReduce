@@ -15,7 +15,7 @@
         %h2
           Have a question?
           &nbsp;
-          // link_to "Ask the Founders!".html_safe, '#', :onclick => "$('.questions_modal').modal('show'); $('#question_content').focus(); return false;", :class => 'btn btn-large btn-success'
+          %a.btn.btn-large.btn-success{:href => '#'} Ask the Founders!
           &nbsp;
       .profile_completeness
         // render 'users/profile_completeness', :title => 'Startup Profile', :align => 'center'
@@ -26,19 +26,19 @@
       %li#questions_tab
         %a{:href => '#questions', 'data-toggle' => 'tab'}
           Questions
-          %span.badge.badge-warning#question_count= @questions.size
+          %span.badge.badge-warning#question_count= @questions.length
       %li#profile_tab
-        %a{:href => '#profile', 'data-toggle' => 'tab'} Your Profile
+        %a{:href => '#user', 'data-toggle' => 'tab'} Your Profile
       %li#startup_profile_tab
-        %a{:href => '#startup_profile', 'data-toggle' => 'tab'} Team Profile
+        %a{:href => '#startup', 'data-toggle' => 'tab'} Team Profile
     .tab-content
       .tab-pane.active#meet_startups
         #startup_mini_profile.hide
         #startups
           // render 'weekly_classes/startups_list'
 
-      .tab-pane#questions
-        != JST['backbone/templates/questions'](questions: @questions)
+      .tab-pane#questions_list
+        /!= JST['backbone/templates/questions'](questions: @questions)
       .tab-pane#user
         != JST['backbone/templates/users/edit'](user: @user)
       .tab-pane#startup
@@ -51,4 +51,4 @@
         // Ask the founders of nReduce a question
     .modal-body
       .question_form
-        // render 'questions/form', :startup => @nreduce
+        != JST['backbone/templates/questions/form'](question: new Nreduce.Models.Question(startup_id: @startup.id))
