@@ -4,6 +4,20 @@
   - this_startup_url = mini_profile_startup_path(s)
   - logo_path = s.logo_url(:square)
   - owner = (s.id == current_user.startup_id ? true : false)
+  -# Show line demarcating completed and not completed teams
+  - if !displayed_line && s.profile_completeness_percent < 1.0
+    - displayed_line = true
+    - if c != 1
+      .clear
+      %hr/
+      %center
+        %h3{:style => 'padding: 10px 0 10px 0'} The below teams need to complete their profile before you can connect with them:
+      %hr/
+      %br/
+      - c == 3
+  - elsif c % 4 == 0 && c != 1
+    .clear
+  - c += 1
   .team.left{:align => 'center', :style => 'width: 270px'}
     .top{:align => 'center', :onclick => "$.get('#{this_startup_url}'); return false;"}
       .background{:style => "background-image: url('#{logo_path}'); cursor: pointer;"} &nbsp;
@@ -66,19 +80,3 @@
                 %br/
                 %br/
                 = f.submit (connected_with.is_a?(Startup) ? 'Invite to Group' : 'Connect'), :class => 'btn btn-info btn-large'
-
-  
-  -# Show line demarcating completed and not completed teams
-  - if !displayed_line && s.profile_completeness_percent < 1.0
-    - displayed_line = true
-    - if c != 1
-      .clear
-      %hr/
-      %center
-        %h3{:style => 'padding: 10px 0 10px 0'} The below teams need to complete their profile before you can connect with them:
-      %hr/
-      %br/
-      - c == 3
-  - elsif c % 4 == 0 && c != 1
-    .clear
-  - c += 1
