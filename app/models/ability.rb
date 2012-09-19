@@ -211,9 +211,9 @@ class Ability
     cannot :all, WeeklyClass
     can [:read, :update_state, :graduate], WeeklyClass, :id => user.weekly_class_id
     
-    if current_user.startup_id.present?
+    if user.startup_id.present?
       can :graduate, WeeklyClass do |w|
-        user.weekly_class_id == w.id && current_user.startup.can_enter_nreduce?
+        user.weekly_class_id == w.id && user.startup.can_enter_nreduce?
       end
     end
 
