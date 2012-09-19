@@ -210,9 +210,12 @@ class Ability
 
     cannot :all, WeeklyClass
     can [:read, :update_state, :graduate], WeeklyClass, :id => user.weekly_class_id
-    # can :graduate, WeeklyClass do |w|
-    #   current_user.startup.can_enter_nreduce?
-    # end
+    
+    if current_user.startup_id.present?
+      can :graduate, WeeklyClass do |w|
+        user.weekly_class_id == w.id && current_user.startup.can_enter_nreduce?
+      end
+    end
 
     # Can only create a startup if registration is open and they don't have a current startup
     can [:new, :create, :edit], Startup do |startup|
