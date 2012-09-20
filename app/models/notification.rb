@@ -77,9 +77,11 @@ class Notification < ActiveRecord::Base
   end
 
   def self.create_for_new_comment(comment)
-    startup = comment.checkin.startup
-    startup.team_members.each do |u|
-      Notification.create_and_send(u, comment, :new_comment) unless u.id == comment.user_id
+    if comment.for_checkin?
+      startup = comment.checkin.startup
+      startup.team_members.each do |u|
+        Notification.create_and_send(u, comment, :new_comment) unless u.id == comment.user_id
+      end
     end
   end
 

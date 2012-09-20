@@ -1,12 +1,16 @@
 - is_owner = (user_signed_in? and (comment.user_id.to_s == current_user.id.to_s)) ? true : false
-= div_for comment do
-  .right.controls{:style => 'padding-top: 8px;'}
-    -# .left!= render_awesome_button(comment)
-    &nbsp;
+= div_for comment, :class => comment.original_post? ? 'post' : 'comment' do
+  .right{:style => 'padding-top: 8px;'}
+    - if comment.original_post?
+      .left!= render_awesome_button(comment)
+    - else
+      %p
   .left.pic
     - title = comment.user.name + (!comment.user.twitter.blank? ? " - @#{comment.user.twitter}" : '')
     %div= link_to image_tag(user_avatar_url(comment.user), :style => 'width: 50px; height: 50px;', :title => title), user_path(comment.user)
   .left
+    - if comment.original_post?
+      .content= auto_link(simple_format(comment.content), :html => { :target => '_blank' }){ |text| truncate(text, :length => 30) }
     = link_to "#{is_owner ? 'You' : truncate(comment.user.name, :length => 20)}", user_path(comment.user)
     - if comment.user.roles?(:mentor) or comment.user.roles?(:nreduce_mentor)
       &nbsp;•&nbsp;Mentor
@@ -17,13 +21,17 @@
     %span.time= link_to "#{time_ago_in_words(comment.created_at)} ago", "#comment_#{comment.id}"
     - unless comment.awesome_count == 0
       •
-      %strong= pluralize(comment.awesome_count, 'awesome')
+      %strong= pluralize(comment.awesome_count, 'like')
     •
-    = link_to 'Reply', reply_to_comment_path(comment), :remote => true
+    - if comment.original_post?
+      = link_to 'Reply', post_path(comment)
+    - else
+      = link_to 'Reply', reply_to_comment_path(comment), :remote => true
     - if is_owner
       &nbsp;•&nbsp;
       = link_to 'Edit', edit_comment_path(comment), :remote => true
       &nbsp;•&nbsp;
-      %strong= link_to 'x', comment, :method => :delete, :remote => true, :confirm => "Are you sure you want to delete the comment?"
-    .content= simple_format(h(comment.content))
+      %strong= link_to 'x', comment, :method => :delete, :remote => true, :confirm => "Are you sure you want to delete the #{comment.original_post? ? 'post' : 'comment'}?"
+    - unless comment.original_post?
+      .content= simple_format(h(comment.content))
   .clear
