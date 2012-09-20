@@ -1,6 +1,6 @@
 %ol
   %li
-    Complete your profile
+    Complete your startup profile
     - if @startup.profile_completeness_percent == 1.0
       %i.icon-ok
   %li
@@ -9,6 +9,6 @@
       %i.icon-ok
 %br/
 - if @can_enter_nreduce
-  /= link_to 'Enter nReduce', graduate_weekly_class_path(@weekly_class), :method => :post, :class => 'btn btn-large btn-success', :style => 'font-size: 1.5em'
+  =# link_to 'Enter nReduce', graduate_weekly_class_path(@weekly_class), :method => :post, :class => 'btn btn-large btn-success', :style => 'font-size: 1.5em'
 - else
-  / = link_to 'Enter nReduce', '#', :class => 'btn btn-large disabled', :style => 'font-size: 1.5em'
+  =# link_to 'Enter nReduce', '#', :class => 'btn btn-large disabled', :style => 'font-size: 1.5em'
