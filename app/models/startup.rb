@@ -26,7 +26,8 @@ class Startup < ActiveRecord::Base
     :growth_model, :stage, :company_goal, :meeting_id, :one_liner, :active, :launched_at, 
     :industry_list, :technology_list, :ideology_list, :industry, :intro_video_url, :elevator_pitch, 
     :logo, :remote_logo_url, :logo_cache, :remove_logo, :checkins_public, :pitch_video_url, 
-    :investable, :screenshots_attributes, :business_model, :founding_date, :market_size
+    :investable, :screenshots_attributes, :business_model, :founding_date, :market_size, :in_signup_flow
+  attr_accessor :in_signup_flow
 
   accepts_nested_attributes_for :screenshots, :reject_if => proc {|attributes| attributes.all? {|k,v| v.blank?} }, :allow_destroy => true
   accepts_nested_attributes_for :intro_video, :reject_if => proc {|attributes| attributes.all? {|k,v| v.blank?} }, :allow_destroy => true
@@ -429,7 +430,7 @@ class Startup < ActiveRecord::Base
   end
 
   def created_but_not_setup_yet?
-    !self.new_record? && !self.account_setup?
+    !in_signup_flow && !self.new_record? && !self.account_setup?
   end
 
   # If they were invited by another startup, establish a relationship

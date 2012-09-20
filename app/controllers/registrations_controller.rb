@@ -37,6 +37,7 @@ class RegistrationsController < Devise::RegistrationsController
       @startup_join_flow = true
       @user.startup = Startup.new unless @user.startup.present?
       @user.startup.attributes = params[:startup] if params[:startup].present?
+      @user.startup.in_signup_flow = true
       @user.roles << :entrepreneur
     end
   end
