@@ -206,6 +206,11 @@ class Ability
     # All Users
     #
 
+    cannot :read_post, Comment
+    can :read_post, Comment do |c|
+      c.original_post?
+    end
+
     can [:new, :create], Invite
 
     cannot :all, WeeklyClass
