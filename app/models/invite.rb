@@ -93,7 +93,7 @@ class Invite < ActiveRecord::Base
     end
 
     # Assign weekly class
-    user.weekly_class = WeeklyClass.current_class
+    user.weekly_class = self.weekly_class || WeeklyClass.current_class
 
     # Only suggest startups if invite is for a new startup
     dont_suggest_startups = (self.invite_type != STARTUP)
