@@ -1,8 +1,69 @@
+
 .wrapper.logged_in {
   // Style the container here
   // background-image...
-  .container {
+    background:none;
+    background-image:url('london-thehub.jpeg');
+    background-repeat:no-repeat;
+    background-position:center top;
+    background-attachment: fixed;
 
+
+
+  .container {
+    background:none;
+    padding: 0;
+
+    .topdash {
+      border-bottom-right-radius: 140px;
+      border-bottom-left-radius: 140px;
+      height: 140px;
+      width:280px;
+      background-color: #ffffff;
+      opacity: 0.8;
+      border-right-style:solid;
+      border-bottom-style:solid;
+      border-left-style:solid;
+      border-width: 5px;
+      border-color: #3697D5;
+    }
+
+    .header {
+      a {
+      .nav-pills {
+        .active {
+          a:hover {
+            background-color: #cccccc;
+          }
+        }
+      }
+    }
+
+    }
+    .body {
+      border-top-right-radius: 20px;
+      border-top-left-radius: 20px;
+      border-bottom-right-radius: 20px;
+      border-bottom-left-radius: 20px;
+      width:1170px;
+      padding: 30px;
+      background-color: #ffffff;
+      border-top-style:solid;
+      border-right-style:solid;
+      border-bottom-style:solid;
+      border-left-style:solid;
+      border-width: 5px;
+      border-color: #3697D5;
+    }
+    .footer {
+      padding: 20px 0 100px 0;
+      a {
+       padding: 0px 20px 0px 20px;
+       color: #fff;
+       text-shadow: 1px 1px #666;
+      }
+
+    }
   }
 }
 

@@ -1,11 +1,11 @@
 - is_owner = (user_signed_in? and (comment.user_id.to_s == current_user.id.to_s)) ? true : false
 = div_for comment do
-  .right.controls{:style => 'padding-top: 8px;'}
+  .right.controls{:style => 'padding-top: 8px; padding-left: 100px;'}
     -# .left!= render_awesome_button(comment)
     &nbsp;
   .left.pic
     - title = comment.user.name + (!comment.user.twitter.blank? ? " - @#{comment.user.twitter}" : '')
-    %div= link_to image_tag(user_avatar_url(comment.user), :style => 'width: 50px; height: 50px;', :title => title), user_path(comment.user)
+    %div= link_to image_tag(user_avatar_url(current_user, :square), :style => 'width: 100px; height: 100px;', :title => title), user_path(comment.user)
   .left
     = link_to "#{is_owner ? 'You' : truncate(comment.user.name, :length => 20)}", user_path(comment.user)
     - if comment.user.roles?(:mentor) or comment.user.roles?(:nreduce_mentor)

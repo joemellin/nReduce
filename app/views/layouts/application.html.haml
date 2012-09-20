@@ -26,14 +26,15 @@
       .container
         .header
           = render 'layouts/nav', :hide_nav => @hide_nav == true
-        = render "layouts/flash_messages"
-        - if @setup and !@weekly_class
-          .row
-            .left= render 'layouts/left_nav'
-            .left.content_right{:style => 'border-left: 1px solid #cccccc;'}= yield
-            .clear
-        - else
-          = yield
+        .body
+          = render "layouts/flash_messages"
+          - if @setup and !@weekly_class
+            .row
+              .left= render 'layouts/left_nav'
+              .left.content_right{:style => 'border-left: 1px solid #cccccc;'}= yield
+              .clear
+          - else
+            = yield
         = render "layouts/footer"
       = content_for :modals
 
