@@ -3,6 +3,7 @@
 
 - if @startup_join_flow
   = f.fields_for :startup do |s|
+    = f.hidden_field :in_signup_flow
     .control-group{error_css(s.object, :name)}
       = s.label :name, 'Startup Name', :class => 'control-label'
       .controls
