@@ -19,7 +19,7 @@
             = link_to "Ask the Founders!".html_safe, '#', :onclick => "$('.questions_modal').modal('show'); $('#question_content').focus(); return false;", :class => 'btn btn-large btn-success'
           &nbsp;
   - else
-    .row{:style => 'margin-top: 20px'}
+    .row{:style => 'margin-top: 40px'}
       .span12
         %center
           - if @startup.present?
@@ -31,12 +31,10 @@
           %h3{:style => 'font-weight: 300'} About Your Class
     .row
       .span3
-        %h2 Next Steps
+        %h2 To Join Complete Items by #{@weekly_class.join_time.strftime('%A, %b %d')} at 2PM PST :
+        .enter_gate{:style => 'padding-top: 10px'}= render 'weekly_classes/enter_gate'
         %ul
-          %li To enroll you have to return here on #{@weekly_class.join_time.strftime('%A, %b %d')} at 1PM PST
-          %li You will connect with 8 other startups
-          %li #{link_to('Joe', team_path)} will answer questions in real time
-          %li Your amazing experience will begin!
+          %li Also, at 1PM PST #{link_to('Joe', team_path)} will answer your questions live in real time
       .span6
         .stats{:align => 'center'}
           - %w(startups users industries countries).each do |e|
@@ -55,42 +53,8 @@
           .clear
 
       .span3
-        %h2 Grow Your Class!
-        = semantic_form_for @invite, :url => [@startup, @invite] do |f|
-          = f.hidden_field :invite_type
-          = f.hidden_field :from_id
-          = f.hidden_field :weekly_class_id
-          .control-group{error_css(f.object, :email)}
-            .controls
-              = f.text_field :email, :class => "span2", :placeholder => 'awesome@founder.com'
-              = f.semantic_errors :email
-
-          / .control-group{error_css(f.object, :msg)}
-          /   .controls
-          /     = f.text_area :msg, :size => '80x5', :placeholder => 'your message'
-          /     = f.semantic_errors :msg
-                
-          = f.submit 'Invite Founder', :class => 'btn btn-large'
-
-        - if @sent_invites.present?
-          %h3 Sent Invites
-          - @sent_invites.each do |i|
-            = i.email
-            - if i.to_id.present?
-              (Joined)
-            - else
-              (Not joined yet)
-  .row
-    .span2
-      %p
-    .span6
-      .profile_completeness= render 'users/profile_completeness', :title => 'Startup Profile', :align => 'center'
-    .span1
-      %p
-    .span2.enter_gate{:style => 'padding-top: 10px'}= render 'weekly_classes/enter_gate'
-    .span1
-      %p
-  .tabbable
+        .profile_completeness= render 'users/profile_completeness', :title => 'Startup Profile', :align => 'center'
+  .tabbable{:style => 'margin-top: 20px'}
     %ul.nav.nav-tabs
       %li#meet_startups_tab.active
         %a{:href => '#meet_startups', 'data-toggle' => 'tab'} Meet Your Class!
