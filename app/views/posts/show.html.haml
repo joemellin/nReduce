@@ -1,0 +1,20 @@
+.posts
+  = link_to 'All Posts', posts_path, :class => 'btn btn-large'
+  .post.original
+    .right!= render_awesome_button(@comment)
+    .left
+      %h1= @comment.content
+
+      - unless @comment.awesome_count == 0
+        = pluralize(@comment.awesome_count, 'like')
+
+      - unless @comment.responder_ids.blank?
+        %h3 Discussion with:
+        - @comment.responders.each do |u|
+          .left= image_tag user_avatar_url(u)
+        .clear
+    .clear
+  #comments
+    = render 'comments/form', :comment => Comment.new(:parent_id => @comment.id), :verb => 'Respond'
+    .list
+      = nested_comments @comments

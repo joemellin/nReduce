@@ -168,6 +168,8 @@ Nreduce::Application.routes.draw do
     end
   end
 
+  resources :posts, :only => [:index, :show]
+
   match '/join' => 'application#join', :as => :join
 
   match '/mentor' => "pages#mentor", :as => :public_mentors
