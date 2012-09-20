@@ -39,14 +39,14 @@ class Comment < ActiveRecord::Base
     self.ancestry.blank? && self.checkin_id.blank?
   end
 
-  protected
-
   def update_responders
     self.responder_ids ||= []
     self.responder_ids = (self.responder_ids + self.children.map{|c| c.user_id } + self.awesomes.map{|a| a.user_id }).uniq
     self.responder_ids -= [self.user_id]
     self.save
   end
+
+  protected
 
   def notify_users_and_update_count
     update_cache_and_count
