@@ -3,17 +3,16 @@ class CommentsController < ApplicationController
   before_filter :login_required
   load_and_authorize_resource :comment
 
-
   def create
     @comment.user = current_user
     if @comment.save
-      flash[:notice] = 'The comment has been added'
+      flash[:notice] = @comment.original_post? ? 'Your post has been created' : 'The comment has been added'
     else
-      flash[:alert] = "The comment could not be added: #{@comment.errors.full_messages.join(', ')}."
+      flash[:alert] = "Your #{@comment.original_post? ? 'post' : 'comment'} could not be added: #{@comment.errors.full_messages.join(', ')}."
     end
     @ua = {:attachable => @comment}
     respond_to do |format|
-      format.html { redirect_to @comment.checkin }
+      format.html { redirect_to @comment.original_post? ? post_path(@comment) : @comment.checkin }
       format.js
     end
   end
@@ -37,7 +36,7 @@ class CommentsController < ApplicationController
   
   def cancel_edit
     respond_to do |format|
-      format.html { redirect_to @comment.checkin }
+      format.html { redirect_to @comment.original_post? ? post_path(@comment) : @comment.checkin }
       format.js
     end
   end
@@ -49,7 +48,7 @@ class CommentsController < ApplicationController
       flash[:alert] = 'The comment has been updated'
     end
     respond_to do |format|
-      format.html { redirect_to @comment.checkin }
+      format.html { redirect_to @comment.checkin_id.present? ? @comment.checkin : post_path(@comment) }
       format.js
     end
   end
@@ -62,7 +61,7 @@ class CommentsController < ApplicationController
       flash[:alert] = 'The comment could not be deleted'
     end
     respond_to do |format|
-      format.html { redirect_to @comment.checkin }
+      format.html { redirect_to @comment.checkin_id.present? ? @comment.checkin : post_path(@comment) }
       format.js
     end
   end

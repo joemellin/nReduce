@@ -12,14 +12,41 @@ class Comment < ActiveRecord::Base
 
   after_create :notify_users_and_update_count
   after_destroy :update_cache_and_count
+
+  serialize :responder_ids
   
   validates_presence_of :content
   validates_presence_of :user_id
-  validates_presence_of :checkin_id
+  #validates_presence_of :checkin_id
 
+  scope :posts, where('checkin_id IS NULL AND ancestry IS NULL').order('created_at DESC')
   scope :ordered, order('created_at DESC')
 
+  def responders
+    return [] if self.responder_ids.blank?
+    User.find(self.responder_ids)
+  end
+
+  def for_checkin?
+    self.checkin_id.present?
+  end
+
+  def for_post?
+    self.checkin_id.blank?
+  end
+
+  def original_post?
+    self.ancestry.blank? && self.checkin_id.blank?
+  end
+
   protected
+
+  def update_responders
+    self.responder_ids ||= []
+    self.responder_ids = (self.responder_ids + self.children.map{|c| c.user_id } + self.awesomes.map{|a| a.user_id }).uniq
+    self.responder_ids -= [self.user_id]
+    self.save
+  end
 
   def notify_users_and_update_count
     update_cache_and_count
@@ -39,9 +66,13 @@ class Comment < ActiveRecord::Base
   end
 
   def update_cache_and_count
-    # delete cache of checkin ids this user has commented on
-    Cache.delete(['cids', self.user])
-    # update checkin comment count
-    self.checkin.update_comments_count
+    if self.for_checkin?
+      # delete cache of checkin ids this user has commented on
+      Cache.delete(['cids', self.user])
+      # update checkin comment count
+      self.checkin.update_comments_count
+    elsif self.for_post?
+      self.root.update_responders unless self.root == self
+    end
   end
 end

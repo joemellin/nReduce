@@ -7,12 +7,10 @@ $("#comments form :submit").removeClass('disabled');
     $('.comments .new_comment').first.prepend('#{escape_javascript(render('layouts/flash_messages'))}');
   - else
     $("#comment_#{@comment.parent_id} .new_comment").prepend('#{escape_javascript(render('layouts/flash_messages'))}');
+  alert('here1');
 - else
-  /* Show message */
-  /* $("#itinerary_<%= @comment.itinerary_id %>_comments .messages").html('<div class="flash notice"><%= escape_javascript(flash.discard(:notice)) %></div>'); */
-
   // No parent
-  - if @comment.parent_id.blank?
+  - if @comment.parent_id.blank? || @comment.parent_id.present? && @comment.parent.original_post?
     :plain
       /* Add the new comment to the top of the comments list */
       $("#comments .list").prepend("#{escape_javascript(render(@comment))}");

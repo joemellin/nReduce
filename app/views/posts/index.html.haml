@@ -1,0 +1,8 @@
+.posts
+  %h1 All Posts
+
+  #comments
+    = render :partial => 'comments/form', :object => Comment.new
+    .list
+      - @comments.each do |c|
+        = render c
