@@ -1,9 +1,9 @@
 class DemoDay < ActiveRecord::Base
   attr_accessible :name, :day, :description, :startup_ids
 
-  serialize :startup_ids
-  serialize :attendee_ids
-  serialize :video_ids
+  serialize :startup_ids, Array
+  serialize :attendee_ids, Array
+  serialize :video_ids, Array
 
   # Returns next demo day or current (current is demo day on this day)
   def self.next_or_current

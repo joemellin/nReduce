@@ -202,6 +202,8 @@ class Relationship < ActiveRecord::Base
     Cache.delete(['connections', "#{entity_type.downcase}_#{entity_id}"])
     Cache.delete(['connections', "#{connected_with_type.downcase}_#{connected_with_id}"])
     if self.context == [:startup_startup]
+      Cache.delete(['2d', "#{entity_type.downcase}_#{entity_id}"])
+      Cache.delete(['2d', "#{connected_with_type.downcase}_#{connected_with_id}"])
       Cache.delete(['profile_c', "#{entity_type.downcase}_#{entity_id}"])
       Cache.delete(['profile_c', "#{connected_with_type.downcase}_#{connected_with_id}"])
     end
@@ -259,6 +261,29 @@ class Relationship < ActiveRecord::Base
       relationships[r.connected_with_type][r.connected_with_id] = [r.approved_at, r.rejected_at.blank? ? Time.now : r.rejected_at]
     end
     relationships
+  end
+
+  # Returns an array of all startup ids that are first and second degree connections of this startup
+  def self.second_degree_connection_ids_for_startup(startup)
+    ids = Cache.arr_get(['2d', startup])
+    if ids.blank?
+      ids = []
+      startups = startup.connected_to('Startup')
+      startups.each do |s|
+        ids += s.connected_to_ids('Startup') 
+        ids << s.id
+      end
+      Cache.arr_push(['2d', startup], ids)
+    end
+    ids
+  end
+
+  # Batch process that will calculate second degree connections and store it in Redis
+  def self.calculate_second_degree_connections
+    Startup.all.each do |s|
+      Cache.delete(['2d', s])
+      Relationship.second_degree_connection_ids_for_startup(s)
+    end
   end
 
   protected

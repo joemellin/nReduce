@@ -62,15 +62,17 @@ ActiveRecord::Schema.define(:version => 20120920212732) do
     t.text     "content"
     t.integer  "user_id"
     t.integer  "checkin_id"
-    t.datetime "created_at",                   :null => false
-    t.datetime "updated_at",                   :null => false
+    t.datetime "created_at",                       :null => false
+    t.datetime "updated_at",                       :null => false
     t.integer  "awesome_count", :default => 0
     t.string   "ancestry"
-    t.text     "commenter_ids"
+    t.text     "responder_ids"
+    t.boolean  "deleted",       :default => false
+    t.integer  "startup_id"
   end
 
-  add_index "comments", ["ancestry"], :name => "index_comments_on_ancestry"
-  add_index "comments", ["checkin_id"], :name => "index_comments_on_checkin_id"
+  add_index "comments", ["checkin_id", "ancestry"], :name => "index_comments_on_checkin_id_and_ancestry"
+  add_index "comments", ["startup_id", "created_at"], :name => "index_comments_on_startup_id_and_created_at"
 
   create_table "demo_days", :force => true do |t|
     t.string   "name"
@@ -179,11 +181,6 @@ ActiveRecord::Schema.define(:version => 20120920212732) do
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
     t.integer  "invite_id"
-  end
-
-  create_table "posts", :force => true do |t|
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
   end
 
   create_table "questions", :force => true do |t|
