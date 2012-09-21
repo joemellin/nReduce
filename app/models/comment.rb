@@ -22,23 +22,43 @@ class Comment < ActiveRecord::Base
   scope :posts, where('checkin_id IS NULL AND ancestry IS NULL').order('created_at DESC')
   scope :ordered, order('created_at DESC')
 
+  # Finds the hottest post 24 hours ago until time
+  def self.hottest_post_for_time(time)
+    beginning_of_day = time - 24.hours
+    # Find posts created less than three days ago, with activity in the last 24 hours
+    active_posts = Comment.posts.where(['created_at > ? AND updated_at >= ? AND updated_at <= ?', beginning_of_day - 3.days, beginning_of_day, time])
+    # Sort by posts with the most activity (technically doesn't know what day they responded)
+    hottest_post = active_posts.sort{|a,b| a.responder_ids.size <=> b.responder_ids.size }.reverse.last
+    # Only return post if anyone actually responded
+    hottest_post.responder_ids.blank? ? nil : hottest_post
+  end
+
+  # All people who commented or liked this post
   def responders
     return [] if self.responder_ids.blank?
     User.find(self.responder_ids)
   end
 
+  def responder_ids
+    self['responder_ids'].blank? ? [] : self['responder_ids']
+  end
+
+  # This comment is for a checkin
   def for_checkin?
     self.checkin_id.present?
   end
 
+  # This is a comment on a post
   def for_post?
     self.checkin_id.blank?
   end
 
+  # This is the original (root) post
   def original_post?
     self.ancestry.blank? && self.checkin_id.blank?
   end
 
+  # Queries who responded to this post and updates cached count and ids
   def update_responders
     self.responder_ids ||= []
     self.responder_ids = (self.responder_ids + self.children.map{|c| c.user_id } + self.awesomes.map{|a| a.user_id }).uniq
