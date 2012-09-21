@@ -3,17 +3,19 @@ class Comment < ActiveRecord::Base
   belongs_to :user
   belongs_to :checkin
   belongs_to :parent, :class_name => 'Comment'
+  belongs_to :original, :class_name => 'Comment'
   has_one :startup, :through => :checkin
   has_many :awesomes, :as => :awsm
   has_many :notifications, :as => :attachable
   has_many :user_actions, :as => :attachable
   
-  attr_accessible :content, :checkin_id, :parent_id
+  attr_accessible :content, :checkin_id, :parent_id, :parent, :original_id, :original
 
+  before_save :assign_startup
   after_create :notify_users_and_update_count
   after_destroy :update_cache_and_count
 
-  serialize :responder_ids
+  serialize :responder_ids, Array
   
   validates_presence_of :content
   validates_presence_of :user_id
@@ -31,6 +33,15 @@ class Comment < ActiveRecord::Base
     hottest_post = active_posts.sort{|a,b| a.responder_ids.size <=> b.responder_ids.size }.reverse.last
     # Only return post if anyone actually responded
     hottest_post.responder_ids.blank? ? nil : hottest_post
+  end
+
+  # Posts this comment (like re-tweeting) from a new user. It will save the originator and then the post is also
+  def repost(user)
+    c = Comment.new
+    c.content = self.content
+    c.original = self
+    c.user = user
+    c.save
   end
 
   # All people who commented or liked this post
@@ -67,6 +78,13 @@ class Comment < ActiveRecord::Base
   end
 
   protected
+
+  def assign_startup
+    unless self.user.startup_id.blank?
+      self.startup_id = self.user.startup_id
+    end
+    true
+  end
 
   def notify_users_and_update_count
     update_cache_and_count

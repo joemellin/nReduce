@@ -4,7 +4,7 @@ class UserAction < ActiveRecord::Base
   
   attr_accessible :attachable, :ip, :action, :url_path, :browser, :data, :time_taken, :user, :user_id, :created_at
 
-  serialize :data
+  serialize :data, Hash
 
   # queue to cache, then write when cache reaches 1000 user actions
   @@queue_actions = true
