@@ -29,17 +29,21 @@
     }
 
     .header {
-      a {
       .nav-pills {
         .active {
+          // Regular state
+          a {
+            background-color: red;
+          }
+          // Hover state
           a:hover {
             background-color: #cccccc;
+            color: #000;
           }
         }
       }
     }
 
-    }
     .body {
       border-top-right-radius: 20px;
       border-top-left-radius: 20px;

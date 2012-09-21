@@ -5,8 +5,8 @@
 $grey: #d6d6d6;
 $ltgrey: #ffffff;
 $dkgrey: #333;
-$ltblue: #eef6fb;
-$blue: #2d71cb;
+$ltblue: #8FB6EC;
+$blue: #3697D5;
 
 a {
   img {
@@ -39,10 +39,11 @@ a {
     color: #999;
   }
   .content {
-    font-size: 1.1em;
+    font-size: 2.1em;
     padding-top: 5px;
-    p { width: 480px; }
-    textarea { width: 375px; }
+    line-height:150%;
+    p { width: 780px; }
+    textarea { width: 675px; }
   }
   .pic {
     width: 100px;
