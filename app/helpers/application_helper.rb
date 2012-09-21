@@ -101,8 +101,8 @@ module ApplicationHelper
     end
   end
 
-  def user_avatar_url(user)
-    return user.pic_url(:small) if user.pic?
+  def user_avatar_url(user, size = :small)
+    return user.pic_url(size) if user.pic?
     return user.external_pic_url unless user.external_pic_url.blank?
     return image_path('pic_default_small.png')
   end
