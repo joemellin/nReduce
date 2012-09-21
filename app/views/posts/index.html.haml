@@ -1,6 +1,14 @@
 .posts
   %h1 All Posts
 
+  - unless @hottest_post.blank?
+    %hr/
+    %h3 Hottest Post in last 24 hours
+    = render @hottest_post
+  %hr/
+  %br/
+  %br/
+
   #comments
     = render :partial => 'comments/form', :object => Comment.new
     .list

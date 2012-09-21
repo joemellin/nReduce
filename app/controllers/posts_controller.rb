@@ -4,6 +4,7 @@ class PostsController < ApplicationController
 
   def index
     @comments = Comment.posts.limit(30).all
+    @hottest_post = Comment.hottest_post_for_time(Time.now)
   end
 
   def show
