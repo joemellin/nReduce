@@ -3,7 +3,7 @@ class AddResponderIdsToComments < ActiveRecord::Migration
     add_column :comments, :responder_ids, :text
     add_column :comments, :deleted, :boolean, :default => false
     add_column :comments, :startup_id, :integer
-    add_column :comments, :originator_id, :integer
+    add_column :comments, :original_id, :integer
 
     remove_index :comments, :checkin_id
     remove_index :comments, :ancestry
@@ -20,7 +20,7 @@ class AddResponderIdsToComments < ActiveRecord::Migration
     remove_column :comments, :responder_ids
     remove_column :comments, :deleted
     remove_column :comments, :startup_id
-    remove_column :comments, :originator_id
+    remove_column :comments, :original_id
 
     add_index :comments, :checkin_id
     add_index :comments, :ancestry

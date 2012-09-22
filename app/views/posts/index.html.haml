@@ -13,4 +13,4 @@
     = render :partial => 'comments/form', :object => Comment.new
     .list
       - @comments.each do |c|
-        = render c, :show_original => c.original.present? ? true : false
+        = render c
