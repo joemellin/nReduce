@@ -78,9 +78,9 @@ class Comment < ActiveRecord::Base
     self.save
   end
 
-  # If this is a root comment then we can delete it
+  # If this is a root post then we can delete it
   def safe_destroy
-    if self.is_root?
+    if self.is_root? && self.original_post?
       Comment.transaction do
         self.children.each{|c| c.destroy }
       end
