@@ -69,10 +69,11 @@ ActiveRecord::Schema.define(:version => 20120920212732) do
     t.string   "ancestry"
     t.text     "responder_ids"
     t.boolean  "deleted",       :default => false
+    t.integer  "startup_id"
   end
 
-  add_index "comments", ["ancestry"], :name => "index_comments_on_ancestry"
-  add_index "comments", ["checkin_id"], :name => "index_comments_on_checkin_id"
+  add_index "comments", ["checkin_id", "ancestry"], :name => "index_comments_on_checkin_id_and_ancestry"
+  add_index "comments", ["startup_id", "created_at"], :name => "index_comments_on_startup_id_and_created_at"
 
   create_table "demo_days", :force => true do |t|
     t.string   "name"
