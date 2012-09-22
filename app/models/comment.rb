@@ -4,9 +4,9 @@ class Comment < ActiveRecord::Base
   belongs_to :checkin
   belongs_to :parent, :class_name => 'Comment'
   belongs_to :original, :class_name => 'Comment'
-  has_many :reposts, :class_name => 'Comment', :foreign_key => 'original_id'
+  has_many :reposts, :class_name => 'Comment', :foreign_key => 'original_id', :dependent => :destroy
   has_one :startup, :through => :checkin
-  has_many :awesomes, :as => :awsm
+  has_many :awesomes, :as => :awsm, :dependent => :destroy
   has_many :notifications, :as => :attachable
   has_many :user_actions, :as => :attachable
   
@@ -80,8 +80,14 @@ class Comment < ActiveRecord::Base
 
   # If this is a root comment then we can delete it
   def safe_destroy
-    self.destroy if self.is_root?
-    self.update_attribute('deleted', true)
+    if self.is_root?
+      Comment.transaction do
+        self.children.each{|c| c.destroy }
+      end
+      self.destroy
+    else
+      self.update_attribute('deleted', true)
+    end
   end
 
   protected
