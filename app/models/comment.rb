@@ -3,17 +3,20 @@ class Comment < ActiveRecord::Base
   belongs_to :user
   belongs_to :checkin
   belongs_to :parent, :class_name => 'Comment'
+  belongs_to :original, :class_name => 'Comment'
+  has_many :reposts, :class_name => 'Comment', :foreign_key => 'original_id'
   has_one :startup, :through => :checkin
   has_many :awesomes, :as => :awsm
   has_many :notifications, :as => :attachable
   has_many :user_actions, :as => :attachable
   
-  attr_accessible :content, :checkin_id, :parent_id
+  attr_accessible :content, :checkin_id, :parent_id, :parent, :original_id, :original
 
+  before_save :assign_startup
   after_create :notify_users_and_update_count
   after_destroy :update_cache_and_count
 
-  serialize :responder_ids
+  serialize :responder_ids, Array
   
   validates_presence_of :content
   validates_presence_of :user_id
@@ -31,6 +34,16 @@ class Comment < ActiveRecord::Base
     hottest_post = active_posts.sort{|a,b| a.responder_ids.size <=> b.responder_ids.size }.reverse.last
     # Only return post if anyone actually responded
     hottest_post.responder_ids.blank? ? nil : hottest_post
+  end
+
+  # Posts this comment (like re-tweeting) from a new user. It will save the originator and then the post is also
+  def repost_by(user)
+    c = Comment.new
+    c.content = self.content
+    c.original = self
+    c.user = user
+    c.original.save if c.save # update cache on responders
+    c
   end
 
   # All people who commented or liked this post
@@ -60,13 +73,19 @@ class Comment < ActiveRecord::Base
 
   # Queries who responded to this post and updates cached count and ids
   def update_responders
-    self.responder_ids ||= []
-    self.responder_ids = (self.responder_ids + self.children.map{|c| c.user_id } + self.awesomes.map{|a| a.user_id }).uniq
-    self.responder_ids -= [self.user_id]
+    self.responder_ids = (self.responder_ids + self.children.map{|c| c.user_id } + self.awesomes.map{|a| a.user_id } + self.reposts.map{|c| c.user_id }).uniq
+    self.responder_ids -= [self.user_id] # don't include author
     self.save
   end
 
   protected
+
+  def assign_startup
+    unless self.user.startup_id.blank?
+      self.startup_id = self.user.startup_id
+    end
+    true
+  end
 
   def notify_users_and_update_count
     update_cache_and_count

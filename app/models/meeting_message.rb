@@ -5,7 +5,7 @@ class MeetingMessage < ActiveRecord::Base
   has_many :user_actions, :as => :attachable
 
   attr_accessible :subject, :body, :meeting_id
-  serialize :emailed_to
+  serialize :emailed_to, Array
 
   validates_presence_of :body
   validates_presence_of :meeting_id
