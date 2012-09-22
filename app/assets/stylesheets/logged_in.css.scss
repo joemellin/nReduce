@@ -30,15 +30,27 @@
 
     .header {
       .nav-pills {
+        padding: 30px 30px 30px 30xp;
+        font-size: 18px;
+        outline:1px;
+        a:hover {
+            background-color: #999999;
+            -moz-box-shadow:    inset 0 0 5px #000000;
+            -webkit-box-shadow: inset 0 0 5px #000000;
+            box-shadow:         inset 0 0 5px #000000;
+            color: #fff;
+
+        }
         .active {
           // Regular state
           a {
-            background-color: red;
+            background-color: #ffffff;
+            color: #cccccc;
           }
           // Hover state
           a:hover {
-            background-color: #cccccc;
-            color: #000;
+            background-color: #ffffff;
+            color: #cccccc;
           }
         }
       }
