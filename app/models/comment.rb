@@ -4,6 +4,7 @@ class Comment < ActiveRecord::Base
   belongs_to :checkin
   belongs_to :parent, :class_name => 'Comment'
   belongs_to :original, :class_name => 'Comment'
+  has_many :reposts, :class_name => 'Comment', :foreign_key => 'original_id'
   has_one :startup, :through => :checkin
   has_many :awesomes, :as => :awsm
   has_many :notifications, :as => :attachable
@@ -36,12 +37,13 @@ class Comment < ActiveRecord::Base
   end
 
   # Posts this comment (like re-tweeting) from a new user. It will save the originator and then the post is also
-  def repost(user)
+  def repost_by(user)
     c = Comment.new
     c.content = self.content
     c.original = self
     c.user = user
-    c.save
+    c.original.save if c.save # update cache on responders
+    c
   end
 
   # All people who commented or liked this post
@@ -71,9 +73,8 @@ class Comment < ActiveRecord::Base
 
   # Queries who responded to this post and updates cached count and ids
   def update_responders
-    self.responder_ids ||= []
-    self.responder_ids = (self.responder_ids + self.children.map{|c| c.user_id } + self.awesomes.map{|a| a.user_id }).uniq
-    self.responder_ids -= [self.user_id]
+    self.responder_ids = (self.responder_ids + self.children.map{|c| c.user_id } + self.awesomes.map{|a| a.user_id } + self.reposts.map{|c| c.user_id }).uniq
+    self.responder_ids -= [self.user_id] # don't include author
     self.save
   end
 

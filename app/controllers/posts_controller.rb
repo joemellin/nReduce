@@ -13,4 +13,16 @@ class PostsController < ApplicationController
     authorize! :read_post, Comment
     @comments = @comment.children.includes(:user).arrange(:order => 'created_at DESC') # arrange in nested order
   end
+
+  def repost
+    original = Comment.find(params[:id])
+    repost = original.repost_by(current_user)
+    if repost.errors.blank?
+      flash[:notice] = "You've reposted this post"
+      redirect_to post_path(repost)
+    else
+      flash[:alert] = "Could not repost: #{repost.errors.full_messages}"
+      redirect_to post_path(original)
+    end
+  end
 end

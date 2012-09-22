@@ -168,7 +168,9 @@ Nreduce::Application.routes.draw do
     end
   end
 
-  resources :posts, :only => [:index, :show]
+  resources :posts, :only => [:index, :show] do
+    post 'repost', :on => :member
+  end
 
   match '/join' => 'application#join', :as => :join
 

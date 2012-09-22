@@ -206,9 +206,12 @@ class Ability
     # All Users
     #
 
-    cannot :read_post, Comment
+    cannot [:read_post, :repost], Comment
     can :read_post, Comment do |c|
       c.original_post?
+    end
+    can :repost, Comment do |c|
+      user.startup_id.present? && user.startup.second_degree_connection_ids.include?(c.startup_id)
     end
 
     can [:new, :create], Invite
