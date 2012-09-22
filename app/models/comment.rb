@@ -10,7 +10,7 @@ class Comment < ActiveRecord::Base
   has_many :notifications, :as => :attachable
   has_many :user_actions, :as => :attachable
   
-  attr_accessible :content, :checkin_id, :parent_id, :parent, :original_id, :original
+  attr_accessible :content, :checkin_id, :parent_id, :parent, :original_id, :original, :deleted
 
   before_save :assign_startup
   after_create :notify_users_and_update_count
@@ -76,6 +76,12 @@ class Comment < ActiveRecord::Base
     self.responder_ids = (self.responder_ids + self.children.map{|c| c.user_id } + self.awesomes.map{|a| a.user_id } + self.reposts.map{|c| c.user_id }).uniq
     self.responder_ids -= [self.user_id] # don't include author
     self.save
+  end
+
+  # If this is a root comment then we can delete it
+  def safe_destroy
+    self.destroy if self.is_root?
+    self.update_attribute('deleted', true)
   end
 
   protected

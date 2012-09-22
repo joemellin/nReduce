@@ -55,7 +55,7 @@ class CommentsController < ApplicationController
   
   def destroy
     @ua = {:attachable => @comment}
-    if @comment.delete
+    if @comment.safe_destroy
       flash[:notice] = 'The commment has been deleted'
     else
       flash[:alert] = 'The comment could not be deleted'
