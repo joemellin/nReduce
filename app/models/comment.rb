@@ -33,7 +33,8 @@ class Comment < ActiveRecord::Base
     # Sort by posts with the most activity (technically doesn't know what day they responded)
     hottest_post = active_posts.sort{|a,b| a.responder_ids.size <=> b.responder_ids.size }.reverse.last
     # Only return post if anyone actually responded
-    hottest_post.responder_ids.blank? ? nil : hottest_post
+    return hottest_post if hottest_post.present? && hottest_post.responder_ids.present?
+    nil
   end
 
   # Posts this comment (like re-tweeting) from a new user. It will save the originator and then the post is also
@@ -114,6 +115,9 @@ class Comment < ActiveRecord::Base
     end
     # Notify all team members who are on team with checkin of new comment
     Notification.create_for_new_comment(self) unless parent_comment and (parent_comment.user_id == self.user_id)
+    # Assign original comment id for posts so we can de-duplicate shared posts
+    self.original_id = self.id if self.for_post? && self.original_id.blank?
+    self.save
   end
 
   def update_cache_and_count
