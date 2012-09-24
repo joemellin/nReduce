@@ -45,15 +45,31 @@ class UserMailer < ActionMailer::Base
     mail(:to => @user.email, :subject => "You have a new team!")
   end
 
-  def new_comment(notification)
+  def new_comment_for_checkin(notification)
     @comment = notification.attachable
     @checkin = @comment.checkin
     @user = notification.user
     @owner = @user.startup_id == @checkin.startup_id
-    subject = @owner ? "#{@comment.user.name} commented on your check-in" : "#{@comment.user.name} replied to your comment"
+    if @owner
+      subject = "#{@comment.user.name} commented on your check-in" 
+    else
+      subject = "#{@comment.user.name} replied to your comment"
+    end
     mail(:to => @user.email, :subject => subject)
   end
 
+  def new_comment_for_post(notification)
+    @comment = notification.attachable
+    @original_post = @comment.original
+    @user = notification.user
+    @owner = @user.startup_id == @checkin.startup_id
+    if @owner
+      subject = "#{@comment.user.name} commented on your post"
+    else
+      subject = "#{@comment.user.name} replied to your #{@comment.original_post? ? 'post' : 'comment'}"
+    end
+    mail(:to => @user.email, :subject => subject)
+  end
 
   # Remind all attendees to come to local meeting
   def meeting_reminder(user, meeting, message, subject = nil)

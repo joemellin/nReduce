@@ -114,7 +114,7 @@ class Comment < ActiveRecord::Base
       parent_comment = parent_comment.parent
     end
     # Notify all team members who are on team with checkin of new comment
-    Notification.create_for_new_comment(self) unless parent_comment and (parent_comment.user_id == self.user_id)
+    Notification.create_for_new_comment(self) unless self.original_post? || (parent_comment && (parent_comment.user_id == self.user_id))
     # Assign original comment id for posts so we can de-duplicate shared posts
     self.original_id = self.id if self.for_post? && self.original_id.blank?
     self.save

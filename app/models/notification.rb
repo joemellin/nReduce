@@ -16,7 +16,7 @@ class Notification < ActiveRecord::Base
 
     # Remember to update method in helpers/application_helper.rb with new object types if they are added for correct messaging
   def self.actions
-    [:new_checkin, :relationship_request, :relationship_approved, :mentorship_approved, :investor_approved, :new_comment, :new_nudge]
+    [:new_checkin, :relationship_request, :relationship_approved, :mentorship_approved, :investor_approved, :new_comment_for_checkin, :new_comment_for_post, :new_nudge]
   end
 
    # Pass in a user to notify, related object (ex: a relationship) and the action performed, and this will:
@@ -80,14 +80,15 @@ class Notification < ActiveRecord::Base
     if comment.for_checkin?
       startup = comment.checkin.startup
       startup.team_members.each do |u|
-        Notification.create_and_send(u, comment, :new_comment) unless u.id == comment.user_id
+        Notification.create_and_send(u, comment, :new_comment_for_checkin) unless u.id == comment.user_id
       end
     end
   end
 
     # Notify this person that someone has replied to their comment
   def self.create_for_comment_reply(new_comment, reply_to_user)
-    Notification.create_and_send(reply_to_user, new_comment, :new_comment) unless reply_to_user.id == new_comment.user_id
+    action = new_comment.for_checkin? ? :new_comment_for_checkin : :new_comment_for_post
+    Notification.create_and_send(reply_to_user, new_comment, action) unless reply_to_user.id == new_comment.user_id
   end
 
   # only intended for awesomes on checkins
