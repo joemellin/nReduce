@@ -75,7 +75,7 @@ class UserMailer < ActionMailer::Base
     @comment = notification.attachable
     @original_post = @comment.original
     @user = notification.user
-    @owner = @user.startup_id == @checkin.startup_id
+    @owner = @comment.root.user_id == @user.id
     if @owner
       subject = "#{@comment.user.name} commented on your post"
     else
