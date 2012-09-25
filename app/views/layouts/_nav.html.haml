@@ -21,7 +21,7 @@
         &nbsp;
     .span3
       .right
-        %ul.nav.nav-pills{:style => 'margin: 50px -170px 60px 31px;'}
+        %ul.nav.nav-pills{:style => 'margin: 50px -170px 60px 0px;'}
           - if user_signed_in?
             - if hide_nav
               %li= link_to "Log out", logout_path, :method => :delete
