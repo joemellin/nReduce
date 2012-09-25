@@ -34,6 +34,9 @@
         •
         %strong= pluralize(comment.awesome_count, 'like')
       •
+      - unless comment.reply_count == 0
+        %strong= pluralize(comment.reply_count, 'comment')
+        •
       = link_to 'Reply', post_path(comment)
       - if is_owner
         &nbsp;•&nbsp;

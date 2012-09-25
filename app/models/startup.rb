@@ -46,6 +46,7 @@ class Startup < ActiveRecord::Base
   before_save :format_url
   after_save :reset_cached_elements
   after_create :initiate_relationships_from_invites
+  after_create :notify_classmates_of_new_startup
 
   acts_as_taggable_on :industries, :technologies, :ideologies
 
@@ -423,6 +424,10 @@ class Startup < ActiveRecord::Base
   end
 
   protected
+
+  def notify_classmates_of_new_startup
+    Notification.create_for_new_team_joined(self)
+  end
 
   def reset_cached_elements
     Cache.delete(['profile_c', self])
