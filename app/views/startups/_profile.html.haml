@@ -1,48 +1,51 @@
 - @num_checkins ||= @startup.checkins.count
 - @num_awesomes ||= @startup.awesomes.count
 .row
-  .span12.well{:style => 'padding: 0'}
-    .row{:style => 'padding: 19px'}
-      .span3
+  .span12{:style => 'padding: 0'}
+    .row{:style => 'padding-top: 0px'}
+      .span6.center
         - vid_url = Youtube.embed_url(@startup.intro_video_url)
         - if vid_url.blank?
           [ no intro video ]
         - else
-          %iframe{:width => '250', :height => '188', :src => vid_url, :frameborder => 0, :allowfullscreen => true}
-      .span5
-        %h1= h(@startup.name)
-        - unless @startup.one_liner.blank?
-          %h3= h(@startup.one_liner)
-        - unless @startup.website_url.blank?
-          %h3
-            %small= link_to_external @startup.website_url_to_uri.hostname, @startup.website_url
-        .row
-          .span2
-            / - unless @startup.company_goal.blank?
-            /   %p
-            /     %small Goal: #{Startup.company_goals[@startup.company_goal.to_i]}
-            %p
-              %small Industry: #{h(@startup.industry_list)}
-            %p
-              Checkins:
-              %span.badge.badge-warning #{@num_checkins}
-          .span2
-            / - unless @startup.stage.blank?
-            /   %p
-            /     %small Idea Stage: #{Startup.stages[@startup.stage.to_i]}
-            / - unless @startup.growth_model.blank?
-            /   %p
-            /     %small Growth Model: #{Startup.growth_models[@startup.growth_model.to_i]}
-            %p
-              Awesomes:
-              %span.badge.badge-warning #{@num_awesomes}
-      .span3
-        != rating_link(@startup)
-        %br/
+          %iframe{:width => '500', :height => '376', :src => vid_url, :frameborder => 0, :allowfullscreen => true}
+      .span4
         %p
-          %small Elevator Pitch
-        %p= simple_format(h(@startup.elevator_pitch))
-  
+          %small Startup:
+        %h1{:style => 'font-size: 50px'}= h(@startup.name)
+        - unless @startup.one_liner.blank?
+          %p{:style => 'padding-top: 20px'}
+            %small Oneliner:
+          %h3= h(@startup.one_liner)
+
+        - unless @startup.website_url.blank?
+          %p{:style => 'padding-top: 20px'}
+            %small Website:
+          %h3= link_to_external @startup.website_url_to_uri.hostname, @startup.website_url
+          %p{:style => 'padding-top: 20px'}
+            %small Industry:
+          %h3 #{h(@startup.industry_list)}
+      .span2.greylink
+        .row.center
+          %p{:style => 'padding-top: 20px'}
+            != rating_link(@startup)
+          %p{:style => 'padding-top: 20px'}
+            %span
+              %h1 #{@num_checkins}
+              = link_to 'Weeks Worked', community_guidelines_path
+          %p{:style => 'padding-top: 20px'}
+            %span 
+              %h1 #{@num_awesomes}
+              = link_to 'Awesomes', community_guidelines_path
+%br/
+%br/
+.row
+  .span12
+    %p
+      %small Elevator Pitch
+    %hr/
+    %h4= simple_format(h(@startup.elevator_pitch))
+
 .row
   .span12
     %h4

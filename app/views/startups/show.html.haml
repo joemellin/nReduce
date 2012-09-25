@@ -2,16 +2,13 @@
   = @startup.name
 
 .row
-  .span8
-    %h1
-      %small Team
-  .span4{:align => 'right'}
+  .span12{:align => 'right'}
     - if @owner
       = link_to "Edit Startup", "/startup/edit", :class => "btn"
     - elsif !@entity.blank?
       = render 'relationships/buttons', :entity => @entity, :connected_with => @startup, :relationship => @relationship.present? ? @relationship : @pending_relationship
 
-%hr/
+
 %br/
 
 = render 'startups/profile'
