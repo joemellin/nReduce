@@ -70,6 +70,7 @@ ActiveRecord::Schema.define(:version => 20120920212732) do
     t.text     "responder_ids"
     t.boolean  "deleted",       :default => false
     t.integer  "startup_id"
+    t.integer  "original_id"
   end
 
   add_index "comments", ["checkin_id", "ancestry"], :name => "index_comments_on_checkin_id_and_ancestry"
