@@ -1,8 +1,9 @@
 - content_for :subtitle do
   Your Alliance / Group
-
+.row.center
+  %p WorkRoom
 .relationships
-  .row.teams{:style => 'padding-top: 40px;'}
+  .row.teams{:style => 'padding-top: 20px;'}
     - c = 0
     - @startups.each do |s|
       - current_checkin = @checkins_by_startup[s.id]
