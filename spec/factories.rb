@@ -37,6 +37,7 @@ FactoryGirl.define do
     setup [:account_type, :onboarding, :profile, :welcome]
     linkedin_url 'http://www.linkedin.com/me'
     startup  { single_instances[:startup] }
+    roles [:entrepreneur]
     factory :user2 do
       email 'bananas@tropical.com'
       name 'Tropical Bananas'
