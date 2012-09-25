@@ -1,0 +1,6 @@
+= render :partial => 'header'
+%h1.h1 #{@from.name} likes your post "#{truncate(@post.content, :length => 50)}"!
+%br/
+%br/
+%h3= link_to('View your post', post_path(@post))
+= render :partial => 'footer'
