@@ -620,6 +620,7 @@ class User < ActiveRecord::Base
   def assign_weekly_class!
     self.weekly_class = WeeklyClass.current_class
     save
+    self.weekly_class.save # updates clusters on weekly class
   end
 
   def geocode_location

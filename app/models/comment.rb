@@ -53,10 +53,6 @@ class Comment < ActiveRecord::Base
     User.find(self.responder_ids)
   end
 
-  def responder_ids
-    self['responder_ids'].blank? ? [] : self['responder_ids']
-  end
-
   # This comment is for a checkin
   def for_checkin?
     self.checkin_id.present?
@@ -74,8 +70,10 @@ class Comment < ActiveRecord::Base
 
   # Queries who responded to this post and updates cached count and ids
   def update_responders
-    self.responder_ids = (self.responder_ids + self.children.map{|c| c.user_id } + self.awesomes.map{|a| a.user_id } + self.reposts.map{|c| c.user_id }).uniq
+    children = self.children
+    self.responder_ids = (children.map{|c| c.user_id } + self.reposts.map{|c| c.user_id } +  self.awesomes.map{|a| a.user_id }).uniq
     self.responder_ids -= [self.user_id] # don't include author
+    self.reply_count = children.size
     self.save
   end
 

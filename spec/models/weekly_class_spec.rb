@@ -29,4 +29,18 @@ describe WeeklyClass do
       next_class.week.should == next_week_integer
     end
   end
+
+  it "should notify all members of a weekly class when another member joins" do
+    wc = WeeklyClass.current_class
+    # Create users and assign them to a weekly class
+    user = FactoryGirl.create(:user)
+    user.assign_weekly_class!
+    user2 = FactoryGirl.create(:user, :email => 'user2@user2.com')
+    user2.assign_weekly_class!
+
+    # Create their startups - they will auto-notify all other members of the class
+    startup = FactoryGirl.create(:startup, :team_members => [user])
+    startup2 = FactoryGirl.create(:startup2, :team_members => [user2])
+
+  end
 end
