@@ -2,10 +2,23 @@ class UserMailer < ActionMailer::Base
   default from: Settings.default_from_email
   default reply_to: Settings.default_reply_to_email
 
+  def new_team_joined(notification)
+    @startup = notification.attachable
+    @to = notification.user
+    mail(:to => @to.email, :subject => "Team #{@startup.name} just joined your class!", :reply_to => @from.email)
+  end
+
   def new_checkin(notification)
     @checkin = notification.attachable
     @user = notification.user
     mail(:to => @user.email, :subject => "#{@checkin.startup.name} has posted their check-in for this week")
+  end
+
+  def new_like(notification)
+    @post = notification.attachable.awsm
+    @poster = @post.user
+    @from = notification.user
+    mail(:to => @poster.email, :subject => "#{@from.name} likes your post")
   end
 
   def relationship_request(notification)
