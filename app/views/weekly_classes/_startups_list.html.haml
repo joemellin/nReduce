@@ -4,6 +4,7 @@
   - this_startup_url = mini_profile_startup_path(s)
   - logo_path = s.logo_url(:square)
   - owner = (s.id == current_user.startup_id ? true : false)
+  - num_connections = s.connected_to_ids.size
   -# Show line demarcating completed and not completed teams
   - if !displayed_line && s.profile_completeness_percent < 1.0
     .clear
@@ -79,3 +80,5 @@
                 %br/
                 %br/
                 = f.submit (connected_with.is_a?(Startup) ? 'Invite to Group' : 'Connect'), :class => 'btn btn-info btn-large'
+      - if num_connections > 0
+        %p{:style => 'font-size: .9em'} #{pluralize(num_connections, 'connection')}
