@@ -66,37 +66,37 @@ class Startup < ActiveRecord::Base
   searchable do
     # full-text search fields - can add :stored => true if you don't want to hit db
     text :name, :boost => 4.0
-    text :location do
-      team_members.map{|tm| tm.location }.delete_if{|l| l.blank? }
-    end
-    text :industries_cached, :stored => true do
-      self.industries.map{|t| t.name.titleize }.join(', ')
-    end
-    text :website_url
-    text :one_liner
+    # text :location do
+    #   team_members.map{|tm| tm.location }.delete_if{|l| l.blank? }
+    # end
+    # text :industries_cached, :stored => true do
+    #   self.industries.map{|t| t.name.titleize }.join(', ')
+    # end
+    # text :website_url
+    # text :one_liner
 
     # filterable fields
     integer :id
-    integer :stage
-    integer :company_goal
+    #integer :stage
+    #integer :company_goal
     boolean :onboarded do
       self.account_setup?
     end
-    double  :rating
+    # double  :rating
     boolean :public
     boolean :investable
-    integer :industry_tag_ids, :multiple => true, :stored => true do
-      self.industries.map{|t| t.id }
-    end
+    # integer :industry_tag_ids, :multiple => true, :stored => true do
+    #   self.industries.map{|t| t.id }
+    # end
     string :sort_name do
       name.downcase.gsub(/^(an?|the)/, '')
     end
-    integer :num_checkins do
-      self.checkins.count
-    end
-    integer :num_pending_relationships do
-      self.received_relationships.pending.count
-    end
+    # integer :num_checkins do
+    #   self.checkins.count
+    # end
+    # integer :num_pending_relationships do
+    #   self.received_relationships.pending.count
+    # end
   end
 
   def self.registration_open?
@@ -422,7 +422,7 @@ class Startup < ActiveRecord::Base
       User.where(:startup_id => self.id).map{|u| u.id }  
     }
   end
-
+  
   protected
 
   def notify_classmates_of_new_startup

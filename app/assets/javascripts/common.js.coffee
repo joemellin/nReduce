@@ -39,6 +39,20 @@ $ ->
     id = "teammate_email_#{random}"
     $('.teammates').append('<div class="email" id="' + id + '"><input type="text" name="user[teammate_emails][]" size="30" placeholder="founder@email.com" /> <a href="#" class="btn" onclick="$(\'#' + id + '\').remove(); return false;"><i class="icon-minus"></i></a></div>')
 
+  $('.startups-autocomplete').typeahead(
+    minLength: 2
+    source: (query, process) ->
+      $.ajax(
+        type: 'POST'
+        url: '/startups/search' + '?search=' + query + '.json'
+        dataType: 'json'
+        success: (results) ->
+          process(results)
+      )
+    matcher: (item) ->
+      true
+  )
+
   split = (val) ->
     return val.split( /,\s*/ )
 
