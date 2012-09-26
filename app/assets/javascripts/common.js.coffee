@@ -44,7 +44,8 @@ $ ->
     source: (query, process) ->
       $.ajax(
         type: 'POST'
-        url: '/startups/search' + '?search=' + query + '.json'
+        url: '/startups/search'
+        data: {query: query}
         dataType: 'json'
         success: (results) ->
           process(results)

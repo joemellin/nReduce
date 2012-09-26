@@ -17,7 +17,7 @@
                 - @relationship.connected_with.team_members.shuffle.first(3).each do |tm|
                   .inline-block{:style => 'margin-left: 4px'}= image_tag(user_avatar_url(tm), :title => tm.name, :style => 'width: 50px; height: 50px;')
       .span3{:align => 'center', :style => 'padding: 55px 0 0 20px'}
-        %h3{:style => 'margin-bottom: 25px'} #{@invite.to.name} is working on #{@relationship.connected_with.name}
+        %h3{:style => 'margin-bottom: 25px'} Connect with #{@relationship.connected_with.name}
         = f.submit 'Connect', :class => 'btn btn-success btn-large'
 
 
