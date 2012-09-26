@@ -34,8 +34,8 @@
         %small Add Teams
     .span5{:align => 'right'}
       = form_for Invite.new, :url => invite_with_confirm_startups_path, :remote => true, :html => { :class => 'form-inline invite_form' } do |f|
-        %p Search by Founder's Email
-        = f.text_field :email, :placeholder => 'founder@startup.com', :class => 'startups-autocomplete'
+        %p Search by Startup Name
+        = text_field_tag 'startup_name', '', :placeholder => 'Startup Name', :class => 'startups-autocomplete'
         = f.submit 'Search'.html_safe, :class => 'btn'
   %hr/
   %br/

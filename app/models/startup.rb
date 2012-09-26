@@ -65,7 +65,7 @@ class Startup < ActiveRecord::Base
   # https://github.com/outoftime/sunspot
   searchable do
     # full-text search fields - can add :stored => true if you don't want to hit db
-    text :name, :boost => 4.0
+    text :name, :boost => 4.0, :stored => true
     # text :location do
     #   team_members.map{|tm| tm.location }.delete_if{|l| l.blank? }
     # end
