@@ -1,6 +1,5 @@
 class AuthenticationsController < ApplicationController
   include Devise::Controllers::Rememberable # included to set cookie manually
-  around_filter :record_user_action, :only => [:create, :failure, :destroy]
   load_and_authorize_resource :only => [:index, :destroy]
 
   def index
@@ -9,7 +8,7 @@ class AuthenticationsController < ApplicationController
 
   def create
     omniauth = request.env["omniauth.auth"]
-   # @ua = {:action => UserAction.id_for('add_authentication'), :data => {:provider => omniauth['provider']}}
+    @ua = {:action => UserAction.id_for('add_authentication')}
     authentication = Authentication.find_by_provider_and_uid(omniauth['provider'], omniauth['uid'])
     if authentication
       authentication.update_attributes(:token => omniauth['credentials']['token'], :secret => omniauth['credentials']['secret']) if omniauth['credentials'] && !omniauth['credentials']['token'].blank?
@@ -54,7 +53,6 @@ class AuthenticationsController < ApplicationController
   
   def failure
     flash[:alert] = "Sorry but you could't be authenticated. Please try again:"
-    @ua = {:data => {:message => params[:message]}}
     redirect_to new_user_registration_url
   end
 

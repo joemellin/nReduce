@@ -1,5 +1,4 @@
 class InstrumentsController < ApplicationController
-  around_filter :record_user_action
   before_filter :login_required
   load_and_authorize_resource
   before_filter :load_obfuscated_startup

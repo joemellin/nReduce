@@ -1,5 +1,5 @@
 class CheckinsController < ApplicationController
-  around_filter :record_user_action
+  around_filter :record_user_action, :only => [:show]
   before_filter :login_required
   before_filter :load_requested_or_users_startup
   load_and_authorize_resource :startup
@@ -17,7 +17,6 @@ class CheckinsController < ApplicationController
   def show
     @new_comment = Comment.new(:checkin_id => @checkin.id)
     @comments = @checkin.comments.includes(:user).arrange(:order => 'created_at DESC') # arrange in nested order
-    @ua = {:attachable => @checkin}
   end
 
   def new
@@ -37,13 +36,11 @@ class CheckinsController < ApplicationController
       render :action => :edit
     end
     @startup.launched! if params[:startup] && params[:startup][:launched].to_i == 1
-    @ua = {:attachable => @checkin}
   end
 
   def edit
     @startup ||= @checkin.startup
     set_disabled_states_and_add_measurement(@checkin)
-    @ua = {:attachable => @checkin}
   end
 
   def update
@@ -56,7 +53,6 @@ class CheckinsController < ApplicationController
       render :action => :edit
     end
     @startup.launched! if params[:startup] && params[:startup][:launched].to_i == 1
-    @ua = {:attachable => @checkin}
   end
 
   protected

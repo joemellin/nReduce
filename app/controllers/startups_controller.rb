@@ -1,5 +1,5 @@
 class StartupsController < ApplicationController
-  around_filter :record_user_action, :except => [:onboard_next, :stats]
+  #around_filter :record_user_action, :except => [:onboard_next, :stats]
   before_filter :login_required
   before_filter :load_requested_or_users_startup, :except => [:index, :invite, :stats]
   load_and_authorize_resource :except => [:index, :stats, :invite, :show, :invite_team_members, :intro_video, :mini_profile]
@@ -278,7 +278,6 @@ class StartupsController < ApplicationController
     # unless @search[:industry_id].blank?
     #   @startups = @startups.where(['startups.industry_id = ?', @search[:industry_id]])
     # end
-    @ua = {:data => @search}
     @meetings_by_id = Meeting.location_name_by_id
     #@tags_by_startup_id = Startup.tags_by_startup_id(@startups)
 
