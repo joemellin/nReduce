@@ -54,30 +54,27 @@
     .clear
     -# This is just a regular comment (on a checkin or post)
   - else
-    - if comment.deleted?
-      %i Comment was deleted
-    - else
-      .left.pic
-        - title = comment.user.name + (!comment.user.twitter.blank? ? " - @#{comment.user.twitter}" : '')
-        %div= link_to image_tag(user_avatar_url(comment.user, :square), :style => 'width: 100px; height: 100px;', :title => title), user_path(comment.user)
-      .left
-        Written by
-        = link_to "#{is_owner ? 'You' : truncate(comment.user.name, :length => 20)}", user_path(comment.user)
-        - if comment.user.roles?(:mentor) or comment.user.roles?(:nreduce_mentor)
-          &nbsp;•&nbsp;Mentor
-        - elsif !comment.user.startup_id.blank?
-          of Team 
-          = link_to comment.user.startup.name, startup_path(comment.user.startup)
-        
-        - unless comment.awesome_count == 0
-          %strong= pluralize(comment.awesome_count, 'like')
-        .content{:style=> 'color: #3697D5; font-weight: bold;'}= simple_format(h(comment.content))
-        = link_to 'Reply', reply_to_comment_path(comment), :remote => true
-        - if is_owner
-          &nbsp;•&nbsp;
-          = link_to 'Edit', edit_comment_path(comment), :remote => true
-          &nbsp;•&nbsp;
-          %strong= link_to 'x', comment, :method => :delete, :remote => true, :confirm => "Are you sure you want to delete the #{comment.original_post? ? 'post' : 'comment'}?"
-        .right
-          %span.time Written #{time_ago_in_words(comment.created_at)} ago.
+    .left.pic
+      - title = comment.user.name + (!comment.user.twitter.blank? ? " - @#{comment.user.twitter}" : '')
+      %div= link_to image_tag(user_avatar_url(comment.user, :square), :style => 'width: 100px; height: 100px;', :title => title), user_path(comment.user)
+    .left.commentlinks 
+      Written by
+      = link_to "#{is_owner ? 'You' : truncate(comment.user.name, :length => 20)}", user_path(comment.user)
+      - if comment.user.roles?(:mentor) or comment.user.roles?(:nreduce_mentor)
+        &nbsp;•&nbsp;Mentor
+      - elsif !comment.user.startup_id.blank?
+        of Team 
+        = link_to comment.user.startup.name, startup_path(comment.user.startup)
+      
+      - unless comment.awesome_count == 0
+        %strong= pluralize(comment.awesome_count, 'like')
+      .content{:style=> 'color: #585858; font-size: 1.9em'}= simple_format(h(comment.content))
+      = link_to 'Reply', reply_to_comment_path(comment), :remote => true
+      - if is_owner
+        &nbsp;•&nbsp;
+        = link_to 'Edit', edit_comment_path(comment), :remote => true
+        &nbsp;•&nbsp;
+        %strong= link_to 'x', comment, :method => :delete, :remote => true, :confirm => "Are you sure you want to delete the #{comment.original_post? ? 'post' : 'comment'}?"
+      .right
+        %span.time Written #{time_ago_in_words(comment.created_at)} ago.
     .clear

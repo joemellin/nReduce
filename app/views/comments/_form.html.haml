@@ -6,11 +6,11 @@
   .comment
     .left
       = image_tag user_avatar_url(current_user, :square), :style => 'width: 100px; height: 100px;'
-    .left.content{:style => 'padding-left: 10px'}
+    .left.content{:style => 'padding-left: 20px; padding-top: 35px'}
       = f.hidden_field :checkin_id
       = f.text_area :content, :size => '50x1'
     - verb = 
-    .left{:style => 'padding: 11px 0 0 5px;'}= f.submit (comment.new_record? ? verb : 'Update'), :class => 'btn primary', :onclick => "$(this).addClass('disabled');"
+    .left{:style => 'padding: 35px 0 0 10px;'}= f.submit (comment.new_record? ? verb : 'Update'), :class => 'btn btn-success btn-large', :onclick => "$(this).addClass('disabled');"
     .left{:style => 'padding: 15px 0 0 8px;'}
       - if comment.new_record? and cancel_link
         = link_to 'Cancel', '#', :onclick => "$('#comment_#{comment.parent_id} .new_comment').remove(); return false;"
