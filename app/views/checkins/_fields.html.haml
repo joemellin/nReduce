@@ -52,6 +52,14 @@
   /   = av.hidden_field :external_id, :id => 'after_video_external_id'
   /   = render 'videos/viddler_recorder', :external_id_element_id => 'after_video_external_id'
 
+  %p.center{:style => 'padding-top: 30px;'} Last Week's Goal
+  %h1.center{:style => 'font-size: 30px'}= h(@checkin.start_focus)
+  %h3.center{:style => 'padding-top: 40px'} Did you accomplish your goal?
+  .control-group{error_css(@checkin, :end_video_url)}
+    .controls
+      = f.text_field :end_video_url, :class => "span4", :placeholder => 'YEah or neigh'
+
+
   .control-group{error_css(@checkin, :end_video_url)}
     %p
       &nbsp
