@@ -5,12 +5,18 @@
 
 - hide_nav = @checkin.submitted?
 
-%h2 Check-in for #{@checkin.time_label}
+%h2.center Check-in for #{@checkin.time_label}
+%hr
 .row
-  .span7
+  .span3
+    %p &nbsp
+  .span6
     = semantic_form_for @checkin, :html => {:class => "form-horizontal"} do |f|
       = render 'checkins/fields', :f => f
-  .span5
+.row{:style => 'padding-top: 60px'}
+  .span4
+    %p &nbsp
+  .span4.center
     = render 'checkins/before_video_faq'
 
 = render 'instruments/modal'

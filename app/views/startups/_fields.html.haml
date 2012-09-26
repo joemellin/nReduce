@@ -61,28 +61,23 @@
     = f.hidden_field :logo_cache
     = f.semantic_errors :logo
     - if @startup.logo?
-      %br/
-      Current Image:
-      = image_tag(@startup.logo_url(:small))
-      &nbsp;
-      = f.check_box :remove_logo
-      Remove logo
-    %span.help-inline.help-danger Optional
+      .div{:style => 'margin-top: 10px'}
+        %br/
+        Current Image:
+        = image_tag(@startup.logo_url(:small))
+        &nbsp;
+        = f.check_box :remove_logo
+        Remove logo
+    - else
+      %p Optional
+.control-group{error_css(@startup, :industry_list)}
+  = f.label :industry_list, "Market(s)", :class => 'control-label'
+  .controls
+    = text_field_tag 'startup[industry_list]', @startup.industry_list.map{|i| i.titleize }.join(', '), :class => 'span4 industries_list_autocomplete', :placeholder => 'ex: mobile games, education'
+    = f.semantic_errors :industry_list
+    %p.help-block List at least one market that your startup is in
 
 - unless @setup
-  %hr/
-
-  .control-group{error_css(@startup, :intro_video_url)}
-    = f.label :intro_video_url, "Team Intro Video URL", :class => 'control-label'
-    .controls
-      = f.text_field :intro_video_url, :class => 'span3 with-placeholder'
-      = f.semantic_errors :intro_video_url
-      %span.help-inline.help-danger
-        Upload a 30 second video to Youtube that introduces your team so that everyone can "meet" you.
-        %br/
-        Set it as unlisted but allow it to be embedded.
-
-
   .control-group{error_css(@startup, :pitch_video_url)}
     = f.label :pitch_video_url, "2 Minute Pitch Video Url", :class => 'control-label'
     .controls
@@ -92,16 +87,18 @@
         Upload a 2 minute video to Youtube of your startup's pitch.
         %br/
         Set it as unlisted but allow it to be embedded.
-  %hr/
-      
-
-
-.control-group{error_css(@startup, :industry_list)}
-  = f.label :industry_list, "Market(s)", :class => 'control-label'
-  .controls
-    = text_field_tag 'startup[industry_list]', @startup.industry_list.map{|i| i.titleize }.join(', '), :class => 'span4 industries_list_autocomplete', :placeholder => 'ex: mobile games, education'
-    = f.semantic_errors :industry_list
-    %p.help-block List at least one market that your startup is in
+  .control-group{error_css(@startup, :business_model)}
+    = f.label :business_model, "Business Model", :class => 'control-label'
+    .controls
+      = f.text_area :business_model, :size => '80x5', :style => 'width: 350px; height: 100px;'
+  .control-group{error_css(@startup, :pitch_video_url)}
+    = f.label :pitch_video_url, "Pitch Video", :class => 'control-label'
+    .controls
+      = f.text_field :pitch_video_url, :placeholder => 'http://www.youtube.com/watch?v=088YM4pB9lM', :class => 'span3'
+  .control-group{error_css(@startup, :founding_date)}
+    = f.label :founding_date, "Founding Date", :class => 'control-label'
+    .controls
+      = f.date_select :founding_date, :end_year => Time.now.year, :use_short_month => true, :order => [:month, :day, :year]
 
 / .control-group{error_css(@startup, :growth_model)}
 /   = f.label :growth_model, "Growth Model", :class => 'control-label'

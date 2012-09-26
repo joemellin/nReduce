@@ -54,7 +54,7 @@
     .left.pic
       - title = comment.user.name + (!comment.user.twitter.blank? ? " - @#{comment.user.twitter}" : '')
       %div= link_to image_tag(user_avatar_url(comment.user, :square), :style => 'width: 100px; height: 100px;', :title => title), user_path(comment.user)
-    .left
+    .left.commentlinks 
       Written by
       = link_to "#{is_owner ? 'You' : truncate(comment.user.name, :length => 20)}", user_path(comment.user)
       - if comment.user.roles?(:mentor) or comment.user.roles?(:nreduce_mentor)
@@ -65,7 +65,7 @@
       
       - unless comment.awesome_count == 0
         %strong= pluralize(comment.awesome_count, 'like')
-      .content{:style=> 'color: #3697D5; font-weight: bold;'}= simple_format(h(comment.content))
+      .content{:style=> 'color: #585858; font-size: 1.9em'}= simple_format(h(comment.content))
       = link_to 'Reply', reply_to_comment_path(comment), :remote => true
       - if is_owner
         &nbsp;•&nbsp;

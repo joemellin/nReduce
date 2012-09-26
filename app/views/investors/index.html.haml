@@ -1,208 +1,50 @@
 .investors
-  - if current_user.investor?
-    .row
-      .span12
-        %h1
-          %small Investors
-    %hr/
-
-    - if current_user.roles?(:approved_investor)
-      - if can? :investor_connect_with_startups, current_user
-        %br/
-        %br/
-        %br/
-        %h1.center Thank you for being willing to judge startups.
-        %br/
-        %br/
-        %br/
-        .row
-          .span3
-            &nbsp;
-          .span6
-            %p The goal of this process is to determine which startups are most investible for the 100 investors that will see the startups on Demo Day. We are doing that by taking a sample of investors and which teams appeal to investors most.
-            %br/
-            %p Please imagine that these startups are actually pitching you. Respond with your level of interest by indicating whether you'd like to be talk with them now, later, or if at all.
-            %br/
-            %p Also if you would like to you can give one piece of constructive feedback to each startup that will be shared with them anonymously.
-            %br/
-            %p When you are ready to start please click "Judge Startups" button below. You can stop at any time and then return later.
-          .span3
-            &nbsp;
-        %br/
-        %p.center You have reviewed #{@num_startups_left} of #{@total_suggested_startups} startups.
-        %div{:style => 'position: relative;'}
-          .progress{:style => 'width: 40%; margin-left: auto; margin-right: auto;'}
-            .bar{:style => "width: #{@pct_complete}%"}
-        %br/
-        %h2.center= link_to 'Judge Startups!', show_startup_investors_path, :class => 'btn btn-large btn-success', :style => 'font-size: 60px;'
-        %br/
-        %br/
-      - else
-        %p You have already connected with one startup this week. Please come back next Tuesday at 4pm PST to see more startups, or upgrade your account.
-    - else
-      %center
-        = image_tag 'nstar_s.png'
-        %h2 nStar Demo Day
-        %h3 September 5th at 11 AM PST
-        %br/
-        %br/
-        %p Join us to meet the 10 nStar teams on our online-only demo day
-
-  - elsif current_user.entrepreneur?
+  - if current_user.entrepreneur?
     .startup
       - investor_profile_class = current_user.startup.investable? ? '' : 'hide'
       = form_for current_user.startup, :url => '/startup/', :remote => true, :html => {:class => 'form-vertical startup'} do |f|
         = hidden_field_tag 'dont_render_form', true
         .row
-          .span8
+          .span4
+            %p
+          .span4.center
             %h1
-              %small Get Discovered By Investors
+              %small Board Room
           .span4
             .right{:style => 'margin: 15px 0px 20px 0px'}= f.check_box :investable, :class => 'investable'
             .right{:style => 'margin: 15px 30px 20px 0px'}
               %h3 Seeking investment?
             .clear
-
         %hr/
         %br/
         .row.investor_profile_inactive{:class => current_user.startup.investable? ? 'hide' : ''}
           %center
-            = image_tag 'nstar_s.png'
+            
             %br/
             %br/
             %h2
-              Apply to be featured in the
-              %br/
-              Sept 5th nStar Online Demo Day
+              Get Feedback From Mentors, Investors and Be Ellegeble to become an nStar.
+
             %br/
-            %h3 To apply set your "seeking investment?" setting to yes
-            %h3 (Application deadline is August 8th)
+            %h3 To Be Ellibleble 
+            %h3 1) Complete Your Startup Profile
+            %h3 2) Complete Your Weekly Checkin
+          .row
+            .span4 
+              %p &nbsp/
+            .span4.center{:style => 'margin-bottom: 60px'}
+              = render 'users/profile_completeness', :title => 'Investment Profile'
+           
 
         .row.investor_profile{:class => investor_profile_class}
-          .span1
-            %p
           .span6
             %br
-            %h1
-              Your investment Status:
-              - if @profile_completeness_percent == 100
-                %span{:style => 'color: #51A351'} ACTIVE
-              - else
-                INACTIVE
             %br
-            %p Complete your investment profile by August 8th to be considered for our September 5th Demo Day.
-            %br
+
             %h3
               = link_to 'View Your Investment Profile', investment_profile_startup_path
               &nbsp;&nbsp;|&nbsp;&nbsp;
               = link_to 'View Investor Feedback', startup_ratings_path(@startup)
-            %br/
-            %h3 To Dos:
-            %br/
-            %h2 1) nReduce Themed Elevator Pitch
-            %p The point is to communicate your idea as quickly as possible in a way that is easily digestable for investors.
-            %ol.myriad_light{:style => 'font-size: 16px'}
-              %li
-                Download and use this 4-slide deck. Do not change the font size or any aspect of the presentation - simply enter your answers to the 4 prompts.
-                %br/
-                %br/
-                = link_to(image_tag('powerpoint.jpg'), '/nreduce_stock_deck.pptx')
-                %strong= link_to 'Download stock deck', '/nreduce_stock_deck.pptx'
-                %br/
-                %br/
-
-              %li Record a 30 second screen capture of you talking through the 4 slides. Tip: use #{link_to('screenr', 'http://www.screenr.com', :target => '_blank')}.
-              %br/
-              %li Upload to #{link_to('Youtube', 'http://www.youtube.com/upload', :target => '_blank')} and set the privacy to unlisted.
-              %br/
-              %li
-                Submit the link in the form to the right.
-                %br/
-                %br/
-                %strong Example:
-                %br/
-                %br/
-                :plain
-                  <iframe width="300" height="189" src="http://www.youtube.com/embed/cJNbbIWYtHg?rel=0" frameborder="0" allowfullscreen></iframe>
-            %br/
-            %h2 2) Team Member Intro Videos
-            %p Investors invest in people not ideas. To help them better learn about you and your team, have each team member record and upload an intro video covering:
-            %ol.myriad_light{:style => 'font-size: 16px'}
-              %br/
-              %li Who are you?
-              %br/
-              %li What have you done?
-              %br/
-              %li
-                Why are you doing this startup?
-                %br/
-                %br/
-                %strong Example:
-                %br/
-                %br/
-                :plain
-                  <iframe width="300" height="189" src="http://www.youtube.com/embed/ITq61YDVBbM?rel=0" frameborder="0" allowfullscreen></iframe>
-
-            %p Each team member will have to submit their intro video to their #{link_to('profile page', edit_user_path(current_user))}.
-            %br/
-            %h2 3) Product Shots
-            %p Upload #{Startup::NUM_SCREENSHOTS} screenshots or photos of your product. To do so visit your #{link_to('edit startup page', edit_startup_path(@startup))}.
-            %br/
-            %h2 4) What is your business model?
-            = f.text_area :business_model, :size => '80x5', :style => 'width: 350px; height: 100px;'
-            %br/
-            %br/
-            %h2 5) What is the size of your market?
-            $
-            = f.text_field :market_size, :placeholder => '2.5 billion'
-            %br/
-            %br/
-            %h2 6) When did you start working on this company?
-            = f.date_select :founding_date, :end_year => Time.now.year, :use_short_month => true, :order => [:month, :day, :year]
-            .control-group
-              .controls= f.submit 'Save', :class => 'btn btn-large btn-success'
-          .span1
-            %p  
-          .span3
-            = render 'users/profile_completeness', :title => 'Investment Profile'
-            %h3 nReduce Elevator Pitch Video
-            %p{:style => 'font-size: 12px'} 30 Second YouTube Video
-            .control-group{:style => 'margin-bottom: 0'}
-              .controls
-                = f.text_field :pitch_video_url, :placeholder => 'http://www.youtube.com/watch?v=088YM4pB9lM', :class => 'span3'
-
-            .control-group
-              .controls= f.submit 'Save', :class => 'btn btn-success'
-            %br/
-            %h3 Team Member Intro Videos
-            %br/
-            - current_user.startup.team_members.each do |u|
-              %div{:style => 'margin-bottom: 20px'}
-                - if !u.intro_video_url.blank?
-                  %iframe{:width => '142', :height => '90', :src => Youtube.embed_url(u.intro_video_url), :frameborder => 0, :allowfullscreen => true}
-                - else
-                  - if u.id == current_user.id
-                    = link_to image_tag('smallx.png'), edit_user_path(current_user)
-                  - else
-                    = image_tag 'smallx.png'
-                - if u.id == current_user.id
-                  %strong #{truncate(u.name, :length => 25)} #{link_to('Edit', edit_user_path(current_user))}
-                - else
-                  = u.name
-            %br/
-            %h3{:style => 'margin-top: 15px'} Product Shots - #{link_to('Edit', edit_startup_path(@startup))}
-            %br/
-            - c = 0
-            - current_user.startup.screenshots.each do |ss|
-              %div{:style => 'margin-bottom: 20px;'}
-                = image_tag ss.image_url(:medium), :style => 'max-width: 140px; max-height: 140px; border: 1px solid #ccc'
-                Screenshot ##{c + 1}
-              - c += 1
-            - c.upto(Startup::NUM_SCREENSHOTS - 1).each do |i|
-              %div{:style => 'margin-bottom: 20px'}
-                = image_tag 'smallx.png'
-                Screenshot ##{i + 1}
-
 
 
 
