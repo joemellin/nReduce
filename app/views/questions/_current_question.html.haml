@@ -4,6 +4,8 @@
   .right
     - if can? :manage, startup
       = link_to "Next Question", answer_startup_question_path(startup, @current_question), :method => :post, :remote => :true, :class => 'btn btn-large'
+      %span.question_count= @questions.present? ? @questions.size : 0
+      Questions
     - else
       &nbsp;
   .left
