@@ -64,19 +64,21 @@ class Invite < ActiveRecord::Base
     return false unless self.active?
     # assign user to startup unless they are already part of a startup
     relationship_role = nil
+
     if self.invite_type == Invite::TEAM_MEMBER
       user.startup_id = self.startup_id if !self.startup_id.blank? or !user.startup_id.blank?
       user.set_account_type(:entrepreneur)
-    # Add user as mentor to startup
-    elsif self.invite_type == Invite::MENTOR || self.invite_type == Invite::NREDUCE_MENTOR
-      user.set_account_type(:mentor)
-      user.roles << :nreduce_mentor if self.invite_type == Invite::NREDUCE_MENTOR
-      relationship_role = :startup_mentor
+      # Assign user same weekly class as the rest of the startup
+      user.weekly_class = self.weekly_class if self.weekly_class.present?
+      # Bypass forcing user to setup account if they were invited from startup that is setup, also don't suggest startups
+      user.setup_complete!(true, true) if self.startup.account_setup?
     elsif self.invite_type == Invite::STARTUP
       user.set_account_type(:entrepreneur)
       relationship_role = :startup_startup
-      #TODO: invite startup to connect (need to do after they create it)
-      #r = Relationship.start_between(user, self.startup, :startup_mentor, true) unless self.startup.blank?
+    elsif self.invite_type == Invite::MENTOR || self.invite_type == Invite::NREDUCE_MENTOR  # Add user as mentor to startup
+      user.set_account_type(:mentor)
+      user.roles << :nreduce_mentor if self.invite_type == Invite::NREDUCE_MENTOR
+      relationship_role = :startup_mentor
     elsif self.invite_type == Invite::INVESTOR
       user.set_account_type(:investor)
       relationship_role = :startup_investor
@@ -91,15 +93,8 @@ class Invite < ActiveRecord::Base
         self.errors.add(:user_id, 'could not be added to startup') unless r.approve!
       end
     end
-
-    # Assign weekly class
-    user.weekly_class = self.weekly_class || WeeklyClass.current_class
-
-    # Only suggest startups if invite is for a new startup
-    dont_suggest_startups = (self.invite_type != STARTUP)
     
-    # Let user skip approval step - unless weekly class is assigned
-    if self.weekly_class.present? || (!self.weekly_class.present? && user.setup_complete!(dont_suggest_startups, true))
+    if user.save
       self.to = user
       self.accepted_at = Time.now
       self.save
