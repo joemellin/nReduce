@@ -64,7 +64,7 @@
         %li.active#questions_tab
           %a{:href => '#questions', 'data-toggle' => 'tab'}
             Questions
-            %span.badge.badge-warning#question_count= @questions.size
+            %span.badge.badge-warning.question_count= @questions.size
       %li#profile_tab{:class => @after ? 'active' : ''}
         %a{:href => '#profile', 'data-toggle' => 'tab'} Startup Profile
     .tab-content
