@@ -33,7 +33,8 @@ class Comment < ActiveRecord::Base
     # Sort by posts with the most activity (technically doesn't know what day they responded)
     hottest_post = active_posts.sort{|a,b| a.responder_ids.size <=> b.responder_ids.size }.reverse.last
     # Only return post if anyone actually responded
-    hottest_post.responder_ids.blank? ? nil : hottest_post
+    return hottest_post if hottest_post.present? && hottest_post.responder_ids.present?
+    return nil
   end
 
   # Posts this comment (like re-tweeting) from a new user. It will save the originator and then the post is also

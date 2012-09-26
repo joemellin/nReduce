@@ -3,5 +3,9 @@
 %br
 %h4.h4 Posted their "After" Video
 %br
-%h3.h3= link_to 'Give Feedback & Support', startup_checkin_url(@checkin.startup, @checkin)
+%h4.h4 They Need Help With
+%br
+%h4.h4 #{@checkin.end_comments}
+%br
+%h3.h3= link_to 'Give Awesome Feedback', startup_checkin_url(@checkin.startup, @checkin)
 = render :partial => 'footer'

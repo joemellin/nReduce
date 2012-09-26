@@ -1,8 +1,6 @@
 .row
   .span12{:align => 'center'}
-    %hr/
-    %h2
-      %small Team #{h(@startup.name).possessive} Progress
+    %h2{:style => 'padding-top: 40px'} Team #{h(@startup.name).possessive} Progress
     %hr
     %br
     - if @checkins.size == 0

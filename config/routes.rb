@@ -173,7 +173,7 @@ Nreduce::Application.routes.draw do
   end
 
   match '/join' => 'application#join', :as => :join
-
+  match 'startups/edit' => "startups#edit", :as => :startups_edit
   match '/mentor' => "pages#mentor", :as => :public_mentors
   match '/investor' => "pages#investor", :as => :public_investors
   match '/press' => "pages#press", :as => :public_press

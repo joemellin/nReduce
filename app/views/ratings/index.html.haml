@@ -1,13 +1,23 @@
-%h2 Investor Feedback
-
+.row
+  .span4
+    %p &nbsp
+  .span4.center{:style => 'margin-bottom:60px; padding-top: 20px'}
+    %h1 Investor & Mentor Feedback
+  .span4
+    .right{style: 'margin-top: 40px; margin-right:40px'}
+      = link_to 'View Your Profile', investment_profile_startup_path
+    .clear
 .row
   .span6
-    %h3 Aggregated feedback from #{pluralize(@ratings.size, 'investor')}:
+    %h3.center{:style => 'margin-bottom: 40px'} Aggregated feedback from #{pluralize(@ratings.size, 'investor')}:
     = render 'ratings/bar_chart', :chart_id => 'weakest_element', :data => @weakest_element_data, :title => 'Biggest aspect holding you back from investors funding you'
     %br/
     = render 'ratings/bar_chart', :chart_id => 'contact_in', :data => @contact_in_data, :title => 'When investors are interested in following up with you'
 
   .span6
+    .row.center
+      %h3{:style => 'margin-bottom: 40px'} nStar Ranking 
+      %h2{:style => 'margin-bottom: 40px'} 3rd out of 250
     - if @ratings.blank?
       You haven't been reviewed by any investors yet.
     - else
