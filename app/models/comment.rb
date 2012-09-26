@@ -4,13 +4,13 @@ class Comment < ActiveRecord::Base
   belongs_to :checkin
   belongs_to :parent, :class_name => 'Comment'
   belongs_to :original, :class_name => 'Comment'
-  has_many :reposts, :class_name => 'Comment', :foreign_key => 'original_id'
+  has_many :reposts, :class_name => 'Comment', :foreign_key => 'original_id', :dependent => :destroy
   has_one :startup, :through => :checkin
-  has_many :awesomes, :as => :awsm
+  has_many :awesomes, :as => :awsm, :dependent => :destroy
   has_many :notifications, :as => :attachable
   has_many :user_actions, :as => :attachable
   
-  attr_accessible :content, :checkin_id, :parent_id, :parent, :original_id, :original
+  attr_accessible :content, :checkin_id, :parent_id, :parent, :original_id, :original, :deleted
 
   before_save :assign_startup
   after_create :notify_users_and_update_count
@@ -53,10 +53,6 @@ class Comment < ActiveRecord::Base
     User.find(self.responder_ids)
   end
 
-  def responder_ids
-    self['responder_ids'].blank? ? [] : self['responder_ids']
-  end
-
   # This comment is for a checkin
   def for_checkin?
     self.checkin_id.present?
@@ -74,9 +70,23 @@ class Comment < ActiveRecord::Base
 
   # Queries who responded to this post and updates cached count and ids
   def update_responders
-    self.responder_ids = (self.responder_ids + self.children.map{|c| c.user_id } + self.awesomes.map{|a| a.user_id } + self.reposts.map{|c| c.user_id }).uniq
+    children = self.children
+    self.responder_ids = (children.map{|c| c.user_id } + self.reposts.map{|c| c.user_id } +  self.awesomes.map{|a| a.user_id }).uniq
     self.responder_ids -= [self.user_id] # don't include author
+    self.reply_count = children.size
     self.save
+  end
+
+  # If this is a root post then we can delete it
+  def safe_destroy
+    if self.is_root? && self.original_post?
+      Comment.transaction do
+        self.children.each{|c| c.destroy }
+      end
+      self.destroy
+    else
+      self.update_attribute('deleted', true)
+    end
   end
 
   protected
@@ -102,7 +112,10 @@ class Comment < ActiveRecord::Base
       parent_comment = parent_comment.parent
     end
     # Notify all team members who are on team with checkin of new comment
-    Notification.create_for_new_comment(self) unless parent_comment and (parent_comment.user_id == self.user_id)
+    Notification.create_for_new_comment(self) unless self.original_post? || (parent_comment && (parent_comment.user_id == self.user_id))
+    # Assign original comment id for posts so we can de-duplicate shared posts
+    self.original_id = self.id if self.for_post? && self.original_id.blank?
+    self.save
   end
 
   def update_cache_and_count

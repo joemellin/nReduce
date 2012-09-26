@@ -46,6 +46,7 @@ class Startup < ActiveRecord::Base
   before_save :format_url
   after_save :reset_cached_elements
   after_create :initiate_relationships_from_invites
+  after_create :notify_classmates_of_new_startup
 
   acts_as_taggable_on :industries, :technologies, :ideologies
 
@@ -64,38 +65,38 @@ class Startup < ActiveRecord::Base
   # https://github.com/outoftime/sunspot
   searchable do
     # full-text search fields - can add :stored => true if you don't want to hit db
-    text :name, :boost => 4.0
-    text :location do
-      team_members.map{|tm| tm.location }.delete_if{|l| l.blank? }
-    end
-    text :industries_cached, :stored => true do
-      self.industries.map{|t| t.name.titleize }.join(', ')
-    end
-    text :website_url
-    text :one_liner
+    text :name, :boost => 4.0, :stored => true
+    # text :location do
+    #   team_members.map{|tm| tm.location }.delete_if{|l| l.blank? }
+    # end
+    # text :industries_cached, :stored => true do
+    #   self.industries.map{|t| t.name.titleize }.join(', ')
+    # end
+    # text :website_url
+    # text :one_liner
 
     # filterable fields
     integer :id
-    integer :stage
-    integer :company_goal
+    #integer :stage
+    #integer :company_goal
     boolean :onboarded do
       self.account_setup?
     end
-    double  :rating
+    # double  :rating
     boolean :public
     boolean :investable
-    integer :industry_tag_ids, :multiple => true, :stored => true do
-      self.industries.map{|t| t.id }
-    end
+    # integer :industry_tag_ids, :multiple => true, :stored => true do
+    #   self.industries.map{|t| t.id }
+    # end
     string :sort_name do
       name.downcase.gsub(/^(an?|the)/, '')
     end
-    integer :num_checkins do
-      self.checkins.count
-    end
-    integer :num_pending_relationships do
-      self.received_relationships.pending.count
-    end
+    # integer :num_checkins do
+    #   self.checkins.count
+    # end
+    # integer :num_pending_relationships do
+    #   self.received_relationships.pending.count
+    # end
   end
 
   def self.registration_open?
@@ -421,8 +422,12 @@ class Startup < ActiveRecord::Base
       User.where(:startup_id => self.id).map{|u| u.id }  
     }
   end
-
+  
   protected
+
+  def notify_classmates_of_new_startup
+    Notification.create_for_new_team_joined(self)
+  end
 
   def reset_cached_elements
     Cache.delete(['profile_c', self])

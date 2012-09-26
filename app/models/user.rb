@@ -148,6 +148,14 @@ class User < ActiveRecord::Base
     countries
   end
 
+  def self.joe
+    User.where(:email => Settings.joe_email)
+  end
+
+  def is_joe?
+    self.email == Settings.joe_email
+  end
+
   def can_access_chat?
     self.created_at < Time.parse('2012-07-24 00:00:00')
   end
@@ -612,6 +620,7 @@ class User < ActiveRecord::Base
   def assign_weekly_class!
     self.weekly_class = WeeklyClass.current_class
     save
+    self.weekly_class.save # updates clusters on weekly class
   end
 
   def geocode_location

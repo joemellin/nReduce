@@ -2,10 +2,23 @@ class UserMailer < ActionMailer::Base
   default from: Settings.default_from_email
   default reply_to: Settings.default_reply_to_email
 
+  def new_team_joined(notification)
+    @startup = notification.attachable
+    @to = notification.user
+    mail(:to => @to.email, :subject => "Team #{@startup.name} just joined your class!", :reply_to => @from.email)
+  end
+
   def new_checkin(notification)
     @checkin = notification.attachable
     @user = notification.user
     mail(:to => @user.email, :subject => "#{@checkin.startup.name} has posted their check-in for this week")
+  end
+
+  def new_like(notification)
+    @post = notification.attachable.awsm
+    @poster = @post.user
+    @from = notification.user
+    mail(:to => @poster.email, :subject => "#{@from.name} likes your post")
   end
 
   def relationship_request(notification)
@@ -45,15 +58,31 @@ class UserMailer < ActionMailer::Base
     mail(:to => @user.email, :subject => "You have a new team!")
   end
 
-  def new_comment(notification)
+  def new_comment_for_checkin(notification)
     @comment = notification.attachable
     @checkin = @comment.checkin
     @user = notification.user
     @owner = @user.startup_id == @checkin.startup_id
-    subject = @owner ? "#{@comment.user.name} commented on your check-in" : "#{@comment.user.name} replied to your comment"
+    if @owner
+      subject = "#{@comment.user.name} commented on your check-in" 
+    else
+      subject = "#{@comment.user.name} replied to your comment"
+    end
     mail(:to => @user.email, :subject => subject)
   end
 
+  def new_comment_for_post(notification)
+    @comment = notification.attachable
+    @original_post = @comment.original
+    @user = notification.user
+    @owner = @comment.root.user_id == @user.id
+    if @owner
+      subject = "#{@comment.user.name} commented on your post"
+    else
+      subject = "#{@comment.user.name} replied to your #{@comment.original_post? ? 'post' : 'comment'}"
+    end
+    mail(:to => @user.email, :subject => subject)
+  end
 
   # Remind all attendees to come to local meeting
   def meeting_reminder(user, meeting, message, subject = nil)
