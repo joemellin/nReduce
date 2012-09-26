@@ -24,6 +24,8 @@ class Comment < ActiveRecord::Base
 
   scope :posts, where('checkin_id IS NULL AND ancestry IS NULL').order('created_at DESC')
   scope :ordered, order('created_at DESC')
+  scope :deleted, where(:deleted => true)
+  scope :not_deleted, where(:deleted => false)
 
   # Finds the hottest post 24 hours ago until time
   def self.hottest_post_for_time(time)
