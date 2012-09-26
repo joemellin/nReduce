@@ -90,11 +90,11 @@ class UserAction < ActiveRecord::Base
   def save!(*args)
     if self.new_record? and UserAction.queue_actions?
       # Remove attached object if it's a new record, it won't marshal correctly
-      self.attachable = nil if !self.attachable.blank? and self.attachable.new_record?
+      self.attachable = nil #if !self.attachable.blank? and self.attachable.new_record?
       # Add to in-memory cache
       Cache.arr_push('user_actions', Marshal.dump(self))
       # Trigger in-memory cache to write to disk
-      Resque.enqueue(UserAction) if Cache.arr_count('user_actions') > 1000
+      Resque.enqueue(UserAction) if Cache.arr_count('user_actions') > 500
       true
     else
       super
@@ -104,7 +104,20 @@ class UserAction < ActiveRecord::Base
     # Writes user actions to database
   def self.perform
     # have to call all classes or ruby will complain when unmarshaling
-    [UserAction.class, Checkin.class, Comment.class, User.class, Meeting.class, Invite.class, Authentication.class, Awesome.class, Instrument.class, Startup.class, Relationship.class, Nudge.class]
+    [
+      UserAction.class, 
+      Checkin.class,
+      Comment.class, 
+      User.class, 
+      Meeting.class, 
+      Invite.class, 
+      Authentication.class, 
+      Awesome.class, 
+      Instrument.class, 
+      Startup.class, 
+      Relationship.class,
+      Nudge.class
+    ]
     t = Time.now
     uas = Cache.arr_get('user_actions')
     Cache.delete('user_actions')

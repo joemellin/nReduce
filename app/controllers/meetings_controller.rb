@@ -1,5 +1,4 @@
 class MeetingsController < ApplicationController
-  around_filter :record_user_action
   before_filter :login_required
   load_and_authorize_resource
 

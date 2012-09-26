@@ -1,5 +1,5 @@
 class InvestorsController < ApplicationController
-  around_filter :record_user_action
+  around_filter :record_user_action, :only => [:show_startup]
   before_filter :login_required
 
   def index
