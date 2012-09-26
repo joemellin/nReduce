@@ -1,15 +1,13 @@
 - @num_checkins ||= @startup.checkins.count
 - @num_awesomes ||= @startup.awesomes.count
 .row
+
+.row
   .span12{:style => 'padding: 0'}
-    .row{:style => 'padding-top: 0px'}
-      .span6.center
-        - vid_url = Youtube.embed_url(@startup.intro_video_url)
-        - if vid_url.blank?
-          [ no intro video ]
-        - else
-          %iframe{:width => '500', :height => '376', :src => vid_url, :frameborder => 0, :allowfullscreen => true}
-      .span4
+    .row{:style => 'padding: 0px'}
+      .span5{:style => 'padding-left: 45px'}
+        = image_tag @startup.logo_url(:medium), :width => 400, :height => 400
+      .span5{:style => 'margin-left: -35px'}
         %p
           %small Startup:
         %h1{:style => 'font-size: 50px'}= h(@startup.name)
@@ -41,35 +39,29 @@
 %br/
 .row
   .span12
-    %p
-      %small Elevator Pitch
-    %hr/
-    %h4= simple_format(h(@startup.elevator_pitch))
-
+    - unless @startup.elevator_pitch.blank?
+      %p{:style => 'padding-top: 20px'}
+        %small Elevator Pitch:
+      %h4= simple_format(h(@startup.elevator_pitch))
 .row
   .span12
     %h4
       %small Team #{h(@startup.name)}
-    %hr
     %br
 .row
   .span12
     = render 'startups/team_members', :team_members => @startup.team_members, :add_team_member => user_signed_in? && (@startup.id == current_user.startup_id ? true : false)
-    %hr
-    %br
+
 - mentors = @startup.connected_to('User')
 - if mentors.size > 0
   .row
     .span12
-      %hr
       %br
-      %h4
+      %h4{:style => 'padding-top: 20px'}
         %small #{h(@startup.name).possessive} Mentors
       %br/
-      %hr
       %br/
   .row
-    .span12
+    .span12{:style => 'padding-top: 20px'}
       = render 'startups/team_members', :team_members => mentors
-      %hr
       %br

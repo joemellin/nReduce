@@ -23,7 +23,11 @@ class CheckinsController < ApplicationController
   def new
     @checkin.startup = current_user.startup
     set_disabled_states_and_add_measurement(@checkin)
+    @before_disabled = true
+    @after_disabled = false
+    @checkin.start_focus = "Got the party started + bought beer!"
     render :action => :edit
+
   end
 
   def create

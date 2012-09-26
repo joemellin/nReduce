@@ -4,7 +4,8 @@
 - else
   - unless @hide_time
     .control-group
-      %strong You have #{verbose_distance_until_time_from_now(Checkin.next_before_checkin)} to make any changes
+      %h3.center{:style => 'padding-top: 10px'}
+        %small You have #{verbose_distance_until_time_from_now(Checkin.next_before_checkin)} to make any changes
   
   / = f.fields_for :before_video do |bv|
   /   = bv.hidden_field :type
@@ -12,6 +13,8 @@
   /   = render 'videos/viddler_recorder', :external_id_element_id => 'before_video_external_id'
 
   .control-group{error_css(@checkin, :start_focus)}
+    %p
+      &nbsp
     = f.label :start_focus, "This week's focus", :maxlength => 255, :class => 'control-label'
     .controls
       = f.text_field :start_focus, :class => "span4", :placeholder => "Create a 'mouse' prototype"
@@ -27,7 +30,7 @@
     = f.label :start_video_url, "'Before' Video URL", :class => 'control-label'
     .controls
       = f.text_field :start_video_url, :class => "span4", :placeholder => 'http://www.youtube.com/watch?v=088YM4pB9lM'
-      %span.help-inline Unlisted Youtube URL
+      %span.help-inline Unlisted Youtube URL 
       = f.semantic_errors :start_video_url
 
 - if @after_disabled == true
@@ -35,8 +38,8 @@
     %h4 'After' Submitted #{@checkin.completed_at.to_s(:short)}
 - else
   - unless @hide_time
-    .control-group
-      %strong You have #{verbose_distance_until_time_from_now(Checkin.next_after_checkin)} to make any changes
+    %h3.center{:style => 'padding-top: 10px'}
+      %small You have #{verbose_distance_until_time_from_now(Checkin.next_after_checkin)} to make any changes
 
   / = f.fields_for :after_video do |av|
   /   - unless av.object.new_record?
@@ -49,14 +52,24 @@
   /   = av.hidden_field :external_id, :id => 'after_video_external_id'
   /   = render 'videos/viddler_recorder', :external_id_element_id => 'after_video_external_id'
 
+  %p.center{:style => 'padding-top: 30px;'} Last Week's Goal
+  %h1.center{:style => 'font-size: 30px'}= h(@checkin.start_focus)
+  %h3.center{:style => 'padding-top: 40px'} Did you accomplish your goal?
   .control-group{error_css(@checkin, :end_video_url)}
+    .controls
+      = f.text_field :end_video_url, :class => "span4", :placeholder => 'YEah or neigh'
+
+
+  .control-group{error_css(@checkin, :end_video_url)}
+    %p
+      &nbsp
     = f.label :end_video_url, "'After' Video URL", :class => 'control-label'
     .controls
       = f.text_field :end_video_url, :class => "span4", :placeholder => 'http://www.youtube.com/watch?v=088YM4pB9lM'
       %span.help-inline Unlisted Youtube URL
       = f.semantic_errors :end_video_url
   
-  .control-group
+  .control-group{:class => @checkin.startup.launched? ? 'hide' : ''}
     = label_tag 'startup', 'Startup Status', :class => 'control-label'
     .controls
       = hidden_field_tag 'startup[launched]', @checkin.startup.launched?, :id => 'launched_field'
@@ -65,7 +78,7 @@
           Launched
           - if @checkin.startup.launched?
             %span{:style => 'font-size: .7em; font-weight: normal;'} #{time_ago_in_words(@checkin.startup.launched_at)} ago
-        .pre_launch{:class => @checkin.startup.launched? ? 'hide' : ''}
+        .pre_launch
           Pre-Launch
           &nbsp;&nbsp;
           = link_to("We've Launched!", '#', :onclick => "$('#launched_field').val(1); $('.pre_launch').hide(); $('.launched').fadeIn(); return false;")
@@ -74,7 +87,6 @@
     = f.fields_for :measurement do |m|
       = m.hidden_field :instrument_id, :id => 'checkin_instrument_id'
       .control-group{:style => 'margin-bottom: 0'}
-        %label.control-label Primary Metric
         .controls
           %h3#instrument_name{:class => m.object.instrument.new_record? ? 'hide' : ''}= m.object.instrument.name
           - if m.object.instrument.new_record?
@@ -88,16 +100,18 @@
 
       #instrument_value{:class => m.object.instrument.new_record? ? 'hide' : ''}
         .control-group{error_css(m.object, :value)}
-          = m.label :value, 'What is the current value?', :class => 'control-label'
+          = m.label :value, 'Past Week:', :class => 'control-label'
           .controls
             = m.text_field :value, :class => "span2", :id => 'checkin_instrument_id'
             = m.semantic_errors :value
 
   .control-group{error_css(@checkin, :end_comments)}
-    = f.label :end_comments, 'What did you accomplish?<br />What do you need help with?'.html_safe, :class => 'control-label'
+    = f.label :end_comments, 'How can your fellow nReducers help you?'.html_safe, :class => 'control-label'
     .controls
       = f.text_area :end_comments, :size => '120x4', :class => "span4"
       = f.semantic_errors :end_comments
 
-.form-actions
-  = f.submit "Submit Video", :class => "btn btn-primary btn-large"
+.form-controls.center{:style => 'margin-bottom: 20px'}
+  %p{:style => 'padding-top: 10px'}
+    &nbsp
+  = f.submit "Submit Video", :class => "btn btn-success btn-large"
