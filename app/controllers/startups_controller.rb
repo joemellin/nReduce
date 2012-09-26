@@ -1,11 +1,11 @@
 class StartupsController < ApplicationController
   around_filter :record_user_action, :except => [:onboard_next, :stats]
   before_filter :login_required
-  before_filter :load_requested_or_users_startup, :except => [:index, :invite, :stats]
-  load_and_authorize_resource :except => [:index, :stats, :invite, :show, :invite_team_members, :intro_video, :mini_profile]
+  before_filter :load_requested_or_users_startup, :except => [:index, :invite, :stats, :search]
+  load_and_authorize_resource :except => [:index, :stats, :invite, :show, :invite_team_members, :intro_video, :mini_profile, :search]
   before_filter :load_obfuscated_startup, :only => [:show, :invite_team_members, :before_video, :intro_video, :mini_profile]
   authorize_resource :only => [:show, :invite_team_members, :before_video, :intro_video, :mini_profile]
-  before_filter :redirect_if_no_startup, :except => [:index, :invite]
+  before_filter :redirect_if_no_startup, :except => [:index, :invite, :search]
 
   def index
     redirect_to '/'
@@ -210,54 +210,40 @@ class StartupsController < ApplicationController
     @measurements = @instrument.measurements.ordered_asc.all unless @instrument.blank?
   end
 
-  #
-  # ADMIN ONLY
-  #
-
-  before_filter :admin_required, :only => [:stats]
-
-  def stats
-    respond_to do |format|
-      format.csv { send_data(Startup.generate_stats_csv,
-                   :type => 'text/csv; charset=iso-8859-1; header=present',
-                   :disposition => "attachment; filename=startup_stats_#{Date.today.to_s(:db)}.csv")
-                 }
-      format.html { render :nothing => true }
-    end
-  end
-
-  protected
-
   def search
-    if !params[:search].blank?
-      # sanitize search params
-      params[:search].select{|k,v| [:name, :meeting_id, :industries].include?(k) }
-
-      # save in session for pagination
-      @search = session[:search] = params[:search]
-    elsif !params[:page].blank?
-      @search = session[:search]
+    if params[:search].blank? || params[:search].present? && params[:search].size < 2
+      render :json => [] 
+      return
     end
+    # if !params[:search].blank?
+    #   # sanitize search params
+    #   params[:search].select{|k,v| [:name, :meeting_id, :industries].include?(k) }
+
+    #   # save in session for pagination
+    #   @search = session[:search] = params[:search]
+    # elsif !params[:page].blank?
+    #   @search = session[:search]
+    # end
 
     @search ||= {}
     @search[:page] = 1 # Force one page
-    @search[:per_page] = 20
-    @search[:sort] ||= 'rating'
+    @search[:per_page] = 10
+    #@search[:sort] ||= 'rating'
 
     # Have to pass context for block or else you can't access @search instance variable
     @search_results = Startup.search do |s|
-      s.fulltext @search[:name] unless @search[:name].blank?
+      s.fulltext @search[:name]
       s.with :onboarded, true
-      s.with :meeting_id, @search[:meeting_id] unless @search[:meeting_id].blank?
-      unless @search[:industries].blank?
-        tag_ids = ActsAsTaggableOn::Tag.named_like_any_from_string(@search[:industries]).map{|t| t.id }
-        s.with :industry_tag_ids, tag_ids unless tag_ids.blank?
-      end
-      if @search[:sort] == 'rating'
-        s.order_by :rating, :desc
-      else
-        s.order_by @search[:sort]
-      end
+      # s.with :meeting_id, @search[:meeting_id] unless @search[:meeting_id].blank?
+      # unless @search[:industries].blank?
+      #   tag_ids = ActsAsTaggableOn::Tag.named_like_any_from_string(@search[:industries]).map{|t| t.id }
+      #   s.with :industry_tag_ids, tag_ids unless tag_ids.blank?
+      # end
+      # if @search[:sort] == 'rating'
+      #   s.order_by :rating, :desc
+      # else
+      #   s.order_by @search[:sort]
+      # end
       s.paginate :page => @search[:page], :per_page => @search[:per_page]
     end
 
@@ -278,14 +264,34 @@ class StartupsController < ApplicationController
     # unless @search[:industry_id].blank?
     #   @startups = @startups.where(['startups.industry_id = ?', @search[:industry_id]])
     # end
-    @ua = {:data => @search}
-    @meetings_by_id = Meeting.location_name_by_id
+    # @ua = {:data => @search}
+    # @meetings_by_id = Meeting.location_name_by_id
     #@tags_by_startup_id = Startup.tags_by_startup_id(@startups)
 
-    if current_user.mentor?
-      @entity = current_user
-    elsif !current_user.startup.blank?
-      @entity = current_user.startup
+    # if current_user.mentor?
+    #   @entity = current_user
+    # elsif !current_user.startup.blank?
+    #   @entity = current_user.startup
+    # end
+
+    render :json => @search_results.results.map{|s| s.name }
+  end
+
+  #
+  # ADMIN ONLY
+  #
+
+  before_filter :admin_required, :only => [:stats]
+
+  def stats
+    respond_to do |format|
+      format.csv { send_data(Startup.generate_stats_csv,
+                   :type => 'text/csv; charset=iso-8859-1; header=present',
+                   :disposition => "attachment; filename=startup_stats_#{Date.today.to_s(:db)}.csv")
+                 }
+      format.html { render :nothing => true }
     end
   end
 end
+
+  

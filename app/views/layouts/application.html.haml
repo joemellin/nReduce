@@ -22,7 +22,9 @@
     = js_settings
     = csrf_meta_tags
   %body
-    .wrapper{:class => user_signed_in? ? 'logged_in' : ''}
+    - if user_signed_in? && !@setup
+      = image_tag 'london-thehub.jpeg', :class => 'bg'
+    .wrapper{:class => user_signed_in? && !@setup ? 'logged_in' : ''}
       .container
         .header
           = render 'layouts/nav', :hide_nav => @hide_nav == true

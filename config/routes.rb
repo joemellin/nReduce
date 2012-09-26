@@ -121,6 +121,7 @@ Nreduce::Application.routes.draw do
       get 'stats'
       match 'invite'
       post 'invite_with_confirm'
+      post 'search'
     end
     member do
       match 'intro_video'
