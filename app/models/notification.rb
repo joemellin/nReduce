@@ -16,7 +16,7 @@ class Notification < ActiveRecord::Base
 
     # Remember to update method in helpers/application_helper.rb with new object types if they are added for correct messaging
   def self.actions
-    [:new_checkin, :relationship_request, :relationship_approved, :mentorship_approved, :investor_approved, :new_comment, :new_nudge]
+    [:new_checkin, :relationship_request, :relationship_approved, :mentorship_approved, :investor_approved, :new_comment_for_checkin, :new_comment_for_post, :new_nudge, :new_team_joined, :new_like]
   end
 
    # Pass in a user to notify, related object (ex: a relationship) and the action performed, and this will:
@@ -35,6 +35,16 @@ class Notification < ActiveRecord::Base
       Resque.enqueue(Notification, n.id) if n.email_user?
     end
     n
+  end
+
+  # Notifies all startups that are joining the same
+  def self.create_for_new_team_joined(startup)
+    wc = startup.team_members.first.weekly_class
+    return if wc.blank?
+    users_to_notify = User.where(['startup_id != ?', startup.id]).where(:weekly_class_id => wc.id).all + [User.joe]
+    users_to_notify.each do |u|
+      Notification.create_and_send(u, startup, :new_team_joined)
+    end
   end
 
   # Notifies all connected startup team members of new checkin
@@ -80,24 +90,29 @@ class Notification < ActiveRecord::Base
     if comment.for_checkin?
       startup = comment.checkin.startup
       startup.team_members.each do |u|
-        Notification.create_and_send(u, comment, :new_comment) unless u.id == comment.user_id
+        Notification.create_and_send(u, comment, :new_comment_for_checkin) unless u.id == comment.user_id
       end
     end
   end
 
     # Notify this person that someone has replied to their comment
   def self.create_for_comment_reply(new_comment, reply_to_user)
-    Notification.create_and_send(reply_to_user, new_comment, :new_comment) unless reply_to_user.id == new_comment.user_id
+    action = new_comment.for_checkin? ? :new_comment_for_checkin : :new_comment_for_post
+    Notification.create_and_send(reply_to_user, new_comment, action) unless reply_to_user.id == new_comment.user_id
   end
 
-  # only intended for awesomes on checkins
+  # Used for awesomes on checkins and likes on posts
   def self.create_for_new_awesome(awesome)
-    awesome.awsm.startup.team_members.each do |u|
-      n = Notification.new
-      n.attachable = awesome
-      n.user = u
-      n.message = "#{awesome.user.name} thought your checkin was awesome!"
-      n.save
+    if awesome.for_checkin?
+      awesome.awsm.startup.team_members.each do |u|
+        n = Notification.new
+        n.attachable = awesome
+        n.user = u
+        n.message = "#{awesome.user.name} thought your checkin was awesome!"
+        n.save
+      end
+    elsif awesome.for_comment?
+      Notification.create_and_send(awesome.awsm.user, awesome, :new_like, "You have a new like")
     end
   end
 

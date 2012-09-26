@@ -30,6 +30,10 @@ class Awesome < ActiveRecord::Base
     self.awsm_type == 'Checkin'
   end
 
+  def for_comment?
+    self.awsm_type == 'Comment'
+  end
+
   def self.label_for_type(type)
     case type
     when 'Checkin' then 'Awesome'
@@ -65,6 +69,6 @@ class Awesome < ActiveRecord::Base
   end
 
   def notify_users
-    Notification.create_for_new_awesome(self) if self.for_checkin?
+    Notification.create_for_new_awesome(self) if self.for_checkin? || self.for_comment?
   end
 end

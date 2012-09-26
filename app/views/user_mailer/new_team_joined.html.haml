@@ -1,0 +1,16 @@
+= render :partial => 'header'
+%h1.h1 Team "#{@startup.name}" has joined your class!
+%br
+%h4.h4 There are now #{pluralize(@weekly_class.startups.count, 'startup')} joining with you!
+%br
+%h4.h4 Market: #{@startup.industry_list}
+%br
+%h4.h4 Location: #{@startup.team_members.map{|tm| tm.location }.uniq.join(', ')}
+%br
+- if @to.is_joe?
+  - @startup.team_members.each do |tm|
+    #{tm.user.name}: #{tm.email}
+    %br/
+  %br/
+%h3.h3= link_to 'View Your Class', weekly_class_url(@weekly_class)
+= render :partial => 'footer'

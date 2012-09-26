@@ -13,12 +13,12 @@
   %strong Team #{@comment.user.startup.name}
 - if @owner
   wrote on your #{@checkin.time_label} check-in:
-- elsif @comment.parent.blank?
+- elsif @comment.parent.blank? && @comment.parent.user_id == @user.id
   They wrote in response to your comment "#{truncate(@comment.parent.content, :length => 30)}":
 - else
   They wrote:
 %hr/
-%h4.h4 "#{h(@comment.content)}"
+%h4.h4 "#{simple_format(h(@comment.content))}"
 %hr/
 %br/
 %br/

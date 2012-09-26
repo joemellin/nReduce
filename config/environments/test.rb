@@ -37,4 +37,5 @@ Nreduce::Application.configure do
 
   config.time_zone = 'Pacific Time (US & Canada)'
 
+  config.action_mailer.default_url_options = { :host => "nreduce.com" }
 end

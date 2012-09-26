@@ -6,7 +6,8 @@ class PostsController < ApplicationController
     connection_ids = current_user.startup.second_degree_connection_ids
     connection_ids << current_user.startup_id
     # Load all comments from this person's 1st and 2nd degree connections, as well as all original posts if these are reposts
-    @comments = Comment.posts.where(:startup_id => connection_ids).includes(:original).limit(30).order('created_at DESC').all
+    # Groups by original id so we don't get dupes from shares
+    @comments = Comment.posts.where(:startup_id => connection_ids).includes(:original).group('comments.original_id').limit(30).order('created_at DESC').all
     @hottest_post = Comment.hottest_post_for_time(Time.now)
   end
 
