@@ -297,7 +297,7 @@ class User < ActiveRecord::Base
     return true unless Settings.apis.mailchimp.enabled
     begin
       h = Hominid::API.new(Settings.apis.mailchimp.api_key)
-      h.list_unsubscribe(Settings.apis.mailchimp.everyone_list_id, self.email)
+      h.list_unsubscribe(Settings.apis.mailchimp.everyone_list_id, self.email, false, false, false)
     rescue
       # Do nothing
     end
