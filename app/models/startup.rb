@@ -130,8 +130,34 @@ class Startup < ActiveRecord::Base
   end
 
    # Returns the checkin for this nReduce week (Tue 4pm - next Tue 4pm)
-  def current_checkin
-    checkins.ordered.where(['created_at > ?', Checkin.prev_after_checkin]).first
+  def current_checkin(reset_cache = false)
+    self.reset_current_checkin_cache if reset_cache
+    cid = Cache.get(['current_checkin', self], nil, true){
+      c = checkins.ordered.where(['created_at > ?', Checkin.prev_after_checkin]).first
+      c.id if c.present?
+    }
+    Checkin.find(cid) if cid.present?
+  end
+
+  def reset_current_checkin_cache
+    Cache.delete(['current_checkin', self])
+  end
+
+   # returns array of [instrument_name, latest_rounded_value]
+  def latest_measurement_name_and_value(reset_cache = false)
+    self.reset_latest_measurement_cache if reset_cache
+    ret = Cache.get(['latest_measurement', self]){
+      i = self.instruments.first
+      if i.present?
+        m = i.measurements.ordered.first
+        [i.name, m.value.round] if m.present?
+      end
+    }
+    ret.present? ? ret : []
+  end
+
+  def reset_latest_measurement_cache
+    Cache.delete(['latest_measurement', self])
   end
 
   def number_of_consecutive_checkins

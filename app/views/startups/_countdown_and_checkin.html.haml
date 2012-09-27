@@ -1,13 +1,16 @@
 .topdash
   - nc = Checkin.next_checkin_type_and_time
+  - current_checkin = @startup.current_checkin
   - unless @startup.blank?
     %h4.solid{:style => 'font-size:10px; color: #666666; padding-left: 27px;'} Goal for the Week:
-    %p.solid{:style => 'font-size:16px; font-weight: bold; color: #3697D5; max-width: 250px;'}= truncate(@startup.checkins.ordered.first.start_focus, :length => 70)
+    - if current_checkin.present?
+      %p.solid{:style => 'font-size:16px; font-weight: bold; color: #3697D5; max-width: 250px;'}= truncate(current_checkin.start_focus, :length => 70)
+    - else
+      %p.solid (none)
     %div{:align => 'center', :style => 'overflow: hidden;'}
       %div{:style => 'padding: 0 0 0 20px;'}= render 'layouts/countdown', :time => nc[:time]
       - in_before_window = Checkin.in_before_time_window?
       - in_after_window = Checkin.in_after_time_window?
-      - current_checkin = @startup.current_checkin
       .checkin_button
         - showed_before = false
         - showed_button = false
@@ -31,7 +34,12 @@
           = link_to "Submit 'Before' Video", new_checkin_path, :class => 'btn btn-success'
           - showed_button = true
       - unless showed_button
-        %h4.solid{:style => 'font-size:10px; line-height: 12px; color: #666666; padding-left:40px;'}  Time Left. Metric to Beat:
-        %h1.solid{:style => 'font-size:24px; color: #3697D5; font-weight:bold; line-height: 24px;'}= @startup.checkins.completed.ordered.first.measurement.value.round
+        - measurement = @startup.latest_measurement_name_and_value
+        %h4.solid{:style => 'font-size:10px; line-height: 12px; color: #666666; padding-left:40px;'}
+          Time Left.
+          - if measurement.present?
+            #{measurement.first} to Beat:
+        - if measurement.present?
+          %h1.solid{:style => 'font-size:24px; color: #3697D5; font-weight:bold; line-height: 24px;'}= measurement.last
 
 
