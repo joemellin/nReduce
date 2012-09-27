@@ -1,0 +1,12 @@
+= f.hidden_field :startup_id
+= f.hidden_field :from_id
+= f.hidden_field :weekly_class_id
+%div{:style => 'margin-bottom: 5px'}
+  - Invite.available_types.each do |id, name|
+    .left{:style => 'margin-right: 10px'}
+      = f.radio_button :invite_type, id
+      = name
+  .clear
+= f.text_field :email, :placeholder => 'email address', :class => 'span2'
+%a{:href => '#', :rel => 'tooltip', :title => 'Team members will get full access to post and view checkins, and participate in nReduce. Mentors and investors will be able to view and comment on all of your checkins.'}
+  %i.icon-question-sign

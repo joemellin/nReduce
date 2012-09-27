@@ -23,18 +23,18 @@
             %br/
             %br/
             %h2
-              Get Feedback From Mentors, Investors and Be Eligible to become an nStar.
+              Get Feedback From Mentors, Investors and Apply to Become an nStar.
 
             %br/
-            %h3 To Be Eligible
-            %h3 1) Complete Your Startup Profile
-            %h3 2) Complete Your Weekly Checkin
-          .row
-            .span4 
-              %p &nbsp/
-            .span4.center{:style => 'margin-bottom: 60px'}
-              = render 'users/profile_completeness', :title => 'Investment Profile'
-           
+            %h3 To Be Eligible:
+            .startup_elements
+              - @startup_elements.each do |k,v|
+                .element
+                  - if v[:passed]
+                    &#x2713;
+                  - else
+                    = v[:value]
+                  = k.to_s.titleize
 
         .row.investor_profile{:class => investor_profile_class}
           .span6
