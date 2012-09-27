@@ -2,7 +2,7 @@
   - nc = Checkin.next_checkin_type_and_time
   - unless @startup.blank?
     %h4.solid{:style => 'font-size:10px; color: #666666; padding-left: 27px;'} Goal for the Week:
-    %p.solid{:style => 'font-size:16px; font-weight: bold; color: #3697D5;'}= @startup.checkins.ordered.first.start_focus
+    %p.solid{:style => 'font-size:16px; font-weight: bold; color: #3697D5; max-width: 250px;'}= truncate(@startup.checkins.ordered.first.start_focus, :length => 70)
     %div{:align => 'center', :style => 'overflow: hidden;'}
       %div{:style => 'padding: 0 0 0 20px;'}= render 'layouts/countdown', :time => nc[:time]
       - in_before_window = Checkin.in_before_time_window?
@@ -32,6 +32,6 @@
           - showed_button = true
       - unless showed_button
         %h4.solid{:style => 'font-size:10px; line-height: 12px; color: #666666; padding-left:40px;'}  Time Left. Metric to Beat:
-        %h1.solid{:style => 'font-size:24px; color: #3697D5; font-weight:bold;'}= @startup.checkins.completed.ordered.first.measurement.value.round
+        %h1.solid{:style => 'font-size:24px; color: #3697D5; font-weight:bold; line-height: 24px;'}= @startup.checkins.completed.ordered.first.measurement.value.round
 
 

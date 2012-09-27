@@ -10,7 +10,7 @@
   %br/
 
   #comments
-    = render :partial => 'comments/form', :object => Comment.new
+    = render :partial => 'comments/form', :object => Comment.new, :post => true
     .list
       - @comments.each do |c|
         = render c
