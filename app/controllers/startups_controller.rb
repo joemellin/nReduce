@@ -138,7 +138,6 @@ class StartupsController < ApplicationController
     @startup.attributes = params[:startup]
     @dont_render_form = params[:dont_render_form].present? ? true : false
     if @startup.save
-      #flash[:notice] = "Startup information has been saved. Thanks!"
       respond_to do |format|
         format.js
         format.html { redirect_to '/startup' }

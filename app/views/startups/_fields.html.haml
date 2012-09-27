@@ -27,13 +27,6 @@
         - mentors.each do |u|
           %li
             = link_to u.name, u
-
-
-  / .control-group{error_css(@startup, :main_contact_id)}
-  /   = f.label :main_contact_id, "Main Contact", :class => 'control-label'
-  /   .controls
-  /     = f.select :main_contact_id, options_for_select(@startup.team_members.map{|tm| [tm.name, tm.id] }, @startup.main_contact_id), :include_blank => true
-  /     = f.semantic_errors :main_contact_id
     
 .control-group{error_css(@startup, :one_liner)}
   = f.label :one_liner, :class => 'control-label'
@@ -78,46 +71,23 @@
     %p.help-block List at least one market that your startup is in
 
 - unless @setup
-  .control-group{error_css(@startup, :pitch_video_url)}
-    = f.label :pitch_video_url, "2 Minute Pitch Video Url", :class => 'control-label'
-    .controls
-      = f.text_field :pitch_video_url, :class => 'span3 with-placeholder'
-      = f.semantic_errors :pitch_video_url
-      %span.help-inline.help-danger
-        Upload a 2 minute video to Youtube of your startup's pitch.
-        %br/
-        Set it as unlisted but allow it to be embedded.
   .control-group{error_css(@startup, :business_model)}
     = f.label :business_model, "Business Model", :class => 'control-label'
     .controls
       = f.text_area :business_model, :size => '80x5', :style => 'width: 350px; height: 100px;'
   .control-group{error_css(@startup, :pitch_video_url)}
-    = f.label :pitch_video_url, "Pitch Video", :class => 'control-label'
+    = f.label :pitch_video_url, :class => 'control-label'
     .controls
-      = f.text_field :pitch_video_url, :placeholder => 'http://www.youtube.com/watch?v=088YM4pB9lM', :class => 'span3'
+      = f.text_field :pitch_video_url, :class => 'span3 with-placeholder', :placeholder => 'http://www.youtube.com/watch?v=088YM4pB9lM'
+      = f.semantic_errors :pitch_video_url
+      %span.help-inline.help-danger
+        Upload a 2 minute video to Youtube of your startup's pitch.
+        %br/
+        Set it as unlisted but allow it to be embedded.
   .control-group{error_css(@startup, :founding_date)}
     = f.label :founding_date, "Founding Date", :class => 'control-label'
     .controls
-      = f.date_select :founding_date, {:end_year => Time.now.year, :use_short_month => true, :order => [:month, :day, :year] }, {:class => 'founding_date'}
-
-/ .control-group{error_css(@startup, :growth_model)}
-/   = f.label :growth_model, "Growth Model", :class => 'control-label'
-/   .controls
-/     = f.select :growth_model, options_for_select(Startup.growth_model_select_options, @startup.growth_model), :include_blank => true
-/     = f.semantic_errors :growth_model
-/     %p.help-block How will you get customers / users?
-
-/ .control-group{error_css(@startup, :stage)}
-/   = f.label :stage, "Stage of Company", :class => 'control-label'
-/   .controls
-/     = f.select :stage, options_for_select(Startup.stage_select_options, @startup.stage), :include_blank => true
-/     = f.semantic_errors :stage
-
-/ .control-group{error_css(@startup, :company_goal)}
-/   = f.label :company_goal, "Company Goal", :class => 'control-label'
-/   .controls
-/     = f.select :company_goal, options_for_select(Startup.company_goal_select_options, @startup.company_goal), :include_blank => true
-/     = f.semantic_errors :company_goal
+      = f.date_select :founding_date, {:include_blank => true, :end_year => Time.now.year, :use_short_month => true, :order => [:month, :day, :year] }, {:class => 'founding_date'}
 
 - unless @startup.new_record? || hide_screenshots
   %hr/

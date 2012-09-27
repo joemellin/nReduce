@@ -33,15 +33,11 @@ class Startup < ActiveRecord::Base
   accepts_nested_attributes_for :intro_video, :reject_if => proc {|attributes| attributes.all? {|k,v| v.blank?} }, :allow_destroy => true
   accepts_nested_attributes_for :pitch_video, :reject_if => proc {|attributes| attributes.all? {|k,v| v.blank?} }, :allow_destroy => true
 
-  #validates_presence_of :intro_video_url, :if => lambda {|startup| startup.onboarding_complete? }
   validates_presence_of :name
   validate :check_video_urls_are_valid
   validates_presence_of :one_liner, :if => :created_but_not_setup_yet?
   validates_presence_of :elevator_pitch, :if => :created_but_not_setup_yet?
   validates_presence_of :industry_list, :if => :created_but_not_setup_yet?
-  #validates_presence_of :growth_model, :if => :created_but_not_setup_yet?
-  #validates_presence_of :stage, :if => :created_but_not_setup_yet?
-  #validates_presence_of :company_goal, :if => :created_but_not_setup_yet?
 
   before_save :format_url
   after_save :reset_cached_elements
