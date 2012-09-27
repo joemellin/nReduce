@@ -32,6 +32,6 @@
           - showed_button = true
       - unless showed_button
         %h4.solid{:style => 'font-size:10px; line-height: 12px; color: #666666; padding-left:40px;'}  Time Left. Metric to Beat:
-        %h1.solid{:style => 'font-size:24px; color: #3697D5; font-weight:bold;'}= @startup.checkins.completed.ordered.first.measurement.value
+        %h1.solid{:style => 'font-size:24px; color: #3697D5; font-weight:bold;'}= @startup.checkins.completed.ordered.first.measurement.value.round
 
 
