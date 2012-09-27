@@ -128,6 +128,7 @@ Nreduce::Application.routes.draw do
       get 'mentor_checklist'
       match 'invite_team_members'
       get 'mini_profile'
+      get 'investment_profile'
     end
     resources :checkins do
       get 'latest' => "checkins#show", :checkin_id => 'latest', :on => :collection
