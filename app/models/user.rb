@@ -148,14 +148,6 @@ class User < ActiveRecord::Base
     countries
   end
 
-  def self.joe
-    User.where(:email => Settings.joe_email)
-  end
-
-  def is_joe?
-    self.email == Settings.joe_email
-  end
-
   def can_access_chat?
     self.created_at < Time.parse('2012-07-24 00:00:00')
   end
