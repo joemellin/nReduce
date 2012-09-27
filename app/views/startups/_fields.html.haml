@@ -16,17 +16,34 @@
           &nbsp;
           = link_to '<i class="icon icon-remove"></i>'.html_safe, remove_team_member_startup_path(:user_id => u.id), :method => :post, :confirm => "Are you sure you want to remove #{u.name}?"
 
-  .control-group
-    %label.control-label Mentors
+  / .control-group
+  /   %label.control-label Mentors
+  /   .controls
+  /     - mentors = @startup.mentors
+  /     - if mentors.size == 0
+  /       None
+  /     - else
+  /       %ul
+  /       - mentors.each do |u|
+  /         %li
+  /           = link_to u.name, u
+
+  .control-group{:style => 'margin-bottom: 40px; padding-top: 20px'}
+    = label_tag 'Invite', 'Invites', :class => 'control-label'
     .controls
-      - mentors = @startup.mentors
-      - if mentors.size == 0
-        None
-      - else
-        %ul
-        - mentors.each do |u|
-          %li
-            = link_to u.name, u
+      - pending_invites = @startup.invites.not_accepted.ordered.all
+      - pending_invites += [Invite.new(:startup => @startup, :from_id => current_user.id)]
+      - pending_invites.each do |invite|
+        .invites
+          = f.fields_for :invites, invite do |i|
+            - if invite.new_record?
+              %div{:style => 'margin: 10px'}
+                = render 'startups/invite_fields', :f => i
+                = link_to '<i class="icon-plus"></i>'.html_safe, '#', :class => 'btn add_teammate_btn'
+            - else
+              %div
+                = "#{invite.to_name} (#{Invite.types[invite.invite_type].titleize})"
+                = link_to '<i class="icon icon-remove"></i>'.html_safe, invite_path(invite), :method => :delete, :confirm => "Are you sure you want to cancel the invite to #{invite.to_name}?"
     
 .control-group{error_css(@startup, :one_liner)}
   = f.label :one_liner, :class => 'control-label'

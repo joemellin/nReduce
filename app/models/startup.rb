@@ -26,12 +26,13 @@ class Startup < ActiveRecord::Base
     :growth_model, :stage, :company_goal, :meeting_id, :one_liner, :active, :launched_at, 
     :industry_list, :technology_list, :ideology_list, :industry, :intro_video_url, :elevator_pitch, 
     :logo, :remote_logo_url, :logo_cache, :remove_logo, :checkins_public, :pitch_video_url, 
-    :investable, :screenshots_attributes, :business_model, :founding_date, :market_size, :in_signup_flow
+    :investable, :screenshots_attributes, :business_model, :founding_date, :market_size, :in_signup_flow, :invites_attributes
   attr_accessor :in_signup_flow
 
   accepts_nested_attributes_for :screenshots, :reject_if => proc {|attributes| attributes.all? {|k,v| v.blank?} }, :allow_destroy => true
   accepts_nested_attributes_for :intro_video, :reject_if => proc {|attributes| attributes.all? {|k,v| v.blank?} }, :allow_destroy => true
   accepts_nested_attributes_for :pitch_video, :reject_if => proc {|attributes| attributes.all? {|k,v| v.blank?} }, :allow_destroy => true
+  accepts_nested_attributes_for :invites, :reject_if => proc {|attributes| attributes.all? {|k,v| v.blank?} }, :allow_destroy => true
 
   validates_presence_of :name
   validate :check_video_urls_are_valid
@@ -161,15 +162,17 @@ class Startup < ActiveRecord::Base
   end
 
     # Returns hash of all requirements to be allowed to search for a mentor - and whether this startup has met them
-  def mentor_elements
-    consecutive_checkins = self.number_of_consecutive_checkins
-    num_awesomes = self.awesomes.count
-    my_rating = self.rating.blank? ? 0 : self.rating
+  def mentor_and_investor_elements
+    #consecutive_checkins = self.number_of_consecutive_checkins
+    #num_awesomes = self.awesomes.count
+    #my_rating = self.rating.blank? ? 0 : self.rating
     profile_completeness = self.profile_completeness_percent
+    checkin_last_week = self.current_checkin
     elements = {
-      :consecutive_checkins => { :value => consecutive_checkins, :passed => consecutive_checkins >= 4 },
-      :num_awesomes => {:value => num_awesomes, :passed => num_awesomes >= 10 },
-      :community_status => {:value => my_rating, :passed => my_rating >= 1.0 },
+      #:consecutive_checkins => { :value => consecutive_checkins, :passed => consecutive_checkins >= 4 },
+      #:num_awesomes => {:value => num_awesomes, :passed => num_awesomes >= 10 },
+      #:community_status => {:value => my_rating, :passed => my_rating >= 1.0 },
+      :checked_in_last_week => {:value => nil, :passed => checkin_last_week.present? && checkin_last_week.completed? },
       :profile_completeness => {:value => profile_completeness, :passed => profile_completeness == 1.0 }
     }
     passed = 0
@@ -178,8 +181,8 @@ class Startup < ActiveRecord::Base
     elements
   end
 
-   # Returns true if mentor elements all pass and they haven't invited an nreduce mentor in the last week
-  def can_invite_mentor?
+   # Returns true if mentor & investor elements all pass and they haven't invited an nreduce mentor in the last week
+  def can_access_mentors_and_investors?
     can_invite = true
     relationships = self.relationships.startup_to_user.approved.where(['created_at > ?', Time.now - 1.week]).includes(:connected_with)
     relationships.each do |r|

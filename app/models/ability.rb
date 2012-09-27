@@ -23,7 +23,7 @@ class Ability
         cannot :invite_mentor, Startup # have to remove this ability since we just assigned manage
 
         can :invite_mentor, Startup do |startup|
-          startup.can_invite_mentor?
+          startup.can_access_mentors_and_investors?
         end
         
         # Can start a checkin if in before or after time window and their startup owns checkin
@@ -47,7 +47,7 @@ class Ability
 
         can [:new, :create], Instrument
 
-        can :read, Rating, :startup_id => user.startup_id if user.startup.investable?
+        can :read, Rating, :startup_id => user.startup_id if user.startup.can_access_mentors_and_investors?
 
         can :manage, Video, :startup_id => user.startup_id
 
@@ -259,7 +259,7 @@ class Ability
 
       # A user with a startup can search mentors if they are able to invite them
       can :search_mentors, User do |u|
-        u.startup.can_invite_mentor?
+        u.startup.can_access_mentors_and_investors?
       end
     end
 
