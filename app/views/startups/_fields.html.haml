@@ -98,7 +98,7 @@
   .control-group{error_css(@startup, :founding_date)}
     = f.label :founding_date, "Founding Date", :class => 'control-label'
     .controls
-      = f.date_select :founding_date, :end_year => Time.now.year, :use_short_month => true, :order => [:month, :day, :year]
+      = f.date_select :founding_date, {:end_year => Time.now.year, :use_short_month => true, :order => [:month, :day, :year] }, {:class => 'founding_date'}
 
 / .control-group{error_css(@startup, :growth_model)}
 /   = f.label :growth_model, "Growth Model", :class => 'control-label'
