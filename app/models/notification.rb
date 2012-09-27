@@ -37,16 +37,6 @@ class Notification < ActiveRecord::Base
     n
   end
 
-  # Notifies all startups that are joining the same
-  def self.create_for_new_team_joined(startup)
-    wc = startup.team_members.first.weekly_class
-    return if wc.blank?
-    users_to_notify = User.where(['startup_id != ?', startup.id]).where(:weekly_class_id => wc.id).all + [User.joe]
-    users_to_notify.each do |u|
-      Notification.create_and_send(u, startup, :new_team_joined)
-    end
-  end
-
   # Notifies all connected startup team members of new checkin
   def self.create_for_new_checkin(checkin)
     startups_to_notify = checkin.startup.connected_to('Startup')
