@@ -16,7 +16,7 @@ class Notification < ActiveRecord::Base
 
     # Remember to update method in helpers/application_helper.rb with new object types if they are added for correct messaging
   def self.actions
-    [:new_checkin, :relationship_request, :relationship_approved, :mentorship_approved, :investor_approved, :new_comment, :new_nudge]
+    [:new_checkin, :relationship_request, :relationship_approved, :mentorship_approved, :investor_approved, :new_comment, :new_nudge, :new_team_joined]
   end
 
    # Pass in a user to notify, related object (ex: a relationship) and the action performed, and this will:
@@ -35,6 +35,17 @@ class Notification < ActiveRecord::Base
       Resque.enqueue(Notification, n.id) if n.email_user?
     end
     n
+  end
+
+    # Notifies all startups that are joining the same
+  def self.create_for_new_team_joined(startup)
+    wc = startup.team_members.first.weekly_class
+    return if wc.blank?
+    users_to_notify = User.where(['startup_id != ?', startup.id]).where(:weekly_class_id => wc.id).all
+    users_to_notify << User.joe if User.joe.present?
+    users_to_notify.each do |u|
+      Notification.create_and_send(u, startup, :new_team_joined)
+    end
   end
 
   # Notifies all connected startup team members of new checkin
@@ -148,6 +159,6 @@ class Notification < ActiveRecord::Base
 
   # Checkins user settings to see if they want to be emailed on this action
   def email_user?
-    self.user.email_for?(self.attachable_type.downcase)
+    self.user.email_for?(self.attachable_type.downcase) || self.user.email_for?(self.action)
   end
 end
