@@ -2,6 +2,13 @@ class UserMailer < ActionMailer::Base
   default from: Settings.default_from_email
   default reply_to: Settings.default_reply_to_email
 
+  def new_team_joined(notification)
+    @startup = notification.attachable
+    @to = notification.user
+    @weekly_class = @to.weekly_class
+    mail(:to => @to.email, :subject => "Team #{@startup.name} just joined your class!")
+  end
+
   def new_checkin(notification)
     @checkin = notification.attachable
     @user = notification.user

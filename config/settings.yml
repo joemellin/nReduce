@@ -6,7 +6,7 @@ staging:
   password: 'sep5th'
 
 email_host: "localhost:3000"
-
+joe_email: "joe@nreduce.com"
 default_time_zone: "Pacific Time (US & Canada)"
 default_from_email: "nReduce <notifications@nreduce.com>"
 default_reply_to_email: "nReduce Support <support@nreduce.com>"
