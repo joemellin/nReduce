@@ -39,6 +39,8 @@ class Notification < ActiveRecord::Base
 
     # Notifies all startups that are joining the same
   def self.create_for_new_team_joined(startup)
+    # need to reload startup as team members are cached (and are nil) when created
+    startup.reload
     wc = startup.team_members.first.weekly_class
     return if wc.blank?
     users_to_notify = User.where(['startup_id != ?', startup.id]).where(:weekly_class_id => wc.id).all
