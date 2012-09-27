@@ -19,6 +19,7 @@ class Checkin < ActiveRecord::Base
   after_validation :check_submitted_completed_times
   before_save :notify_user
   before_create :assign_week
+  after_create :reset_startup_checkin_cache
 
   accepts_nested_attributes_for :before_video, :reject_if => proc {|attributes| attributes.all? {|k,v| v.blank?} }, :allow_destroy => true
   accepts_nested_attributes_for :after_video, :reject_if => proc {|attributes| attributes.all? {|k,v| v.blank?} }, :allow_destroy => true
@@ -306,6 +307,10 @@ class Checkin < ActiveRecord::Base
   end
 
   protected
+
+  def reset_startup_checkin_cache
+    self.startup.reset_current_checkin_cache
+  end
 
   def check_submitted_completed_times
     if self.errors.blank?
