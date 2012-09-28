@@ -59,34 +59,6 @@ class Video < ActiveRecord::Base
     # simple one-liner because using net/http just doesn't seem to work
     system("wget -O #{local_path_to_file} #{remote_url_str}")
 
-    # Wrap opening file to ensure it gets closed
-    # could use open-uri: http://stackoverflow.com/questions/5386159/download-a-zip-file-through-nethttp
-    # begin
-
-    #   download_file = open(local_path_to_file, "wb")
-    #   url = URI.parse(remote_url_str)
-    #   # May be better code for redirect following: http://stackoverflow.com/questions/5386159/download-a-zip-file-through-nethttp
-    #   found = false
-    #   until found
-    #     host, port = url.host, url.port if url.host && url.port
-    #     request = Net::HTTP.start(host, port, :use_ssl => url.scheme == 'https', :verify_mode => OpenSSL::SSL::VERIFY_NONE) 
-    #     request.request_get(url.path) do |resp|
-    #       # See if this is a redirect if so follow it
-    #       resp.header['location'] ? url = URI.parse(resp.header['location']) : found = true
-    #       # Otherwise save the file
-    #       if found == true
-    #         resp.read_body do |segment|
-    #           download_file.write(segment)
-    #           # hack to allow buffer to fille writes
-    #           sleep 0.005
-    #         end
-    #       end
-    #     end
-    #     puts url.inspect
-    #   end
-    # ensure
-    #   download_file.close
-    # end
     self.local_file_path = local_path_to_file if File.exists?(local_path_to_file)
     if self.local_file_path.blank?
       raise "Local file could not be saved" 
@@ -105,6 +77,7 @@ class Video < ActiveRecord::Base
     # Method to take the external video and save it to our vimeo account
   # First it saves it locally, then it uploads to vimeo, finally saves object
   def transfer_to_vimeo!
+    return true if self.vimeo_id.present?
     # Use individually implemented method to save file locally
     self.save_external_video_locally
     # Transfer to vimeo

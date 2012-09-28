@@ -53,8 +53,6 @@ type="application/x-shockwave-flash"  pluginspage="http://www.macromedia.com/go/
   end
 
   def save_external_video_locally
-    # return true if already uploaded
-    return true if !self.vimeo_id.blank? && !force_upload
     # Set video as downloadable
     details = ViddlerVideo.client.post('viddler.videos.set_details', :video_id => self.external_id, :download_perm => 'public')
     raise "Viddler: Video with id #{self.external_id} doesn't exist or isn't encoded yet" if details.blank? || details['video']['files'].blank?
