@@ -42,7 +42,7 @@
       $('##{video_id} .video_type').val('Screenr');
       $('##{video_id} .video_external_id').val(screencast.id);
       $('##{video_id} .video_external_url').val(screencast.mp4);
-      $('##{video_id} .screenr_embed .message').text('Your recording has been saved!');
+      $('##{video_id} .completed, ##{video_id} .fields').toggle();
     }
 
     function recordingCanceled(screencast){
