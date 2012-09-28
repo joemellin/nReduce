@@ -1,6 +1,6 @@
 - if @before_disabled == true
   - if @checkin.submitted?
-    %h4 'Before' Submitted #{@checkin.submitted_at.to_s(:short)}
+    %h4 'Before' Submitted
 - else
   - unless @hide_time
     .control-group
@@ -37,8 +37,20 @@
 
 - if @after_disabled == true
   - if @checkin.completed?
-    %h4 'After' Submitted #{@checkin.completed_at.to_s(:short)}
+    %h4 'After' Submitted
 - else
+  .row
+    .span5
+      .stage
+        .left.number 1
+        .left Video
+        .clear
+    .span6
+      .stage
+        .left.number 2
+        .left Checkin
+        .clear
+  
   - unless @hide_time
     %h3.center{:style => 'padding-top: 10px'}
       %small You have #{verbose_distance_until_time_from_now(Checkin.next_after_checkin)} to make any changes
@@ -48,9 +60,9 @@
   .span1
     %p
   .span6
-    %p.center{:style => 'padding-top: 30px;'} Last Week's Goal
+    %p.center{:style => 'padding-top: 30px;'} Last Week's Goal:
     %h1.center{:style => 'font-size: 30px'}= h(@checkin.start_focus)
-    %h3.center{:style => 'padding-top: 40px'} Did you accomplish your goal?
+    %h3{:style => 'padding-top: 40px'} Did you accomplish your goal?
     .control-group{error_css(@checkin, :accomplished)}
       .controls
         = f.radio_button :accomplished, true
@@ -91,13 +103,13 @@
 
         #instrument_value{:class => m.object.instrument.new_record? ? 'hide' : ''}
           .control-group{error_css(m.object, :value)}
-            = m.label :value, 'Past Week:', :class => 'control-label'
             .controls
               = m.text_field :value, :class => "span2", :id => 'checkin_instrument_id'
+              %span.help-text (Past Week)
               = m.semantic_errors :value
 
     .control-group{error_css(@checkin, :end_comments)}
-      = f.label :end_comments, 'How can your fellow nReducers help you?'.html_safe, :class => 'control-label'
+      %h3 How can your fellow nReducers help you?
       .controls
         = f.text_area :end_comments, :size => '120x4', :class => "span4"
         = f.semantic_errors :end_comments
@@ -105,4 +117,4 @@
 .form-controls.center{:style => 'margin-bottom: 20px'}
   %p{:style => 'padding-top: 10px'}
     &nbsp
-  = f.submit "Submit Video", :class => "btn btn-success btn-large"
+  = f.submit "Submit Checkin", :class => "btn btn-success btn-large submit disabled"
