@@ -1,5 +1,5 @@
 .posts
-  %h1 All Posts
+  %h1 Welcome to the Water Cooler!
 
   - unless @hottest_post.blank?
     %hr/
@@ -10,7 +10,7 @@
   %br/
 
   #comments
-    = render :partial => 'comments/form', :object => Comment.new, :post => true
+    = render :partial => 'comments/post_form', :object => Comment.new, :post => true
     .list
       - @comments.each do |c|
         = render c
