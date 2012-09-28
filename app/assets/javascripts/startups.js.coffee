@@ -2,6 +2,27 @@ $ ->
   $('form.startup textarea').autosize()
   $('a[rel=tooltip]').tooltip()
 
+  if $('form.checkin').length > 0
+    setTimeout( ->
+      enableCheckinFormIfComplete(true)
+    , 1000)
+
+  enableCheckinFormIfComplete = (add_timer = false) ->
+    type = $('#checkin_type').val()
+    is_complete = false
+    if type == 'before'
+      is_complete = true if $('.video_form .completed:visible').length == 1 && $('.video_form .start_focus').val().length > 0
+    else if type == 'after'
+      is_complete = true if $('.video_form .completed:visible').length == 1 && $('.checkin_accomplished').is(':checked') && $('.checkin_end_comments').val().length > 0
+    if is_complete
+      $('form.checkin :submit').removeClass('disabled')
+    else
+      $('form.checkin :submit').addClass('disabled')
+    if add_timer
+      setTimeout( ->
+        enableCheckinFormIfComplete(true)
+      , 1000)
+
   $('form.checkin').submit (e) ->
     e.stopPropagation()
     e.preventDefault()
