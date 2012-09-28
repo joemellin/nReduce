@@ -1,0 +1,52 @@
+- title ||= 'Checkin Video'
+
+%h3.message
+  %i Loading screen recorder...
+
+  %br/
+  (Please allow the Java applet to run)
+  
+:plain
+  <script type="text/javascript">
+    var sEmbedHost = (("https:" == document.location.protocol) ? "https://" : "http://");
+    document.write(unescape("%3Cscript charset='utf-8' id='screenr_recorder' src='" + sEmbedHost + "nreduce.viewscreencasts.com/api/recorder' type='text/javascript'%3E%3C/script%3E"));
+  </script>
+  <script type="text/javascript">
+    // When clicking on button with id "screencast" it will launch the recorder
+    // Recorder settings: http://business.screenr.com/api/settings.php
+    var recorder = null;
+
+    $(function() {
+      recorder = Screenr.Recorder({
+        id:"3b0463d0b3dc406283a9329a4b5d6140", 
+        maxTimeLimit: 300
+      });
+      // Set fields and hide them
+      recorder.addCustomData("user_id", "#{current_user.id}");
+      recorder.addCustomData("startup_id", "#{current_user.startup_id}");
+      recorder.setUserName("#{current_user.name}", false);
+      recorder.setSubject("#{title}", false);
+      recorder.setUserEmail("videos@nreduce.com", false);
+      recorder.setDescription('', false);
+      recorder.setOnComplete(function(screencast){ recordingDone(screencast); });
+      recorder.setOnCancel(function(screencast){ recordingCanceled(screencast); });
+    });
+
+    function startRecording(){
+      if(recorder != null)
+        recorder.record();
+    }
+
+    function recordingDone(screencast){
+      console.log(screencast);
+      $('##{video_id} .video_type').val('Screenr');
+      $('##{video_id} .video_external_id').val(screencast.id);
+      $('##{video_id} .video_external_url').val(screencast.mp4);
+      $('##{video_id} .completed, ##{video_id} .fields').toggle();
+    }
+
+    function recordingCanceled(screencast){
+      console.log('recording canceled');
+      $('##{video_id} .video_external_id').val('');
+    }
+  </script>
