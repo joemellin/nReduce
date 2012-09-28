@@ -23,13 +23,6 @@ $ ->
         enableCheckinFormIfComplete(true)
       , 1000)
 
-  $('form.checkin').submit (e) ->
-    e.stopPropagation()
-    e.preventDefault()
-    $(this).find(':submit').attr('disabled', true)
-    # Save video recording if it exists
-    saveRecording()
-
   # Logic for showing/hiding video embedding
   $('.video_embed_buttons .button').click (e) ->
     e.preventDefault()
