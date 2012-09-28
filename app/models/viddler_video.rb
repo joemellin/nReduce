@@ -28,7 +28,7 @@ id="viddler_recorder" align="middle">
       <param name="scale" value="noScale" />
       <param name="bgcolor" value="#000000" />
       <param name="recQuality" value="H" />
-      <param name="enableCallbacks" value="Y" />
+      <param name="enableCallbacks" value="1" />
       <param name="flashvars" value="fake=1&recordToken=' + token + '" />
       <embed src="http://cdn-static.viddler.com/flash/recorder.swf" quality="high" scale="noScale" bgcolor="#000000"
 allowScriptAccess="always" allowNetworking="all" width="449" height="400" name="viddler_recorder"

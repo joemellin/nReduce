@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120925225801) do
+ActiveRecord::Schema.define(:version => 20120927215753) do
 
   create_table "authentications", :force => true do |t|
     t.string   "provider"
@@ -54,6 +54,7 @@ ActiveRecord::Schema.define(:version => 20120925225801) do
     t.integer  "before_video_id"
     t.integer  "after_video_id"
     t.integer  "measurement_id"
+    t.boolean  "accomplished"
   end
 
   add_index "checkins", ["startup_id", "created_at"], :name => "index_checkins_on_startup_id_and_created_at"
