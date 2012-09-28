@@ -75,3 +75,31 @@ form.startup {
     width: 100px;
   }
 }
+
+// Styling for video embed
+
+.youtube_embed {
+  input {
+    height: 25px;
+  }
+}
+
+.video_embed_buttons {
+  .button {
+    padding: 20px;
+    margin-bottom: 10px;
+    background-color: #ccc;
+    color: #333;
+    font-size: 1.5em;
+    line-height: 1.5em;
+    cursor: pointer;
+  }
+  .button:hover {
+    background-color: #666;
+    color: #fff;
+  }
+}
+
+.video_embed_cancel {
+  margin-bottom: 15px;
+}

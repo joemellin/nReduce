@@ -27,7 +27,6 @@ class CheckinsController < ApplicationController
     @after_disabled = false
     @checkin.start_focus = "Got the party started + bought beer!"
     render :action => :edit
-
   end
 
   def create
@@ -119,6 +118,8 @@ class CheckinsController < ApplicationController
     @checkin.startup.launched_at = Time.now unless @instrument.new_record?
     @checkin.before_video = ViddlerVideo.new if @checkin.before_video.blank?
     @checkin.after_video = ViddlerVideo.new if @checkin.after_video.blank?
+    # disable olark
+    @recording_video = true
   end
 
   def load_obfuscated_checkin
