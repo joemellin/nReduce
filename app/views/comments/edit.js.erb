@@ -1,5 +1,5 @@
 /* Replace comment with updated version */
-$('#comment_<%= @comment.id -%>').replaceWith("<%= escape_javascript(render(:partial => 'form', :object => @comment)) %>");
+$('#comment_<%= @comment.id -%>').replaceWith("<%= escape_javascript(render(:partial => @comment.for_post? ? 'post_form' : 'form', :object => @comment)) %>");
 
 /* Place focus on textarea */
 $('#edit_comment_<%= @comment.id -%> textarea').first().focus();
