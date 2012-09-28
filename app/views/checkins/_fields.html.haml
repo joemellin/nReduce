@@ -40,79 +40,84 @@
     %h4 'After' Submitted
 - else
   .row
+    .span1
+      %p
     .span5
       .stage
         .left.number 1
-        .left Video
+        .left{:style => 'margin-left: 20px; margin-top: 20px'} 
+          %h1 Record Video
         .clear
-    .span6
+    .span5
       .stage
         .left.number 2
-        .left Checkin
+        .left{:style => 'margin-left: 20px; margin-top: 20px'} 
+          %h1 Enter Data
         .clear
   
-  - unless @hide_time
-    %h3.center{:style => 'padding-top: 10px'}
-      %small You have #{verbose_distance_until_time_from_now(Checkin.next_after_checkin)} to make any changes
-  .span5
-    = f.fields_for :after_video do |av|
-      = render 'videos/form', :video_id => av.object.new_record? ? 'new_after_video' : "video_#{av.object.id}", :f => av
-  .span1
-    %p
-  .span6
-    %p.center{:style => 'padding-top: 30px;'} Last Week's Goal:
-    %h1.center{:style => 'font-size: 30px'}= h(@checkin.start_focus)
-    %h3{:style => 'padding-top: 40px'} Did you accomplish your goal?
-    .control-group{error_css(@checkin, :accomplished)}
-      .controls
-        = f.radio_button :accomplished, true
-        Yes
-        &nbsp;&nbsp;
-        = f.radio_button :accomplished, false
-        No
-        = f.semantic_errors :accomplished
-    
-    .control-group{:class => @checkin.startup.launched? ? 'hide' : ''}
-      = label_tag 'startup', 'Startup Status', :class => 'control-label'
-      .controls
-        = hidden_field_tag 'startup[launched]', @checkin.startup.launched?, :id => 'launched_field'
-        %h3
-          .launched{:class => @checkin.startup.launched? ? '' : 'hide'}
-            Launched
-            - if @checkin.startup.launched?
-              %span{:style => 'font-size: .7em; font-weight: normal;'} #{time_ago_in_words(@checkin.startup.launched_at)} ago
-          .pre_launch
-            Pre-Launch
-            &nbsp;&nbsp;
-            = link_to("We've Launched!", '#', :onclick => "$('#launched_field').val(1); $('.pre_launch').hide(); $('.launched').fadeIn(); return false;")
+  .row
+    .span1
+      %p 
+    .span5
+      = f.fields_for :after_video do |av|
+        = render 'videos/form', :video_id => av.object.new_record? ? 'new_after_video' : "video_#{av.object.id}", :f => av
+        - unless @hide_time
+          %h3.center{:style => 'padding-top: 10px'}
+            %small You have #{verbose_distance_until_time_from_now(Checkin.next_after_checkin)} to make any changes
+    .span5
+      %p{:style => 'padding-top: 10px;'} Last Week's Goal:
+      %h3{:style => 'font-size: 25px'}= h(@checkin.start_focus)
+      %p{:style => 'padding-top: 10px'} Did you accomplish your goal?
+      .control-group{error_css(@checkin, :accomplished)}
+        .controls
+          = f.radio_button :accomplished, true
+          Yes
+          &nbsp;&nbsp;
+          = f.radio_button :accomplished, false
+          No
+          = f.semantic_errors :accomplished
+      
+      .control-group{:class => @checkin.startup.launched? ? 'hide' : ''}
+        = label_tag 'startup', 'Startup Status', :class => 'control-label'
+        .controls
+          = hidden_field_tag 'startup[launched]', @checkin.startup.launched?, :id => 'launched_field'
+          %h3
+            .launched{:class => @checkin.startup.launched? ? '' : 'hide'}
+              Launched
+              - if @checkin.startup.launched?
+                %span{:style => 'font-size: .7em; font-weight: normal;'} #{time_ago_in_words(@checkin.startup.launched_at)} ago
+            .pre_launch
+              Pre-Launch
+              &nbsp;&nbsp;
+              = link_to("We've Launched!", '#', :onclick => "$('#launched_field').val(1); $('.pre_launch').hide(); $('.launched').fadeIn(); return false;")
 
-    .launched{:class => @checkin.startup.launched? ? '' : 'hide'}
-      = f.fields_for :measurement do |m|
-        = m.hidden_field :instrument_id, :id => 'checkin_instrument_id'
-        .control-group{:style => 'margin-bottom: 0'}
-          .controls
-            %h3#instrument_name{:class => m.object.instrument.new_record? ? 'hide' : ''}= m.object.instrument.name
-            - if m.object.instrument.new_record?
-              #instrument_name_form
-                %p
-                  %h3= link_to 'Choose Your Metric', '#', :onclick => "$('#instrument_modal').modal(); return false;"
-                  - if @checkin.startup.launched?
-                    %br/
-                    %i Required, since you are launched (to show traction &amp; progress)
-            = f.semantic_errors :measurement
-
-        #instrument_value{:class => m.object.instrument.new_record? ? 'hide' : ''}
-          .control-group{error_css(m.object, :value)}
+      .launched{:class => @checkin.startup.launched? ? '' : 'hide'}
+        = f.fields_for :measurement do |m|
+          = m.hidden_field :instrument_id, :id => 'checkin_instrument_id'
+          .control-group{:style => 'margin-bottom: 0'}
             .controls
-              = m.text_field :value, :class => "span2", :id => 'checkin_instrument_id'
-              %span.help-text (Past Week)
-              = m.semantic_errors :value
+              %h3#instrument_name{:class => m.object.instrument.new_record? ? 'hide' : ''}= m.object.instrument.name
+              - if m.object.instrument.new_record?
+                #instrument_name_form
+                  %p
+                    %h3= link_to 'Choose Your Metric', '#', :onclick => "$('#instrument_modal').modal(); return false;"
+                    - if @checkin.startup.launched?
+                      %br/
+                      %i Required, since you are launched (to show traction &amp; progress)
+              = f.semantic_errors :measurement
 
-    .control-group{error_css(@checkin, :end_comments)}
-      %h3 How can your fellow nReducers help you?
-      .controls
-        = f.text_area :end_comments, :size => '120x4', :class => "span4"
-        = f.semantic_errors :end_comments
+          #instrument_value{:class => m.object.instrument.new_record? ? 'hide' : ''}
+            .control-group{error_css(m.object, :value)}
+              .controls
+                = m.text_field :value, :class => "span2", :id => 'checkin_instrument_id'
+                %span.help-text (Past Week)
+                = m.semantic_errors :value
+
+      .control-group{error_css(@checkin, :end_comments)}
+        %h3 How can your fellow nReducers help you?
+        .controls
+          = f.text_area :end_comments, :size => '120x4', :class => "span4"
+          = f.semantic_errors :end_comments
 
 .form-controls.center{:style => 'margin-bottom: 20px'}
   %p{:style => 'padding-top: 10px'}
