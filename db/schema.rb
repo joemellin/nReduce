@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120927215753) do
+ActiveRecord::Schema.define(:version => 20120928175619) do
 
   create_table "authentications", :force => true do |t|
     t.string   "provider"
@@ -433,6 +433,7 @@ ActiveRecord::Schema.define(:version => 20120927215753) do
     t.string   "title"
     t.integer  "startup_id"
     t.string   "image"
+    t.string   "external_url"
   end
 
   add_index "videos", ["external_id", "type"], :name => "index_videos_on_external_id_and_type", :unique => true
