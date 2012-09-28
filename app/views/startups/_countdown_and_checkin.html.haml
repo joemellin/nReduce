@@ -6,7 +6,7 @@
     - if current_checkin.present?
       %p.solid{:style => 'font-size:16px; font-weight: bold; color: #3697D5; max-width: 250px;'}= truncate(current_checkin.start_focus, :length => 70)
     - else
-      %p.solid (none)
+      %p.solid{:style => 'font-size:16px; font-weight: bold; color: #3697D5; max-width: 250px;'} none
     %div{:align => 'center', :style => 'overflow: hidden;'}
       %div{:style => 'padding: 0 0 0 20px;'}= render 'layouts/countdown', :time => nc[:time]
       - in_before_window = Checkin.in_before_time_window?

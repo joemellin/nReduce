@@ -3,7 +3,8 @@ class Video < ActiveRecord::Base
   belongs_to :user      # profile video
   belongs_to :startup   # team video, pitch video
 
-  attr_accessible :external_id, :user_id, :type, :vimeo_id, :image, :remote_image_url, :image_cache
+  attr_accessible :external_id, :user_id, :type, :vimeo_id, :image, :remote_image_url, :image_cache, :external_url, :youtube_url
+  attr_accessor :youtube_url
 
   after_create :queue_transfer_to_vimeo
   after_destroy :remove_from_vimeo_and_delete_local_file
