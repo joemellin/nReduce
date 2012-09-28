@@ -1,5 +1,5 @@
 $ ->
-  $('form.startup textarea').autosize()
+  $('form.startup textarea, form.checkin textarea').autosize()
   $('a[rel=tooltip]').tooltip()
 
   if $('form.checkin').length > 0
@@ -15,9 +15,11 @@ $ ->
     else if type == 'after'
       is_complete = true if $('.video_form .completed:visible').length == 1 && $('.checkin_accomplished').is(':checked') && $('.checkin_end_comments').val().length > 0
     if is_complete
-      $('form.checkin :submit').removeClass('disabled')
+      console.log 'complete'
+      $('form.checkin :submit').removeClass('disabled').removeAttr('disabled')
     else
-      $('form.checkin :submit').addClass('disabled')
+      console.log 'not complete'
+      $('form.checkin :submit').addClass('disabled').attr('disabled', true)
     if add_timer
       setTimeout( ->
         enableCheckinFormIfComplete(true)

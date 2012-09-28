@@ -1,3 +1,5 @@
+%h1 RESET checkin is valid
+
 .row{:style => 'padding-top: 10px'}
   .span1
     %p
@@ -56,14 +58,14 @@
             %small You have #{verbose_distance_until_time_from_now(Checkin.next_after_checkin)} to make any changes
     .span5{:style => 'padding-left: 20px'}
       %p{:style => 'padding-top: 10px;'} Last Week's Goal:
-      %h3{:style => 'font-size: 25px'}= h(@checkin.start_focus)
+      %h3{:style => 'font-size: 25px'}= @checkin.start_focus.blank? ? '(none)' : h(@checkin.start_focus)
       %p{:style => 'padding-top: 10px'} Did you accomplish your goal?
       .control-group{error_css(@checkin, :accomplished)}
         .controls
-          = f.radio_button :accomplished, true
+          = f.radio_button :accomplished, true, :class => 'checkin_accomplished'
           Yes
           &nbsp;&nbsp;
-          = f.radio_button :accomplished, false
+          = f.radio_button :accomplished, false, :class => 'checkin_accomplished'
           No
           = f.semantic_errors :accomplished
       
@@ -106,10 +108,10 @@
       .control-group{error_css(@checkin, :end_comments)}
         %h3 How can your fellow nReducers help you?
         .controls
-          = f.text_area :end_comments, :size => '200x1', :class => "span5", :class => 'checkin_end_comments',:placeholder => "Give me feedback on..."
+          = f.text_area :end_comments, :size => '200x1', :class => "span4 checkin_end_comments", :placeholder => "Give me feedback on..."
           = f.semantic_errors :end_comments
 
 .form-controls.center{:style => 'margin-bottom: 10px; padding-top: 20px; '}
   %p{:style => 'padding-top: 20px'}
     &nbsp
-  = f.submit "Submit Checkin", :class => "btn btn-success btn-large submit disabled"
+  = f.submit "Submit Checkin", :class => "btn btn-success btn-large submit disabled", :disabled => true
