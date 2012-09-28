@@ -21,18 +21,20 @@
     .clear
   .span3{:align => 'right'}
     - unless @checkin.startup.one_liner.blank?
-      %h2
+      %h3
         %small "#{@checkin.startup.one_liner}"
-%hr{:style => 'padding-bottom: 30px'}
+%hr{:style => 'padding-bottom: 0px'}
 .row
   .span6{:style => 'text-align: center', :align => 'right',}
-    %h3{:style => 'margin-bottom: 10px'}
+    %p{:style => 'margin-bottom: 0px; font-color: #ff0066'}
       Before Video
-    = display_checkin_video(@checkin, :before_video, false, 500, 315).html_safe
+    .span{:style => 'margin-left:-20px'}
+      = display_checkin_video(@checkin, :before_video, false, 600, 387).html_safe
   .span6{:style => 'text-align: center;'}
-    %h3{:style => 'margin-bottom: 10px'}
+    %p{:style => 'margin-bottom: 0px'}
       After Video
-    = display_checkin_video(@checkin, :after_video, false, 500, 315).html_safe
+    .span{:style => 'margin-left:-10px'}
+      = display_checkin_video(@checkin, :after_video, false, 600, 387).html_safe
 .row
   .span1
     %p &nbsp

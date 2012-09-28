@@ -15,6 +15,6 @@
         .clear
     .clear
   #comments
-    = render 'comments/form', :comment => Comment.new(:parent_id => @comment.id), :verb => 'Respond'
+    = render 'comments/post_form', :comment => Comment.new(:parent_id => @comment.id), :verb => 'Respond'
     .list
       = nested_comments @comments
