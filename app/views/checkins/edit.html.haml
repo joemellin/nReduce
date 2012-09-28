@@ -11,13 +11,7 @@
   .span12
     = semantic_form_for @checkin, :html => {:class => "form-vertical"} do |f|
       = render 'checkins/fields', :f => f
-.row{:style => 'padding-top: 60px'}
-  .span4
-    %p
-  .span4
-    = render 'checkins/before_video_faq'
-  .span4
-    %p
+
 
 = render 'instruments/modal'
     
