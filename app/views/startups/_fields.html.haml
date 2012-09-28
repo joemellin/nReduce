@@ -29,7 +29,7 @@
   /           = link_to u.name, u
 
   .control-group{:style => 'margin-bottom: 40px; padding-top: 20px'}
-    = label_tag 'Invite', 'Invites', :class => 'control-label'
+    = label_tag 'Invite', 'Add Team Members, Mentors & Investors', :class => 'control-label'
     .controls
       - pending_invites = @startup.invites.not_accepted.ordered.all
       - pending_invites += [Invite.new(:startup => @startup, :from_id => current_user.id)]
