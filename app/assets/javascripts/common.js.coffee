@@ -39,17 +39,24 @@ $ ->
     id = "teammate_email_#{random}"
     $('.teammates').append('<div class="email" id="' + id + '"><input type="text" name="user[teammate_emails][]" size="30" placeholder="founder@email.com" /> <a href="#" class="btn" onclick="$(\'#' + id + '\').remove(); return false;"><i class="icon-minus"></i></a></div>')
 
+  last_startup_search = 0
+
   $('.startups-autocomplete').typeahead(
     minLength: 2
     source: (query, process) ->
-      $.ajax(
-        type: 'POST'
-        url: '/startups/search'
-        data: {query: query}
-        dataType: 'json'
-        success: (results) ->
-          process(results)
-      )
+      now = new Date()
+      # Make sure we only search every two seconds
+      if last_startup_search < (now.valueOf() - 2000)
+        $.ajax(
+          type: 'POST'
+          url: '/startups/search'
+          data: {query: query}
+          dataType: 'json'
+          success: (results) ->
+            process(results)
+        )
+        now = new Date()
+        last_startup_search = now.valueOf()
     matcher: (item) ->
       true
   )
