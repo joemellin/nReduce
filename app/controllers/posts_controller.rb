@@ -1,6 +1,7 @@
 class PostsController < ApplicationController
   before_filter :login_required
   load_and_authorize_resource :comment, :parent => false
+  before_filter :load_requested_or_users_startup
 
   def index
     connection_ids = current_user.startup.second_degree_connection_ids
