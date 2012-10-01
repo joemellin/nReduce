@@ -57,31 +57,40 @@
           %h3.center{:style => 'padding-top: 10px'}
             %small You have #{verbose_distance_until_time_from_now(Checkin.next_after_checkin)} to make any changes
     .span5{:style => 'padding-left: 20px'}
-      %p{:style => 'padding-top: 10px;'} Last Week's Goal:
-      %h3{:style => 'font-size: 25px'}= @checkin.start_focus.blank? ? '(none)' : h(@checkin.start_focus)
-      %p{:style => 'padding-top: 10px'} Did you accomplish your goal?
-      .control-group{error_css(@checkin, :accomplished)}
+      %p{:style => 'padding-top: 10px;'}
+        Last Week's Goal:
+        #{@checkin.start_focus.blank? ? '(none)' : h(@checkin.start_focus)}
+      %h3 Did you accomplish your goal?
+      .control-group{error_css(@checkin, :accomplished), :style => 'margin-bottom: 30px'}
         .controls
-          = f.radio_button :accomplished, true, :class => 'checkin_accomplished'
-          Yes
-          &nbsp;&nbsp;
-          = f.radio_button :accomplished, false, :class => 'checkin_accomplished'
-          No
+          .btn-group{'data-toggle' => 'buttons-radio'}
+            %button.btn.btn-large{:type => 'button'} No
+            %button.btn.btn-large{:type => 'button'} Yes
+         
+          
+
+          / = f.radio_button :accomplished, true, :class => 'checkin_accomplished'
+          / Yes
+          / &nbsp;&nbsp;
+          / = f.radio_button :accomplished, false, :class => 'checkin_accomplished'
+          / No
           = f.semantic_errors :accomplished
       
       .control-group{:class => @checkin.startup.launched? ? 'hide' : ''}
-        = label_tag 'startup', 'Startup Status', :class => 'control-label'
         .controls
           = hidden_field_tag 'startup[launched]', @checkin.startup.launched?, :id => 'launched_field'
           %h3
-            .launched{:class => @checkin.startup.launched? ? '' : 'hide'}
+            .left Startup Status:&nbsp;&nbsp;
+            .left.launched{:class => @checkin.startup.launched? ? '' : 'hide'}
               Launched
               - if @checkin.startup.launched?
                 %span{:style => 'font-size: .7em; font-weight: normal;'} #{time_ago_in_words(@checkin.startup.launched_at)} ago
-            .pre_launch
+            .left.pre_launch
               Pre-Launch
               &nbsp;&nbsp;
               = link_to("We've Launched!", '#', :onclick => "$('#launched_field').val(1); $('.pre_launch').hide(); $('.launched').fadeIn(); return false;")
+            .clear
+            %p.help-text Have you launched to customers yet? (privately or publicly)
 
       .launched{:class => @checkin.startup.launched? ? '' : 'hide'}
         = f.fields_for :measurement do |m|
@@ -105,7 +114,7 @@
                 %span.help-text (Past Week)
                 = m.semantic_errors :value
 
-      .control-group{error_css(@checkin, :end_comments)}
+      .control-group{error_css(@checkin, :end_comments), :style => 'margin-top: 30px'}
         %h3 How can your fellow nReducers help you?
         .controls
           = f.text_area :end_comments, :size => '200x1', :class => "span4 checkin_end_comments", :placeholder => "Give me feedback on..."

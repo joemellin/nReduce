@@ -7,6 +7,33 @@ $ ->
       enableCheckinFormIfComplete(true)
     , 1000)
 
+  $('.video_form .youtube_url').change( ->
+    console.log 'change'
+    video_id = $(this).data('video-id')
+    url = $(this).val()
+    if isValidYoutubeUrl(url)
+      $("##{video_id} .completed").show()
+      $("##{video_id} .fields").hide()
+    else
+      $("##{video_id} .completed").hide()
+      $("##{video_id} .fields").show()
+  )
+
+  # if they choose to record again
+  # $('.video_form .record_again').click ->
+  #   video_id = $(this).data('video_id')
+  #   $("##{video_id} .completed").show()
+  #   $("##{video_id} .fields").hide()
+
+  isValidYoutubeUrl = (string) ->
+    # http://www.youtube.com/?watch?v=id
+    return true if string.match(/^http\:\/\/.*youtube\.com\/watch\?v\=.+$/)
+    # http://www.youtu.be/?watch=id
+    return true if string.match(/^http\:\/\/.*youtu\.be\/watch\?v\=.+$/)
+    # http://www.youtube.com/embed/id
+    return true if string.match(/^http\:\/\/.*youtube\.com\/embed\/.+$/)
+    false
+
   enableCheckinFormIfComplete = (add_timer = false) ->
     type = $('#checkin_type').val()
     is_complete = false
