@@ -1,5 +1,3 @@
-%h1 RESET checkin is valid
-
 .row{:style => 'padding-top: 10px'}
   .span1
     %p
@@ -62,35 +60,22 @@
         #{@checkin.start_focus.blank? ? '(none)' : h(@checkin.start_focus)}
       %h3 Did you accomplish your goal?
       .control-group{error_css(@checkin, :accomplished), :style => 'margin-bottom: 30px'}
+        = f.hidden_field :accomplished
         .controls
           .btn-group{'data-toggle' => 'buttons-radio'}
-            %button.btn.btn-large{:type => 'button'} No
-            %button.btn.btn-large{:type => 'button'} Yes
-         
-          
-
-          / = f.radio_button :accomplished, true, :class => 'checkin_accomplished'
-          / Yes
-          / &nbsp;&nbsp;
-          / = f.radio_button :accomplished, false, :class => 'checkin_accomplished'
-          / No
+            %button.btn.btn-large.checkin_accomplished{:type => 'button', 'data-value' => false} No
+            %button.btn.btn-large.checkin_accomplished{:type => 'button', 'data-value' => true} Yes
           = f.semantic_errors :accomplished
-      
-      .control-group{:class => @checkin.startup.launched? ? 'hide' : ''}
+
+      .control-group.pre_launch{:class => @checkin.startup.launched? ? 'hide' : ''}
         .controls
-          = hidden_field_tag 'startup[launched]', @checkin.startup.launched?, :id => 'launched_field'
-          %h3
-            .left Startup Status:&nbsp;&nbsp;
-            .left.launched{:class => @checkin.startup.launched? ? '' : 'hide'}
-              Launched
-              - if @checkin.startup.launched?
-                %span{:style => 'font-size: .7em; font-weight: normal;'} #{time_ago_in_words(@checkin.startup.launched_at)} ago
-            .left.pre_launch
-              Pre-Launch
-              &nbsp;&nbsp;
-              = link_to("We've Launched!", '#', :onclick => "$('#launched_field').val(1); $('.pre_launch').hide(); $('.launched').fadeIn(); return false;")
-            .clear
-            %p.help-text Have you launched to customers yet? (privately or publicly)
+          = hidden_field_tag 'startup[launched]', @checkin.startup.launched?, :id => 'startup_launched'
+          %h3 Have you launched to customers?
+          .btn-group{'data-toggle' => 'buttons-radio'}
+            %button.btn.btn-large{:type => 'button'} No
+            %button.btn.btn-large{:type => 'button', :onclick => "$('#startup_launched').val(1); $('.pre_launch').hide(); $('.launched').fadeIn();"} Yes
+          %p.help-text
+            %i (Privately or Publicly)
 
       .launched{:class => @checkin.startup.launched? ? '' : 'hide'}
         = f.fields_for :measurement do |m|
@@ -101,7 +86,7 @@
               - if m.object.instrument.new_record?
                 #instrument_name_form
                   %p
-                    %h3= link_to 'Choose Your Metric', '#', :onclick => "$('#instrument_modal').modal(); return false;"
+                    %h3= link_to '<i class="icon-signal"></i> Choose Your Metric'.html_safe, '#', :onclick => "$('#instrument_modal').modal(); return false;", :class => 'btn btn-large'
                     - if @checkin.startup.launched?
                       %br/
                       %i Required, since you are launched (to show traction &amp; progress)
@@ -110,11 +95,12 @@
           #instrument_value{:class => m.object.instrument.new_record? ? 'hide' : ''}
             .control-group{error_css(m.object, :value)}
               .controls
-                = m.text_field :value, :class => "span2", :id => 'checkin_instrument_id'
-                %span.help-text (Past Week)
+                = m.text_field :value, :class => "span2", :id => 'checkin_measurement_value'
+                %span.help-text 
+                  %i &nbsp;(Past Week)
                 = m.semantic_errors :value
 
-      .control-group{error_css(@checkin, :end_comments), :style => 'margin-top: 30px'}
+      .control-group{error_css(@checkin, :end_comments), :style => 'margin-top: 20px'}
         %h3 How can your fellow nReducers help you?
         .controls
           = f.text_area :end_comments, :size => '200x1', :class => "span4 checkin_end_comments", :placeholder => "Give me feedback on..."

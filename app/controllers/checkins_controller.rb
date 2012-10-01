@@ -23,8 +23,8 @@ class CheckinsController < ApplicationController
   def new
     @checkin.startup = current_user.startup
     set_disabled_states_and_add_measurement(@checkin)
-    @before_disabled = true
-    @after_disabled = false
+    # @before_disabled = true
+    # @after_disabled = false
     render :action => :edit
   end
 
@@ -74,6 +74,7 @@ class CheckinsController < ApplicationController
       end
       redirect_to add_teams_relationships_path
     else
+      flash[:notice] = "Your checkin has been saved!"
       redirect_to relationships_path
     end
   end

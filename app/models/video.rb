@@ -8,6 +8,7 @@ class Video < ActiveRecord::Base
 
   after_create :queue_transfer_to_vimeo
   after_destroy :remove_from_vimeo_and_delete_local_file
+  before_validation :extract_id_from_youtube_url
 
   validates_presence_of :external_id
   validate :video_is_unique
@@ -84,6 +85,8 @@ class Video < ActiveRecord::Base
     self.upload_to_vimeo(true)
     raise "Vimeo: video could not be uploaded from local file: #{path_to_local_file}" if self.vimeo_id.blank?
     self.save
+    # Check to see if it has been encoded
+    Resque.enqueue_in(5.minutes, Video, self.id, true)
   end
 
   # Transfers a local file (using local_file_path) to vimeo account
@@ -138,7 +141,7 @@ class Video < ActiveRecord::Base
     return !response['video'].blank? ? response['video'].first : nil
   end
 
-  def check_if_encoded_and_get_thumbnail_urls
+  def check_if_encoded_and_get_thumbnail_urls(queue_again = false)
     details = self.vimeo_details
     return false if details.blank?
     # Set as transcoded if it has completed
@@ -148,22 +151,25 @@ class Video < ActiveRecord::Base
       self.remote_image_url = details['thumbnails']['thumbnail'].last['_content']
       self.save
     else
+      Resque.enqueue_in(5.minutes, Video, self.id, true)
       false
     end
   end
 
   # Downloads video and transfers to Vimeo
-  def self.perform(video_id)
+  def self.perform(video_id, check_if_encoded = false)
     v = Video.find(video_id)
     begin
-      v.transfer_to_vimeo! unless v.vimeod?
+      if v.vimeod? && check_if_encoded
+        self.check_if_encoded_and_get_thumbnail_urls(true)
+      else 
+        # Transfer it to vimeo and queue encoding check
+        v.transfer_to_vimeo! 
+      end
     rescue
       # If it fails to download or video hasn't encoded yet, enqueue
       v.queue_transfer_to_vimeo
     end
-    # Get thumbnail video and confirm it has been transcoded on vimeo
-    # Need to schedule this ahead in time
-    # v.check_if_encoded_and_get_thumbnail_urls if v.vimeod?
   end
 
   def queue_transfer_to_vimeo
@@ -173,6 +179,18 @@ class Video < ActiveRecord::Base
   # END VIMEO-SPECIFIC METHODS
 
   protected
+
+  # Pulls youtube id from youtube_url attribute
+
+  def extract_id_from_youtube_url
+    if self.youtube_url.present?
+      url = self.youtube_url 
+      self.external_id = Youtube.id_from_url(url) if url.present?
+      self.errors.add(:youtube_url, 'is not a valid Youtube URL') unless self.external_id.present?
+    else
+      true
+    end
+  end
 
   # Make sure there isn't another video already stored with same external id
   def video_is_unique
