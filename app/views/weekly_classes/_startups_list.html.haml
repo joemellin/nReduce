@@ -43,7 +43,7 @@
           %div{:id => "#{form_id}_details"}
             - if (!relationship.blank? and relationship.approved?) #|| entity.connected_to?(connected_with)
               - if !relationship.blank?
-                = link_to '<i class="icon icon-remove"></i> Remove from Group'.html_safe, reject_relationship_path(:id => relationship.id), :method => :destroy, :class => 'btn', :confirm => "Are you sure you want to remove #{connected_with.name} as a connection?", :remote => true
+                = link_to '<i class="icon icon-remove"></i> Remove Connection'.html_safe, reject_relationship_path(:id => relationship.id), :method => :destroy, :class => 'btn', :confirm => "Are you sure you want to remove #{connected_with.name} as a connection?", :remote => true
               - else
                 = link_to 'View Profile', connected_with, :class => 'btn btn-large', :style => 'margin-bottom: 12px'
             - elsif !relationship.blank? and relationship.pending?
@@ -57,9 +57,9 @@
             - elsif !relationship.blank? and relationship.suggested?
               /= link_to '<i class="icon-refresh"></i> Pass'.html_safe, reject_relationship_path(relationship), :class => 'btn btn-large', :method => :post
               /&nbsp;&nbsp;
-              = link_to '<i class="icon-ok icon-white"></i> Invite to Group'.html_safe, '#', :onclick => "$('##{form_id}').modal(); return false;", :class => 'btn btn-large btn-success'
+              = link_to '<i class="icon-ok icon-white"></i> Connect'.html_safe, '#', :onclick => "$('##{form_id}').modal(); return false;", :class => 'btn btn-large btn-success'
             - elsif user_signed_in? # and Relationship.can_connect?(entity, connected_with)
-              = link_to((connected_with.is_a?(Startup) ? 'Invite to Group' : 'Connect'), '#', :onclick => "$('##{form_id}').modal(); return false;", :class => 'btn btn-large btn-info')
+              = link_to('Connect'), '#', :onclick => "$('##{form_id}').modal(); return false;", :class => 'btn btn-large btn-info')
             - relationship ||= Relationship.new(:entity => entity, :connected_with => connected_with)
             / Clear out message if it's a suggested relationship
             - relationship.message = nil if relationship && relationship.suggested?
@@ -79,6 +79,6 @@
                 = f.text_area :message, :size => '120x5', :class => 'span4'
                 %br/
                 %br/
-                = f.submit (connected_with.is_a?(Startup) ? 'Invite to Group' : 'Connect'), :class => 'btn btn-info btn-large'
+                = f.submit 'Connect', :class => 'btn btn-info btn-large'
       - if num_connections > 0
         %p{:style => 'font-size: .9em'} #{pluralize(num_connections, 'connection')}
