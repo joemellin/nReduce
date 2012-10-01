@@ -1,6 +1,9 @@
 $ ->
   $('form.startup textarea, form.checkin textarea').autosize()
   $('a[rel=tooltip]').tooltip()
+  $('form.checkin button.accomplished').click ->
+    val = $(this).data('value')
+    $('#checkin_accomplished').val(val)
 
   if $('form.checkin').length > 0
     setTimeout( ->
@@ -12,6 +15,7 @@ $ ->
     video_id = $(this).data('video-id')
     url = $(this).val()
     if isValidYoutubeUrl(url)
+      $("##{video_id} .video_type").val('Youtube')
       $("##{video_id} .completed").show()
       $("##{video_id} .fields").hide()
     else
@@ -40,7 +44,13 @@ $ ->
     if type == 'before'
       is_complete = true if $('.video_form .completed:visible').length == 1 && $('.checkin_start_focus').val().length > 0
     else if type == 'after'
-      is_complete = true if $('.video_form .completed:visible').length == 1 && $('.checkin_accomplished').is(':checked') && $('.checkin_end_comments').val().length > 0
+      if $('.video_form .completed:visible').length == 1 && $('#checkin_accomplish').val() != '' && $('.checkin_end_comments').val().length > 0
+        # if launched they need a measurement
+        if $('#startup_launched').val() == 'true' && $('#checkin_measurement_value').val() != ''
+          is_complete = true
+        # else no requirement
+        else if $('#startup_launched').val() == 'false'
+          is_complete = true
     if is_complete
       console.log 'complete'
       $('form.checkin :submit').removeClass('disabled').removeAttr('disabled')

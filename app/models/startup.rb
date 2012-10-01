@@ -119,7 +119,7 @@ class Startup < ActiveRecord::Base
   end
 
   def launched!
-    self.update_attribute('launched_at', Time.now)
+    self.update_attribute('launched_at', Time.now) if self.launched_at.blank?
   end
 
   def mentors

@@ -6,6 +6,15 @@
     Video Saved
     =# link_to 'Record Different Video', '#', :class => 'record_again', 'data-video_id' => video_id
   .fields
+    - unless f.object.new_record?
+      %h3 Current video:
+      != f.object.embed_code
+      %br/
+      %h3 Or, record a new version:
+    = f.hidden_field :type, :class => 'video_type'
+    = f.hidden_field :external_id, :class => 'video_external_id'
+    = f.hidden_field :remote_image_url, :class => 'video_remote_image_url'
+    = f.hidden_field :external_url, :class => 'video_external_url'
     - unless only_show_embed
       .video_embed_buttons
         %h3{:style => 'margin: 12px'} How would you like to record your video?
@@ -20,16 +29,6 @@
           Embed Youtube Video
       .video_embed_cancel.hide
         .button= link_to '<i class="icon-arrow-left"></i> Use Different Video Type'.html_safe, '#', :class => 'btn btn-large', 'data-video-id' => video_id
-    - unless f.object.new_record?
-      %strong Current video:
-      %br/
-      != f.object.embed_code
-      %br/
-      %strong Record a new version:
-    = f.hidden_field :type, :class => 'video_type'
-    = f.hidden_field :external_id, :class => 'video_external_id'
-    = f.hidden_field :remote_image_url, :class => 'video_remote_image_url'
-    = f.hidden_field :external_url, :class => 'video_external_url'
     - if only_show_embed.blank? || only_show_embed == :viddler
       .viddler_embed.video_embed{:class => only_show_embed == :viddler ? '' : 'hide'}= render 'videos/viddler_recorder', :video_id => video_id
     - if only_show_embed.blank? || only_show_embed == :screenr

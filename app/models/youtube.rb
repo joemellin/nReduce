@@ -1,6 +1,4 @@
 class Youtube < Video
-  before_validation :extract_id_from_url
-
   # Pass in a url string
   # Formats:
   # http://www.youtube.com/watch?feature=player_embedded&v=2f70gxTUt5U
@@ -90,14 +88,5 @@ class Youtube < Video
     else
       return true
     end
-  end
-
-  # Pulls youtube id from url (first checks external_url, then youtube_url)
-
-  def extract_id_from_url
-    url = self.external_url if self.external_url.present?
-    url ||= self.youtube_url if self.youtube_url.present?
-    self.external_id = Youtube.id_from_url(url) if url.present?
-    self.errors.add(:external_url, 'is not a valid Youtube URL') unless self.external_id.present?
   end
 end
