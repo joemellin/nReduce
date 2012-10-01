@@ -110,11 +110,16 @@ form.startup {
     padding-top: 40px;
   }
   .completed {
-    padding-top: 100px;
     background-color: #fff;
     color: green;
     text-align: center;
     font-size: 2em;
+    .record_again {
+      line-height: 25px;
+      font-size: 12px;
+      margin-top: 20px;
+      color: #000;
+    }
     .check { 
       color: green;
       font-size: 250px;
