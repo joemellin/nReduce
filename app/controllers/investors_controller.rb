@@ -1,5 +1,5 @@
 class InvestorsController < ApplicationController
-  around_filter :record_user_action
+  around_filter :record_user_action, :only => [:show_startup]
   before_filter :login_required
 
   def index
@@ -13,7 +13,7 @@ class InvestorsController < ApplicationController
   def show_startup
     authorize! :investor_connect_with_startups, current_user
     # Only allow temporary investor account access to their suggested startups
-    if [2367, 2375, 2435, 2436, 2437, 2438, 2459].include?(current_user.id)
+    if [2367, 2375, 2435, 2436, 2437, 2438, 2459, 2466].include?(current_user.id)
       calculate_suggested_startup_completeness
       @startup = current_user.suggested_startups(1).first
     else
@@ -43,7 +43,7 @@ class InvestorsController < ApplicationController
   protected
 
   def calculate_suggested_startup_completeness
-    @total_suggested_startups = 30
+    @total_suggested_startups = 10
     @num_startups_left = @total_suggested_startups - current_user.suggested_startups(1000).count
     @pct_complete = ((@num_startups_left.to_f / @total_suggested_startups.to_f) * 100).to_i
   end

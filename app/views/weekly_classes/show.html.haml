@@ -69,7 +69,7 @@
         %li#questions_tab
           %a{:href => '#questions', 'data-toggle' => 'tab'}
             Questions
-            %span.badge.badge-warning#question_count= @questions.size
+            %span.badge.badge-warning.question_count= @questions.size
       %li#profile_tab
         %a{:href => '#profile', 'data-toggle' => 'tab'} #{current_user.name.possessive} Profile
       %li#startup_profile_tab

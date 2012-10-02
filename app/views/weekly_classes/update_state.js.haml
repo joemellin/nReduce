@@ -6,7 +6,7 @@
 - unless @questions.blank?
   :plain
     $('.questions').html("#{escape_javascript(render('questions/list'))}");
-    $('#question_count').text(#{@questions.size});
+    $('.question_count').text(#{@questions.size});
 
 - unless @current_question.blank?
   :plain

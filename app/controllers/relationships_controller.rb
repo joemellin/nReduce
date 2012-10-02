@@ -1,5 +1,5 @@
 class RelationshipsController < ApplicationController
-  around_filter :record_user_action
+  around_filter :record_user_action, :only => [:index]
   before_filter :login_required
   before_filter :load_requested_or_users_startup, :only => [:index, :add_teams]
   load_and_authorize_resource :except => [:index, :add_teams]

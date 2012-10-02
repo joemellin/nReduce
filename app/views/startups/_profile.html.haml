@@ -6,7 +6,10 @@
       .span3
         - vid_url = Youtube.embed_url(@startup.intro_video_url)
         - if vid_url.blank?
-          [ no intro video ]
+          - if @startup.logo?
+            = image_tag @startup.logo_url(:medium)
+          - else
+            [ no intro video ]
         - else
           %iframe{:width => '250', :height => '188', :src => vid_url, :frameborder => 0, :allowfullscreen => true}
       .span5
