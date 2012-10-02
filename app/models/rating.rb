@@ -34,13 +34,22 @@ class Rating < ActiveRecord::Base
     }
   end
 
-  def self.contact_in_labels
-    { 1 => ['Not a fit', "Don't show me this startup again"],
-      2 => ['6 months', 'Show me again in 6 months and I might be interested'],
-      3 => ['3 months', 'Show me again in 3 months and I might be interested'],
-      4 => ['1 month', 'Show me again in 1 month and I might be interested'],
-      5 => ['Now', 'Please introduce me today']
-    }
+  def self.contact_in_labels(extended = false)
+    if extended
+      { 1 => "Don't show me this startup again",
+        2 => 'Show me again in 6 months and I might be interested',
+        3 => 'Show me again in 3 months and I might be interested',
+        4 => 'Show me again in 1 month and I might be interested',
+        5 => 'Please introduce me today'
+      }
+    else
+      { 1 => 'Not a fit',
+        2 => '6 months',
+        3 => '3 months',
+        4 => '1 month',
+        5 => 'Now'
+      }
+    end
   end
 
   def contact_now?
@@ -53,7 +62,7 @@ class Rating < ActiveRecord::Base
 
   def contact_in_desc
     return nil if self.contact_in.blank?
-    Rating.contact_in_labels[self.contact_in].first unless Rating.contact_in_labels[self.contact_in].blank?
+    Rating.contact_in_labels[self.contact_in] unless Rating.contact_in_labels[self.contact_in].blank?
   end
 
   def weakest_element_desc
@@ -61,41 +70,33 @@ class Rating < ActiveRecord::Base
     Rating.weakest_element_labels[self.weakest_element] unless Rating.weakest_element_labels[self.weakest_element].blank?
   end
 
-  # Takes an array of ratings and returns an array for weakest element, eg: [['Traction', 5], ['Market', 4]] - used in charts
-  def self.weakest_element_arr_from_ratings(ratings)
-    we = {}
+  # Takes an array of ratings and returns for column provided, either :contact_in or :weakest_element
+  # eg: [['Traction', 5], ['Market', 4]] - used in charts
+  def self.chart_data_from_ratings(ratings, column)
+    investor_ratings = {}
+    mentor_ratings = {}
+    labels = Rating.send("#{column}_labels".to_sym)
+
     # Set it up so all values are represented
-    Rating.weakest_element_labels.each{|id, label| we[id] = 0 }
-    ratings.map{|r| we[r.weakest_element] += 1 }
-    ret = []
-    we.each do |id, num|
-      ret << [Rating.weakest_element_labels[id], num]
-    end
-    ret
-  end
+    labels.each{|id, label| investor_ratings[id] = 0; mentor_ratings[id] = 0 }
 
-  # For use in pie chart
-  def self.weakest_element_pct_arr_from_ratings(ratings)
-    we = {}
-    ratings.map{|r| we[r.weakest_element] ||= 0; we[r.weakest_element] += 1 }
-    ret = {}
-    total = we.inject(0.0){|r,e| r + e.last }
-    we.each do |id, num|
-      ret[Rating.weakest_element_labels[id]] = ((num / total) * 100).round(2)
+    # Split up ratings between investors and mentors
+    ratings.each do |r|
+      if r.user.investor?
+        investor_ratings[r.send(column)] += 1
+      elsif r.user.mentor?
+        mentor_ratings[r.send(column)] += 1
+      end
     end
-    ret.sort{|a,b| a.last <=> b.last }.reverse
-  end
 
-  # Takes an array of ratings and returns an array for contact in time (format same as weakest element) - used in charts
-  def self.contact_in_arr_from_ratings(ratings)
-    ci = {}
-    Rating.contact_in_labels.each{|id, label| ci[id] = 0 }
-    ratings.map{|r| ci[r.contact_in] += 1 }
-    ret = []
-    ci.each do |id, num|
-      ret << [Rating.contact_in_labels[id].first, num]
-    end
-    ret
+    {
+      :categories => labels.values, 
+      :series =>
+        {
+          'Investor' => investor_ratings.sort.map{|k,v| v }, 
+          'Mentor' => mentor_ratings.sort.map{|k,v| v }
+        }
+    }
   end
 
   # Finds the relationship that exists between the startup and investor involved in this rating

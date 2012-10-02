@@ -29,9 +29,9 @@
             - if hide_nav
               %li= link_to "Log out", logout_path, :method => :delete
             - else
-              %li.main.padding{:class => is_controller_action?('relationships', 'index') ? 'active' : ''}= link_to "Work Room", '/'
+              %li.main.padding{:class => is_controller_action?('relationships', 'index') ? 'active' : ''}= link_to "Work Room", work_room_path
               - if can? :see_investor_page, current_user
-                %li.main.padding{:class => is_controller_action?('investors', 'index') ? 'active' : ''}= link_to "Board Room", investors_path
+                %li.main.padding{:class => is_controller_action?('investors', 'index') ? 'active' : ''}= link_to "Board Room", board_room_path
               %li.dropdown
                 %a.dropdown-toggle.btn{:href => '#', 'data-toggle' => 'dropdown'}
                   = image_tag(user_avatar_url(current_user))

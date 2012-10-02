@@ -22,6 +22,7 @@ class Checkin < ActiveRecord::Base
   before_save :notify_user
   before_create :assign_week
   after_create :reset_startup_checkin_cache
+  after_destroy :reset_startup_checkin_cache
 
   validates_presence_of :startup_id
   validates_presence_of :start_focus, :message => "can't be blank", :if => lambda { Checkin.in_before_time_window? }

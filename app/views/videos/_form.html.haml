@@ -11,6 +11,7 @@
       != f.object.embed_code
       %br/
       %h3 Or, record a new version:
+      = f.hidden_field :id, :class => 'video_id'
     = f.hidden_field :type, :class => 'video_type'
     = f.hidden_field :external_id, :class => 'video_external_id'
     = f.hidden_field :remote_image_url, :class => 'video_remote_image_url'
@@ -19,13 +20,13 @@
       .video_embed_buttons
         %h3{:style => 'margin: 12px'} How would you like to record your video?
         .button{'data-embed-class' => 'viddler_embed', 'data-video-id' => video_id}
-          = image_tag 'webcam_icon.png', :style => 'width: 30px; height: 30px; margin-right: 10px;'
+          = image_tag 'webcam_icon.png', :style => 'width: 28px; height: 23px; margin-right: 10px;'
           Record from Webcam
         .button{'data-embed-class' => 'screenr_embed', 'data-video-id' => video_id}
-          = image_tag 'screen_icon.png', :style => 'width: 30px; height: 30px; margin-right: 10px;'
+          = image_tag 'screen_icon.png', :style => 'width: 26px; height: 24px; margin-right: 10px;'
           Record Screencast
         .button{'data-embed-class' => 'youtube_embed', 'data-video-id' => video_id}
-          = image_tag 'youtube_icon.png', :style => 'width: 50px; height: 50px;'
+          = image_tag 'youtube_icon.png', :style => 'width: 60px; height: 24px;'
           Embed Youtube Video
       .video_embed_cancel.hide
         .button= link_to '<i class="icon-arrow-left"></i> Use Different Video Type'.html_safe, '#', :class => 'btn btn-large', 'data-video-id' => video_id

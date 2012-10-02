@@ -38,7 +38,8 @@
     }
 
     function recordingDone(screencast){
-      console.log(screencast);
+      //console.log(screencast);
+      $('##{video_id} .video_id').remove();
       $('##{video_id} .video_type').val('Screenr');
       $('##{video_id} .video_external_id').val(screencast.id);
       $('##{video_id} .video_external_url').val(screencast.mp4);
@@ -46,7 +47,7 @@
     }
 
     function recordingCanceled(screencast){
-      console.log('recording canceled');
+      //console.log('recording canceled');
       $('##{video_id} .video_external_id').val('');
     }
   </script>

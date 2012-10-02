@@ -6,9 +6,10 @@ class Video < ActiveRecord::Base
   attr_accessible :external_id, :user_id, :type, :vimeo_id, :image, :remote_image_url, :image_cache, :external_url, :youtube_url
   attr_accessor :youtube_url
 
-  after_create :queue_transfer_to_vimeo
-  after_destroy :remove_from_vimeo_and_delete_local_file
   before_validation :extract_id_from_youtube_url
+  before_save :check_if_needs_vimeo_upload, :unless => :new_record?
+  before_save :flag_for_vimeo_upload, :if => :new_record?
+  after_destroy :remove_from_vimeo_and_delete_local_file
 
   validates_presence_of :external_id
   validate :video_is_unique
@@ -172,19 +173,28 @@ class Video < ActiveRecord::Base
     end
   end
 
-  def queue_transfer_to_vimeo
-    Resque.enqueue(Video, self.id)
+  def flag_for_vimeo_upload
+    @transfer_to_vimeo = true
+  end
+
+  # only queues if flag_for_vimeo_upload is called
+  def queue_transfer_to_vimeo(force_transfer = false)
+    Resque.enqueue(Video, self.id) if @transfer_to_vimeo == true || force_transfer
   end
 
   # END VIMEO-SPECIFIC METHODS
 
   protected
 
-  # Pulls youtube id from youtube_url attribute
+  # Queue for upload to vimeo if the external id (linked video) has changed
+  def check_if_needs_vimeo_upload
+    self.flag_for_vimeo_upload if self.external_id.present? && self.external_id_changed?
+  end
 
+  # Pulls youtube id from youtube_url attribute
   def extract_id_from_youtube_url
     if self.youtube_url.present?
-      url = self.youtube_url 
+      url = self.youtube_url
       self.external_id = Youtube.id_from_url(url) if url.present?
       self.errors.add(:youtube_url, 'is not a valid Youtube URL') unless self.external_id.present?
     else
@@ -194,7 +204,7 @@ class Video < ActiveRecord::Base
 
   # Make sure there isn't another video already stored with same external id
   def video_is_unique
-    if self.new_record? && Video.where(:external_id => self.external_id, :type => self.class.to_s).count > 0
+    if self.new_record? && self.external_id.present? && Video.where(:external_id => self.external_id, :type => self.class.to_s).count > 0
       self.errors.add(:external_id, 'is not unique')
       false
     else

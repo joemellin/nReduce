@@ -26,7 +26,7 @@ class Startup < ActiveRecord::Base
     :growth_model, :stage, :company_goal, :meeting_id, :one_liner, :active, :launched_at, 
     :industry_list, :technology_list, :ideology_list, :industry, :intro_video_url, :elevator_pitch, 
     :logo, :remote_logo_url, :logo_cache, :remove_logo, :checkins_public, :pitch_video_url, 
-    :investable, :screenshots_attributes, :business_model, :founding_date, :market_size, :in_signup_flow, :invites_attributes
+    :investable, :screenshots_attributes, :business_model, :founding_date, :market_size, :in_signup_flow, :invites_attributes, :mentorable
   attr_accessor :in_signup_flow
 
   accepts_nested_attributes_for :screenshots, :reject_if => proc {|attributes| attributes.all? {|k,v| v.blank?} }, :allow_destroy => true
@@ -178,6 +178,8 @@ class Startup < ActiveRecord::Base
     passed = 0
     elements.each{|name, e| passed += 1 if e[:passed] == true }
     elements[:total] = {:value => "#{passed} of #{elements.size}", :passed => passed == elements.size}
+    # uncomment this to fake being ready
+    #elements[:total] = {:value => 'passed', :passed => true}
     elements
   end
 
@@ -188,7 +190,7 @@ class Startup < ActiveRecord::Base
     relationships.each do |r|
       can_invite = false if r.connected_with.roles?(:nreduce_mentor)
     end
-    (mentor_elements[:total][:passed] == true) and can_invite
+    (mentor_and_investor_elements[:total][:passed] == true) and can_invite
   end
 
   # They can enter from their weekly class if they have completed their profile and are connected to four other startups

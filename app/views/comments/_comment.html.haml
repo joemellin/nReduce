@@ -45,7 +45,7 @@
         %strong= link_to 'x', comment, :method => :delete, :remote => true, :confirm => "Are you sure you want to delete the #{comment.original_post? ? 'post' : 'comment'}?"
       - else
         &nbsp;•&nbsp;
-        = link_to 'Share', repost_post_path(comment), :method => :post
+        = link_to 'Share With Your Connections', repost_post_path(comment), :method => :post
       - unless comment.responder_ids.blank?
         %div
           - comment.responders.each do |u|

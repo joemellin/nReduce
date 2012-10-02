@@ -7,7 +7,7 @@ class InvestorsController < ApplicationController
     if current_user.entrepreneur? && current_user.startup_id.present?
       @startup = current_user.startup
       @startup_elements = @startup.mentor_and_investor_elements
-      if @startup_elements[:total][:passed] # if they have all elements passed show feedback
+      if @startup_elements[:total][:passed] && (@startup.mentorable? || @startup.investable?) # if they have all elements passed show feedback
         redirect_to startup_ratings_path(@startup)
         return
       end
