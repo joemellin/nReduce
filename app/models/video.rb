@@ -9,6 +9,7 @@ class Video < ActiveRecord::Base
   before_validation :extract_id_from_youtube_url
   before_save :check_if_needs_vimeo_upload, :unless => :new_record?
   before_save :flag_for_vimeo_upload, :if => :new_record?
+  after_save :queue_transfer_to_vimeo
   after_destroy :remove_from_vimeo_and_delete_local_file
 
   validates_presence_of :external_id
@@ -179,7 +180,10 @@ class Video < ActiveRecord::Base
 
   # only queues if flag_for_vimeo_upload is called
   def queue_transfer_to_vimeo(force_transfer = false)
-    Resque.enqueue(Video, self.id) if @transfer_to_vimeo == true || force_transfer
+    if @transfer_to_vimeo == true || force_transfer
+      Resque.enqueue(Video, self.id)
+      @transfer_to_vimeo = false
+    end
   end
 
   # END VIMEO-SPECIFIC METHODS
