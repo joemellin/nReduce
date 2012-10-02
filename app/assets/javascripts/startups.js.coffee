@@ -11,9 +11,14 @@ $ ->
     , 1000)
 
   $('.video_form .youtube_url').change( ->
-    console.log 'change'
-    video_id = $(this).data('video-id')
-    url = $(this).val()
+    field = $(this)
+    if field.length > 0 && field.val() != ''
+      validateYoutubeForm(field)
+  )
+
+  validateYoutubeForm = (element) ->
+    video_id = element.data('video-id')
+    url = element.val()
     if isValidYoutubeUrl(url)
       $("##{video_id} .video_type").val('Youtube')
       $("##{video_id} .completed").show()
@@ -21,7 +26,6 @@ $ ->
     else
       $("##{video_id} .completed").hide()
       $("##{video_id} .fields").show()
-  )
 
   # if they choose to record again
   # $('.video_form .record_again').click ->
@@ -41,10 +45,11 @@ $ ->
   enableCheckinFormIfComplete = (add_timer = false) ->
     type = $('#checkin_type').val()
     is_complete = false
+    validateYoutubeForm($('.video_form .youtube_url'))
     if type == 'before'
-      is_complete = true if $('.video_form .completed:visible').length == 1 && $('.checkin_start_focus').val().length > 0
+      is_complete = true if ($('.video_form .completed:visible').length == 1 || $('.video_form .video_id').val()?)  && $('.checkin_start_focus').val().length > 0
     else if type == 'after'
-      if $('.video_form .completed:visible').length == 1 && $('#checkin_accomplish').val() != '' && $('.checkin_end_comments').val().length > 0
+      if ($('.video_form .completed:visible').length == 1 || $('.video_form .video_id').val()?) && $('#checkin_accomplish').val() != '' && $('.checkin_end_comments').val().length > 0
         # if launched they need a measurement
         if $('#startup_launched').val() == 'true' && $('#checkin_measurement_value').val() != ''
           is_complete = true

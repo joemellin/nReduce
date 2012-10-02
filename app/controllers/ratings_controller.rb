@@ -6,9 +6,9 @@ class RatingsController < ApplicationController
   load_and_authorize_resource :through => :startup
   
   def index
-    @ratings = @ratings.ordered
-    @weakest_element_data = Rating.weakest_element_arr_from_ratings(@ratings)
-    @contact_in_data = Rating.contact_in_arr_from_ratings(@ratings)
+    @ratings = Rating.includes(:user).ordered.all #@ratings.includes(:user).ordered
+    @weakest_element_data = Rating.chart_data_from_ratings(@ratings, :weakest_element)
+    @contact_in_data = Rating.chart_data_from_ratings(@ratings, :contact_in)
   end
 
   def new

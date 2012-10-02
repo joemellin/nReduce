@@ -1,7 +1,6 @@
 .investors
   - if current_user.entrepreneur?
     .startup
-      - investor_profile_class = current_user.startup.investable? ? '' : 'hide'
       = form_for current_user.startup, :url => '/startup/', :remote => true, :html => {:class => 'form-vertical startup'} do |f|
         = hidden_field_tag 'dont_render_form', true
         .row
@@ -11,40 +10,51 @@
             %h1
               %small Board Room
           .span4
-            .right{:style => 'margin: 15px 0px 20px 0px'}= f.check_box :investable, :class => 'investable'
-            .right{:style => 'margin: 15px 30px 20px 0px'}
-              %h3 Seeking investment?
+            .right{:style => 'margin: 15px 0px 20px 0px'}
+              .left
+                %h3 Seeking Investment
+              .left{:style => 'margin-left: 10px'}
+                = f.check_box :investable, :class => 'investable'
+              .clear
+              %br/
+              .left
+                %h3 Seeking Mentorship
+              .left{:style => 'margin-left: 10px'}
+                = f.check_box :mentorable, :class => 'mentorable'
+              .clear
             .clear
         %hr/
         %br/
-        .row.investor_profile_inactive{:class => current_user.startup.investable? ? 'hide' : ''}
-          %center
-            
-            %br/
-            %br/
-            %h2
-              Get Feedback From Mentors, Investors and Apply to Become an nStar.
+        - if current_user.startup.can_access_mentors_and_investors?
+          .row.investor_profile
+            .span6
+              %br
+              %br
+              %h3
+                = link_to 'View Your Investment Profile', investment_profile_startup_path
+                &nbsp;&nbsp;|&nbsp;&nbsp;
+                = link_to 'View Investor Feedback', startup_ratings_path(@startup)
+        - else
+          .row.investor_profile_inactive
+            %center
+              
+              %br/
+              %br/
+              %h2
+                Get Feedback From Mentors, Investors and Apply to Become an nStar.
 
-            %br/
-            %h3 To Be Eligible:
-            .startup_elements
-              - @startup_elements.each do |k,v|
-                .element
-                  - if v[:passed]
-                    &#x2713;
-                  - else
-                    = v[:value]
-                  = k.to_s.titleize
+              %br/
+              %h3 To Be Eligible:
+              .startup_elements
+                - @startup_elements.each do |k,v|
+                  .element
+                    - if v[:passed]
+                      &#x2713;
+                    - else
+                      = v[:value]
+                    = k.to_s.titleize
 
-        .row.investor_profile{:class => investor_profile_class}
-          .span6
-            %br
-            %br
-
-            %h3
-              = link_to 'View Your Investment Profile', investment_profile_startup_path
-              &nbsp;&nbsp;|&nbsp;&nbsp;
-              = link_to 'View Investor Feedback', startup_ratings_path(@startup)
+        
 
 
 

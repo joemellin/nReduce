@@ -57,14 +57,14 @@
     .span5{:style => 'padding-left: 20px'}
       %p{:style => 'padding-top: 10px;'}
         Last Week's Goal:
-        #{@checkin.start_focus.blank? ? '(none)' : h(@checkin.start_focus)}
+        %strong #{@checkin.start_focus.blank? ? '(none)' : h(@checkin.start_focus)}
       %h3 Did you accomplish your goal?
       .control-group{error_css(@checkin, :accomplished), :style => 'margin-bottom: 30px'}
         = f.hidden_field :accomplished
         .controls
           .btn-group{'data-toggle' => 'buttons-radio'}
-            %button.btn.btn-large.checkin_accomplished{:type => 'button', 'data-value' => false} No
-            %button.btn.btn-large.checkin_accomplished{:type => 'button', 'data-value' => true} Yes
+            %button.btn.btn-large.accomplished{:type => 'button', 'data-value' => 'false', :class => (@checkin.accomplished.present? && !@checkin.accomplished?) ? 'active' : ''} No
+            %button.btn.btn-large.accomplished{:type => 'button', 'data-value' => 'true', :class => (@checkin.accomplished.present? && @checkin.accomplished?) ? 'active' : ''} Yes
           = f.semantic_errors :accomplished
 
       .control-group.pre_launch{:class => @checkin.startup.launched? ? 'hide' : ''}

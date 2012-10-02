@@ -173,6 +173,8 @@ Nreduce::Application.routes.draw do
     post 'repost', :on => :member
   end
 
+  match '/work_room' => 'relationships#index', :as => :work_room
+  match '/board_room' => 'investors#index', :as => :board_room
   match '/join' => 'application#join', :as => :join
   match 'startups/edit' => "startups#edit", :as => :startups_edit
   match '/mentor' => "pages#mentor", :as => :public_mentors
