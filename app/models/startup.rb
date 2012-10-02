@@ -172,8 +172,8 @@ class Startup < ActiveRecord::Base
       #:consecutive_checkins => { :value => consecutive_checkins, :passed => consecutive_checkins >= 4 },
       #:num_awesomes => {:value => num_awesomes, :passed => num_awesomes >= 10 },
       #:community_status => {:value => my_rating, :passed => my_rating >= 1.0 },
-      :checked_in_last_week => {:value => nil, :passed => checkin_last_week.present? && checkin_last_week.completed? },
-      :profile_completeness => {:value => profile_completeness, :passed => profile_completeness == 1.0 }
+      :checked_in_within_the_last_week => {:value => nil, :passed => checkin_last_week.present? && checkin_last_week.completed? },
+      :profile_completeness => {:value => "#{(profile_completeness * 100).round}%", :passed => profile_completeness == 1.0 }
     }
     passed = 0
     elements.each{|name, e| passed += 1 if e[:passed] == true }

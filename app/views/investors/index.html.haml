@@ -41,16 +41,17 @@
               %br/
               %br/
               %h2
-                Get Feedback From Mentors, Investors and Apply to Become an nStar.
+                Get Feedback From Mentors, Investors and Apply to Become an nStar
 
               %br/
-              %h3 To Be Eligible:
+              %h3{:style => 'margin-bottom: 10px'} To Be Eligible:
               .startup_elements
                 - @startup_elements.each do |k,v|
                   .element
                     - if v[:passed]
                       &#x2713;
                     - else
+                      •
                       = v[:value]
                     = k.to_s.titleize
 
