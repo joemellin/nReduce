@@ -56,6 +56,7 @@ class User < ActiveRecord::Base
 
   before_create :set_default_settings
   after_create :mailchimp!
+  after_create :notify_classmates_of_new_team
   after_destroy :remove_from_mailchimp
   before_save :geocode_location
   before_save :ensure_roles_exist
@@ -134,7 +135,7 @@ class User < ActiveRecord::Base
   end
 
   def self.force_email_on
-    [:nudge, :user] # user is new mentor
+    [:nudge, :user, :new_team_joined] # user is new mentor
   end
 
   def self.user_countries
@@ -146,6 +147,14 @@ class User < ActiveRecord::Base
       countries << country unless country.blank?
     end
     countries
+  end
+
+  def self.joe
+    User.where(:email => Settings.joe_email).first
+  end
+
+  def is_joe?
+    self.email == Settings.joe_email
   end
 
   def can_access_chat?
@@ -224,13 +233,13 @@ class User < ActiveRecord::Base
 
   def update_unread_notifications_count
     self.unread_nc = self.notifications.unread.count
-    self.save
+    self.save(:validate => false)
   end
 
   def mark_all_notifications_read
     if Notification.mark_all_read_for(self)
       self.unread_nc = 0
-      self.save
+      self.save(:validate => false)
     else 
       false
     end
@@ -297,7 +306,7 @@ class User < ActiveRecord::Base
     return true unless Settings.apis.mailchimp.enabled
     begin
       h = Hominid::API.new(Settings.apis.mailchimp.api_key)
-      h.list_unsubscribe(Settings.apis.mailchimp.everyone_list_id, self.email)
+      h.list_unsubscribe(Settings.apis.mailchimp.everyone_list_id, self.email, false, false, false)
     rescue
       # Do nothing
     end
@@ -626,6 +635,16 @@ class User < ActiveRecord::Base
   end
 
   protected
+
+  # sends notifications of weekly class that this person has joined
+  def notify_classmates_of_new_team
+    # don't notify if this person is not an entrepreneur
+    return true unless self.entrepreneur?
+    # don't notify if they are not in this week's current class
+    return true unless self.weekly_class.present? && WeeklyClass.current_class == self.weekly_class && self.startup.present?
+    Notification.create_for_new_team_joined(self.startup)
+    true
+  end
 
   def reset_cached_elements
     Cache.delete(['profile_c', self])

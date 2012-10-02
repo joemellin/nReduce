@@ -1,5 +1,5 @@
 = render :partial => 'header'
-- if @invite.weekly_class.present?
+- if !@invite.startup.account_setup? || @invite.weekly_class.present?
   %p Hi!
 
   %P #{@invite.from.name} is thinking about having #{@invite.from.startup.name} joining this week's nReduce class on #{@invite.weekly_class.join_time.strftime('%A, %b %d')} at 1PM PST.

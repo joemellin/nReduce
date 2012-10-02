@@ -1,5 +1,4 @@
 class OnboardController < ApplicationController
-  around_filter :record_user_action
   before_filter :login_required
   before_filter :load_requested_or_users_startup
 

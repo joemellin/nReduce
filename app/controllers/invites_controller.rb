@@ -1,5 +1,4 @@
 class InvitesController < ApplicationController
-  around_filter :record_user_action
   before_filter :login_required, :except => :accept
   before_filter :load_obfuscated_startup, :only => :create
   load_and_authorize_resource :startup, :only => :create
@@ -86,7 +85,7 @@ class InvitesController < ApplicationController
           end
         end
       end
-      @ua = {:attachable => @invite}
+      #@ua = {:attachable => @invite}
     else
       if !current_user.blank? and @invite.to_id == current_user.id
         flash[:notice] = "You have already accepted that invite."
