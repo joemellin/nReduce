@@ -59,7 +59,7 @@
               /&nbsp;&nbsp;
               = link_to '<i class="icon-ok icon-white"></i> Connect'.html_safe, '#', :onclick => "$('##{form_id}').modal(); return false;", :class => 'btn btn-large btn-success'
             - elsif user_signed_in? # and Relationship.can_connect?(entity, connected_with)
-              = link_to('Connect'), '#', :onclick => "$('##{form_id}').modal(); return false;", :class => 'btn btn-large btn-info')
+              = link_to 'Connect', '#', :onclick => "$('##{form_id}').modal(); return false;", :class => 'btn btn-large btn-info'
             - relationship ||= Relationship.new(:entity => entity, :connected_with => connected_with)
             / Clear out message if it's a suggested relationship
             - relationship.message = nil if relationship && relationship.suggested?
