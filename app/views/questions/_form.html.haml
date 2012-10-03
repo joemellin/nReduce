@@ -10,8 +10,6 @@
 
   %div{:align => 'center', :style => 'margin-top: 20px'}
     = link_to "Ask Question".html_safe, '#', :onclick => "$('#question_form').submit(); return false;", :class => 'btn btn-success btn-large'
-    /= link_to "#{image_tag('twitter_white.png')} Tweet Question".html_safe, '#', :onclick => "$('#question_form').submit(); return false;", :class => 'btn btn-success btn-large'
-
   :javascript
     $(function() {
       $('#question_content').textareaCount({maxCharacterSize: 90, displayFormat: '#input characters (limit of 90)'});
