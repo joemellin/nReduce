@@ -12,8 +12,6 @@
           %p= link_to_external @startup.website_url, @startup.website_url
     .span3
       %center
-        Investors Only
-        %br/
         = link_to "<i class=\"icon-envelope\"></i> Contact #{@startup.name}".html_safe, '#', :class => 'btn btn-large', :onclick => "$('.investor_contact').modal('show');"
         .modal.hide.investor_contact
           .modal-header

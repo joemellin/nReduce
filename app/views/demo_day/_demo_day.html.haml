@@ -19,7 +19,7 @@
   .row
     - c = 0
     - startups.each do |s|
-      - this_startup_url = demo_day_path(:id => demo_day.index_of(s))
+      - this_startup_url = (demo_day.day.to_s == '2012-10-03') ? demo_day_path(:id => demo_day.index_of(s)) : '#'
       - logo_path = s.logo_url(:square)
       - owner = (user_signed_in? && !current_user.startup_id.blank? && (s.id == current_user.startup_id))
       .span3{:align => 'center'}
