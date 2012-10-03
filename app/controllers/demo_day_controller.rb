@@ -19,7 +19,8 @@ class DemoDayController < ApplicationController
       return
     end
     
-    initialize_tokbox_session(@startup)
+    # initialize tokbox and force new session key
+    initialize_tokbox_session(@startup, user_signed_in? && current_user.startup_id == @startup.id)
 
     load_questions_for_startup(@startup)
     

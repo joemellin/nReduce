@@ -9,6 +9,8 @@
           %br/
           .enter_button= link_to "Enter Demo Day".html_safe, '#', :class => 'btn btn-large disabled'
         - elsif @demo_day.in_time_window?
+          %h2 #{@demo_day.day.strftime('%B %Y')} nStar Demo Day
+          %br/
           .enter_button= link_to "Meet the Winners".html_safe, '/d', :class => 'btn btn-large btn-success'
       - else
         %h1.headline.center
