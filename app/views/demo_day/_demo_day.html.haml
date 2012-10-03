@@ -93,7 +93,7 @@
           You're Attending
         - else
           = link_to_login "I attended!".html_safe, attend_demo_day_path(demo_day), :method => :post, :class => 'btn btn-large'
-.row
+.row{:style => 'margin-bottom: 20px'}
   .span12
     - demo_day.attendees.each do |u|
       - next if u.twitter.blank?
