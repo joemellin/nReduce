@@ -10,6 +10,11 @@
   .span3= image_tag 'nstar_s.png', :style => 'width: 75px; height: 63px'
 %hr/
 %br/
+- if demo_day.day.to_s == '2012-10-03'
+  %center
+    :plain
+      <iframe src="http://player.vimeo.com/video/50698479" width="500" height="281" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>
+  %br/
 .relationships.teams
   .row
     - c = 0
