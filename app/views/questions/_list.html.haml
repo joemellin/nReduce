@@ -54,12 +54,13 @@
                   %small Get this answered sooner
         - else
           &nbsp;
-    .modal.hide
-      .modal-header
-        %button.close{:type => 'button', 'data-dismiss' => 'modal'} x
-        %h2{:style => 'margin-bottom: 5px'} Re-Tweet This Question
-      .modal-body
-        %h3 "#{h(q.tweet_content)}"
-      .modal-footer
-        %center
-          = link_to "#{image_tag('twitter_white.png')} Re-Tweet This".html_safe, support_startup_question_path(@startup, q), :method => :post, :remote => true, :class => 'btn btn-large btn-success'
+    - if !no_upvoting #&& q.tweet_id.present?
+      .modal.hide
+        .modal-header
+          %button.close{:type => 'button', 'data-dismiss' => 'modal'} x
+          %h2{:style => 'margin-bottom: 5px'} Re-Tweet This Question
+        .modal-body
+          %h3 "#{h(q.tweet_content)}"
+        .modal-footer
+          %center
+            = link_to "#{image_tag('twitter_white.png')} Re-Tweet This".html_safe, support_startup_question_path(@startup, q), :method => :post, :remote => true, :class => 'btn btn-large btn-success'

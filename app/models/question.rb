@@ -86,7 +86,11 @@ class Question < ActiveRecord::Base
   end
 
   def tweet_content
-    # "#{self.content.first(90)} #{Settings.demo_day.hashtag} http://nreduce.com/d/#{DemoDay.next_or_current.index_of(self.startup)}"
+    begin
+      "#{self.content.first(90)} #{Settings.demo_day.hashtag} http://nreduce.com/d/#{DemoDay.next_or_current.index_of(self.startup)}"
+    rescue
+      ''
+    end
   end
 
   # Tweets question from creator's account
