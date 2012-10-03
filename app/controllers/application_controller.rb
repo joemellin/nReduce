@@ -151,7 +151,6 @@ class ApplicationController < ActionController::Base
 
   def login_required
     if authenticate_user!
-      @demo_day = DemoDay.where(:day => "2012-10-03").first
       return redirect_for_setup_and_onboarding
     else
       return false
