@@ -36,10 +36,12 @@ class DemoDay < ActiveRecord::Base
   end
 
   def starts_at
+    return Time.now - 5.minutes
     Time.parse("#{self.day} 11:00:00 -0700")
   end
 
   def ends_at
+    return Time.now + 10.minutes
     Time.parse("#{self.day} 12:30:00 -0700")
   end
 
