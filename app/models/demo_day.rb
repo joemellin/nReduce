@@ -41,7 +41,7 @@ class DemoDay < ActiveRecord::Base
   end
 
   def hide_checkins?(startup)
-    return true if startup.id == 742
+    return true if [742, 585].include?(startup.id)
     false
   end
 
