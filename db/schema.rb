@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120919144751) do
+ActiveRecord::Schema.define(:version => 20121003011811) do
 
   create_table "authentications", :force => true do |t|
     t.string   "provider"
@@ -48,13 +48,13 @@ ActiveRecord::Schema.define(:version => 20120919144751) do
     t.datetime "created_at",                     :null => false
     t.datetime "updated_at",                     :null => false
     t.integer  "awesome_count",   :default => 0
-    t.text     "before_comments"
     t.text     "start_comments"
     t.integer  "comment_count",   :default => 0
     t.integer  "week"
     t.integer  "before_video_id"
     t.integer  "after_video_id"
     t.integer  "measurement_id"
+    t.boolean  "accomplished"
   end
 
   add_index "checkins", ["startup_id", "created_at"], :name => "index_checkins_on_startup_id_and_created_at"
@@ -63,23 +63,29 @@ ActiveRecord::Schema.define(:version => 20120919144751) do
     t.text     "content"
     t.integer  "user_id"
     t.integer  "checkin_id"
-    t.datetime "created_at",                   :null => false
-    t.datetime "updated_at",                   :null => false
+    t.datetime "created_at",                       :null => false
+    t.datetime "updated_at",                       :null => false
     t.integer  "awesome_count", :default => 0
     t.string   "ancestry"
+    t.text     "responder_ids"
+    t.boolean  "deleted",       :default => false
+    t.integer  "startup_id"
+    t.integer  "original_id"
+    t.integer  "reply_count",   :default => 0
   end
 
-  add_index "comments", ["ancestry"], :name => "index_comments_on_ancestry"
-  add_index "comments", ["checkin_id"], :name => "index_comments_on_checkin_id"
+  add_index "comments", ["checkin_id", "ancestry"], :name => "index_comments_on_checkin_id_and_ancestry"
+  add_index "comments", ["startup_id", "created_at"], :name => "index_comments_on_startup_id_and_created_at"
 
   create_table "demo_days", :force => true do |t|
     t.string   "name"
     t.text     "attendee_ids"
     t.date     "day"
-    t.datetime "created_at",   :null => false
-    t.datetime "updated_at",   :null => false
+    t.datetime "created_at",                  :null => false
+    t.datetime "updated_at",                  :null => false
     t.string   "startup_ids"
     t.text     "video_ids"
+    t.integer  "index_offset", :default => 0
   end
 
   create_table "instruments", :force => true do |t|
@@ -161,13 +167,13 @@ ActiveRecord::Schema.define(:version => 20120919144751) do
 
   create_table "notifications", :force => true do |t|
     t.string   "message"
+    t.string   "action"
     t.integer  "attachable_id"
     t.string   "attachable_type"
     t.integer  "user_id"
     t.boolean  "emailed",         :default => false
     t.datetime "read_at"
     t.datetime "created_at"
-    t.string   "action"
   end
 
   add_index "notifications", ["user_id", "read_at"], :name => "index_notifications_on_user_id_and_read_at"
@@ -189,8 +195,9 @@ ActiveRecord::Schema.define(:version => 20120919144751) do
     t.datetime "answered_at"
     t.integer  "startup_id"
     t.integer  "user_id"
-    t.datetime "created_at",                     :null => false
-    t.datetime "updated_at",                     :null => false
+    t.datetime "created_at",                         :null => false
+    t.datetime "updated_at",                         :null => false
+    t.boolean  "tweet",           :default => false
   end
 
   add_index "questions", ["startup_id", "answered_at", "updated_at"], :name => "startup_answered_updated", :unique => true
@@ -232,6 +239,7 @@ ActiveRecord::Schema.define(:version => 20120919144751) do
     t.string   "connected_with_type"
     t.text     "message"
     t.integer  "context"
+    t.string   "reason"
     t.datetime "pending_at"
   end
 
@@ -300,10 +308,22 @@ ActiveRecord::Schema.define(:version => 20120919144751) do
     t.string   "market_size"
     t.string   "tokbox_session_id"
     t.string   "cached_industry_list"
+    t.boolean  "mentorable",           :default => false
   end
 
   add_index "startups", ["public"], :name => "index_startups_on_public"
   add_index "startups", ["week"], :name => "index_startups_on_week"
+
+  create_table "suggested_startups", :force => true do |t|
+    t.string   "entity_type"
+    t.string   "suggested_entity_type"
+    t.integer  "entity_id"
+    t.integer  "state"
+    t.string   "reason"
+    t.datetime "decided_at"
+    t.datetime "created_at",            :null => false
+    t.datetime "updated_at",            :null => false
+  end
 
   create_table "taggings", :force => true do |t|
     t.integer  "tag_id"
@@ -357,6 +377,7 @@ ActiveRecord::Schema.define(:version => 20120919144751) do
     t.string   "location"
     t.float    "lat"
     t.float    "lng"
+    t.boolean  "admin",                  :default => false
     t.boolean  "mailchimped",            :default => false
     t.integer  "startup_id"
     t.datetime "created_at",                                :null => false
@@ -386,6 +407,7 @@ ActiveRecord::Schema.define(:version => 20120919144751) do
     t.string   "cached_industry_list"
   end
 
+  add_index "users", ["email"], :name => "index_users_on_email", :unique => true
   add_index "users", ["reset_password_token"], :name => "index_users_on_reset_password_token", :unique => true
   add_index "users", ["roles"], :name => "index_users_on_roles"
   add_index "users", ["startup_id"], :name => "index_users_on_startup_id"
@@ -414,16 +436,17 @@ ActiveRecord::Schema.define(:version => 20120919144751) do
     t.string   "title"
     t.integer  "startup_id"
     t.string   "image"
+    t.string   "external_url"
   end
 
   add_index "videos", ["external_id", "type"], :name => "index_videos_on_external_id_and_type", :unique => true
 
   create_table "weekly_classes", :force => true do |t|
     t.integer  "week"
-    t.integer  "num_startups"
+    t.integer  "num_startups",   :default => 0
     t.integer  "num_users",      :default => 0
-    t.integer  "num_countries"
-    t.integer  "num_industries"
+    t.integer  "num_countries",  :default => 0
+    t.integer  "num_industries", :default => 0
     t.text     "clusters"
     t.datetime "created_at",                    :null => false
     t.datetime "updated_at",                    :null => false

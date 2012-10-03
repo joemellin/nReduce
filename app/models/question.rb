@@ -7,13 +7,13 @@ class Question < ActiveRecord::Base
 
   serialize :supporter_ids
 
-  attr_accessible :content, :startup, :startup_id
+  attr_accessible :content, :startup, :startup_id, :tweet
 
   validates :user_id, :startup_id, :presence => true
   validates :content, :length => { :maximum => 90, :minimum => 10 }
 
-  #before_create :update_followers_and_attendees
-  #before_create :tweet_question
+  before_create :update_followers_and_attendees
+  before_create :tweet_question
   after_save :update_cache
 
   scope :unanswered, where('answered_at IS NULL')
@@ -61,12 +61,13 @@ class Question < ActiveRecord::Base
     self.supporter_ids ||= []
     # Add supporter id
     self.supporter_ids << user.id
-    # Retweet from supporter's account
-    if !dont_tweet && self.tweet_id.present?
-      tw = user.twitter_client
-      self.followers_count += user.followers_count if user.followers_count.present?
-      tw.retweet(self.tweet_id) if Rails.env.production?
-    end
+    # Retweet from supporter's account - commented out as we're not doing it for now
+    # if !dont_tweet && self.tweet_id.present?
+    #   tw = user.twitter_client
+    #   self.followers_count += user.followers_count if user.followers_count.present?
+    #   tw.retweet(self.tweet_id) if Rails.env.production?
+    # end
+    self.followers_count += user.followers_count if user.followers_count.present?
     if save
       self.add_attendee_to_demo_day(self.user)
     else
@@ -90,7 +91,7 @@ class Question < ActiveRecord::Base
 
   # Tweets question from creator's account
   def tweet_question
-    return true unless Rails.env.production?
+    return true unless Rails.env.production? && self.tweet?
     tw = self.user.twitter_client
     return false if tw.blank?
     begin
@@ -131,6 +132,8 @@ class Question < ActiveRecord::Base
   end
 
   def update_followers_and_attendees
+    # Don't update if we are nReduce answering questions for weekly join
+    return if self.startup_id == Startup.nreduce_id
     self.followers_count = self.user.followers_count if self.user.followers_count.present?
     self.add_attendee_to_demo_day(self.user)
   end

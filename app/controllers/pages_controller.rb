@@ -9,7 +9,7 @@ class PagesController < ApplicationController
 
   def home
     @weekly_class = WeeklyClass.current_class
-    #@demo_day = DemoDay.next_or_current
+    @demo_day = DemoDay.where(:day => Date.today).first
     @home = true
     if user_signed_in?
       redirect_to relationships_path

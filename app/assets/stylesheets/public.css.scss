@@ -1,5 +1,6 @@
 
 .home_page.demo_day {
+  margin-top: 0px;
   .background-field {
     background: image-url('background-pattern-blue.png');
   }
@@ -14,20 +15,22 @@
     }
   }
   #countdown {
+    padding-left: 150px;
     text-align: center;
     margin: 0px auto;
-    width: 580px;
-    overflow: hidden;
+    width: 850px;
+    height: 140px;
     .number_block {
-      font-size: 2em;
-      line-height: 1em;
       p { 
         margin: 10px;
+        font-size: 30px;
       }
       .numbers {
-        font-size: 3.2em;
+        line-height: 80px;
+        font-size: 100px;
         font-weight: 600;
-        margin: 20px;
+        margin: 0 10px 0 10px;
+        height: 80px;
       }
     }
   }
@@ -76,9 +79,9 @@
 
   }
 
-  .background-field{
-    background: image-url('background-pattern.png');
-  }
+  // .background-field{
+  //   background: image-url('background-pattern.png');
+  // }
 
   .headspacing {
     padding: 25px 0px 0px 50px
