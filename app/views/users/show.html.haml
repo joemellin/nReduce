@@ -39,9 +39,7 @@
     .row{:style => 'padding: 0px'}
       .span5{:style => 'padding-left: 45px'}= image_tag @user.pic_url(:square), :width => 400, :height => 400
       .span5{:style => 'margin-left: -35px'}
-        %p
-          %small Team Member:
-        %h1{:style => 'font-size: 50px'}= h(@user.name)
+        %h1{:style => 'font-size: 50px; margin-top: 5px'}= h(@user.name)
         - unless @user.one_liner.blank?
           %p{:style => 'padding-top: 20px'}
             %small Oneliner:
@@ -81,13 +79,15 @@
 
 
     .row
-      .span12
+      .span7
         -unless @user.bio.blank?
           %p{:style => 'padding-top: 60px'}
             %small About #{h(@user.name)}
           %p= simple_format(h(@user.bio))
         -unless @user.skill_list.blank?
           %p{:style => 'padding-top: 10px'} Skills: #{h(@user.skill_list)}
+      .span5
+        %p
 
 - if @user.mentor?
   - startups = @user.connected_to('Startup')
@@ -108,7 +108,7 @@
 - elsif !@user.startup.blank?
   .row
     .span12
-      %h4{:style => 'padding-top: 20px'}
+      %p{:style => 'padding-top: 20px'}
         %small #{h(@user.name).possessive} Teammates
       %br/
       %hr

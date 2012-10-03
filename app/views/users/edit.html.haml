@@ -4,7 +4,6 @@
 .row
   .span12.center{:style => 'margin-bottom:40px; padding-top: 20px'}
     %h1 Edit Your Profile
-    %H1 UPDATE THE ADD PROFILE VIDEO
 .row{:style => "height:100%"}
   .span8
     = semantic_form_for @user, :html => {:class => "form-horizontal"} do |f|
@@ -23,21 +22,20 @@
         .span1
           %p &nbsp
         .span3
-          .row{:style => 'margin-top:40px'}
-            .controls
-              - if @user.linkedin_authentication.blank?
-                %a.btn.btn-large{:href => '/auth/linkedin'}
-                  = image_tag('linkedin_32.png')
-                  Add LinkedIn
-                - if @setup
-                  %i To automatically populate your account
-              - else
-                Authorized with
-                = image_tag('linkedin_32.png', :alt => 'LinkedIn', :title => 'LinkedIn')
-              - unless @setup
-                &nbsp;&nbsp;
-                = link_to 'Change Password', change_password_user_path(current_user)
-          .row{:style => 'margin-top:40px'}
+          - unless @setup
+            %div{:style => 'margin-top:40px'}
+              %strong= link_to 'Change Password', change_password_user_path(current_user)
+          %div{:style => 'margin-top:40px'}
+            - if @user.linkedin_authentication.blank?
+              %a.btn.btn-large{:href => '/auth/linkedin'}
+                = image_tag('linkedin_32.png')
+                Add LinkedIn
+              - if @setup
+                %i To automatically populate your account
+            - else
+              Authorized with
+              = image_tag('linkedin_32.png', :alt => 'LinkedIn', :title => 'LinkedIn')
+          %div{:style => 'margin-top:40px'}
             %div
               - if @user.twitter_authentication.blank?
                 %a.btn.btn-large{:href => '/auth/twitter'}
