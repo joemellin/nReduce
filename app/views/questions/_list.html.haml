@@ -41,7 +41,7 @@
             .clear
     .span2
       %h3
-        - if !no_upvoting && q.tweet_id.present?
+        - if !no_upvoting #&& q.tweet_id.present?
           .support
             - if user_signed_in? && q.user_id == current_user.id
               .supported= link_to '<i class="icon-ok"></i> Supported'.html_safe, '#', :class => 'btn btn-large disabled', :onclick => 'return false;'
@@ -49,7 +49,7 @@
               - supporter = user_signed_in? && q.is_supporter?(current_user)
               .supported{:class => supporter ? '' : 'hide'}= link_to '<i class="icon-ok"></i> Supported'.html_safe, '#', :class => 'btn btn-large disabled'
               .unsupported{:class => supporter ? 'hide' : ''}
-                = link_to_login "#{image_tag('twitter_grey.png')} Upvote".html_safe, '#', :onclick => "$('#question_#{q.id} .modal').modal('show'); return false;", :class => 'btn btn-large'
+                = link_to_login "Upvote".html_safe, '#', :onclick => "$('#question_#{q.id} .modal').modal('show'); return false;", :class => 'btn btn-large'
                 %p 
                   %small Get this answered sooner
         - else
