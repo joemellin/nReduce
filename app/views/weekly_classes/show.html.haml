@@ -74,6 +74,8 @@
         %a{:href => '#profile', 'data-toggle' => 'tab'} #{current_user.name.possessive} Profile
       %li#startup_profile_tab
         %a{:href => '#startup_profile', 'data-toggle' => 'tab'} Team Profile
+      %li#tutorial_tab
+        %a{:href => '#tutorial', 'data-toggle' => 'tab'} Tutorial
     .tab-content
       .tab-pane.active#meet_startups
         #startup_mini_profile.hide
@@ -87,6 +89,8 @@
         = render 'users/ajax_edit'
       .tab-pane#startup_profile
         = render 'startups/ajax_edit'
+      .tab-pane#tutorial
+        = render 'weekly_classes/tutorial'
   - if @in_time_window
     .modal.questions_modal.hide
       .modal-header
