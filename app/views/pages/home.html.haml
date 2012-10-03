@@ -1,46 +1,39 @@
-/ .home_page{:class => @demo_day ? 'demo_day' : ''}
-/   - if @demo_day.present?
-/     .row
-/       .span12.background-field{:align => 'center'}
-/         = image_tag 'nstar_halo.png', :style => 'width: 184px; height: 165px;'
-
-/         %h2 The first nStar Demo Day was a smashing success!
-/         %br/
-/         .enter_button= link_to "Meet the Winners".html_safe, 'http://www.nreduce.com/d', :class => 'btn btn-large btn-success'
-/ = render 'layouts/countdown', :time => @demo_day.starts_at
-/%br/
-/- if Time.now > @demo_day.starts_at
-/  .enter_button= link_to "View Winners".html_safe, 'http://www.nreduce.com/d', :class => 'btn btn-large btn-success'
-/- else
-/  .enter_button= link_to "#{image_tag('twitter_grey.png')} Enter Demo Day".html_safe, '#', :class => 'btn btn-large disabled'
-
-.home_page
-  .span12
-    %h1.headline.center
-      %b nReduce is a Free Online Startup Incubator
-    %br/
-    .subhead.center Join These Global Entrepreneurs in the Next nReduce Class
-    %br/
-
-  = render 'weekly_classes/map'
-
-  %br/
-  %br/
-  .left.share_btns
-    .twitter.left
-      :plain
-        <a href="https://twitter.com/share" class="twitter-share-button" data-url="http://www.nreduce.com" data-text="An alliance of founders working together to build Amazing Companies" data-via="nReduce">Tweet</a>
-        <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
-    .facebook.left
-      :plain
-        <div class="fb-like" data-href="http://www.nreduce.com" data-send="false" data-layout="button_count" data-width="150" data-show-faces="false" data-font="lucida grande"></div>
-    .right{:style => 'margin-left: 249px'}=link_to 'Meet the September 2012 nStars','http://www.nreduce.com/d'
-    .clear
-  
-  .right.newslogo{:style => 'margin-bottom: 10px'}= link_to image_tag('venturebeat.png'), 'http://venturebeat.com/2012/09/05/nreduce-demo-day/', :target => '_blank'
-  .right.newslogo= link_to image_tag('pando.png'), 'http://pandodaily.com/2012/07/27/virtual-incubator-to-all-nreduce-adds-mentors-and-demo-days-is-it-the-pre-angellist/', :target => '_blank'
-  / .right.newslogo= image_tag('xoconomy.png')
-  .clear
+.home_page{:class => @demo_day.present? ? 'demo_day' : ''}
+  .row
+    .span12.background-field{:align => 'center'}
+      - if @demo_day.present?
+    
+        = image_tag 'nstar_halo.png', :style => 'width: 184px; height: 165px;'
+        - if @demo_day.in_the_future?
+          = render 'layouts/countdown', :time => @demo_day.starts_at
+          %br/
+          .enter_button= link_to "Enter Demo Day".html_safe, '#', :class => 'btn btn-large disabled'
+        - elsif @demo_day.in_time_window?
+          .enter_button= link_to "Meet the Winners".html_safe, '/d', :class => 'btn btn-large btn-success'
+      - else
+        %h1.headline.center
+          %b nReduce is a Free Online Startup Incubator
+        %br/
+        .subhead.center Join These Global Entrepreneurs in the Next nReduce Class
+        %br/
+        = render 'weekly_classes/map'
+      %br/
+      %br/
+      .left.share_btns
+        .twitter.left
+          :plain
+            <a href="https://twitter.com/share" class="twitter-share-button" data-url="http://www.nreduce.com" data-text="An alliance of founders working together to build Amazing Companies" data-via="nReduce">Tweet</a>
+            <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+        .facebook.left
+          :plain
+            <div class="fb-like" data-href="http://www.nreduce.com" data-send="false" data-layout="button_count" data-width="150" data-show-faces="false" data-font="lucida grande"></div>
+        - unless @demo_day.present?
+          .right{:style => 'margin-left: 249px; font-weight: bold; font-size: 1.4em'}=link_to 'Meet the nStars','http://www.nreduce.com/d'
+        .clear
+      
+      .right.newslogo{:style => 'margin-bottom: 10px'}= link_to image_tag('venturebeat.png'), 'http://venturebeat.com/2012/09/05/nreduce-demo-day/', :target => '_blank'
+      .right.newslogo= link_to image_tag('pando.png'), 'http://pandodaily.com/2012/07/27/virtual-incubator-to-all-nreduce-adds-mentors-and-demo-days-is-it-the-pre-angellist/', :target => '_blank'
+      .clear
   %hr
   
   .middle_container

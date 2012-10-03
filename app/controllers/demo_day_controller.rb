@@ -4,18 +4,14 @@ class DemoDayController < ApplicationController
   before_filter :load_and_validate_demo_day
 
   def index
-    if @before
-      render :action => :before if @before
-      #render :action => :after if @after
-      return
-    end
     @question_count = Question.group('startup_id').unanswered.count
   end
 
     # Show a specific company
   def show
-    if @demo_day.startup_ids[params[:id].to_i].present?
-      @startup = Startup.find(@demo_day.startup_ids[params[:id].to_i])
+    startup_id = @demo_day.startup_for_index(params[:id].to_i)
+    if startup_id.present?
+      @startup = Startup.find(startup_id)
       # Load all checkins made before demo day
       @checkins = @startup.checkins.where(['created_at < ?', "#{@demo_day.day} 00:00:00"]).ordered.includes(:before_video, :after_video)
     else

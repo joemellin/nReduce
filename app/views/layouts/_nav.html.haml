@@ -1,7 +1,7 @@
 - hide_nav ||= false
 .nav
   .row
-    .span4= link_to image_tag('nreduce_s.png'), (@demo_day.present? ? '/d' : "/")
+    .span4= link_to image_tag('nreduce_s.png'), (@demo_day.present? && @demo_day.in_time_window? ? '/d' : "/")
     .span4.countdown_and_checkin{:align => 'center'}
       - if @demo_day && !@home
         - if @before
