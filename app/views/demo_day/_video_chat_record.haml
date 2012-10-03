@@ -77,14 +77,14 @@
     }
 
     function archiveCreatedHandler(event) {
-      console.log('archive created');
+      //console.log('archive created');
       archive = event.archives[0];
-      console.log("Recording archive has been created");
+      //console.log("Recording archive has been created");
       startRecordingSession();
     }
 
     function archiveClosedHandler(event){
-      console.log("The archive has been successfully closed");
+      //console.log("The archive has been successfully closed");
     }
 
 - else
@@ -125,6 +125,5 @@
     session.addEventListener("sessionRecordingInProgress", recordingInProgressHandler);
 
 :plain
-  consoe
   session.connect(apiKey, token);
   </script>
