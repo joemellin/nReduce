@@ -91,7 +91,7 @@ class Question < ActiveRecord::Base
 
   # Tweets question from creator's account
   def tweet_question
-    return true unless Rails.env.production? && self.tweet?
+    return true #unless Rails.env.production? && self.tweet?
     tw = self.user.twitter_client
     return false if tw.blank?
     begin
