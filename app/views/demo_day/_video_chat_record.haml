@@ -2,11 +2,11 @@
   #video
     .loading Loading Live Stream...
 
-- if 1 == 2 #@owner
+- if @owner
   %div{:style => 'margin-top: 10px;'}
-    = link_to 'Start Recording', '#', :onclick => "initiateArchiveForRecording(); return false;", :class => 'btn btn-success'
+    = link_to 'Start Recording', '#', :onclick => "initiateArchiveForRecording(); return false;", :class => 'btn btn-success start_recording'
     &nbsp;&nbsp;
-    = link_to 'Stop Recording', '#', :onclick => "stopRecordingSession(); return false;", :class => 'btn btn-danger'
+    = link_to 'Stop Recording (press once when done demo day)', '#', :onclick => "stopRecordingSession(); return false;", :class => 'btn btn-danger stop_recording'
 
 :plain
   <script type="text/javascript">
@@ -20,14 +20,6 @@
   function streamDestroyed(event) {
     $('.loading').show();
   }
-
-  / function exceptionHandler(event) {
-  /   // Retry session connect
-  /   if (event.code === 1006 || event.code === 1008 || event.code === 1014) {
-  /     alert('There was an error connecting. Trying again.');
-  /     session.connect(apiKey, token);
-  /   }
-  / }
 
 - if @owner
   :plain
@@ -50,8 +42,9 @@
         var d = new Date();
         session.createArchive(#{Settings.apis.tokbox.key}, "perSession", '#{@startup.name} - ' + d.valueOf());
       }else{
-        session.closeArchive(archive);
-        session.addEventListener("archiveClosed", archiveClosedStartRecordingAgainHandler);
+        startRecordingSession();
+        // session.closeArchive(archive);
+        // session.addEventListener("archiveClosed", archiveClosedStartRecordingAgainHandler);
       }
     }
 
@@ -65,7 +58,6 @@
     }
 
     function stopRecordingSession(){
-      
       session.stopRecording(archive);
       session.closeArchive(archive);
     }
@@ -76,10 +68,12 @@
 
     function recordingStartedHandler(event) {
       alert("The session is being recorded.");
+      $('.btn.start_recording').hide();
     }
 
     function recordingStoppedHandler(event) {
       alert("The session recording has stopped.");
+      $('.btn.stop_recording').hide();
     }
 
     function archiveCreatedHandler(event) {
@@ -95,7 +89,7 @@
 
 - else
   :plain
-    function streamCreated(event) {
+    function sessionConnectedHandler(event) {
       for (var i = 0; i < event.streams.length; i++) {
         var stream = event.streams[i];
         displayStream(stream);
@@ -110,7 +104,7 @@
       streamsContainer.appendChild(div);
       var divProps = {width: 500, height:315};
       subscriber = session.subscribe(stream, 'stream' + stream.streamId, divProps);
-      $('.loading').hide();
+      $('.loading').remove();
     }
 
 - if user_signed_in? && current_user.admin?
@@ -118,26 +112,19 @@
     TB.setLogLevel(TB.DEBUG);
 :plain
   session = TB.initSession(sessionId);
+  session.addEventListener('sessionConnected', sessionConnectedHandler);
 
 -# Listen if stream gets created again - to display in case publisher loses connection
 - if @owner
   :plain
     // Add event listeners
-    session.addEventListener('sessionConnected', sessionConnectedHandler);
     session.addEventListener("archiveCreated", archiveCreatedHandler);
     session.addEventListener("archiveClosed", archiveClosedHandler);
     session.addEventListener("sessionRecordingStarted", recordingStartedHandler);
     session.addEventListener("sessionRecordingStopped", recordingStoppedHandler);
     session.addEventListener("sessionRecordingInProgress", recordingInProgressHandler);
 
-- else
-  :plain
-    session.addEventListener('streamCreated', streamCreated);
-    session.addEventListener('streamCreated', streamDestroyed);
-
 :plain
-  // Listen for exceptions to try and reconnect
-  //TB.addEventListener("exception", exceptionHandler);
-  
+  consoe
   session.connect(apiKey, token);
   </script>
