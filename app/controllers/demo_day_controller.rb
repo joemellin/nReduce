@@ -9,6 +9,7 @@ class DemoDayController < ApplicationController
 
     # Show a specific company
   def show
+    @after = true
     startup_id = @demo_day.startup_for_index(params[:id].to_i)
     if startup_id.present?
       @startup = Startup.find(startup_id)
