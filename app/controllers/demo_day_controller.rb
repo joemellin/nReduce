@@ -9,7 +9,6 @@ class DemoDayController < ApplicationController
 
     # Show a specific company
   def show
-    @demo_day = DemoDay.where(:day => "2012-10-03").first
     startup_id = @demo_day.startup_for_index(params[:id].to_i)
     if startup_id.present?
       @startup = Startup.find(startup_id)
@@ -21,9 +20,11 @@ class DemoDayController < ApplicationController
     end
     
     # initialize tokbox and force new session key
-    initialize_tokbox_session(@startup, user_signed_in? && current_user.startup_id == @startup.id)
+    if @demo_day.in_time_window?
+      initialize_tokbox_session(@startup, user_signed_in? && current_user.startup_id == @startup.id)
 
-    load_questions_for_startup(@startup)
+      load_questions_for_startup(@startup)
+    end
     
     @num_checkins = @startup.checkins.count
     @num_awesomes = @startup.awesomes.count

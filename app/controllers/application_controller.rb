@@ -256,7 +256,8 @@ class ApplicationController < ActionController::Base
     # else
     #   @demo_day = DemoDay.next_or_current
     # end
-    @demo_day = DemoDay.next_or_current
+    #@demo_day = DemoDay.next_or_current
+    @demo_day = DemoDay.where(:day => "2012-10-03").first
     # if admin or demo day participant let them in early
     if user_signed_in? && (current_user.admin? || (current_user.startup_id.present? && @demo_day.startup_ids.include?(current_user.startup_id)))
       if Time.now > @demo_day.ends_at
