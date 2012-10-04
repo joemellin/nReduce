@@ -175,13 +175,14 @@
                   %center
                     %p After
 
-  .modal.questions_modal.hide
-    .modal-header
-      %button.close{:type => 'button', 'data-dismiss' => 'modal'} x
-      %h2{:style => 'margin-bottom: 5px'} Ask the founders of #{@startup.name} a question
-    .modal-body
-      .question_form
-        = render 'questions/form'
+  - if @demo_day.in_time_window?
+    .modal.questions_modal.hide
+      .modal-header
+        %button.close{:type => 'button', 'data-dismiss' => 'modal'} x
+        %h2{:style => 'margin-bottom: 5px'} Ask the founders of #{@startup.name} a question
+      .modal-body
+        .question_form
+          = render 'questions/form'
 
   .modal.how_it_works.hide
     .modal-header
