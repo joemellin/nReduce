@@ -9,7 +9,7 @@
           = render 'layouts/countdown', :time => @demo_day.starts_at
         - elsif @after && @next_demo_day
           %p Next #{link_to(@next_demo_day.name, '/d')} starts on
-          %h3 #{@next_demo_day.starts_at.strftime('%B %d at %H')} AM PST
+          %h3 #{@next_demo_day.starts_at.strftime('%B %d')} at 11AM PST
         - else
           %p
             %strong #{link_to @demo_day.name, '/d'}
