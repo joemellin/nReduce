@@ -1,0 +1,4 @@
+- counter = @c.to_i + 1
+:plain
+  $('form.startup .invites').append("<div style='margin: 10px 0 20px 0'>#{escape_javascript(render('startups/invite_fields', :invite => @invite, :c => @c))}</div>");
+  $('#startup_invite_counter').val(#{counter});

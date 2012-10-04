@@ -166,6 +166,7 @@ Nreduce::Application.routes.draw do
     member do
       post 'remove_team_member'
       get 'investment_profile'
+      post 'add_invite_field'
     end
   end
 

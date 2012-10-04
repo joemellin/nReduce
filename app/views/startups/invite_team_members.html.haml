@@ -19,7 +19,8 @@
               = label_tag name
           .clear
         = f.text_field :email, :placeholder => 'email address', :class => 'span2'
-        = submit_tag 'Invite', :class => "btn #{@setup ? 'btn-large btn-primary' : ''}"
+        = submit_tag "I'm Done", :class => "btn btn-large"
+        = submit_tag 'Invite Another', :class => "btn btn-large"
         %a{:href => '#', :rel => 'tooltip', :title => 'Team members will get full access to post and view checkins, and participate in nReduce. Mentors and investors will be able to view and comment on all of your checkins.'}
           %i.icon-question-sign
       - pending_invites = @startup.invites.not_accepted.all
@@ -32,8 +33,6 @@
           %li
             = "#{i.to_name} (#{Invite.types[i.invite_type].titleize})"
             = link_to '<i class="icon icon-remove"></i>'.html_safe, invite_path(i), :method => :delete, :confirm => "Are you sure you want to cancel the invite to #{i.to_name}?"
-
-
     - if @setup
       %br/
       %br/

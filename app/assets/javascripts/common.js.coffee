@@ -33,11 +33,20 @@ $ ->
     $('#ciao').modal('hide')
     window.open($(this).attr('href'), '_blank')
 
-  $('.add_teammate_btn').click (e) ->
+  $('.user_add_teammate_btn').click (e) ->
     e.preventDefault()
+    addTeammateButton('user')
+
+  $('.startup_add_teammate_btn').click (e) ->
+    e.preventDefault()
+    addTeammateButton('startup')
+    
+  # Type can be user or startup
+  addTeammateButton = (type) ->
     random = Math.floor((Math.random()*1000000)+1);
     id = "teammate_email_#{random}"
-    $('.teammates').append('<div class="email" id="' + id + '"><input type="text" name="user[teammate_emails][]" size="30" placeholder="founder@email.com" /> <a href="#" class="btn" onclick="$(\'#' + id + '\').remove(); return false;"><i class="icon-minus"></i></a></div>')
+    $('.teammates').append('<div class="email" id="' + id + '"><input type="text" name="' + type + '[teammate_emails][]" size="30" placeholder="founder@email.com" /> <a href="#" class="btn" onclick="$(\'#' + id + '\').remove(); return false;"><i class="icon-minus"></i></a></div>')
+
 
   last_startup_search = 0
 
