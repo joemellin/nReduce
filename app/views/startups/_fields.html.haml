@@ -17,7 +17,7 @@
           = link_to '<i class="icon icon-remove"></i>'.html_safe, remove_team_member_startup_path(:user_id => u.id), :method => :post, :confirm => "Are you sure you want to remove #{u.name}?"
 
   .control-group{:style => 'margin-bottom: 40px; padding-top: 20px'}
-    = label_tag 'Invite', 'Add Team Members, Mentors & Investors', :class => 'control-label'
+    = label_tag 'Invite', 'Invite Team Members, Mentors & Investors', :class => 'control-label'
     .controls
       - pending_invites = @startup.invites.not_accepted.ordered.all
       - new_invite = Invite.new(:startup => @startup, :from_id => current_user.id)
