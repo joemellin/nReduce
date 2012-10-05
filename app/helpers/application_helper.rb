@@ -163,4 +163,11 @@ module ApplicationHelper
     options.merge!(:class => 'external') if user_signed_in? && current_user.investor?
     link_to(title, external_url(url), options)
   end
+
+  def background_image_path
+    return 'london-thehub.jpeg' if controller.controller_name == 'checkins'
+    return 'london-thehub.jpeg' if ['investors', 'ratings'].include?(controller.controller_name)
+    return 'london-thehub.jpeg'
+  end
+  
 end
