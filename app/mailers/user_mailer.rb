@@ -2,6 +2,12 @@ class UserMailer < ActionMailer::Base
   default from: Settings.default_from_email
   default reply_to: Settings.default_reply_to_email
 
+  def join_next_week(notification)
+    @weekly_class = notification.attachable
+    @user = notification.user
+    mail(:to => @user.email, :subject => "Would you like to join next week's class?")
+  end
+
   def new_checkin(notification)
     @checkin = notification.attachable
     @user = notification.user

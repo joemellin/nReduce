@@ -39,6 +39,14 @@ class WeeklyClassesController < ApplicationController
     end
   end
 
+  def join
+    redirect_to '/' unless current_user.startup.present?
+    # also assign other members of this person's startup
+    current_user.startup.team_members.each{|tm| tm.weekly_class = @weekly_class; tm.save(:validate => false) }
+    flash[:notice] = "You're now a part of this weekly class!"
+    redirect_to @weekly_class
+  end
+
   protected
 
   def load_data(live_join = false)

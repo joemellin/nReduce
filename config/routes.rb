@@ -149,6 +149,7 @@ Nreduce::Application.routes.draw do
     member do 
       get 'update_state'
       post 'graduate'
+      get 'join'
     end
   end
 
