@@ -25,13 +25,17 @@ class DemoDay < ActiveRecord::Base
   #   index
   # end
 
-  def index_of(startup)
-    return nil if self.startup_ids.blank?
-    self.startup_ids.index(startup.id) + self.index_offset
+  def to_param
+    "#{self.id}-#{self.day.strftime("%B-%Y")}"
   end
 
-  def startup_for_index(index)
-    self.startup_ids[index.to_i - self.index_offset]
+  def includes_startup?(startup)
+    self.index_of(startup) != nil
+  end
+
+  def index_of(startup)
+    return nil if self.startup_ids.blank?
+    self.startup_ids.index(startup.id)
   end
 
   def video_for_startup(startup)
