@@ -7,6 +7,7 @@ class DemoDayController < ApplicationController
   def index
     @demo_days = DemoDay.where(['day <= ?', Date.today]).ordered
     @demo_day = @demo_days.shift
+    @next_demo_day = @demo_day.next_demo_day if @demo_day.in_the_past?
     @question_count = Question.group('startup_id').unanswered.count if @demo_day.present? && @demo_day.in_time_window?
   end
 
