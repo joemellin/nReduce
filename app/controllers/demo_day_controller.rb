@@ -13,6 +13,7 @@ class DemoDayController < ApplicationController
 
   def show
     @question_count = Question.group('startup_id').unanswered.count if @demo_day.in_time_window?
+    @next_demo_day = @demo_day.next_demo_day if @demo_day.in_the_past?
   end
 
     # Show a specific company
@@ -25,6 +26,7 @@ class DemoDayController < ApplicationController
       #id = params[:startup_id].split('-').first
       @startup = Startup.find_by_obfuscated_id(params[:startup_id])
     end
+    @next_demo_day = @demo_day.next_demo_day if @demo_day.in_the_past?
     @after = true
     if @demo_day.includes_startup?(@startup)
       # Load all checkins made before demo day
