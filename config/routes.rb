@@ -191,7 +191,7 @@ Nreduce::Application.routes.draw do
 
   # Match old routes for demo day
   match '/d' => 'demo_day#index'
-  match '/d/:id' => 'demo_day#show'
+  match '/d/:startup_index' => 'demo_day#show_startup', :old_id => true, :id => 1
 
   root :to => 'pages#home'
 end

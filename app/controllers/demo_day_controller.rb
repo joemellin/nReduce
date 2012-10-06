@@ -16,8 +16,14 @@ class DemoDayController < ApplicationController
 
     # Show a specific company
   def show_startup
-    id = params[:startup_id].split('-').first
-    @startup = Startup.find_by_obfuscated_id(id)
+    # support legacy urls
+    if params[:old_id].present?
+     @demo_day = DemoDay.where(:day => '2012-10-03').first
+     @startup = Startup.find(@demo_day.startup_ids[params[:startup_index].to_i])
+    else
+      id = params[:startup_id].split('-').first
+      @startup = Startup.find_by_obfuscated_id(id)
+    end
     @after = true
     if @demo_day.includes_startup?(@startup)
       # Load all checkins made before demo day
