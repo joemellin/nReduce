@@ -4,7 +4,7 @@
   .span3{:align => 'right'}= image_tag 'nstar_s.png', :style => 'width: 75px; height: 63px'
   .span6
     %center
-      %h1 The Amazing #{Time.parse("#{demo_day.day} 11:00:00").strftime('%B %Y')} nStars
+      %h1= link_to "The Amazing #{Time.parse("#{demo_day.day} 11:00:00").strftime('%B %Y')} nStars", demo_day
       - unless in_time_window
         %p{:style => 'padding-top: 10px'} Meet the Best nReduce Startups the First Wednesday of Each Month
   .span3= image_tag 'nstar_s.png', :style => 'width: 75px; height: 63px'
@@ -19,7 +19,7 @@
   .row
     - c = 0
     - startups.each do |s|
-      - this_startup_url = (demo_day.day.to_s == '2012-10-03') ? demo_day_path(:id => demo_day.index_of(s)) : '#'
+      - this_startup_url = show_startup_demo_day_path(demo_day, s)
       - logo_path = s.logo_url(:square)
       - owner = (user_signed_in? && !current_user.startup_id.blank? && (s.id == current_user.startup_id))
       .span3{:align => 'center'}

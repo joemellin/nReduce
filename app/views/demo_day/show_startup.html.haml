@@ -1,0 +1,228 @@
+- content_for :subtitle do
+  #{@startup.name}
+
+.demo_day
+  .row.header
+    .span3{:style => 'padding-top: 20px'}= link_to '<i class="icon-chevron-left"></i> View All nStars'.html_safe, @demo_day, :class => 'btn btn-large'
+    .span6
+      %center
+        %h1 #{@startup.name}
+        %p{:style => 'margin-bottom: 2px'}= h(@startup.one_liner)
+        - if @startup.website_url.present?
+          %h3= link_to_external @startup.website_url, @startup.website_url
+    .span3
+      %center
+        = link_to "<i class=\"icon-envelope\"></i> Contact #{@startup.name}".html_safe, '#', :class => 'btn btn-large', :onclick => "$('.investor_contact').modal('show');"
+        .modal.hide.investor_contact
+          .modal-header
+            %button.close{:type => 'button', 'data-dismiss' => 'modal'} x
+            %h2{:style => 'margin-bottom: 5px'} Interested in meeting #{@startup.name}?
+          .modal-body
+            %h3
+              Please send an email to 
+              = mail_to('joe@nReduce.com')
+              %br/
+              and he will personally introduce you.
+            %br/
+            %br/
+            %h3 Thanks for your support of nReduce!
+  %hr/
+
+  .row
+    - if @after
+      .span12
+        %center
+          %h3 Q&A with the founders of #{@startup.name}
+          - if @video
+            %div{:style => 'padding: 20px'}!= display_video(@video, false, 500, 315)
+          - else
+            .video_wrapper
+              #video
+                .loading Demo Day Video available soon...
+    - else
+      .span6
+        %h3 Live Q&A with the founders of #{@startup.name}
+        = render :partial => 'demo_day/video_chat_record'
+      .span6
+        .current_question
+          - unless @current_question.blank?
+            = render 'questions/current_question'
+  - unless @after
+    .ask_a_question{:align => 'center'}
+      %h2
+        Have a question?
+        &nbsp;
+        = link_to_login "Ask the Founders!", '#', :onclick => "$('.questions_modal').modal('show'); $('#question_content').focus(); return false;", :class => 'btn btn-large btn-success'
+        / &nbsp;
+        / = link_to image_tag('question_mark.png'), '#', :onclick => "$('.how_it_works').modal('show'); return false;"
+
+  .tabbable
+    %ul.nav.nav-tabs
+      - unless @after
+        %li.active#questions_tab
+          %a{:href => '#questions', 'data-toggle' => 'tab'}
+            Questions
+            %span.badge.badge-warning.question_count= @questions.size
+      %li#profile_tab{:class => @after ? 'active' : ''}
+        %a{:href => '#profile', 'data-toggle' => 'tab'} Startup Profile
+    .tab-content
+      - unless @after
+        .tab-pane.active#questions
+          .questions
+            = render 'questions/list'
+      .tab-pane#profile{:class => @after ? 'active' : ''}
+        - #display_video(video, show_image = false, width = 500, height = 315)
+        .row
+          .span12.well{:style => 'padding: 0'}
+            .row{:style => 'padding: 19px'}
+              .span3
+                - vid_url = Youtube.embed_url(@startup.pitch_video_url)
+                - if vid_url.blank?
+                  [ no pitch video ]
+                - else
+                  %iframe{:width => '250', :height => '188', :src => vid_url, :frameborder => 0, :allowfullscreen => true}
+                - unless @screenshots.blank?
+                  .product_screenshots
+                    %h3 Product Screenshots
+
+                    - c = 0
+                    - @screenshots.each do |s|
+                      .screenshot.screenshot_modal.left{'data-id' => c, :style => 'margin-right: 15px; border: 1px solid #ccc;'}= link_to image_tag(s.image_url(:small)), '#'
+                      - c += 1
+                    .clear
+
+                    #screenshots_modal.modal.hide
+                      .modal-body
+                        #screenshots_carousel.carousel.slide
+                          .carousel-inner
+                            - c = 0
+                            - @screenshots.each do |s|
+                              .item{:class => c == 0 ? 'active' : ''}= image_tag s.image_url
+                              - c += 1
+                          %a.carousel-control.left{:href => '#screenshots_carousel', 'data-slide' => 'prev'} &lsaquo;
+                          %a.carousel-control.right{:href => '#screenshots_carousel', 'data-slide' => 'next'} &rsaquo;
+                      
+              .span5
+                %h1= h(@startup.name)
+                - unless @startup.one_liner.blank?
+                  %h3= h(@startup.one_liner)
+                - unless @startup.website_url_to_uri.blank?
+                  %h3
+                    %small= link_to_external @startup.website_url_to_uri.hostname, @startup.website_url
+                .row
+                  .span2
+                    - unless @startup.company_goal.blank?
+                      %p
+                        %small Goal: #{Startup.company_goals[@startup.company_goal.to_i]}
+                    %p
+                      %small Industry: #{h(@startup.industry_list)}
+                    %p
+                      Checkins:
+                      %span.badge.badge-warning #{@num_checkins}
+                  .span2
+                    - unless @startup.stage.blank?
+                      %p
+                        %small Idea Stage: #{Startup.stages[@startup.stage.to_i]}
+                    - unless @startup.growth_model.blank?
+                      %p
+                        %small Growth Model: #{Startup.growth_models[@startup.growth_model.to_i]}
+                    %p
+                      Awesomes:
+                      %span.badge.badge-warning #{@num_awesomes}
+              .span3
+                %p
+                  %small Elevator Pitch
+                %p= simple_format(h(@startup.elevator_pitch))
+          
+        .row
+          .span12
+            %h4 Team #{h(@startup.name)}
+            %hr
+            %br
+        .row
+          .span12
+            - @startup.team_members.each do |team_member|
+              .left
+                .span1{:align => 'right', :style => 'margin-left: 0'}= link_to(image_tag(user_avatar_url(team_member)), team_member.linkedin_url, :target => '_blank')
+                .span2
+                  %h4= link_to team_member.name, team_member.linkedin_url, :target => '_blank'
+                  %p
+                    %small
+                      Skills: #{team_member.skill_list}
+                      %br/
+                      Located: #{team_member.location}
+            .clear
+            %hr
+            %br
+
+        - unless @demo_day.hide_checkins?(@startup)
+          %center
+            %h2{:style => 'font-weight: 600'} #{@startup.name.possessive} Timeline
+          - @checkins.each do |c|
+            %center
+              %h3 Week of #{c.time_label}
+              %p Goal: #{h(c.start_focus)}
+            .row{:style => 'margin-bottom: 20px;'}
+              .span6
+                .right{:style => 'width: 425px', :align => 'right'}
+                  = display_checkin_video(c, :before_video, false, 425, 268).html_safe
+                  %center
+                    %p Before
+                .clear
+              .span6
+                %div{:style => 'width: 425px'}
+                  = display_checkin_video(c, :after_video, false, 425, 268).html_safe
+                  %center
+                    %p After
+
+  - if @demo_day.in_time_window?
+    .modal.questions_modal.hide
+      .modal-header
+        %button.close{:type => 'button', 'data-dismiss' => 'modal'} x
+        %h2{:style => 'margin-bottom: 5px'} Ask the founders of #{@startup.name} a question
+      .modal-body
+        .question_form
+          = render 'questions/form'
+
+  .modal.how_it_works.hide
+    .modal-header
+      %button.close{:type => 'button', 'data-dismiss' => 'modal'} x
+      %h2{:style => 'margin-bottom: 5px'} How it Works
+    .modal-body
+      %h3 When you ask a question it is tweeted from your Twitter account.
+      %p We do this so that people only ask questions that they think are good. Also, the point of demo day is to bring attention to great founders. This rewards the founders you are interested in by sharing with your followers.
+
+      %h3 Questions are ranked by the number of followers who saw it.
+      %p When a question is asked, it gets ranked based on the number of followers of the asker. After a question is asked (and before it is answered) other people can support the question (re-tweet it).
+
+      %h3 Supporting a question upvotes it (and gets it answered sooner).
+      %p When a question is "supported", that question is seen by their followers and therefore gets added to the sum of followers who have seen it. That will re-rank the question and move it up in the queue so that it gets answered sooner.
+    .modal-footer
+      %center
+        = link_to_login "#{image_tag('twitter_white.png')} Ask a question!".html_safe, '#', :onclick => "$('.how_it_works').modal('hide'); $('.questions_modal').modal('show'); $('#question_content').focus(); return false;", :class => 'btn btn-large btn-success'
+
+- unless @before || @after
+  :plain
+    <script type="text/javascript">
+    // Start polling for questions
+    var lastPolledAt = new Date();
+
+    // can count number of people connected
+    // http://www.tokbox.com/opentok/api/tools/js/documentation/api/ConnectionEvent.html
+
+    function loadQuestions(){
+      last = lastPolledAt.toISOString();
+      $.ajax({
+        url: '#{startup_questions_path(@startup)}.js?last=' + last,
+        dataType: 'script',
+        type: 'GET'
+      });
+      lastPolledAt = new Date();
+      setTimeout(function(){
+        loadQuestions();
+      }, 10000);
+    }
+
+    loadQuestions();
+
+    </script>

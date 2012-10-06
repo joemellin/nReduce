@@ -1,18 +1,25 @@
 class DemoDayController < ApplicationController
   #before_filter :only_allow_in_staging
   before_filter :login_required, :only => [:attend]
-  before_filter :load_and_validate_demo_day
+  #before_filter :load_and_validate_demo_day
+  load_and_authorize_resource :only => [:show, :show_startup]
 
   def index
-    @question_count = Question.group('startup_id').unanswered.count
+    @demo_days = DemoDay.where(['day <= ?', Date.today]).ordered
+    @demo_day = @demo_days.shift
+    @question_count = Question.group('startup_id').unanswered.count if @demo_day.present? && @demo_day.in_time_window?
+  end
+
+  def show
+    @question_count = Question.group('startup_id').unanswered.count if @demo_day.in_time_window?
   end
 
     # Show a specific company
-  def show
+  def show_startup
+    id = params[:startup_id].split('-').first
+    @startup = Startup.find_by_obfuscated_id(id)
     @after = true
-    startup_id = @demo_day.startup_for_index(params[:id].to_i)
-    if startup_id.present?
-      @startup = Startup.find(startup_id)
+    if @demo_day.includes_startup?(@startup)
       # Load all checkins made before demo day
       @checkins = @startup.checkins.where(['created_at < ?', "#{@demo_day.day} 00:00:00"]).ordered.includes(:before_video, :after_video)
     else
