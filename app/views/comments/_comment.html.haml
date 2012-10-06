@@ -28,22 +28,21 @@
           - if is_owner
             = link_to 'Edit', edit_comment_path(comment), :remote => true
             &nbsp;•&nbsp;
-            %strong= link_to 'x', comment, :method => :delete, :remote => true, :confirm => "Are you sure you want to 
-      - unless comment.awesome_count == 0
-        •
-        %strong= pluralize(comment.awesome_count, 'like')
-    
+            %strong= link_to 'x', comment, :method => :delete, :remote => true, :confirm => "Are you sure you want to delete the #{comment.original_post? ? 'post' : 'comment'}?"
+
+
     .left.pic
       - title = comment.user.name + (!comment.user.twitter.blank? ? " - @#{comment.user.twitter}" : '')
       %div= link_to image_tag(user_avatar_url(comment.user, :square), :style => 'width: 100px; height: 100px;', :title => title), user_path(comment.user)
     .left.commentlinks{:style => 'padding-left:30px'}
       .row{:style => 'padding-top:4px'}
         = link_to "#{image_tag('quotebbl.png')}".html_safe, post_path(comment), :class => 'btn', :title => 'Comment'
-        - if comment.reply_count == 0
-        - else
-          = link_to pluralize(comment.reply_count,''), post_path(comment) 
+        - unless comment.reply_count == 0
+          = link_to comment.reply_count, post_path(comment) 
       .row{:style => 'padding-top:4px'}
-        = link_to '<i class="icon-thumbs-up"></i>'.html_safe, post_path(comment), :class => 'btn' , :title => 'Like'
+        != render_like_button(comment)
+        - unless comment.awesome_count == 0
+          = comment.awesome_count
       .row{:style => 'padding-top:4px'}
         = link_to '<i class="icon-share-alt"></i>'.html_safe, post_path(comment), :class => 'btn', :title => 'Share'
     - unless is_post_page

@@ -46,7 +46,7 @@ class Awesome < ActiveRecord::Base
   protected
 
   def check_user_doesnt_own_object
-    if !awsm.blank? and (awsm.user_id == self.user_id)
+    if !awsm.blank? and (awsm.user_id == self.user_id) and !awsm.is_a?(Comment)
       self.errors.add :awsm, "can't awesome your own #{awsm.class.to_s.downcase}"
       false
     else
