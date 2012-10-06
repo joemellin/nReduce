@@ -159,6 +159,15 @@ class StartupsController < ApplicationController
     end
   end
 
+  def add_invite_field
+    @invite = Invite.new(:startup_id => @startup.id, :from_id => current_user.id)
+    @invite.weekly_class_id = current_user.weekly_class_id unless @startup.account_setup?
+    @c = params[:c] || 1
+    respond_to do |format|
+      format.js { render :action => :add_invite_field }
+    end
+  end
+
    # Start of setup flow - to get startup to post initial before video
   def before_video
   #if can? :before_video, @startup

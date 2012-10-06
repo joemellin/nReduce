@@ -58,6 +58,41 @@ class WeeklyClass < ActiveRecord::Base
     wc.all.first
   end
 
+  # Finds current week, and then emails people from previous week who didn't join to join this week
+  def self.email_incomplete_startups_from_previous_week
+    current_week = WeeklyClass.current_class
+    previous_week = current_week.previous_class
+    incomplete_startups = previous_week.incomplete_startups
+    incomplete_startups.each do |s|
+      Notification.create_for_join_next_week(s, current_week)
+    end
+    incomplete_startups
+  end
+
+  def previous_class
+    WeeklyClass.where(['week < ?', self.week]).first
+  end
+
+  def activate_all_completed_startups
+    activated = []
+    self.startups.each do |s|
+      if s.can_enter_nreduce?
+        s.force_setup_complete!
+        activated << s
+      end
+    end
+    activated
+  end
+
+  # all startups who haven't completed their profile
+  def incomplete_startups
+    incomplete = []
+    self.startups.each do |s|
+      incomplete << s unless s.can_enter_nreduce?
+    end
+    incomplete
+  end
+
   # This is the time window in which you join
   def in_join_window?
     starts = self.time_window.last + 1.second
@@ -132,6 +167,8 @@ class WeeklyClass < ActiveRecord::Base
       self.num_countries = us.map{|u| u.country }.uniq.size
       self.num_industries = ActsAsTaggableOn::Tagging.where(:taggable_type => 'User', :taggable_id => us.map{|u| u.id }).group(:tag_id).count.keys.size
       self.clusters = WeeklyClass.create_clusters(us)
+    else
+      self.clusters = []
     end
     true
   end

@@ -28,7 +28,7 @@
           - if is_owner
             = link_to 'Edit', edit_comment_path(comment), :remote => true
             &nbsp;•&nbsp;
-            %strong= link_to 'x', comment, :method => :delete, :remote => true, :confirm => "Are you sure you want to delete the #{comment.original_post? ? 'post' : 'comment'}?"
+            %strong= link_to 'x', comment, :method => :delete, :remote => true, :confirm => "Are you sure you want to 
       - unless comment.awesome_count == 0
         •
         %strong= pluralize(comment.awesome_count, 'like')

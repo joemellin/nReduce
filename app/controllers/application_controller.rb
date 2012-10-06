@@ -60,7 +60,7 @@ class ApplicationController < ActionController::Base
         session[:redirect_to] = nil
         return tmp
       else
-        return root_path
+        super(resource)
       end
     end
   end

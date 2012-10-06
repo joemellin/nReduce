@@ -26,7 +26,8 @@ class Startup < ActiveRecord::Base
     :growth_model, :stage, :company_goal, :meeting_id, :one_liner, :active, :launched_at, 
     :industry_list, :technology_list, :ideology_list, :industry, :intro_video_url, :elevator_pitch, 
     :logo, :remote_logo_url, :logo_cache, :remove_logo, :checkins_public, :pitch_video_url, 
-    :investable, :screenshots_attributes, :business_model, :founding_date, :market_size, :in_signup_flow, :invites_attributes, :mentorable
+    :investable, :screenshots_attributes, :business_model, :founding_date, :market_size, :in_signup_flow, 
+    :invites_attributes, :mentorable
   attr_accessor :in_signup_flow
 
   accepts_nested_attributes_for :screenshots, :reject_if => proc {|attributes| attributes.all? {|k,v| v.blank?} }, :allow_destroy => true
@@ -145,10 +146,8 @@ class Startup < ActiveRecord::Base
     self.reset_latest_measurement_cache if reset_cache
     ret = Cache.get(['latest_measurement', self]){
       i = self.instruments.first
-      if i.present?
-        m = i.measurements.ordered.first
-        [i.name, m.value.round] if m.present?
-      end
+      m = i.measurements.ordered.first if i.present?
+      m.present? ? [i.name, m.value.round] : []
     }
     ret.present? ? ret : []
   end
@@ -173,7 +172,7 @@ class Startup < ActiveRecord::Base
       #:num_awesomes => {:value => num_awesomes, :passed => num_awesomes >= 10 },
       #:community_status => {:value => my_rating, :passed => my_rating >= 1.0 },
       :checked_in_within_the_last_week => {:value => nil, :passed => checkin_last_week.present? && checkin_last_week.completed? },
-      :profile_completeness => {:value => "#{(profile_completeness * 100).round}%", :passed => profile_completeness == 1.0 }
+      :startup_profile_completeness => {:value => "#{(profile_completeness * 100).round}%", :passed => profile_completeness == 1.0 }
     }
     passed = 0
     elements.each{|name, e| passed += 1 if e[:passed] == true }

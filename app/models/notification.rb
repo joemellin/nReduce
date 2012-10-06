@@ -16,7 +16,11 @@ class Notification < ActiveRecord::Base
 
     # Remember to update method in helpers/application_helper.rb with new object types if they are added for correct messaging
   def self.actions
-    [:new_checkin, :relationship_request, :relationship_approved, :mentorship_approved, :investor_approved, :new_comment_for_checkin, :new_comment_for_post, :new_nudge, :new_team_joined, :new_like]
+    [
+      :new_checkin, :relationship_request, :relationship_approved, 
+      :mentorship_approved, :investor_approved, :new_comment_for_checkin, 
+      :new_comment_for_post, :new_nudge, :new_team_joined, :new_like, :join_next_week
+    ]
   end
 
    # Pass in a user to notify, related object (ex: a relationship) and the action performed, and this will:
@@ -35,6 +39,12 @@ class Notification < ActiveRecord::Base
       Resque.enqueue(Notification, n.id) if n.email_user?
     end
     n
+  end
+
+  def self.create_for_join_next_week(startup, next_weeks_class)
+    startup.team_members.each do |u|
+      Notification.create_and_send(u, next_weeks_class, :join_next_week)
+    end
   end
 
   # Notifies all connected startup team members of new checkin
