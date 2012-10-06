@@ -1,9 +1,18 @@
 .posts
-  = link_to 'All Posts', posts_path, :class => 'btn btn-large'
+  .row
+    .span2
+      = link_to '<i class="icon icon-chevron-left"></i> Back'.html_safe, posts_path, :class => 'btn btn-large'
+    .span{:style => 'padding-left : 115px'}
+      .post.original
+        .right
+          = render @comment, :is_post_page => true
+        .clear
   .post.original
     .right!= render_awesome_button(@comment)
     .left
-      %h1= @comment.content
+      .row
+        .span
+          %h1{:style => 'padding:20px 60px 60px 60px'}= @comment.content
 
       - unless @comment.awesome_count == 0
         = pluralize(@comment.awesome_count, 'like')
@@ -14,7 +23,11 @@
           .left= image_tag user_avatar_url(u)
         .clear
     .clear
-  #comments
-    = render 'comments/post_form', :comment => Comment.new(:parent_id => @comment.id), :verb => 'Respond'
-    .list
-      = nested_comments @comments
+  .row
+    %hr/
+  .row
+    .span12
+      #comments
+        = render 'comments/form', :comment => Comment.new(:parent_id => @comment.id)
+        .list
+          = nested_comments @comments

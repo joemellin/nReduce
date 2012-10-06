@@ -1,16 +1,25 @@
 .posts
-  %h1 Welcome to the Water Cooler!
-
-  - unless @hottest_post.blank?
-    %hr/
-    %h3 Hottest Post in last 24 hours
-    = render @hottest_post
-  %hr/
-  %br/
-  %br/
-
-  #comments
-    = render :partial => 'comments/post_form', :object => Comment.new, :post => true
-    .list
-      - @comments.each do |c|
-        = render c
+  .row.center
+    %h1 Welcome to the Water Cooler! 
+    %p Share Ideas - Get Feedback - Meet People
+  .row
+    .span12
+      #comments
+        .span12
+          .row
+            .span3
+              %p
+            .span11.well
+              - unless @hottest_post.blank?
+                .row.center 
+                  %h3 Hottest Post
+                .row
+                  = render @hottest_post
+        .row{:style => 'padding-left : 210px'}
+          = render :partial => 'comments/post_form', :object => Comment.new, :post => true
+        .row
+          %hr
+        .row
+          .list
+            - @comments.each do |c|
+              = render c
