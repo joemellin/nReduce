@@ -21,8 +21,8 @@ class DemoDayController < ApplicationController
      @demo_day = DemoDay.where(:day => '2012-10-03').first
      @startup = Startup.find(@demo_day.startup_ids[params[:startup_index].to_i])
     else
-      id = params[:startup_id].split('-').first
-      @startup = Startup.find_by_obfuscated_id(id)
+      #id = params[:startup_id].split('-').first
+      @startup = Startup.find_by_obfuscated_id(params[:startup_id])
     end
     @after = true
     if @demo_day.includes_startup?(@startup)

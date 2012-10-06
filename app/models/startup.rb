@@ -98,9 +98,9 @@ class Startup < ActiveRecord::Base
     end
   end
 
-  def to_param
-    "#{ObfuscateId.hide(self.id)}-#{self.name.to_url}"
-  end
+  # def to_param
+  #   "#{ObfuscateId.hide(self.id)}-#{self.name.to_url}"
+  # end
 
   def self.registration_open?
     true
