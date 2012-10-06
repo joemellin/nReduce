@@ -16,7 +16,7 @@
         %h1= h(@startup.name)
         - unless @startup.one_liner.blank?
           %h3= h(@startup.one_liner)
-        - unless @startup.website_url.blank?
+        - if @startup.website_url.present? && @startup.website_url_to_uri.present?
           %h3
             %small= link_to_external @startup.website_url_to_uri.hostname, @startup.website_url
         .row
