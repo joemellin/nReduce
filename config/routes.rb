@@ -183,7 +183,7 @@ Nreduce::Application.routes.draw do
 
   match '/capture_and_login' => 'application#capture_and_login', :as => :capture_and_login
 
-  match '/nStars/:id/:startup_id' => 'demo_day#show_startup', :as => :show_startup_demo_day
+  match '/nstars/:id/:startup_id' => 'demo_day#show_startup', :as => :show_startup_demo_day
 
   resources :demo_day, :only => [:index, :show], :path => 'nstars' do
     post 'attend', :on => :member
