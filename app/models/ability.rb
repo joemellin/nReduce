@@ -263,7 +263,7 @@ class Ability
       end
     end
 
-    if user.investor?
+    if user.investor? || user.mentor?
       can [:new, :create], Rating
       can :manage, Rating, :user_id => user.id 
     end
