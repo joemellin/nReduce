@@ -7,8 +7,8 @@
   - repost = nil
 -# This is a watercooler post
 - if comment.original_post?
-  = div_for comment, :class => 'post', :style => 'border-top: none' do 
-    .left
+  = div_for comment, :class => 'post original', :style => 'border-top: none' do 
+    .left{:style => is_post_page ? 'padding-left: 250px' : ''}
       .span2{:style => 'margin-right: 10px'}
         .row.commentlinks{:style => 'text-align:right; font-size: 1.4em; padding-top:15px; padding-bottom: 5px'}
           - if repost.present?
@@ -36,26 +36,39 @@
       %div= link_to image_tag(user_avatar_url(comment.user, :square), :style => 'width: 100px; height: 100px;', :title => title), user_path(comment.user)
     .left.commentlinks{:style => 'padding-left:30px'}
       .row{:style => 'padding-top:4px'}
-        = link_to "#{image_tag('quotebbl.png')}".html_safe, post_path(comment), :class => 'btn', :title => 'Comment'
+        - commented = comment.commented_by?(current_user)
+        = link_to image_tag(commented ? 'quotebbl_white.png' : 'quotebbl.png'), post_path(comment), :class => "btn #{commented ? 'btn-success' : ''}", :title => 'Comment'
         - unless comment.reply_count == 0
           = link_to comment.reply_count, post_path(comment) 
       .row{:style => 'padding-top:4px'}
         != render_like_button(comment)
         - unless comment.awesome_count == 0
           = comment.awesome_count
-      .row{:style => 'padding-top:4px'}
-        = link_to '<i class="icon-share-alt"></i>'.html_safe, post_path(comment), :class => 'btn', :title => 'Share'
+      - unless is_owner
+        - reposted = comment.reposted_by?(current_user)
+        .row{:style => 'padding-top:4px'}
+          = link_to "<i class='icon-share-alt #{reposted ? 'icon-white' : ''}'></i>".html_safe, repost_post_path(comment), :class => "btn share #{reposted ? 'btn-success' : ''}", :remote => true, :method => :post, :title => 'Share with your connections'
     - unless is_post_page
       .left.commentlinks.postcontent{:style => 'padding-left:40px; padding-top:4px'}
         .row
-          - content = is_post_page ? comment.content : truncate(comment.content, :length => 180)
+          - content = is_post_page ? comment.content : truncate(comment.content, :length => 180, :omission => "... #{link_to('read more', post_path(comment))}")
           = auto_link(simple_format(content), :html => { :target => '_blank' }){ |text| truncate(text, :length => 30) }
-      .left{:style => 'padding-left: 40px'}
-        .row
-          - if is_owner
-          - else
-            = link_to 'Share', repost_post_path(comment), :method => :post
     .clear
+    - if is_post_page
+      .post.original{:style => 'margin-bottom: 10px'}
+        .row
+          .span
+            %h1{:style => 'padding:20px 60px 40px 60px'}= comment.content
+
+        - unless comment.awesome_count == 0
+          = pluralize(comment.awesome_count, 'like')
+
+        - unless comment.responder_ids.blank?
+          %h3 Discussion with:
+          - comment.responders.each do |u|
+            .left= image_tag user_avatar_url(u)
+          .clear
+
     -# This is just a regular comment (on a checkin or post)
 - else
   = div_for comment, :class => 'comment', :style => 'border-top: none' do

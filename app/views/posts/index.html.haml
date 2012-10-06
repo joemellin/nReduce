@@ -6,11 +6,11 @@
     .span12
       #comments
         .span12
-          .row
-            .span3
-              %p
-            .span11.well
-              - unless @hottest_post.blank?
+          - unless @hottest_post.blank?
+            .row
+              .span3
+                %p
+              .span11.well
                 .row.center 
                   %h3 Hottest Post
                 .row
