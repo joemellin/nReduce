@@ -120,10 +120,20 @@ img.bg {
       border-width: 5px;
       border-color: #3697D5;
 
+      .postcontent {
+        border-top: none;
+        font-size: 1.8em;
+        padding-top: 5px;
+        line-height:150%;
+        p { width: 600px; }
+          textarea { width: 575px; }
+        }
+
+
       .commentlinks {
-        color: #999999;
+        color: #666666;
         a {
-          color: #777777;
+          color: #888888;
         }
 
       }
