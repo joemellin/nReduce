@@ -1,9 +1,11 @@
 class DemoDay < ActiveRecord::Base
   attr_accessible :name, :day, :description, :startup_ids
 
-  serialize :startup_ids, Array
-  serialize :attendee_ids, Array
-  serialize :video_ids, Array
+  serialize :startup_ids
+  serialize :attendee_ids
+  serialize :video_ids
+
+  scope :ordered, order('day DESC')
 
   # Returns next demo day or current (current is demo day on this day)
   def self.next_or_current
@@ -14,9 +16,22 @@ class DemoDay < ActiveRecord::Base
     "I'm checking out some awesome companies in the #{Settings.demo_day.hashtag}! http://nreduce.com/d"
   end
 
+  # Add index offset so that we can use same url for different demo days -- /d/:startup_id
+  # def index_of(startup_or_id)
+  #   return nil if self.startup_ids.blank?
+  #   id = startup_or_id.is_a?(Startup) ? startup_or_id.id : startup_or_id.to_i
+  #   index = self.startup_ids.index(id)
+  #   index += self.index_offset if index.present?
+  #   index
+  # end
+
   def index_of(startup)
     return nil if self.startup_ids.blank?
-    self.startup_ids.index(startup.id)
+    self.startup_ids.index(startup.id) + self.index_offset
+  end
+
+  def startup_for_index(index)
+    self.startup_ids[index.to_i - self.index_offset]
   end
 
   def video_for_startup(startup)
@@ -36,16 +51,26 @@ class DemoDay < ActiveRecord::Base
   end
 
   def starts_at
+    return Time.now - 5.minutes if Rails.env.development?
     Time.parse("#{self.day} 11:00:00 -0700")
   end
 
   def ends_at
-    Time.parse("#{self.day} 12:30:00 -0700")
+    return Time.now + 10.minutes if Rails.env.development?
+    Time.parse("#{self.day} 12:00:00 -0700")
   end
 
   # Returns true if it's currently the time window for this demo day
   def in_time_window?
     self.starts_at <= Time.now && self.ends_at >= Time.now
+  end
+
+  def in_the_past?
+    self.ends_at <= Time.now
+  end
+
+  def in_the_future?
+    self.starts_at >= Time.now
   end
 
   # Returns next demo day in chronological order
@@ -72,11 +97,11 @@ class DemoDay < ActiveRecord::Base
     # Add supporter id
     self.attendee_ids << user.id
 
-    # Tweet from supporter's account
-    unless dont_tweet
-      tw = user.twitter_client
-      tw.update(DemoDay.tweet_content) if Rails.env.production? && tw.present?
-    end
+    # Tweet from supporter's account - no longer doing this now
+    # unless dont_tweet
+    #   tw = user.twitter_client
+    #   tw.update(DemoDay.tweet_content) if Rails.env.production? && tw.present?
+    # end
 
     save
   end

@@ -64,6 +64,14 @@
       = f.semantic_errors :bio
       %p.help-block Minimum 100 characters
 
+- if @user.entrepreneur? and show_user_field?(:intro_video_url)
+  .control-group{error_css(@user, :intro_video_url)}
+    = f.label :intro_video_url, 'Intro Video URL', :class => 'control-label'
+    .controls
+      = f.text_field :intro_video_url, :class => "span4"
+      = f.semantic_errors :intro_video_url
+      %p.help-block Unlisted Youtube URL
+
 - if @user.entrepreneur? and show_user_field?(:meeting_id)
   .control-group{error_css(@user, :meeting_id)}
     = f.label :meeting_id, "Your Meeting", :class => 'control-label'

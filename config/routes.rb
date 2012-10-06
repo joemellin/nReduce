@@ -149,6 +149,7 @@ Nreduce::Application.routes.draw do
     member do 
       get 'update_state'
       post 'graduate'
+      get 'join'
     end
   end
 
@@ -166,6 +167,7 @@ Nreduce::Application.routes.draw do
     member do
       post 'remove_team_member'
       get 'investment_profile'
+      post 'add_invite_field'
     end
   end
 
