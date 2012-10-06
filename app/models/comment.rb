@@ -52,7 +52,19 @@ class Comment < ActiveRecord::Base
   # All people who commented or liked this post
   def responders
     return [] if self.responder_ids.blank?
-    User.find(self.responder_ids)
+    User.find(self.responder_ids.flatten - [self.user_id]) # don't include author
+  end
+
+  def commented_by?(user)
+    self.responder_ids.present? && self.responder_ids[0].include?(user.id)
+  end
+
+  def reposted_by?(user)
+    self.responder_ids.present? && self.responder_ids[1].include?(user.id)
+  end
+
+  def liked_by?(user)
+    self.responder_ids.present? && self.responder_ids[2].include?(user.id)
   end
 
   # This comment is for a checkin
@@ -70,11 +82,16 @@ class Comment < ActiveRecord::Base
     self.ancestry.blank? && self.checkin_id.blank?
   end
 
+  def is_repost?
+    self.original_id.present?
+  end
+
   # Queries who responded to this post and updates cached count and ids
   def update_responders
+    return true unless self.original_post?
     children = self.children
-    self.responder_ids = (children.map{|c| c.user_id } + self.reposts.map{|c| c.user_id } +  self.awesomes.map{|a| a.user_id }).uniq
-    self.responder_ids -= [self.user_id] # don't include author
+    # Save as array with comment user ids, then repost user ids, then awesome user ids
+    self.responder_ids = [children.map{|c| c.user_id }, self.reposts.map{|c| c.user_id }, self.awesomes.map{|a| a.user_id }]
     self.reply_count = children.size
     self.save
   end

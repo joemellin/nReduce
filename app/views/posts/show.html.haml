@@ -2,27 +2,9 @@
   .row
     .span2
       = link_to '<i class="icon icon-chevron-left"></i> Back'.html_safe, posts_path, :class => 'btn btn-large'
-    .span{:style => 'padding-left : 115px'}
-      .post.original
-        .right
-          = render @comment, :is_post_page => true
-        .clear
-  .post.original
-    .right!= render_awesome_button(@comment)
-    .left
-      .row
-        .span
-          %h1{:style => 'padding:20px 60px 60px 60px'}= @comment.content
-
-      - unless @comment.awesome_count == 0
-        = pluralize(@comment.awesome_count, 'like')
-
-      - unless @comment.responder_ids.blank?
-        %h3 Discussion with:
-        - @comment.responders.each do |u|
-          .left= image_tag user_avatar_url(u)
-        .clear
-    .clear
+ 
+  = render @comment, :is_post_page => true
+  
   .row
     %hr/
   .row
