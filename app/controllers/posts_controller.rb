@@ -14,7 +14,7 @@ class PostsController < ApplicationController
 
   def show
     authorize! :read_post, Comment
-    @comments = @comment.children.includes(:user).arrange(:order => 'created_at DESC') # arrange in nested order
+    @comments = @comment.descendants.includes(:user).arrange(:order => 'created_at DESC') # arrange in nested order
   end
 
   def repost
