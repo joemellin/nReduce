@@ -33,7 +33,7 @@ class Comment < ActiveRecord::Base
     # Find posts created less than three days ago, with activity in the last 24 hours
     active_posts = Comment.posts.where(['created_at > ? AND updated_at >= ? AND updated_at <= ?', beginning_of_day - 3.days, beginning_of_day, time])
     # Sort by posts with the most activity (technically doesn't know what day they responded)
-    hottest_post = active_posts.sort{|a,b| a.responder_ids.size <=> b.responder_ids.size }.reverse.last
+    hottest_post = active_posts.sort{|a,b| a.responder_ids.flatten.size <=> b.responder_ids.flatten.size }.last
     # Only return post if anyone actually responded
     return hottest_post if hottest_post.present? && hottest_post.responder_ids.present?
     return nil
