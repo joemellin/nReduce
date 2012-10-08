@@ -3,27 +3,24 @@
 
 -# Show team nav if this is someone else's check-ins
 .row
-  .span2
+  .span1
     = link_to '<i class="icon icon-chevron-left"></i> All Teams'.html_safe, relationships_path, :class => 'btn btn-large'
-    / = link_to '<i class="icon icon-chevron-left"></i> Previous Team'.html_safe, '#', :class => 'btn btn-large'
-  .span2
+  .span3
     .right
       %h2{:style => 'margin-bottom: -5px'}= link_to "Team #{@checkin.startup.name}", startup_path(@checkin.startup)
       - unless @checkin.startup.one_liner.blank?
         %h3
           %small "#{@checkin.startup.one_liner}"
     .clear
-  .span4{:align => 'center'}
+  .span3{:align => 'center'}
     .inline-block
       - @checkin.startup.team_members.each do |tm|
         - title = tm.name + (!tm.twitter.blank? ? " - @#{tm.twitter}" : '')
         .inline-block{:style => 'margin-left: 0px'}= link_to(image_tag(user_avatar_url(tm), :title => title, :style => 'width: 50px; height: 50px;'), user_path(tm))
-  .span2{:style => 'margin-bottom: 20px'}
+  .span4{:style => 'margin-bottom: 20px'}
     .left
       %h2= link_to_external @startup.website_url_to_uri.hostname, @startup.website_url
     .clear
-  .span2
-    %p
 %hr{:style => 'padding-bottom: 0px'}
 .row
   .span6{:style => 'text-align: center', :align => 'right',}
