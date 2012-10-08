@@ -70,7 +70,7 @@
           - unless comment.responders.blank?
             %h3 Discussion with:
             - comment.responders.each do |u|
-              .left= image_tag user_avatar_url(u)
+              .left= link_to image_tag(user_avatar_url(u)), u
             .clear
 
   -# This is just a regular comment (on a checkin or post)
@@ -89,7 +89,7 @@
         - if comment.user.roles?(:mentor) or comment.user.roles?(:nreduce_mentor)
           &nbsp;•&nbsp;Mentor
         - elsif !comment.user.startup_id.blank?
-          of Team 
+          of Team
           = link_to comment.user.startup.name, startup_path(comment.user.startup)
         
         - unless comment.awesome_count == 0
