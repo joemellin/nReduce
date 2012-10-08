@@ -1,23 +1,46 @@
 class RatingsController < ApplicationController
   #around_filter :record_user_action, :only => [:create]
   before_filter :login_required
-  before_filter :load_obfuscated_startup_nested
-  load_and_authorize_resource :startup
-  load_and_authorize_resource :through => :startup
+  load_and_authorize_resource
   
   def index
-    @ratings = @ratings.ordered
-    @weakest_element_data = Rating.weakest_element_arr_from_ratings(@ratings)
-    @contact_in_data = Rating.contact_in_arr_from_ratings(@ratings)
+    if params[:startup_id].present? && current_user.entrepreneur?
+      load_obfuscated_startup_nested
+      authorize! :manage, @startup
+      @ratings = @startup.ratings.ordered
+      unless @ratings.blank?
+        @weakest_element_data = Rating.weakest_element_arr_from_ratings(@ratings)
+        @contact_in_data = Rating.contact_in_arr_from_ratings(@ratings)
+      end
+      render :action => :startup
+      return
+    else
+      calculate_suggested_startup_completeness
+    end
   end
 
   def new
-    @rating.interested = params[:interested] unless params[:interested].blank?
-    @rating.startup = @startup
-    respond_to do |format|
-      format.js { render :action => :edit }
-      format.html { render :nothing => true }
+    authorize! :investor_mentor_connect_with_startups, current_user
+    @startup = current_user.suggested_startups(1).first
+
+    if @startup.blank?
+      flash[:notice] = "Thanks, you've reviewed all of the startups currently available to you."
+      redirect_to :action => :index
+      return
     end
+
+    calculate_suggested_startup_completeness
+
+    @checkin_history = Checkin.history_for_startup(@startup)
+    @screenshots = @startup.screenshots.ordered
+
+    @rating.startup = @startup
+    @rating.interested = false
+
+    @instrument = @startup.instruments.first
+    @measurements = @instrument.measurements.ordered_asc.all unless @instrument.blank?
+
+    @checkins = @startup.checkins.ordered
   end
 
   def create
@@ -26,14 +49,14 @@ class RatingsController < ApplicationController
       #flash[:notice] = "Your rating has been stored!"
       # They are done rating startups
       if params[:commit].match(/stop/i) != nil
-        @redirect_to = investors_path
+        @redirect_to = ratings_path
       else # They want to continue
         # Check if they are above their limit
         if current_user.can_connect_with_startups?
-          @redirect_to = show_startup_investors_path
+          @redirect_to = new_rating_path
         else
           flash[:alert] = "You've already contacted a startup this week, please come back later or upgrade your account to connect with more startups."
-          @redirect_to = investors_path
+          @redirect_to = ratings_path
         end
       end
       # JS will render page that redirects to url
@@ -42,11 +65,19 @@ class RatingsController < ApplicationController
         format.html { redirect_to @redirect_to }
       end
     else
-      logger.info @rating.inspect
       respond_to do |format|
         format.js { render :action => :edit }
         format.html { render :nothing => true }
       end
     end
+  end
+
+  protected
+
+  def calculate_suggested_startup_completeness
+    @total_suggested_startups = 5
+    @num_startups_left = current_user.suggested_relationships('Startup').count
+    return if @num_startups_left == 0
+    @pct_complete = ((@num_startups_left.to_f / @total_suggested_startups.to_f) * 100).to_i
   end
 end

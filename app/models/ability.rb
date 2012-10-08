@@ -255,7 +255,7 @@ class Ability
       end
     end
 
-    if user.investor?
+    if user.investor? || user.nreduce_mentor?
       can [:new, :create], Rating
       can :manage, Rating, :user_id => user.id 
     end
@@ -265,9 +265,11 @@ class Ability
       u.investor? || (u.entrepreneur? and !u.startup_id.blank?)
     end
 
+    can :see_ratings_page, User if user.nreduce_mentor? || user.investor?
+
     # Investor can see startups if they have contacted less than one startup this week.
-    can :investor_connect_with_startups, User do |u|
-      u.investor? && u.can_connect_with_startups?
+    can :investor_mentor_connect_with_startups, User do |u|
+      (u.investor? || u.nreduce_mentor?) && u.can_connect_with_startups?
     end
 
     # Everyone can see users
