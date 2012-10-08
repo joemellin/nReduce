@@ -73,7 +73,7 @@ class User < ActiveRecord::Base
   # adds methods and scopes: https://github.com/joelmoss/bitmask_attributes
   bitmask :roles, :as => [:admin, :entrepreneur, :mentor, :investor, :nreduce_mentor, :spectator, :approved_investor]
   bitmask :onboarded, :as => [:startup, :mentor, :nreduce_mentor, :investor]
-  bitmask :email_on, :as => [:docheckin, :comment, :meeting, :checkin, :relationship]
+  bitmask :email_on, :as => [:docheckin, :comment, :meeting, :checkin, :relationship, :new_comment_for_post]
   bitmask :setup, :as => [:account_type, :onboarding, :profile, :invite_startups, :welcome]
 
   # Number of startups an investor can contact per week
@@ -122,11 +122,12 @@ class User < ActiveRecord::Base
 
   def self.email_on_options
     {
-      :docheckin => 'Reminder to Check-in',
-      :comment => 'New Comment',
-      :meeting => 'Meeting Reminder',
-      :checkin => 'New Checkin',
-      :relationship => 'Relationships'
+      :docheckin => 'Reminder to check-in',
+      :comment => 'New comment',
+      :meeting => 'Meeting reminder',
+      :checkin => 'New checkin',
+      :relationship => 'Connection Requests',
+      :new_comment_for_post => 'New comment on your post'
     }
   end
 
