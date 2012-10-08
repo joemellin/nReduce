@@ -22,18 +22,22 @@
     = js_settings
     = csrf_meta_tags
   %body
-    .wrapper{:class => user_signed_in? ? 'logged_in' : ''}
+    - if user_signed_in? && !@setup
+      -# Helper defined in application_helper.rb
+      = image_tag background_image_path, :class => 'bg'
+    .wrapper{:class => user_signed_in? && !@setup ? 'logged_in' : ''}
       .container
         .header
           = render 'layouts/nav', :hide_nav => @hide_nav == true
-        = render "layouts/flash_messages"
-        - if @setup and !@weekly_class
-          .row
-            .left= render 'layouts/left_nav'
-            .left.content_right{:style => 'border-left: 1px solid #cccccc;'}= yield
-            .clear
-        - else
-          = yield
+        .body
+          = render "layouts/flash_messages"
+          - if @setup and !@weekly_class
+            .row
+              .left= render 'layouts/left_nav'
+              .left.content_right{:style => 'border-left: 1px solid #cccccc;'}= yield
+              .clear
+          - else
+            = yield
         = render "layouts/footer"
       = content_for :modals
 

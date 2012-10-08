@@ -123,6 +123,7 @@ Nreduce::Application.routes.draw do
       get 'stats'
       match 'invite'
       post 'invite_with_confirm'
+      post 'search'
     end
     member do
       match 'intro_video'
@@ -151,6 +152,7 @@ Nreduce::Application.routes.draw do
     member do 
       get 'update_state'
       post 'graduate'
+      get 'join'
     end
   end
 
@@ -168,11 +170,18 @@ Nreduce::Application.routes.draw do
     member do
       post 'remove_team_member'
       get 'investment_profile'
+      post 'add_invite_field'
     end
   end
 
-  match '/join' => 'application#join', :as => :join
+  resources :posts, :only => [:index, :show] do
+    post 'repost', :on => :member
+  end
 
+  match '/work_room' => 'relationships#index', :as => :work_room
+  match '/board_room' => 'investors#index', :as => :board_room
+  match '/join' => 'application#join', :as => :join
+  match 'startups/edit' => "startups#edit", :as => :startups_edit
   match '/mentor' => "pages#mentor", :as => :public_mentors
   match '/investor' => "pages#investor", :as => :public_investors
   match '/press' => "pages#press", :as => :public_press

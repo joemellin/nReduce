@@ -2,10 +2,9 @@
 -#   Coming Soon!
 
 .row
-  .span8
-    %h1
-      %small User Profile
-  .span4{:align => 'right'}
+  .span4
+    %p{:style => 'margin-top: 20px'} &nbsp
+  .span8{:align => 'right'}
     - if user_signed_in? and current_user.id == @user.id
       = link_to "Edit Account", edit_user_path(@user), :class => "btn"
     - if current_user.admin? and current_user.id != @user.id
@@ -36,13 +35,15 @@
             %br/
             %i Limit one per week
 .row
-  .span12.well{:style => 'padding: 0'}
-    .row{:style => 'padding: 19px'}
-      .span3= image_tag @user.pic_url(:square), :width => 200, :height => 200
-      .span5
-        %br
-        %h1= h(@user.name)
-        %h3= h(@user.one_liner)
+  .span12{:style => 'padding: 0'}
+    .row{:style => 'padding: 0px'}
+      .span5{:style => 'padding-left: 45px'}= image_tag @user.pic_url(:square), :width => 400, :height => 400
+      .span5{:style => 'margin-left: -35px'}
+        %h1{:style => 'font-size: 50px; margin-top: 5px'}= h(@user.name)
+        - unless @user.one_liner.blank?
+          %p{:style => 'padding-top: 20px'}
+            %small Oneliner:
+          %h3= h(@user.one_liner)
         - if @user.roles?(:nreduce_mentor)
           %h2
             %small nReduce Mentor
@@ -50,14 +51,13 @@
           %h2
             %small Mentor
         - unless @user.startup.blank?
-          %h3
+          %p{:style => 'padding-top: 20px'}
             %small Team :
-            = link_to h(@user.startup.name), @user.startup
-        %p
-          %small Skills: #{h(@user.skill_list)}
+          %h3= link_to h(@user.startup.name), @user.startup
         - unless @user.location.blank?
-          %p
-            %small Located: #{h(@user.location)}
+          %p{:style => 'padding-top: 20px'}
+            %small Located: 
+          %h3 #{h(@user.location)}
         %br
         - unless @user.linkedin_url.blank?
           = link_to_external image_tag('linkedin_32.png'), @user.linkedin_url
@@ -71,12 +71,23 @@
           = link_to_external image_tag('blog_32.png'), @user.blog_url
         - unless @user.facebook_url.blank?
           = link_to_external image_tag('facebook_32.png'), @user.facebook_url
-      .span3
-        != rating_link(@user)
-        %br/
+      .span2.greylink
+        .row.center
+          %p{:style => 'padding-top: 20px'}
+            != rating_link(@user)
+
+
+
+    .row
+      .span7
+        -unless @user.bio.blank?
+          %p{:style => 'padding-top: 60px'}
+            %small About #{h(@user.name)}
+          %p= simple_format(h(@user.bio))
+        -unless @user.skill_list.blank?
+          %p{:style => 'padding-top: 10px'} Skills: #{h(@user.skill_list)}
+      .span5
         %p
-          %small About #{h(@user.name)}
-        %p= simple_format(h(@user.bio))
 
 - if @user.mentor?
   - startups = @user.connected_to('Startup')
@@ -93,23 +104,17 @@
     .row
       .span12
         = render 'startups/horizontal_list', :startups => @user.connected_to('Startup')
-        %hr
         %br
 - elsif !@user.startup.blank?
   .row
     .span12
-      %hr
-      %br
-      %h4
+      %p{:style => 'padding-top: 20px'}
         %small #{h(@user.name).possessive} Teammates
       %br/
       %hr
-      %br/
   .row
-    .span12
+    .span12{:style => 'padding-top: 20px'}
       = render 'startups/team_members', :team_members => @user.startup.team_members - [@user], :add_team_member => (@user.id == current_user.id ? true : false)
-      %hr
-      %br
 
 - if !@current_invite.blank?
   - if @current_invite.invite_type == Invite::MENTOR || @current_invite.invite_type == Invite::NREDUCE_MENTOR

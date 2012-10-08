@@ -26,26 +26,25 @@ class Startup < ActiveRecord::Base
     :growth_model, :stage, :company_goal, :meeting_id, :one_liner, :active, :launched_at, 
     :industry_list, :technology_list, :ideology_list, :industry, :intro_video_url, :elevator_pitch, 
     :logo, :remote_logo_url, :logo_cache, :remove_logo, :checkins_public, :pitch_video_url, 
-    :investable, :screenshots_attributes, :business_model, :founding_date, :market_size, :in_signup_flow
+    :investable, :screenshots_attributes, :business_model, :founding_date, :market_size, :in_signup_flow, 
+    :invites_attributes, :mentorable
   attr_accessor :in_signup_flow
 
   accepts_nested_attributes_for :screenshots, :reject_if => proc {|attributes| attributes.all? {|k,v| v.blank?} }, :allow_destroy => true
   accepts_nested_attributes_for :intro_video, :reject_if => proc {|attributes| attributes.all? {|k,v| v.blank?} }, :allow_destroy => true
   accepts_nested_attributes_for :pitch_video, :reject_if => proc {|attributes| attributes.all? {|k,v| v.blank?} }, :allow_destroy => true
+  accepts_nested_attributes_for :invites, :reject_if => proc {|attributes| attributes.all? {|k,v| v.blank?} }, :allow_destroy => true
 
-  #validates_presence_of :intro_video_url, :if => lambda {|startup| startup.onboarding_complete? }
   validates_presence_of :name
   validate :check_video_urls_are_valid
   validates_presence_of :one_liner, :if => :created_but_not_setup_yet?
   validates_presence_of :elevator_pitch, :if => :created_but_not_setup_yet?
   validates_presence_of :industry_list, :if => :created_but_not_setup_yet?
-  #validates_presence_of :growth_model, :if => :created_but_not_setup_yet?
-  #validates_presence_of :stage, :if => :created_but_not_setup_yet?
-  #validates_presence_of :company_goal, :if => :created_but_not_setup_yet?
 
   before_save :format_url
   after_save :reset_cached_elements
   after_create :initiate_relationships_from_invites
+  after_create :notify_classmates_of_new_startup
 
   acts_as_taggable_on :industries, :technologies, :ideologies
 
@@ -64,38 +63,38 @@ class Startup < ActiveRecord::Base
   # https://github.com/outoftime/sunspot
   searchable do
     # full-text search fields - can add :stored => true if you don't want to hit db
-    text :name, :boost => 4.0
-    text :location do
-      team_members.map{|tm| tm.location }.delete_if{|l| l.blank? }
-    end
-    text :industries_cached, :stored => true do
-      self.industries.map{|t| t.name.titleize }.join(', ')
-    end
-    text :website_url
-    text :one_liner
+    text :name, :boost => 4.0, :stored => true
+    # text :location do
+    #   team_members.map{|tm| tm.location }.delete_if{|l| l.blank? }
+    # end
+    # text :industries_cached, :stored => true do
+    #   self.industries.map{|t| t.name.titleize }.join(', ')
+    # end
+    # text :website_url
+    # text :one_liner
 
     # filterable fields
     integer :id
-    integer :stage
-    integer :company_goal
+    #integer :stage
+    #integer :company_goal
     boolean :onboarded do
       self.account_setup?
     end
-    double  :rating
+    # double  :rating
     boolean :public
     boolean :investable
-    integer :industry_tag_ids, :multiple => true, :stored => true do
-      self.industries.map{|t| t.id }
-    end
+    # integer :industry_tag_ids, :multiple => true, :stored => true do
+    #   self.industries.map{|t| t.id }
+    # end
     string :sort_name do
       name.downcase.gsub(/^(an?|the)/, '')
     end
-    integer :num_checkins do
-      self.checkins.count
-    end
-    integer :num_pending_relationships do
-      self.received_relationships.pending.count
-    end
+    # integer :num_checkins do
+    #   self.checkins.count
+    # end
+    # integer :num_pending_relationships do
+    #   self.received_relationships.pending.count
+    # end
   end
 
   # def to_param
@@ -125,7 +124,7 @@ class Startup < ActiveRecord::Base
   end
 
   def launched!
-    self.update_attribute('launched_at', Time.now)
+    self.update_attribute('launched_at', Time.now) if self.launched_at.blank?
   end
 
   def mentors
@@ -133,8 +132,32 @@ class Startup < ActiveRecord::Base
   end
 
    # Returns the checkin for this nReduce week (Tue 4pm - next Tue 4pm)
-  def current_checkin
-    checkins.ordered.where(['created_at > ?', Checkin.prev_after_checkin]).first
+  def current_checkin(reset_cache = false)
+    self.reset_current_checkin_cache if reset_cache
+    cid = Cache.get(['current_checkin', self], nil, true){
+      c = checkins.ordered.where(['created_at > ?', Checkin.prev_after_checkin]).first
+      c.id if c.present?
+    }
+    Checkin.find(cid) if cid.present?
+  end
+
+  def reset_current_checkin_cache
+    Cache.delete(['current_checkin', self])
+  end
+
+   # returns array of [instrument_name, latest_rounded_value]
+  def latest_measurement_name_and_value(reset_cache = false)
+    self.reset_latest_measurement_cache if reset_cache
+    ret = Cache.get(['latest_measurement', self]){
+      i = self.instruments.first
+      m = i.measurements.ordered.first if i.present?
+      m.present? ? [i.name, m.value.round] : []
+    }
+    ret.present? ? ret : []
+  end
+
+  def reset_latest_measurement_cache
+    Cache.delete(['latest_measurement', self])
   end
 
   def number_of_consecutive_checkins
@@ -142,31 +165,35 @@ class Startup < ActiveRecord::Base
   end
 
     # Returns hash of all requirements to be allowed to search for a mentor - and whether this startup has met them
-  def mentor_elements
-    consecutive_checkins = self.number_of_consecutive_checkins
-    num_awesomes = self.awesomes.count
-    my_rating = self.rating.blank? ? 0 : self.rating
+  def mentor_and_investor_elements
+    #consecutive_checkins = self.number_of_consecutive_checkins
+    #num_awesomes = self.awesomes.count
+    #my_rating = self.rating.blank? ? 0 : self.rating
     profile_completeness = self.profile_completeness_percent
+    checkin_last_week = self.current_checkin
     elements = {
-      :consecutive_checkins => { :value => consecutive_checkins, :passed => consecutive_checkins >= 4 },
-      :num_awesomes => {:value => num_awesomes, :passed => num_awesomes >= 10 },
-      :community_status => {:value => my_rating, :passed => my_rating >= 1.0 },
-      :profile_completeness => {:value => profile_completeness, :passed => profile_completeness == 1.0 }
+      #:consecutive_checkins => { :value => consecutive_checkins, :passed => consecutive_checkins >= 4 },
+      #:num_awesomes => {:value => num_awesomes, :passed => num_awesomes >= 10 },
+      #:community_status => {:value => my_rating, :passed => my_rating >= 1.0 },
+      :checked_in_within_the_last_week => {:value => nil, :passed => checkin_last_week.present? && checkin_last_week.completed? },
+      :startup_profile_completeness => {:value => "#{(profile_completeness * 100).round}%", :passed => profile_completeness == 1.0 }
     }
     passed = 0
     elements.each{|name, e| passed += 1 if e[:passed] == true }
     elements[:total] = {:value => "#{passed} of #{elements.size}", :passed => passed == elements.size}
+    # uncomment this to fake being ready
+    #elements[:total] = {:value => 'passed', :passed => true}
     elements
   end
 
-   # Returns true if mentor elements all pass and they haven't invited an nreduce mentor in the last week
-  def can_invite_mentor?
+   # Returns true if mentor & investor elements all pass and they haven't invited an nreduce mentor in the last week
+  def can_access_mentors_and_investors?
     can_invite = true
     relationships = self.relationships.startup_to_user.approved.where(['created_at > ?', Time.now - 1.week]).includes(:connected_with)
     relationships.each do |r|
       can_invite = false if r.connected_with.roles?(:nreduce_mentor)
     end
-    (mentor_elements[:total][:passed] == true) and can_invite
+    (mentor_and_investor_elements[:total][:passed] == true) and can_invite
   end
 
   # They can enter from their weekly class if they have completed their profile and are connected to four other startups
@@ -425,8 +452,12 @@ class Startup < ActiveRecord::Base
       User.where(:startup_id => self.id).map{|u| u.id }  
     }
   end
-
+  
   protected
+
+  def notify_classmates_of_new_startup
+    Notification.create_for_new_team_joined(self)
+  end
 
   def reset_cached_elements
     Cache.delete(['profile_c', self])

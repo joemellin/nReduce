@@ -57,8 +57,6 @@ class RelationshipsController < ApplicationController
     end
     @commented_on_checkin_ids = current_user.commented_on_checkin_ids
 
-    @num_blank_spots = current_user.mentor? ? 4 : 8
-
     @show_mentor_message = true if current_user.roles?(:nreduce_mentor) && no_startups == true
   end
 

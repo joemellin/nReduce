@@ -1,10 +1,11 @@
 - content_for :subtitle do
   Edit your startup
+.row
+  .span12.center{:style => 'margin-bottom:40px; padding-top: 20px'}
+    %h1 Edit Your Startup Profile
 
 .row
   .span8
-    %h2 Edit your Startup
-
     = semantic_form_for @startup, :url => '/startup/', :html => {:class => "form-horizontal", :multipart => true} do |f|
       - if @setup
         .control-group{:style => 'padding-top: 0'}
@@ -12,9 +13,38 @@
           .controls
             %strong All fields are required unless noted
       = render "startups/fields", :f => f
-      .form-actions
-        = f.submit "Save", :class => "btn btn-primary btn-large"
+      .form.center{:style => 'margin-bottom: 40px; padding-top: 20px'}
+        = f.submit "Save Profile", :class => "btn btn-success btn-large"
+    = render 'startups/invite_modal'
   - unless @setup
-    .span4
-      = render 'users/profile_completeness', :title => 'Startup Profile'
-      = render 'startups/invite_team_members'
+    .span3
+      .row{:style => 'margin-bottom: 40px; padding-top: 0px'}
+        = render 'users/profile_completeness', :title => 'Startup Profile'
+      .row
+        %h3 nReduce Themed Elevator Pitch
+        %p The point is to communicate your idea as quickly as possible in a way that is easily digestable for investors.
+        %ol.myriad_light{:style => 'font-size: 16px'}
+          %li
+            Download and use this 4-slide deck. Do not change the font size or any aspect of the presentation - simply enter your answers to the 4 prompts.
+            %br/
+            %br/
+            = link_to(image_tag('powerpoint.jpg'), '/nreduce_stock_deck.pptx')
+            %strong= link_to 'Download stock deck', '/nreduce_stock_deck.pptx'
+            %br/
+            %br/
+
+          %li Record a 30 second screen capture of you talking through the 4 slides. Tip: use #{link_to('screenr', 'http://www.screenr.com', :target => '_blank')}.
+          %br/
+          %li Upload to #{link_to('Youtube', 'http://www.youtube.com/upload', :target => '_blank')} and set the privacy to unlisted.
+          %br/
+          %li
+            Submit the link in the form to the left.
+            %br/
+            %br/
+            %strong Example:
+            %br/
+            %br/
+            :plain
+              <iframe width="300" height="189" src="http://www.youtube.com/embed/cJNbbIWYtHg?rel=0" frameborder="0" allowfullscreen></iframe>
+
+

@@ -1,15 +1,35 @@
-- external_id_element_id ||= 'video_external_id'
-%h3 Record from webcam
-
 = ViddlerVideo.embedded_recorder_html(30).html_safe
 
-/ Mac bug in Lion that won't allow you to click on allow flash recording: http://blog.mailvu.com/blog/adobe-flash-issue-on-mac-os-10-7-lion/
-/ how to change: http://blog.mailvu.com/blog/setting-flash-system-preference-on-a-mac/
+%p.center
+  %strong 
+    1) Press the red button to start/stop recording
+    %br/
+    2) Press save when you've finished recording your video
+
+%h3.message
+
+-# Viddler Recorder documentation: http://developers.viddler.com/documentation/recorder/
+-# http://developers.viddler.com/documentation/articles/howto-record/
+
+-# Mac bug in Lion that won't allow you to click on allow flash recording: http://blog.mailvu.com/blog/adobe-flash-issue-on-mac-os-10-7-lion/
+-# how to change: http://blog.mailvu.com/blog/setting-flash-system-preference-on-a-mac/
 :javascript
   // Called when recording is finished and saved to the server
   function recordDone(username,user_video_number,video_id) {
     // Set video id correctly
     if(video_id != null){
-      $('##{external_id_element_id}').val(video_id);
+      $('##{video_id} .video_id').remove();
+      $('##{video_id} .video_external_id').val(video_id);
+      $('##{video_id} .video_type').val('ViddlerVideo');
+      $('##{video_id} .completed, ##{video_id} .fields').toggle();
     }
+  }
+
+  function recordSave(){
+    console.log('recording saved - check to see if form is ready and we can submit it');
+  }
+
+  // called to make sure recording is saved
+  function saveRecording(){
+    doSaveRecord();
   }

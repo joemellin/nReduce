@@ -35,7 +35,11 @@ class DemoDay < ActiveRecord::Base
 
   def index_of(startup)
     return nil if self.startup_ids.blank?
-    self.startup_ids.index(startup.id)
+    self.startup_ids.index(startup.id) + self.index_offset
+  end
+
+  def startup_for_index(index)
+    self.startup_ids[index.to_i - self.index_offset]
   end
 
   def video_for_startup(startup)

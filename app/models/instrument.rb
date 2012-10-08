@@ -1,5 +1,5 @@
 class Instrument < ActiveRecord::Base
-  has_many :measurements
+  has_many :measurements, :dependent => :destroy
   belongs_to :startup
 
   attr_accessible :name, :startup, :startup_id, :instrument_type_id

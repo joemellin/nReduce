@@ -1,0 +1,24 @@
+- comment ||= post_form
+- cancel_link ||= false
+= form_for comment, :remote => true do |f|
+  = f.hidden_field :parent_id
+  .comment{:style => 'padding-right:100px'}
+    .left
+      = image_tag user_avatar_url(current_user, :square), :style => 'width: 100px; height: 100px;'
+    .left.content{:style => 'padding-left: 20px; padding-top: 5px'}
+      .row
+        .center{:style => 'padding-bottom : 10px'}
+          %h4{:style => 'color: #999'} Share with your connections and their connections
+      .row
+        .right{:style => 'padding: 0 0 0 20px;'}
+          = f.hidden_field :checkin_id
+          = f.text_area :content, :size => '50x1'
+      .row
+        .right{:style => 'padding: 0px 0 0 10px;'}= f.submit (comment.new_record? ? 'Post' : 'Update'), :class => 'btn btn-success btn-large', :onclick => "$(this).addClass('disabled');"
+        .right{:style => 'padding: 5px 0 0 8px;'}
+          - if comment.new_record? and cancel_link
+            = link_to 'Cancel', '#', :onclick => "$('#comment_#{comment.parent_id} .new_comment').remove(); return false;"
+          - elsif !comment.new_record?
+            = link_to 'Cancel', cancel_edit_comment_path(comment), :remote => true
+        .clear
+    .clear

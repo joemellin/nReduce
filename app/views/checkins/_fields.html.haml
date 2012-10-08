@@ -1,103 +1,112 @@
+.row{:style => 'padding-top: 10px'}
+  .span1
+    %p
+  .span5
+    .stage
+      .left.number 1
+      .left{:style => 'margin-left: 20px; margin-top: 20px'} 
+        %h1 Record Video
+      .clear
+  .span5
+    .stage
+      .left.number 2
+      .left{:style => 'margin-left: 20px; margin-top: 20px'} 
+        %h1 Enter Information
+      .clear
+
 - if @before_disabled == true
   - if @checkin.submitted?
-    %h4 'Before' Submitted #{@checkin.submitted_at.to_s(:short)}
+    %h4 'Before' Submitted
 - else
-  - unless @hide_time
-    .control-group
-      %strong You have #{verbose_distance_until_time_from_now(Checkin.next_before_checkin)} to make any changes
-  
-  / = f.fields_for :before_video do |bv|
-  /   = bv.hidden_field :type
-  /   = bv.hidden_field :external_id, :id => 'before_video_external_id'
-  /   = render 'videos/viddler_recorder', :external_id_element_id => 'before_video_external_id'
+  = hidden_field_tag 'checkin_type', 'before', :id => 'checkin_type'
 
-  .control-group{error_css(@checkin, :start_focus)}
-    = f.label :start_focus, "This week's focus", :maxlength => 255, :class => 'control-label'
-    .controls
-      = f.text_field :start_focus, :class => "span4", :placeholder => "Create a 'mouse' prototype"
-      = f.semantic_errors :start_focus
-
-  .control-group{error_css(@checkin, :start_comments)}
-    = f.label :start_comments, "Why?", :class => 'control-label'
-    .controls
-      = f.text_area :start_comments, :size => '120x4', :class => "span4", :placeholder => "Because we want people to have a strong emotional connection with their computers, and we want to test if this device will do so."
-      = f.semantic_errors :start_comments
-
-  .control-group{error_css(@checkin, :start_video_url)}
-    = f.label :start_video_url, "'Before' Video URL", :class => 'control-label'
-    .controls
-      = f.text_field :start_video_url, :class => "span4", :placeholder => 'http://www.youtube.com/watch?v=088YM4pB9lM'
-      %span.help-inline Unlisted Youtube URL
-      = f.semantic_errors :start_video_url
+  .row{:style => 'padding-top: 20px'}
+    .span1
+      %p
+    .span5
+      = f.fields_for :before_video do |av|
+        = render 'videos/form', :video_id => av.object.new_record? ? 'new_before_video' : "video_#{av.object.id}", :f => av
+      - unless @hide_time
+        .control-group
+          %h3.center{:style => 'padding-top: 10px'}
+            %small You have #{verbose_distance_until_time_from_now(Checkin.next_before_checkin)} to make any changes
+    .span5{:style => 'padding-left: 70px'}
+      .control-group{error_css(@checkin, :start_focus)}
+        %p
+          &nbsp
+        = f.label :start_focus, "This Week's Goal:", :style => 'font-size:38px; margin-bottom:40px; margin-top:40px', :maxlength => 255, :class => 'control-label'
+        .controls
+          = f.text_field :start_focus, :style => 'height: 30px; line-height:24px; font-size:22px', :class => "span4 checkin_start_focus", :placeholder => "Test, Ship or Hustle..."
+          = f.semantic_errors :start_focus
 
 - if @after_disabled == true
   - if @checkin.completed?
-    %h4 'After' Submitted #{@checkin.completed_at.to_s(:short)}
+    %h4 'After' Submitted
 - else
-  - unless @hide_time
-    .control-group
-      %strong You have #{verbose_distance_until_time_from_now(Checkin.next_after_checkin)} to make any changes
-
-  / = f.fields_for :after_video do |av|
-  /   - unless av.object.new_record?
-  /     %strong Current video:
-  /     %br/
-  /     != av.object.embed_code
-  /     %br/
-  /     %strong Record a new version:
-  /   = av.hidden_field :type
-  /   = av.hidden_field :external_id, :id => 'after_video_external_id'
-  /   = render 'videos/viddler_recorder', :external_id_element_id => 'after_video_external_id'
-
-  .control-group{error_css(@checkin, :end_video_url)}
-    = f.label :end_video_url, "'After' Video URL", :class => 'control-label'
-    .controls
-      = f.text_field :end_video_url, :class => "span4", :placeholder => 'http://www.youtube.com/watch?v=088YM4pB9lM'
-      %span.help-inline Unlisted Youtube URL
-      = f.semantic_errors :end_video_url
+  = hidden_field_tag 'checkin_type', 'after', :id => 'checkin_type'
   
-  .control-group
-    = label_tag 'startup', 'Startup Status', :class => 'control-label'
-    .controls
-      = hidden_field_tag 'startup[launched]', @checkin.startup.launched?, :id => 'launched_field'
-      %h3
-        .launched{:class => @checkin.startup.launched? ? '' : 'hide'}
-          Launched
-          - if @checkin.startup.launched?
-            %span{:style => 'font-size: .7em; font-weight: normal;'} #{time_ago_in_words(@checkin.startup.launched_at)} ago
-        .pre_launch{:class => @checkin.startup.launched? ? 'hide' : ''}
-          Pre-Launch
-          &nbsp;&nbsp;
-          = link_to("We've Launched!", '#', :onclick => "$('#launched_field').val(1); $('.pre_launch').hide(); $('.launched').fadeIn(); return false;")
-
-  .launched{:class => @checkin.startup.launched? ? '' : 'hide'}
-    = f.fields_for :measurement do |m|
-      = m.hidden_field :instrument_id, :id => 'checkin_instrument_id'
-      .control-group{:style => 'margin-bottom: 0'}
-        %label.control-label Primary Metric
+  .row{:style => 'padding-top: 20px'}
+    .span1
+      %p 
+    .span5
+      = f.fields_for :after_video do |av|
+        = render 'videos/form', :video_id => av.object.new_record? ? 'new_after_video' : "video_#{av.object.id}", :f => av
+        - unless @hide_time
+          %h3.center{:style => 'padding-top: 10px'}
+            %small You have #{verbose_distance_until_time_from_now(Checkin.next_after_checkin)} to make any changes
+    .span5{:style => 'padding-left: 20px'}
+      %p{:style => 'padding-top: 10px;'}
+        Last Week's Goal:
+        %strong #{@checkin.start_focus.blank? ? '(none)' : h(@checkin.start_focus)}
+      %h3 Did you accomplish your goal?
+      .control-group{error_css(@checkin, :accomplished), :style => 'margin-bottom: 30px'}
+        = f.hidden_field :accomplished
         .controls
-          %h3#instrument_name{:class => m.object.instrument.new_record? ? 'hide' : ''}= m.object.instrument.name
-          - if m.object.instrument.new_record?
-            #instrument_name_form
-              %p
-                %h3= link_to 'Choose Your Metric', '#', :onclick => "$('#instrument_modal').modal(); return false;"
-                - if @checkin.startup.launched?
-                  %br/
-                  %i Required, since you are launched (to show traction &amp; progress)
-          = f.semantic_errors :measurement
+          .btn-group{'data-toggle' => 'buttons-radio'}
+            %button.btn.btn-large.accomplished{:type => 'button', 'data-value' => 'false', :class => (@checkin.accomplished.present? && !@checkin.accomplished?) ? 'active' : ''} No
+            %button.btn.btn-large.accomplished{:type => 'button', 'data-value' => 'true', :class => (@checkin.accomplished.present? && @checkin.accomplished?) ? 'active' : ''} Yes
+          = f.semantic_errors :accomplished
 
-      #instrument_value{:class => m.object.instrument.new_record? ? 'hide' : ''}
-        .control-group{error_css(m.object, :value)}
-          = m.label :value, 'What is the current value?', :class => 'control-label'
-          .controls
-            = m.text_field :value, :class => "span2", :id => 'checkin_instrument_id'
-            = m.semantic_errors :value
+      .control-group.pre_launch{:class => @checkin.startup.launched? ? 'hide' : ''}
+        .controls
+          = hidden_field_tag 'startup[launched]', @checkin.startup.launched?, :id => 'startup_launched'
+          %h3 Have you launched to customers?
+          .btn-group{'data-toggle' => 'buttons-radio'}
+            %button.btn.btn-large{:type => 'button'} No
+            %button.btn.btn-large{:type => 'button', :onclick => "$('#startup_launched').val(1); $('.pre_launch').hide(); $('.launched').fadeIn();"} Yes
+          %p.help-text
+            %i (Privately or Publicly)
 
-  .control-group{error_css(@checkin, :end_comments)}
-    = f.label :end_comments, 'What did you accomplish?<br />What do you need help with?'.html_safe, :class => 'control-label'
-    .controls
-      = f.text_area :end_comments, :size => '120x4', :class => "span4"
-      = f.semantic_errors :end_comments
+      .launched{:class => @checkin.startup.launched? ? '' : 'hide'}
+        = f.fields_for :measurement do |m|
+          = m.hidden_field :instrument_id, :id => 'checkin_instrument_id'
+          .control-group{:style => 'margin-bottom: 0'}
+            .controls
+              %h3#instrument_name{:class => m.object.instrument.new_record? ? 'hide' : ''}= m.object.instrument.name
+              - if m.object.instrument.new_record?
+                #instrument_name_form
+                  %p
+                    %h3= link_to '<i class="icon-signal"></i> Choose Your Metric'.html_safe, '#', :onclick => "$('#instrument_modal').modal(); return false;", :class => 'btn btn-large'
+                    - if @checkin.startup.launched?
+                      %br/
+                      %i Required, since you are launched (to show traction &amp; progress)
+              = f.semantic_errors :measurement
 
-.form-actions
-  = f.submit "Submit Video", :class => "btn btn-primary btn-large"
+          #instrument_value{:class => m.object.instrument.new_record? ? 'hide' : ''}
+            .control-group{error_css(m.object, :value)}
+              .controls
+                = m.text_field :value, :class => "span2", :id => 'checkin_measurement_value'
+                %span.help-text 
+                  %i &nbsp;(Past Week)
+                = m.semantic_errors :value
+
+      .control-group{error_css(@checkin, :end_comments), :style => 'margin-top: 20px'}
+        %h3 How can your fellow nReducers help you?
+        .controls
+          = f.text_area :end_comments, :size => '200x1', :class => "span4 checkin_end_comments", :placeholder => "Give me feedback on..."
+          = f.semantic_errors :end_comments
+
+.form-controls.center{:style => 'margin-bottom: 10px; padding-top: 20px; '}
+  %p{:style => 'padding-top: 20px'}
+    &nbsp
+  = f.submit "Submit Checkin", :class => "btn btn-success btn-large submit disabled", :disabled => true

@@ -56,7 +56,7 @@ class Cache
     # Add an item to an array
   def self.arr_push(key, value)
     res = $redis.lpush(key, value)
-    Cache.logger.info "CACHE: arr push with index #{res} to #{key}"
+    #Cache.logger.info "CACHE: arr push with index #{res} to #{key}"
     true
   end
 
@@ -64,7 +64,7 @@ class Cache
   def self.arr_get(key)
     key = Cache.key_for(key)
     res = $redis.lrange(key, 0, Cache.arr_count(key))
-    Cache.logger.info "CACHE: arr get for #{key}"
+    #Cache.logger.info "CACHE: arr get for #{key}"
     res
   end
 

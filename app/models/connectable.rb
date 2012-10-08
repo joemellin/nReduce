@@ -25,6 +25,15 @@ module Connectable
     return []
   end
 
+  def second_degree_connection_ids
+    return nil unless self.is_a?(Startup)
+    Relationship.second_degree_connection_ids_for_startup(self)
+  end
+
+  def second_degree_connections
+    Startup.find(self.second_degree_connection_ids)
+  end
+
 	  # Relationships this entity as requested with others
     # not cached
   def requested_relationships

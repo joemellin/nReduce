@@ -5,17 +5,19 @@
 $ ->
 
   # iPhone-style checkboxes: http://awardwinningfjords.com/2009/06/16/iphone-style-checkboxes.html
-  $('form.startup .investable').iphoneStyle(
+  $('form.startup .investable, form.startup .mentorable').iphoneStyle(
     checkedLabel: 'YES',
     uncheckedLabel: 'NO',
     onChange: ->
       $('form.startup').submit()
-      if $('#startup_investable').attr('checked') == 'checked'
-        $('.investor_profile').fadeIn()
-        $('.investor_profile_inactive').fadeOut()
-      else
-        $('.investor_profile').fadeOut()
-        $('.investor_profile_inactive').fadeIn()
+    # onChange: ->
+    #   $('form.startup').submit()
+    #   if $('#startup_investable').attr('checked') == 'checked'
+    #     $('.investor_profile').fadeIn()
+    #     $('.investor_profile_inactive').fadeOut()
+    #   else
+    #     $('.investor_profile').fadeOut()
+    #     $('.investor_profile_inactive').fadeIn()
   )
 
   # Screenshot carousel - set long interval between auto-change

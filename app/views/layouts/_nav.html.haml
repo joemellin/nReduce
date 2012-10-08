@@ -1,7 +1,12 @@
 - hide_nav ||= false
 .nav
   .row
-    .span4= link_to image_tag('nreduce_s.png'), (@demo_day.present? && @demo_day.in_time_window? ? '/d' : "/")
+    .span2{:style => 'margin: 31px 0 60px 31px;'}= link_to(image_tag(user_signed_in? && !@setup ? 'nglow.png' : 'nreduce_s.png'), (@demo_day.present? ? '/d' : "/"))
+    - if user_signed_in? && !@setup && current_user.entrepreneur? && current_user.startup.account_setup?
+      .span2.center{:style => 'margin: 60px 0 0 0;'}= link_to 'Add Teams', add_teams_relationships_path, :class => 'btn' 
+    - else
+      .span1
+        %p
     .span4.countdown_and_checkin{:align => 'center'}
       - if @demo_day && !@home
         - if @demo_day.in_the_future?
@@ -15,24 +20,20 @@
             %strong #{link_to @demo_day.name, '/d'}
             ends in
           = render 'layouts/countdown', :time => @demo_day.ends_at
-      - elsif @weekly_class.blank? && user_signed_in? && !current_user.roles?(:approved_investor)
+      - elsif @weekly_class.blank? && user_signed_in? && current_user.entrepreneur?
         = render 'startups/countdown_and_checkin'
       - else
         &nbsp;
-    .span4
+    .span3
       .right
-        %ul.nav.nav-pills
+        %ul.nav.nav-pills{:style => 'margin: 50px -170px 60px 0px;'}
           - if user_signed_in?
             - if hide_nav
               %li= link_to "Log out", logout_path, :method => :delete
             - else
-              %li.padding{:class => is_controller_action?('relationships', 'index') ? 'active' : ''}= link_to "Home", '/'
-              - if can? :see_mentor_page, current_user
-                %li.padding{:class => is_controller_action?('mentors', 'index') ? 'active' : ''}= link_to "Mentors", mentors_path
+              %li.main.padding{:class => is_controller_action?('relationships', 'index') ? 'active' : ''}= link_to "Work Room", work_room_path
               - if can? :see_investor_page, current_user
-                %li.padding{:class => is_controller_action?('investors', 'index') ? 'active' : ''}= link_to "Investors", investors_path
-              - if current_user.entrepreneur? and !current_user.startup_id.blank? and current_user.can_access_chat?
-                %li.padding{:class => is_controller_action?('users', 'chat') ? 'active' : ''}= link_to "Chat", chat_users_path
+                %li.main.padding{:class => is_controller_action?('investors', 'index') ? 'active' : ''}= link_to "Board Room", board_room_path
               %li.dropdown
                 %a.dropdown-toggle.btn{:href => '#', 'data-toggle' => 'dropdown'}
                   = image_tag(user_avatar_url(current_user))
@@ -77,4 +78,3 @@
       - if @demo_day && !user_signed_in?
         .right{:style => 'margin-right: 20px'}= link_to 'Founders Join', sign_up_path, :class => 'btn btn-large btn-success'
       .clear
-%hr

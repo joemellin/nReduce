@@ -6,38 +6,43 @@
   .span2
     = link_to '<i class="icon icon-chevron-left"></i> All Teams'.html_safe, relationships_path, :class => 'btn btn-large'
     / = link_to '<i class="icon icon-chevron-left"></i> Previous Team'.html_safe, '#', :class => 'btn btn-large'
-  .span8{:align => 'center'}
-    .inline-block
+  .span3
+    .right
       %h2= link_to "Team #{@checkin.startup.name}", startup_path(@checkin.startup)
-    - @checkin.startup.team_members.each do |tm|
-      - title = tm.name + (!tm.twitter.blank? ? " - @#{tm.twitter}" : '')
-      .inline-block{:style => 'margin-left: 4px'}= link_to(image_tag(user_avatar_url(tm), :title => title, :style => 'width: 50px; height: 50px;'), user_path(tm))
     .clear
+  .span2{:align => 'center'}
+    .inline-block
+      - @checkin.startup.team_members.each do |tm|
+        - title = tm.name + (!tm.twitter.blank? ? " - @#{tm.twitter}" : '')
+        .inline-block{:style => 'margin-left: 0px'}= link_to(image_tag(user_avatar_url(tm), :title => title, :style => 'width: 50px; height: 50px;'), user_path(tm))
+  .span2{:style => 'margin-bottom: 20px'}
+    .left
+      %h2= link_to_external @startup.website_url_to_uri.hostname, @startup.website_url
+    .clear
+  .span3{:align => 'right'}
     - unless @checkin.startup.one_liner.blank?
-      "#{@checkin.startup.one_liner}"
-  .span2{:align => 'right'}
-    / = link_to 'Next Team <i class="icon icon-chevron-right"></i>'.html_safe, '#', :class => 'btn btn-large'
-%hr
-%br
+      %h3
+        %small "#{@checkin.startup.one_liner}"
+%hr{:style => 'padding-bottom: 0px'}
 .row
-  .span12{:align => 'center'}
-    %h4
-      Week of #{@checkin.time_label} Focus: #{h(@checkin.start_focus)}
-.row
-  .span6{:style => 'text-align: center', :align => 'right'}
-    %div
-      %strong BEFORE
-    = display_checkin_video(@checkin, :before_video, false, 500, 315).html_safe
+  .span6{:style => 'text-align: center', :align => 'right',}
+    %p{:style => 'margin-bottom: 0px; font-color: #ff0066'}
+      Before Video
+    .span{:style => 'margin-left:-20px'}
+      = display_checkin_video(@checkin, :before_video, false, 600, 387).html_safe
   .span6{:style => 'text-align: center;'}
-    %div
-      %strong AFTER
-    = display_checkin_video(@checkin, :after_video, false, 500, 315).html_safe
+    %p{:style => 'margin-bottom: 0px'}
+      After Video
+    .span{:style => 'margin-left:-10px'}
+      = display_checkin_video(@checkin, :after_video, false, 600, 387).html_safe
 .row
-  .span5{:align => 'right'}
-    %p{:style => 'margin-bottom: 0'}
-      %small Why?
+  .span1
+    %p &nbsp
+  .span4{:align => 'center'}
+    %p{:style => 'margin-top: 10px'}
+      %small Goal for Week:
       / Can't seem to get auto-link to set target='_blank'
-    %h4= simple_format(auto_link(h(@checkin.start_comments), :all, :target => '_blank' ))
+    %h4= simple_format(auto_link(h(@checkin.start_focus), :all, :target => '_blank' ))
   .span2{:align => 'center', :style => 'padding-top: 8px'}
     - if current_user.startup_id == @checkin.startup_id
       / - if @checkin.awesome_count > 0
@@ -45,12 +50,14 @@
       /   = pluralize(@checkin.awesome_count, 'awesome')
       &nbsp;
     - elsif @checkin.completed?
+      %p{:style => 'margin-top: 15px'} 
       != render_awesome_button(@checkin)
-  .span5
-    %p{:style => 'margin-bottom: 0'}
-      %small Question:
+  .span4
+    %p{:style => 'margin-top: 10px', :align => 'center'}
+      %small Help Needed:
     %h4= simple_format(auto_link(h(@checkin.end_comments), :all, :target => '_blank' ))
-
+  .span1
+    %p &nbsp
 .row{:style => 'margin-top: 15px'}
   .span12
     #comments

@@ -1,0 +1,24 @@
+= render :partial => 'header'
+- if @owner
+  %h1.h1 #{@comment.user.name} responded to your post!
+- else
+  %h1.h1 #{@comment.user.name} responded to your comment!
+%br/
+%br/
+%strong #{@comment.user.name}
+- if @comment.user.startup_id.present?
+  of
+  %strong Team #{@comment.user.startup.name}
+- if @owner
+  wrote on your "#{truncate(@original_post.content, :length => 30)}" post:
+- elsif @comment.parent.blank? && @comment.parent.user_id == @user.id
+  They wrote in response to your comment "#{truncate(@comment.parent.content, :length => 30)}":
+- else
+  They wrote:
+%hr/
+%h4.h4 #{simple_format(h(@comment.content))}
+%hr/
+%br/
+%br/
+%h3= link_to "Respond to #{@comment.user.name}", post_url(@original_post)
+= render :partial => 'footer'

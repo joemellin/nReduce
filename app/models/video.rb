@@ -3,9 +3,13 @@ class Video < ActiveRecord::Base
   belongs_to :user      # profile video
   belongs_to :startup   # team video, pitch video
 
-  attr_accessible :external_id, :user_id, :type, :vimeo_id, :image, :remote_image_url, :image_cache
+  attr_accessible :external_id, :user_id, :type, :vimeo_id, :image, :remote_image_url, :image_cache, :external_url, :youtube_url
+  attr_accessor :youtube_url
 
-  after_create :queue_transfer_to_vimeo
+  before_validation :extract_id_from_youtube_url
+  before_save :check_if_needs_vimeo_upload, :unless => :new_record?
+  before_save :flag_for_vimeo_upload, :if => :new_record?
+  after_save :queue_transfer_to_vimeo
   after_destroy :remove_from_vimeo_and_delete_local_file
 
   validates_presence_of :external_id
@@ -58,34 +62,6 @@ class Video < ActiveRecord::Base
     # simple one-liner because using net/http just doesn't seem to work
     system("wget -O #{local_path_to_file} #{remote_url_str}")
 
-    # Wrap opening file to ensure it gets closed
-    # could use open-uri: http://stackoverflow.com/questions/5386159/download-a-zip-file-through-nethttp
-    # begin
-
-    #   download_file = open(local_path_to_file, "wb")
-    #   url = URI.parse(remote_url_str)
-    #   # May be better code for redirect following: http://stackoverflow.com/questions/5386159/download-a-zip-file-through-nethttp
-    #   found = false
-    #   until found
-    #     host, port = url.host, url.port if url.host && url.port
-    #     request = Net::HTTP.start(host, port, :use_ssl => url.scheme == 'https', :verify_mode => OpenSSL::SSL::VERIFY_NONE) 
-    #     request.request_get(url.path) do |resp|
-    #       # See if this is a redirect if so follow it
-    #       resp.header['location'] ? url = URI.parse(resp.header['location']) : found = true
-    #       # Otherwise save the file
-    #       if found == true
-    #         resp.read_body do |segment|
-    #           download_file.write(segment)
-    #           # hack to allow buffer to fille writes
-    #           sleep 0.005
-    #         end
-    #       end
-    #     end
-    #     puts url.inspect
-    #   end
-    # ensure
-    #   download_file.close
-    # end
     self.local_file_path = local_path_to_file if File.exists?(local_path_to_file)
     if self.local_file_path.blank?
       raise "Local file could not be saved" 
@@ -104,12 +80,15 @@ class Video < ActiveRecord::Base
     # Method to take the external video and save it to our vimeo account
   # First it saves it locally, then it uploads to vimeo, finally saves object
   def transfer_to_vimeo!
+    return true if self.vimeo_id.present?
     # Use individually implemented method to save file locally
     self.save_external_video_locally
     # Transfer to vimeo
     self.upload_to_vimeo(true)
     raise "Vimeo: video could not be uploaded from local file: #{path_to_local_file}" if self.vimeo_id.blank?
     self.save
+    # Check to see if it has been encoded
+    Resque.enqueue_in(5.minutes, Video, self.id, true)
   end
 
   # Transfers a local file (using local_file_path) to vimeo account
@@ -164,7 +143,7 @@ class Video < ActiveRecord::Base
     return !response['video'].blank? ? response['video'].first : nil
   end
 
-  def check_if_encoded_and_get_thumbnail_urls
+  def check_if_encoded_and_get_thumbnail_urls(queue_again = false)
     details = self.vimeo_details
     return false if details.blank?
     # Set as transcoded if it has completed
@@ -174,35 +153,62 @@ class Video < ActiveRecord::Base
       self.remote_image_url = details['thumbnails']['thumbnail'].last['_content']
       self.save
     else
+      Resque.enqueue_in(5.minutes, Video, self.id, true)
       false
     end
   end
 
   # Downloads video and transfers to Vimeo
-  def self.perform(video_id)
+  def self.perform(video_id, check_if_encoded = false)
     v = Video.find(video_id)
     begin
-      v.transfer_to_vimeo! unless v.vimeod?
+      if v.vimeod? && check_if_encoded
+        self.check_if_encoded_and_get_thumbnail_urls(true)
+      else 
+        # Transfer it to vimeo and queue encoding check
+        v.transfer_to_vimeo! 
+      end
     rescue
       # If it fails to download or video hasn't encoded yet, enqueue
       v.queue_transfer_to_vimeo
     end
-    # Get thumbnail video and confirm it has been transcoded on vimeo
-    # Need to schedule this ahead in time
-    # v.check_if_encoded_and_get_thumbnail_urls if v.vimeod?
   end
 
-  def queue_transfer_to_vimeo
-    Resque.enqueue(Video, self.id)
+  def flag_for_vimeo_upload
+    @transfer_to_vimeo = true
+  end
+
+  # only queues if flag_for_vimeo_upload is called
+  def queue_transfer_to_vimeo(force_transfer = false)
+    if @transfer_to_vimeo == true || force_transfer
+      Resque.enqueue(Video, self.id)
+      @transfer_to_vimeo = false
+    end
   end
 
   # END VIMEO-SPECIFIC METHODS
 
   protected
 
+  # Queue for upload to vimeo if the external id (linked video) has changed
+  def check_if_needs_vimeo_upload
+    self.flag_for_vimeo_upload if self.external_id.present? && self.external_id_changed?
+  end
+
+  # Pulls youtube id from youtube_url attribute
+  def extract_id_from_youtube_url
+    if self.youtube_url.present?
+      url = self.youtube_url
+      self.external_id = Youtube.id_from_url(url) if url.present?
+      self.errors.add(:youtube_url, 'is not a valid Youtube URL') unless self.external_id.present?
+    else
+      true
+    end
+  end
+
   # Make sure there isn't another video already stored with same external id
   def video_is_unique
-    if self.new_record? && Video.where(:external_id => self.external_id, :type => self.class.to_s).count > 0
+    if self.new_record? && self.external_id.present? && Video.where(:external_id => self.external_id, :type => self.class.to_s).count > 0
       self.errors.add(:external_id, 'is not unique')
       false
     else

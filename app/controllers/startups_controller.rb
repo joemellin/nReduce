@@ -1,11 +1,11 @@
 class StartupsController < ApplicationController
   #around_filter :record_user_action, :except => [:onboard_next, :stats]
   before_filter :login_required
-  before_filter :load_requested_or_users_startup, :except => [:index, :invite, :stats, :investment_profile]
-  load_and_authorize_resource :except => [:index, :stats, :invite, :show, :invite_team_members, :intro_video, :mini_profile, :investment_profile]
+  before_filter :load_requested_or_users_startup, :except => [:index, :invite, :stats, :investment_profile, :search]
+  load_and_authorize_resource :except => [:index, :stats, :invite, :show, :invite_team_members, :intro_video, :mini_profile, :investment_profile. :search]
   before_filter :load_obfuscated_startup, :only => [:show, :invite_team_members, :before_video, :intro_video, :mini_profile, :investment_profile]
   authorize_resource :only => [:show, :invite_team_members, :before_video, :intro_video, :mini_profile]
-  before_filter :redirect_if_no_startup, :except => [:index, :invite]
+  before_filter :redirect_if_no_startup, :except => [:index, :invite, :search]
 
   def index
     redirect_to '/'
@@ -45,16 +45,21 @@ class StartupsController < ApplicationController
   end
 
   # Two-step invite
-  # 1) Check email to see if they are already in the system and have a startup - if so just create relationship
+  # 1) Check name to see if they are already in the system - if so just create relationship
   # 2) Otherwise do traditional path
   def invite_with_confirm
-    @invite = Invite.new(params[:invite])
+    startup = Startup.where(:name => params[:startup_name]).first if params[:startup_name].present?
+    @invite = Invite.new
+    if startup.present?
+      @invite.startup = startup 
+      @invite.to = startup.team_members.first
+    end
     @invite.from = current_user
     # run validations to assign from/to
     @invite.valid?
     logger.info @invite.inspect
-    if !@invite.from.blank? && !@invite.from.startup.blank? && !@invite.to.blank? && !@invite.to.startup.blank?
-      @relationship = Relationship.new(:entity => @invite.from.startup, :connected_with => @invite.to.startup)
+    if !@invite.from.blank? && !@invite.from.startup.blank? && !@invite.startup.blank? && !@invite.to.blank?
+      @relationship = Relationship.new(:entity => @invite.from.startup, :connected_with => @invite.startup)
       @relationship.context << :startup_startup
     end
     @modal = true
@@ -133,7 +138,6 @@ class StartupsController < ApplicationController
     @startup.attributes = params[:startup]
     @dont_render_form = params[:dont_render_form].present? ? true : false
     if @startup.save
-      #flash[:notice] = "Startup information has been saved. Thanks!"
       respond_to do |format|
         format.js
         format.html { redirect_to '/startup' }
@@ -152,6 +156,15 @@ class StartupsController < ApplicationController
       @startup.invited_team_members!
       redirect_to '/'
       return
+    end
+  end
+
+  def add_invite_field
+    @invite = Invite.new(:startup_id => @startup.id, :from_id => current_user.id)
+    @invite.weekly_class_id = current_user.weekly_class_id unless @startup.account_setup?
+    @c = params[:c] || 1
+    respond_to do |format|
+      format.js { render :action => :add_invite_field }
     end
   end
 
@@ -211,6 +224,15 @@ class StartupsController < ApplicationController
     @measurements = @instrument.measurements.ordered_asc.all unless @instrument.blank?
   end
 
+  def search
+    if params[:query].blank? || params[:query].present? && params[:query].size < 2
+      render :json => [] 
+      return
+    end
+    startups = Startup.select('id, name').where(['name LIKE ?', "#{params[:query]}%"]).with_setup(:profile, :invite_team_members, :intro_video).limit(10)
+    render :json =>  startups.map{|s| s.name }
+  end
+
   #
   # ADMIN ONLY
   #
@@ -229,7 +251,7 @@ class StartupsController < ApplicationController
 
   protected
 
-  def search
+  def search_old
     if !params[:search].blank?
       # sanitize search params
       params[:search].select{|k,v| [:name, :meeting_id, :industries].include?(k) }
@@ -240,14 +262,12 @@ class StartupsController < ApplicationController
       @search = session[:search]
     end
 
-    @search ||= {}
-    @search[:page] = 1 # Force one page
-    @search[:per_page] = 20
+    @search = {:query => params[:query], :page => 1, :per_page => 10}
     @search[:sort] ||= 'rating'
 
     # Have to pass context for block or else you can't access @search instance variable
     @search_results = Startup.search do |s|
-      s.fulltext @search[:name] unless @search[:name].blank?
+      s.fulltext(@search[:query])
       s.with :onboarded, true
       s.with :meeting_id, @search[:meeting_id] unless @search[:meeting_id].blank?
       unless @search[:industries].blank?
@@ -262,8 +282,6 @@ class StartupsController < ApplicationController
       s.paginate :page => @search[:page], :per_page => @search[:per_page]
     end
 
-    # # Establish basic query to find public startups
-    # @startups = Startup.is_public.where(:onboarding_step => Startup.num_onboarding_steps).order('startups.name').includes(:team_members).paginate(:page => @search[:page], :per_page => 10)
 
     # # Add conditions
     # # Ignore current user's startup
@@ -280,12 +298,21 @@ class StartupsController < ApplicationController
     #   @startups = @startups.where(['startups.industry_id = ?', @search[:industry_id]])
     # end
     @meetings_by_id = Meeting.location_name_by_id
-    #@tags_by_startup_id = Startup.tags_by_startup_id(@startups)
+    @tags_by_startup_id = Startup.tags_by_startup_id(@startups)
 
-    if current_user.mentor?
-      @entity = current_user
-    elsif !current_user.startup.blank?
-      @entity = current_user.startup
-    end
+    # if current_user.mentor?
+    #   @entity = current_user
+    # elsif !current_user.startup.blank?
+    #   @entity = current_user.startup
+    # end
+
+    # startup_names = @search_results.hits.map{ |hit| hit.stored(:name) }
+
+    # logger.info startup_names.inspect
+
+    render :json =>  startups.map{|s| s.name }
   end
+
 end
+
+  

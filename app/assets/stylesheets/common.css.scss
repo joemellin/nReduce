@@ -164,11 +164,12 @@ hr {
 
 
     .nav {
-      z-index: 10;
-      margin-right: 0px;
-      margin-bottom: 10px;
+      margin-right: 20px;
+      margin-bottom: 0px;
       .padding {
         padding-top: 15px;
+        padding-right:20px;
+        padding-left: 20px;
       }
       hr {
         margin: 8px 0 0 0;
@@ -243,20 +244,36 @@ hr {
 }
 
 .footer {
-  border-top: 1px solid #eee;
   margin-top: 20px;
-  padding: 20px 0 100px 0;
+  padding: 20px 0 50px 0;
   a {
     padding: 0px 20px 0px 20px;
     color: #999;
   }
-
 }
+
+.coworking_location_tab {
+  margin-top: 100px;
+  background-color: #26A9EB;
+  padding: 6px 8px 6px 8px;
+  border-radius: 15px 15px 0 0;
+  width: 320px;
+  text-align: center;
+  color: #fff;
+  a {
+    color: #fff;
+  }
+}
+
+.coworking_location_modal {
+  text-align: left;
+}
+
 
 #countdown {
   margin-top: -15px;
   .number_block{
-    padding: 0 12px;
+    padding: 0 8px;
     margin: 0 0 0 4px;
     height: 68px;
     text-align: center;
@@ -287,3 +304,4 @@ hr {
     padding: 10px 0 10px 0;
   }
 }
+
