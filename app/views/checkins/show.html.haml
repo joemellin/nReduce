@@ -6,11 +6,14 @@
   .span2
     = link_to '<i class="icon icon-chevron-left"></i> All Teams'.html_safe, relationships_path, :class => 'btn btn-large'
     / = link_to '<i class="icon icon-chevron-left"></i> Previous Team'.html_safe, '#', :class => 'btn btn-large'
-  .span3
+  .span2
     .right
-      %h2= link_to "Team #{@checkin.startup.name}", startup_path(@checkin.startup)
+      %h2{:style => 'margin-bottom: -5px'}= link_to "Team #{@checkin.startup.name}", startup_path(@checkin.startup)
+      - unless @checkin.startup.one_liner.blank?
+        %h3
+          %small "#{@checkin.startup.one_liner}"
     .clear
-  .span2{:align => 'center'}
+  .span4{:align => 'center'}
     .inline-block
       - @checkin.startup.team_members.each do |tm|
         - title = tm.name + (!tm.twitter.blank? ? " - @#{tm.twitter}" : '')
@@ -19,10 +22,8 @@
     .left
       %h2= link_to_external @startup.website_url_to_uri.hostname, @startup.website_url
     .clear
-  .span3{:align => 'right'}
-    - unless @checkin.startup.one_liner.blank?
-      %h3
-        %small "#{@checkin.startup.one_liner}"
+  .span2
+    %p
 %hr{:style => 'padding-bottom: 0px'}
 .row
   .span6{:style => 'text-align: center', :align => 'right',}
