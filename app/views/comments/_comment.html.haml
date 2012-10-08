@@ -64,9 +64,6 @@
             .span
               %h1{:style => 'padding:20px 60px 40px 60px'}= comment.content
 
-          - unless comment.awesome_count == 0
-            = pluralize(comment.awesome_count, 'like')
-
           - unless comment.responders.blank?
             %h3 Discussion with:
             - comment.responders.each do |u|
