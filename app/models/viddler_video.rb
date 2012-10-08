@@ -19,7 +19,7 @@ class ViddlerVideo < Video
   def self.embedded_recorder_html(max_length = 30)
     token = self.record_token
     return '' if token.blank?
-    flashvars = "fake=1&recordToken=#{token}&recQuality=H&enableCallbacks=1"
+    flashvars = "fake=1&recordToken=#{token}&recQuality=M&enableCallbacks=1"
     '<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000"  codebase="http://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=8,0,0,0" width="449" height="545"
 id="viddler_recorder" align="middle">
       <param name="allowScriptAccess" value="always" />
