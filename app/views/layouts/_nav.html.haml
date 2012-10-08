@@ -21,7 +21,7 @@
             ends in
           = render 'layouts/countdown', :time => @demo_day.ends_at
       - elsif @weekly_class.blank? && user_signed_in? && current_user.entrepreneur?
-        = render 'startups/countdown_and_checkin'
+        = render 'startups/countdown_and_checkin', :startup => @startup || current_user.startup
       - else
         &nbsp;
     .span3
