@@ -112,8 +112,8 @@ class CheckinsController < ApplicationController
     @checkin.measurement = Measurement.new(:instrument => @instrument) if @checkin.measurement.blank?
     # Set startup as launched if they have established an instrument
     @checkin.startup.launched_at = Time.now unless @instrument.new_record?
-    @checkin.before_video = ViddlerVideo.new if @checkin.before_video.blank?
-    @checkin.after_video = ViddlerVideo.new if @checkin.after_video.blank?
+    @checkin.before_video = Video.new if @checkin.before_video.blank?
+    @checkin.after_video = Video.new if @checkin.after_video.blank?
     # disable olark
     @recording_video = true
   end

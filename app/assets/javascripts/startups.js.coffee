@@ -29,6 +29,7 @@ $ ->
   validateYoutubeForm = (element) ->
     video_id = element.data('video-id')
     url = element.val()
+    return unless url? && url.length > 0
     if isValidYoutubeUrl(url)
       $("##{video_id} .video_type").val('Youtube')
       $("##{video_id} .completed").show()
@@ -67,10 +68,10 @@ $ ->
         else if $('#startup_launched').val() == 'false'
           is_complete = true
     if is_complete
-      console.log 'complete'
+      #console.log 'complete'
       $('form.checkin :submit').removeClass('disabled').removeAttr('disabled')
     else
-      console.log 'not complete'
+      #console.log 'not complete'
       $('form.checkin :submit').addClass('disabled').attr('disabled', true)
     if add_timer
       setTimeout( ->
@@ -93,6 +94,7 @@ $ ->
     video_id = $(this).data('video-id')
     $("##{video_id} .video_embed_cancel, .video_embed").hide()
     $("##{video_id} .video_embed_buttons").show()
+    $("##{video_id} .youtube_url").val(''); # clear out youtube url
     
 
   
