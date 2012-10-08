@@ -1,0 +1,46 @@
+%h2 Investor Feedback
+
+.row
+  .span6
+    %h3 Aggregated feedback from #{pluralize(@ratings.size, 'investor')}:
+    = render 'ratings/bar_chart', :chart_id => 'weakest_element', :data => @weakest_element_data, :title => 'Biggest aspect holding you back from investors funding you'
+    %br/
+    = render 'ratings/bar_chart', :chart_id => 'contact_in', :data => @contact_in_data, :title => 'When investors are interested in following up with you'
+
+  .span6
+    - if @ratings.blank?
+      You haven't been reviewed by any investors yet.
+    - else
+      - @ratings.each do |r|
+        - if r.interested?
+          .right
+            - relationship = r.startup_relationship
+            - unless relationship.blank?
+              = link_to 'Ignore', reject_relationship_path(relationship, :rating_id => r.id), :class => 'btn', :method => :post
+              &nbsp;&nbsp;
+              = link_to 'Connect', approve_relationship_path(relationship, :rating_id => r.id), :class => 'btn btn-success', :method => :post
+          .left
+            %h3 #{r.user.name} would like to connect with you.
+          .clear
+        - else
+          %h3 Anonymous Investor saw you #{distance_of_time_in_words_to_now(r.created_at)} ago
+          .left
+            %strong Result:
+            - if r.contact_never?
+              Passed
+            - else
+              Wants to check back in #{r.contact_in_desc}
+          .left{:style => 'margin-left: 10px'}
+            %strong Main Blocker:
+            #{r.weakest_element_desc}
+          .clear
+          - if r.explanation.present?
+            %strong Suggestion:
+            %h3 #{simple_format(h(r.explanation))}
+            .right!= render_awesome_button(r)
+            .right{:style => 'font-size: .85em; margin-right: 10px;', :align => 'right'}
+              Did this feedback help your startup?
+              %br/
+              %small Thank the investor by giving them a "#{Awesome.label_for_type('Rating')}"
+            .clear
+        %hr{:style => 'margin: 10px 0 10px 0'}/
