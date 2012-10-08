@@ -165,9 +165,9 @@ module ApplicationHelper
   end
 
   def background_image_path
-    return 'london-thehub.jpeg' if controller.controller_name == 'checkins'
-    return 'london-thehub.jpeg' if ['investors', 'ratings'].include?(controller.controller_name)
-    return 'london-thehub.jpeg'
+    return '/images/coworking/' + Settings.coworking_locations.uptown_espresso.images[2] if controller.controller_name == 'checkins'
+    return '/images/coworking/' + Settings.coworking_locations.uptown_espresso.images[1] if ['investors', 'ratings'].include?(controller.controller_name)
+    return '/images/coworking/' + Settings.coworking_locations.uptown_espresso.images[0]
   end
   
 end
