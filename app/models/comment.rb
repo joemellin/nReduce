@@ -90,10 +90,12 @@ class Comment < ActiveRecord::Base
   def update_responders
     return true unless self.original_post?
     children = self.children
+    awesomes = self.awesomes
     # Save as array with comment user ids, then repost user ids, then awesome user ids
-    self.responder_ids = [children.map{|c| c.user_id }, self.reposts.map{|c| c.user_id }, self.awesomes.map{|a| a.user_id }]
+    self.responder_ids = [children.map{|c| c.user_id }, self.reposts.map{|c| c.user_id }, awesomes.map{|a| a.user_id }]
     self.responder_ids = [] if self.responder_ids.present? && self.responder_ids[0].blank? && self.responder_ids[1].blank? && self.responder_ids[2].blank?
     self.reply_count = children.size
+    self.awesome_count = awesomes.size
     self.save
   end
 
