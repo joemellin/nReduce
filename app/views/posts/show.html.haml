@@ -1,0 +1,15 @@
+.posts
+  .row
+    .span2
+      = link_to '<i class="icon icon-chevron-left"></i> Back'.html_safe, posts_path, :class => 'btn btn-large'
+ 
+  = render @comment, :is_post_page => true
+  
+  .row
+    %hr/
+  .row
+    .span12
+      #comments
+        = render 'comments/form', :comment => Comment.new(:parent_id => @comment.id)
+        .list
+          = nested_comments @comments

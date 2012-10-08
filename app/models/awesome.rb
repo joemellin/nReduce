@@ -30,11 +30,15 @@ class Awesome < ActiveRecord::Base
     self.awsm_type == 'Checkin'
   end
 
+  def for_comment?
+    self.awsm_type == 'Comment'
+  end
+
   def self.label_for_type(type)
     case type
     when 'Checkin' then 'Awesome'
     when 'Rating' then 'Value Add'
-    when 'Comment' then 'Helpful'
+    when 'Comment' then 'Like'
     else 'Awesome'
     end
   end
@@ -42,7 +46,7 @@ class Awesome < ActiveRecord::Base
   protected
 
   def check_user_doesnt_own_object
-    if !awsm.blank? and (awsm.user_id == self.user_id)
+    if !awsm.blank? and (awsm.user_id == self.user_id) and !awsm.is_a?(Comment)
       self.errors.add :awsm, "can't awesome your own #{awsm.class.to_s.downcase}"
       false
     else
@@ -55,12 +59,16 @@ class Awesome < ActiveRecord::Base
     # Reset awesome cache for user
     Cache.delete(['awesome_ids', self.user])
     # Check if we need to update cached awesome count on object
-    return true unless obj && obj.respond_to?(:awesome_count)
-    obj.awesome_count = obj.awesomes.count
-    obj.save(:validate => false)
+    if obj && obj.respond_to?(:update_responders)
+      obj.update_responders
+    elsif obj && obj.respond_to?(:awesome_count)
+      obj.awesome_count = obj.awesomes.count
+      obj.save(:validate => false)
+    end
+    return true
   end
 
   def notify_users
-    Notification.create_for_new_awesome(self) if self.for_checkin?
+    Notification.create_for_new_awesome(self) if self.for_checkin? || self.for_comment?
   end
 end

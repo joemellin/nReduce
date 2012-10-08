@@ -1,0 +1,41 @@
+- only_show_embed ||= nil
+- video_id ||= 'new_video'
+.video_form{:id => video_id}
+  .completed.hide
+    .check &#x2713;
+    Video Saved
+    =# link_to 'Record Different Video', '#', :class => 'record_again', 'data-video_id' => video_id
+  .fields
+    - unless f.object.new_record?
+      %h3 Current video:
+      != f.object.embed_code
+      %br/
+      %h3 Or, record a new version:
+      = f.hidden_field :id, :class => 'video_id'
+    = f.hidden_field :type, :class => 'video_type'
+    = f.hidden_field :external_id, :class => 'video_external_id'
+    = f.hidden_field :remote_image_url, :class => 'video_remote_image_url'
+    = f.hidden_field :external_url, :class => 'video_external_url'
+    - unless only_show_embed
+      .video_embed_buttons
+        %h3{:style => 'margin: 12px'} How would you like to record your video?
+        .button{'data-embed-class' => 'viddler_embed', 'data-video-id' => video_id}
+          = image_tag 'webcam_icon.png', :style => 'width: 28px; height: 23px; margin-right: 10px;'
+          Record from Webcam
+        .button{'data-embed-class' => 'screenr_embed', 'data-video-id' => video_id}
+          = image_tag 'screen_icon.png', :style => 'width: 26px; height: 24px; margin-right: 10px;'
+          Record Screencast
+        .button{'data-embed-class' => 'youtube_embed', 'data-video-id' => video_id}
+          = image_tag 'youtube_icon.png', :style => 'width: 60px; height: 24px;'
+          Embed Youtube Video
+      .video_embed_cancel.hide
+        .button= link_to '<i class="icon-arrow-left"></i> Use Different Video Type'.html_safe, '#', :class => 'btn btn-large', 'data-video-id' => video_id
+    - if only_show_embed.blank? || only_show_embed == :viddler
+      .viddler_embed.video_embed{:class => only_show_embed == :viddler ? '' : 'hide'}= render 'videos/viddler_recorder', :video_id => video_id
+    - if only_show_embed.blank? || only_show_embed == :screenr
+      .screenr_embed.video_embed{:class => only_show_embed == :screenr ? '' : 'hide'}= render 'videos/screenr_recorder', :video_id => video_id
+    - if only_show_embed.blank? || only_show_embed == :youtube
+      .youtube_embed.video_embed{:class => only_show_embed == :youtube ? '' : 'hide'}
+        = f.text_field :youtube_url, :class => "span5 youtube_url", :placeholder => 'http://www.youtube.com/watch?v=088YM4pB9lM', :style => 'font-size: 1.3em; line-height: 1.3em;', 'data-video-id' => video_id
+        %span.help-inline Unlisted Youtube URL
+        = f.semantic_errors :youtube_url

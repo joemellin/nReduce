@@ -1,29 +1,106 @@
 - is_owner = (user_signed_in? and (comment.user_id.to_s == current_user.id.to_s)) ? true : false
-= div_for comment do
-  .right.controls{:style => 'padding-top: 8px;'}
-    -# .left!= render_awesome_button(comment)
-    &nbsp;
-  .left.pic
-    - title = comment.user.name + (!comment.user.twitter.blank? ? " - @#{comment.user.twitter}" : '')
-    %div= link_to image_tag(user_avatar_url(comment.user), :style => 'width: 50px; height: 50px;', :title => title), user_path(comment.user)
-  .left
-    = link_to "#{is_owner ? 'You' : truncate(comment.user.name, :length => 20)}", user_path(comment.user)
-    - if comment.user.roles?(:mentor) or comment.user.roles?(:nreduce_mentor)
-      &nbsp;•&nbsp;Mentor
-    - elsif !comment.user.startup_id.blank?
-      &nbsp;•&nbsp;
-      = link_to comment.user.startup.name, startup_path(comment.user.startup)
-    •
-    %span.time= link_to "#{time_ago_in_words(comment.created_at)} ago", "#comment_#{comment.id}"
-    - unless comment.awesome_count == 0
-      •
-      %strong= pluralize(comment.awesome_count, 'awesome')
-    •
-    = link_to 'Reply', reply_to_comment_path(comment), :remote => true
-    - if is_owner
-      &nbsp;•&nbsp;
-      = link_to 'Edit', edit_comment_path(comment), :remote => true
-      &nbsp;•&nbsp;
-      %strong= link_to 'x', comment, :method => :delete, :remote => true, :confirm => "Are you sure you want to delete the comment?"
-    .content= simple_format(h(comment.content))
-  .clear
+- is_post_page ||= false
+- if comment.original_post? && comment.original.present? && comment != comment.original
+  - repost = comment
+  - comment = comment.original
+- else
+  - repost = nil
+-# This is a watercooler post
+- if comment.original_post?
+  = div_for comment, :class => 'post original', :style => 'border-top: none' do
+    - if comment.deleted?
+      %p
+        %i (deleted by author)
+    - else
+      .left{:style => is_post_page ? 'padding-left: 250px' : ''}
+        .span2{:style => 'margin-right: 10px'}
+          .row.commentlinks{:style => 'text-align:right; font-size: 1.4em; padding-top:15px; padding-bottom: 5px'}
+            - if repost.present?
+              - originator = comment.user
+              = link_to truncate(originator.name, :length => 20), user_path(originator)
+              Shared by
+              = link_to (is_owner ? 'You' : truncate(repost.user.name, :length => 20)), user_path(repost.user)
+            - else
+              = link_to "#{is_owner ? 'You' : truncate(comment.user.name, :length => 20)}", user_path(comment.user)
+          .row.commentlinks{:style => 'text-align:right'}
+            - if comment.user.roles?(:mentor) or comment.user.roles?(:nreduce_mentor)
+            - elsif !comment.user.startup_id.blank?
+              = link_to comment.user.startup.name, startup_path(comment.user.startup)
+          .row{:style => 'text-align:right'}
+            %span.time= link_to "#{time_ago_in_words(comment.created_at)} ago", "#comment_#{comment.id}"
+          .row.commentlinks{:style => 'text-align:right'}
+            - if is_owner
+              = link_to 'Edit', edit_comment_path(comment), :remote => true
+              &nbsp;•&nbsp;
+              %strong= link_to 'x', comment, :method => :delete, :remote => true, :confirm => "Are you sure you want to delete the #{comment.original_post? ? 'post' : 'comment'}?"
+
+
+      .left.pic
+        - title = comment.user.name + (!comment.user.twitter.blank? ? " - @#{comment.user.twitter}" : '')
+        %div= link_to image_tag(user_avatar_url(comment.user, :square), :style => 'width: 100px; height: 100px;', :title => title), user_path(comment.user)
+      .left.commentlinks{:style => 'padding-left:30px'}
+        .row{:style => 'padding-top:4px'}
+          - commented = comment.commented_by?(current_user)
+          = link_to image_tag(commented ? 'quotebbl_white.png' : 'quotebbl.png'), post_path(comment), :class => "btn #{commented ? 'btn-success' : ''}", :title => 'Comment'
+          - unless comment.reply_count == 0
+            = link_to comment.reply_count, post_path(comment) 
+        .row{:style => 'padding-top:4px'}
+          != render_like_button(comment)
+          - unless comment.awesome_count == 0
+            = comment.awesome_count
+        - unless is_owner
+          - reposted = comment.reposted_by?(current_user)
+          .row{:style => 'padding-top:4px'}
+            = link_to "<i class='icon-share-alt #{reposted ? 'icon-white' : ''}'></i>".html_safe, repost_post_path(comment), :class => "btn share #{reposted ? 'btn-success' : ''}", :remote => true, :method => :post, :title => 'Share with your connections'
+      - unless is_post_page
+        .left.commentlinks.postcontent{:style => 'padding-left:40px; padding-top:4px'}
+          .row
+            - content = is_post_page ? comment.content : truncate(comment.content, :length => 180, :omission => "... #{link_to('read more', post_path(comment))}")
+            = auto_link(simple_format(content), :html => { :target => '_blank' }){ |text| truncate(text, :length => 30) }
+      .clear
+      - if is_post_page
+        .post.original{:style => 'margin-bottom: 10px'}
+          .row
+            .span
+              %h1{:style => 'padding:20px 60px 40px 60px'}= comment.content
+
+          - unless comment.awesome_count == 0
+            = pluralize(comment.awesome_count, 'like')
+
+          - unless comment.responders.blank?
+            %h3 Discussion with:
+            - comment.responders.each do |u|
+              .left= image_tag user_avatar_url(u)
+            .clear
+
+  -# This is just a regular comment (on a checkin or post)
+- else
+  = div_for comment, :class => 'comment', :style => 'border-top: none' do
+    - if comment.deleted?
+      %p
+        %i (deleted by author)
+    - else
+      .left.pic
+        - title = comment.user.name + (!comment.user.twitter.blank? ? " - @#{comment.user.twitter}" : '')
+        %div= link_to image_tag(user_avatar_url(comment.user, :square), :style => 'width: 100px; height: 100px;', :title => title), user_path(comment.user)
+      .left.commentlinks 
+        Written by
+        = link_to "#{is_owner ? 'You' : truncate(comment.user.name, :length => 20)}", user_path(comment.user)
+        - if comment.user.roles?(:mentor) or comment.user.roles?(:nreduce_mentor)
+          &nbsp;•&nbsp;Mentor
+        - elsif !comment.user.startup_id.blank?
+          of Team 
+          = link_to comment.user.startup.name, startup_path(comment.user.startup)
+        
+        - unless comment.awesome_count == 0
+          %strong= pluralize(comment.awesome_count, 'like')
+        .content{:style=> 'color: #585858; font-size: 1.9em'}= simple_format(h(comment.content))
+        = link_to 'Reply', reply_to_comment_path(comment), :remote => true
+        - if is_owner
+          &nbsp;•&nbsp;
+          = link_to 'Edit', edit_comment_path(comment), :remote => true
+          &nbsp;•&nbsp;
+          %strong= link_to 'x', comment, :method => :delete, :remote => true, :confirm => "Are you sure you want to delete the #{comment.original_post? ? 'post' : 'comment'}?"
+        .right
+          %span.time Written #{time_ago_in_words(comment.created_at)} ago.
+    .clear

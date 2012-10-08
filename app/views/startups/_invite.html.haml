@@ -16,10 +16,12 @@
               .members{:align => 'center'}
                 - @relationship.connected_with.team_members.shuffle.first(3).each do |tm|
                   .inline-block{:style => 'margin-left: 4px'}= image_tag(user_avatar_url(tm), :title => tm.name, :style => 'width: 50px; height: 50px;')
-      .span3{:align => 'center', :style => 'padding: 55px 0 0 20px'}
-        %h3{:style => 'margin-bottom: 25px'} #{@invite.to.name} is working on #{@relationship.connected_with.name}
-        = f.submit 'Connect', :class => 'btn btn-success btn-large'
-
+      .span3{:align => 'center', :style => 'padding: 0px 0 0 20px'}
+        %h3{:style => 'margin-bottom: 25px'} Connect with #{@relationship.connected_with.name}
+        %div{:id => "#{form_id}_details"}
+        %p Please write a quick message to explain why you think they would be a great match for your startup.
+        = f.text_area :message, :size => '120x5', :class => 'span3'
+        %div{:style => 'margin-top: 20px'}= f.submit 'Connect', :class => 'btn btn-success btn-large'
 
 - else
   - invite = @invite || Invite.new

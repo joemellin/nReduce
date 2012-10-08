@@ -1,0 +1,11 @@
+- c ||= 0
+= hidden_field_tag "startup[invites_attributes][#{c}][startup_id]", invite.startup_id
+= hidden_field_tag "startup[invites_attributes][#{c}][from_id]", invite.from_id
+= hidden_field_tag "startup[invites_attributes][#{c}][weekly_class_id]", invite.weekly_class_id
+%div{:style => 'margin-bottom: 5px'}
+  - Invite.available_types.each do |id, name|
+    .left{:style => 'margin-right: 10px'}
+      = radio_button_tag "startup[invites_attributes][#{c}][invite_type]", id
+      = name
+  .clear
+= text_field_tag "startup[invites_attributes][#{c}][email]", invite.email, :placeholder => 'email address', :class => 'span2'

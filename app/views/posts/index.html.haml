@@ -1,0 +1,25 @@
+.posts
+  .row.center
+    %h1 Welcome to the Water Cooler! 
+    %p Share Ideas - Get Feedback - Meet People
+  .row
+    .span12
+      #comments
+        .span12
+          - unless @hottest_post.blank?
+            .row
+              .span3
+                %p
+              .span11.well
+                .row.center 
+                  %h3 Hottest Post
+                .row
+                  = render @hottest_post
+        .row{:style => 'padding-left : 210px'}
+          = render :partial => 'comments/post_form', :object => Comment.new, :post => true
+        .row
+          %hr
+        .row
+          .list
+            - @comments.each do |c|
+              = render c

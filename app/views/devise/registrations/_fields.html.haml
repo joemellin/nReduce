@@ -61,7 +61,7 @@
         - f.object.sent_invites.build if f.object.sent_invites.blank?
         - f.object.sent_invites.each do |si|
           = text_field_tag 'user[teammate_emails][]', si.email, :placeholder => 'founder@email.com'
-          = link_to '<i class="icon-plus"></i>'.html_safe, '#', :class => 'btn add_teammate_btn'
+          = link_to '<i class="icon-plus"></i>'.html_safe, '#', :class => 'btn user_add_teammate_btn'
           /= si.semantic_errors :email
 
 .control-group

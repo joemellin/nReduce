@@ -101,8 +101,8 @@ module ApplicationHelper
     end
   end
 
-  def user_avatar_url(user)
-    return user.pic_url(:small) if user.pic?
+  def user_avatar_url(user, size = :small)
+    return user.pic_url(size) if user.pic?
     return user.external_pic_url unless user.external_pic_url.blank?
     return image_path('pic_default_small.png')
   end
@@ -119,17 +119,12 @@ module ApplicationHelper
     return html if !obj.respond_to?(:rating)
     # Set as 0 if nil
     obj.rating ||= 0
-    html += "<p><small>#{obj.name.possessive} Community Status</small></p>"
     html += compact ? '<h3>' : '<h1>'
     html += "#{obj.rating.round(2)} "
-    if obj.rating < 0.25
-      html += link_to(Startup.community_status[0], community_guidelines_path, :class => "btn #{compact ? '' : 'btn-large'}") 
-    elsif obj.rating >= 0.25 and obj.rating < 1
-      html += link_to(Startup.community_status[1], community_guidelines_path, :class => "btn btn-warning #{compact ? '' : 'btn-large'}") 
-    elsif obj.rating >= 1
-      html += link_to(Startup.community_status[2], community_guidelines_path, :class => "btn btn-success #{compact ? '' : 'btn-large'}") 
-    end
     html += compact ? '</h3>' : '</h1>'
+    html += compact ? '<p>' : '<p>'
+    html += link_to('Community Rating', community_guidelines_path,) 
+    html += compact ? '</p>' : '</p>'
     html
   end
 
@@ -168,4 +163,16 @@ module ApplicationHelper
     options.merge!(:class => 'external') if user_signed_in? && current_user.investor?
     link_to(title, external_url(url), options)
   end
+
+  def background_image_path
+    url = nil
+    url = Settings.coworking_locations.uptown_espresso.images[4] if ['startups', 'users'].include?(controller.controller_name) && controller.action_name == 'edit'
+    url = Settings.coworking_locations.uptown_espresso.images[3] if controller.controller_name == 'posts'
+    url = Settings.coworking_locations.uptown_espresso.images[2] if ['startups', 'users'].include?(controller.controller_name) && controller.action_name == 'show'
+    url = Settings.coworking_locations.uptown_espresso.images[2] if controller.controller_name == 'checkins'
+    url = Settings.coworking_locations.uptown_espresso.images[1] if ['investors', 'ratings'].include?(controller.controller_name)
+    url ||= Settings.coworking_locations.uptown_espresso.images[0]
+    "http://assets.nreduce.com/coworking/#{url}"
+  end
+  
 end

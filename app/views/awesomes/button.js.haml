@@ -1,4 +1,7 @@
 - if @success
-  - html = render_awesome_button(@awesome.awsm)
+  - if @awesome.awsm.is_a?(Comment)
+    - html = render_like_button(@awesome.awsm)
+  - else
+    - html = render_awesome_button(@awesome.awsm)
   :plain
     $("##{@awesome.unique_id}").replaceWith("#{escape_javascript(html)}");

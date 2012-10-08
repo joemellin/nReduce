@@ -12,21 +12,23 @@ class Checkin < ActiveRecord::Base
 
   attr_accessible :start_focus, :start_why, :start_video_url, :end_video_url, :end_comments, 
     :startup_id, :start_comments, :startup, :measurement_attributes, 
-    :before_video_attributes, :after_video_attributes
+    :before_video_attributes, :after_video_attributes, :accomplished
 
   accepts_nested_attributes_for :measurement, :reject_if => proc {|attributes| attributes.all? {|k,v| v.blank?} }, :allow_destroy => true
+  accepts_nested_attributes_for :before_video, :reject_if => proc {|attributes| attributes.all? {|k,v| v.blank?} }, :allow_destroy => true
+  accepts_nested_attributes_for :after_video, :reject_if => proc {|attributes| attributes.all? {|k,v| v.blank?} }, :allow_destroy => true
 
   after_validation :check_submitted_completed_times
   before_save :notify_user
   before_create :assign_week
-
-  accepts_nested_attributes_for :before_video, :reject_if => proc {|attributes| attributes.all? {|k,v| v.blank?} }, :allow_destroy => true
-  accepts_nested_attributes_for :after_video, :reject_if => proc {|attributes| attributes.all? {|k,v| v.blank?} }, :allow_destroy => true
+  after_create :reset_startup_checkin_cache
+  after_destroy :reset_startup_checkin_cache
 
   validates_presence_of :startup_id
   validates_presence_of :start_focus, :message => "can't be blank", :if => lambda { Checkin.in_before_time_window? }
   validates_presence_of :start_video_url, :message => "can't be blank", :if => lambda { Checkin.in_before_time_window? }
   validates_presence_of :end_video_url, :message => "can't be blank", :if =>  lambda { Checkin.in_after_time_window? }
+  validates_presence_of :accomplished, :message => "must be selected", :if => lambda { Checkin.in_after_time_window? }
   validate :check_video_urls_are_valid
   validate :measurement_is_present_if_launched
 
@@ -254,7 +256,7 @@ class Checkin < ActiveRecord::Base
 
   # Cache # of comments
   def update_comments_count
-    self.comment_count = self.comments.count
+    self.comment_count = self.comments.not_deleted.count
     self.save(:validate => false) # don't require validations in case we're during check-in window with requirements
   end
 
@@ -306,6 +308,10 @@ class Checkin < ActiveRecord::Base
   end
 
   protected
+
+  def reset_startup_checkin_cache
+    self.startup.reset_current_checkin_cache
+  end
 
   def check_submitted_completed_times
     if self.errors.blank?

@@ -19,6 +19,7 @@ class ViddlerVideo < Video
   def self.embedded_recorder_html(max_length = 30)
     token = self.record_token
     return '' if token.blank?
+    flashvars = "fake=1&recordToken=#{token}&recQuality=M&enableCallbacks=1"
     '<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000"  codebase="http://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=8,0,0,0" width="449" height="545"
 id="viddler_recorder" align="middle">
       <param name="allowScriptAccess" value="always" />
@@ -27,12 +28,10 @@ id="viddler_recorder" align="middle">
       <param name="quality" value="high" />
       <param name="scale" value="noScale" />
       <param name="bgcolor" value="#000000" />
-      <param name="recQuality" value="H" />
-      <param name="enableCallbacks" value="Y" />
-      <param name="flashvars" value="fake=1&recordToken=' + token + '" />
+      <param name="flashvars" value="' + flashvars + '" />
       <embed src="http://cdn-static.viddler.com/flash/recorder.swf" quality="high" scale="noScale" bgcolor="#000000"
 allowScriptAccess="always" allowNetworking="all" width="449" height="400" name="viddler_recorder"
-flashvars="fake=1&recordToken=' + token + '" align="middle" allowScriptAccess="sameDomain"
+flashvars="' + flashvars + '" align="middle" allowScriptAccess="sameDomain"
 type="application/x-shockwave-flash"  pluginspage="http://www.macromedia.com/go/getflashplayer" />
     </object>'
   end
@@ -54,8 +53,6 @@ type="application/x-shockwave-flash"  pluginspage="http://www.macromedia.com/go/
   end
 
   def save_external_video_locally
-    # return true if already uploaded
-    return true if !self.vimeo_id.blank? && !force_upload
     # Set video as downloadable
     details = ViddlerVideo.client.post('viddler.videos.set_details', :video_id => self.external_id, :download_perm => 'public')
     raise "Viddler: Video with id #{self.external_id} doesn't exist or isn't encoded yet" if details.blank? || details['video']['files'].blank?

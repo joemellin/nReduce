@@ -20,12 +20,13 @@
       = f.hidden_field :pic_cache
       = f.semantic_errors :pic
       - if @user.pic?
-        %br/
-        Current Image:
-        = image_tag(@user.pic_url(:small))
-        &nbsp;
-        = f.check_box :remove_pic
-        Remove pic
+        .div{:style => 'margin-top: 10px'}
+          %br/
+          Current Image:
+          = image_tag(@user.pic_url(:small))
+          &nbsp;
+          = f.check_box :remove_pic
+          Remove pic
 
 - if show_user_field?(:location)
   .control-group{error_css(@user, :location)}
@@ -33,10 +34,6 @@
     .controls
       = f.text_field :location, :class => 'span4', :placeholder => 'City, State, Country'
       = f.semantic_errors :location
-
-  - unless @setup
-    %hr/
-    %br/
 
 - if show_user_field?(:skill_list)
   .control-group{error_css(@user, :skill_list)}
@@ -67,13 +64,13 @@
       = f.semantic_errors :bio
       %p.help-block Minimum 100 characters
 
-- if show_user_field?(:intro_video_url)
+- if @user.entrepreneur? and show_user_field?(:intro_video_url)
   .control-group{error_css(@user, :intro_video_url)}
-    = f.label :intro_video_url, :class => 'control-label'
+    = f.label :intro_video_url, 'Intro Video URL', :class => 'control-label'
     .controls
-      = f.text_field :intro_video_url, :class => "span4", :placeholder => 'http://www.youtube.com/watch?v=088YM4pB9lM'
+      = f.text_field :intro_video_url, :class => "span4"
       = f.semantic_errors :intro_video_url
-      %p.help-block A 30-second video that covers: Who are you? What have you done? Why are you doing this startup?
+      %p.help-block Unlisted Youtube URL
 
 - if @user.entrepreneur? and show_user_field?(:meeting_id)
   .control-group{error_css(@user, :meeting_id)}
@@ -97,6 +94,10 @@
           = User.email_on_options[action]
         &nbsp;&nbsp;
       = f.semantic_errors :settings
+
+
+
+
 - unless @setup
   %hr/
   .control-group
@@ -148,5 +149,5 @@
       = f.text_field :dribbble_url, :class => "span3"
       = f.semantic_errors :dribbble_url
 
-.form-actions
-  = f.submit('Save', :class => "btn btn-primary btn-large")
+.form.center{:style => 'margin-bottom: 40px; padding-top: 20px'}
+  = f.submit('Save Profile', :class => "btn btn-success btn-large")

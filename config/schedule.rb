@@ -32,6 +32,16 @@ end
 every :wednesday, :at => '4am' do
   runner "Checkin.send_before_checkin_email"
 end
+  
+# Activate all teams who have completed join requirements (it's now for the prev week's class because a new class is started at 1pm)
+every :wednesday, :at => '2pm' do
+  runner "WeeklyClass.current_class.previous_class.activate_all_completed_startups"
+end
+
+# Send email to all people who didn't join this week to join again next week
+every :wednesday, :at => '2:05pm' do
+  runner "WeeklyClass.email_incomplete_startups_from_previous_week"
+end
 
 every 24.hours, :at => '1am' do
 	runner "Stats.calculate_engagement_metrics"
