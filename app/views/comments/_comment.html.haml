@@ -67,7 +67,7 @@
           - unless comment.responders.blank?
             %h3 Discussion with:
             - comment.responders.each do |u|
-              .left= link_to image_tag(user_avatar_url(u)), u
+              .left= link_to image_tag(user_avatar_url(u)), u, :title => u.name
             .clear
 
   -# This is just a regular comment (on a checkin or post)
