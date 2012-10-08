@@ -165,9 +165,13 @@ module ApplicationHelper
   end
 
   def background_image_path
-    return '/images/coworking/' + Settings.coworking_locations.uptown_espresso.images[2] if controller.controller_name == 'checkins'
-    return '/images/coworking/' + Settings.coworking_locations.uptown_espresso.images[1] if ['investors', 'ratings'].include?(controller.controller_name)
-    return '/images/coworking/' + Settings.coworking_locations.uptown_espresso.images[0]
+    dir = '/images/coworking/'
+    return dir + Settings.coworking_locations.uptown_espresso.images[4] if ['startups', 'users'].include?(controller.controller_name) && controller.action_name == 'edit'
+    return dir + Settings.coworking_locations.uptown_espresso.images[3] if controller.controller_name == 'posts'
+    return dir + Settings.coworking_locations.uptown_espresso.images[2] if ['startups', 'users'].include?(controller.controller_name) && controller.action_name == 'show'
+    return dir + Settings.coworking_locations.uptown_espresso.images[2] if controller.controller_name == 'checkins'
+    return dir + Settings.coworking_locations.uptown_espresso.images[1] if ['investors', 'ratings'].include?(controller.controller_name)
+    return dir + Settings.coworking_locations.uptown_espresso.images[0]
   end
   
 end
