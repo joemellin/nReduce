@@ -245,13 +245,30 @@ hr {
 
 .footer {
   margin-top: 20px;
-  padding: 20px 0 100px 0;
+  padding: 20px 0 50px 0;
   a {
     padding: 0px 20px 0px 20px;
     color: #999;
   }
-
 }
+
+.coworking_location_tab {
+  margin-top: 100px;
+  background-color: #26A9EB;
+  padding: 6px 8px 6px 8px;
+  border-radius: 15px 15px 0 0;
+  width: 320px;
+  text-align: center;
+  color: #fff;
+  a {
+    color: #fff;
+  }
+}
+
+.coworking_location_modal {
+  text-align: left;
+}
+
 
 #countdown {
   margin-top: -15px;
@@ -287,3 +304,4 @@ hr {
     padding: 10px 0 10px 0;
   }
 }
+
