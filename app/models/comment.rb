@@ -89,7 +89,7 @@ class Comment < ActiveRecord::Base
   # Queries who responded to this post and updates cached count and ids
   def update_responders
     return true unless self.original_post?
-    children = self.children
+    children = self.descendants
     awesomes = self.awesomes
     # Save as array with comment user ids, then repost user ids, then awesome user ids
     self.responder_ids = [children.map{|c| c.user_id }, self.reposts.map{|c| c.user_id }, awesomes.map{|a| a.user_id }]

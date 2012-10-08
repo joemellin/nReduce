@@ -13,7 +13,11 @@ class PostsController < ApplicationController
   end
 
   def show
-    authorize! :read_post, Comment
+    authorize! :read_post, @comment
+    unless @comment.original_post?
+      redirect_to :action => :index
+      return
+    end
     @comments = @comment.descendants.includes(:user).arrange(:order => 'created_at DESC') # arrange in nested order
     @startup = current_user.startup
   end
