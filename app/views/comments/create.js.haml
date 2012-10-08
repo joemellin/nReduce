@@ -7,7 +7,6 @@ $("#comments form :submit").removeClass('disabled');
     $('.comments .new_comment').first.prepend('#{escape_javascript(render('layouts/flash_messages'))}');
   - else
     $("#comment_#{@comment.parent_id} .new_comment").prepend('#{escape_javascript(render('layouts/flash_messages'))}');
-  alert('here1');
 - else
   // No parent
   - if @comment.parent_id.blank? || @comment.parent_id.present? && @comment.parent.original_post?
