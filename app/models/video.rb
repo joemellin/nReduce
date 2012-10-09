@@ -152,7 +152,7 @@ class Video < ActiveRecord::Base
     if details['thumbnails'].present? && details['thumbnails']['thumbnail'].present? && details['thumbnails']['thumbnail'].last['_content'].match(/default\..*\.jpg/) == nil
       self.remote_image_url = details['thumbnails']['thumbnail'].last['_content']
       self.save
-    else
+    elsif queue_again
       Resque.enqueue_in(5.minutes, Video, self.id, true)
       false
     end
