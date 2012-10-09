@@ -15,15 +15,16 @@
     %br/
     - displayed_line = true
     - c = 0
-  - elsif c % 4 == 0 && c != 0
-    .clear
+  / - elsif c % 4 == 0 && c != 0
+  /   .clear
   - c += 1
   .team.left{:align => 'center', :style => 'width: 270px'}
     .top{:align => 'center', :onclick => "$.get('#{this_startup_url}'); return false;"}
       .background{:style => "background-image: url('#{logo_path}'); cursor: pointer;"} &nbsp;
-      .status
-        .progress{:align => 'left'}
-          .bar{:style => "width: #{(s.profile_completeness_percent * 100).round}%"}
+      - unless s.profile_completeness_percent == 1.0
+        .status
+          .progress{:align => 'left'}
+            .bar{:style => "width: #{(s.profile_completeness_percent * 100).round}%"}
       .members{:align => 'center'}
         - if @team_members[s.id].present?
           - @team_members[s.id].shuffle.first(3).each do |tm|
