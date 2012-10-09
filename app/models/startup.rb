@@ -456,7 +456,7 @@ class Startup < ActiveRecord::Base
   protected
 
   def notify_classmates_of_new_startup
-    Notification.create_for_new_team_joined(self)
+    Notification.create_for_new_team_joined(self, WeeklyClass.current_class)
   end
 
   def reset_cached_elements

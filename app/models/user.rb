@@ -56,7 +56,6 @@ class User < ActiveRecord::Base
 
   before_create :set_default_settings
   after_create :mailchimp!
-  after_create :notify_classmates_of_new_team
   after_destroy :remove_from_mailchimp
   before_save :geocode_location
   before_save :ensure_roles_exist
