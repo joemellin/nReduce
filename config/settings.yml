@@ -16,11 +16,11 @@ client:
 
 coworking_locations:
   uptown_espresso:
-    name: 'Uptown Espresso'
+    name: 'The Uptown Espresso'
     location: 'Seattle, WA, USA'
     twitter: '@thevelvetfoam'
     url: 'http://www.uptownespresso.net/'
-    map_url: 'https://maps.google.com/maps?q=Uptown+Espresso,+4th+Avenue,+Seattle,+WA&amp;hl=en&amp;sll=47.613028,-122.342064&amp;sspn=0.291621,0.637894&amp;oq=uptown&amp;hq=Uptown+Espresso,+4th+Avenue,+Seattle,+WA&amp;t=m&amp;ie=UTF8&amp;ll=47.616752,-122.346153&amp;spn=0.009113,0.019934&amp;output=embed'
+    map_url: 'https://maps.google.com/maps?f=q&amp;source=s_q&amp;hl=en&amp;geocode=&amp;q=Uptown+Espresso,+4th+Avenue,+Seattle,+WA&amp;aq=0&amp;oq=uptown+espresso+&amp;sll=47.623322,-122.33825&amp;sspn=0.020305,0.045447&amp;ie=UTF8&amp;hq=Uptown+Espresso,+4th+Avenue,+Seattle,+WA&amp;t=m&amp;ll=47.621554,-122.346668&amp;spn=0.040496,0.091839&amp;z=13&amp;iwloc=A&amp;output=embed'
     images: ['ue_tables.jpg', 'ue_boardroom.jpg', 'ue_window.jpg', 'ue_bar.jpg', 'ue_details.jpg']
 
 location_options:

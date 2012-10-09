@@ -57,7 +57,8 @@
     .span5{:style => 'padding-left: 20px'}
       %p{:style => 'padding-top: 10px;'}
         Last Week's Goal:
-        %strong #{@checkin.start_focus.blank? ? '(none)' : h(@checkin.start_focus)}
+      %h1 #{@checkin.start_focus.blank? ? '(none)' : h(@checkin.start_focus)}
+      %br/
       %h3 Did you accomplish your goal?
       .control-group{error_css(@checkin, :accomplished), :style => 'margin-bottom: 30px'}
         = f.hidden_field :accomplished
