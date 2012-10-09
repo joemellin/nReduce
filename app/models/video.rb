@@ -40,7 +40,7 @@ class Video < ActiveRecord::Base
 
   # Mock - this method should return a string of html to play the video
   def embed_code_html(width = 500, height = 315)
-    '[video embed]'
+    '[video saved - will display when done]'
   end
 
   # Mock - to be implemented on any external video classes that inherit from the Video class

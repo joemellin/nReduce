@@ -6,7 +6,7 @@
     Video Saved
     =# link_to 'Record Different Video', '#', :class => 'record_again', 'data-video_id' => video_id
   .fields
-    - unless f.object.new_record?
+    - if !f.object.new_record? || f.object.external_id.present?
       %h3 Current video:
       != f.object.embed_code
       %br/
