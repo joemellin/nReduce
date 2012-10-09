@@ -150,6 +150,8 @@ Nreduce::Application.routes.draw do
     end
   end
 
+  resources :ratings, :only => [:index, :new, :create]
+
   resources :weekly_classes, :only => [:show] do
     member do 
       get 'update_state'

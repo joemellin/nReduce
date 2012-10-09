@@ -33,8 +33,8 @@
             - else
               - unless @setup
                 %li.main.padding{:class => is_controller_action?('relationships', 'index') ? 'active' : ''}= link_to "Work Room", work_room_path
-                - if can? :see_investor_page, current_user
-                  %li.main.padding{:class => is_controller_action?('investors', 'index') ? 'active' : ''}= link_to "Board Room", board_room_path
+                - if can? :see_ratings_page, current_user
+                  %li.main.padding{:class => is_controller_action?('ratings', 'index') ? 'active' : ''}= link_to "Board Room", board_room_path
               %li.dropdown
                 %a.dropdown-toggle.btn{:href => '#', 'data-toggle' => 'dropdown'}
                   = image_tag(user_avatar_url(current_user))

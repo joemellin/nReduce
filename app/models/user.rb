@@ -76,7 +76,7 @@ class User < ActiveRecord::Base
   bitmask :setup, :as => [:account_type, :onboarding, :profile, :invite_startups, :welcome]
 
   # Number of startups an investor can contact per week
-  INVESTOR_STARTUPS_PER_WEEK = 5
+  INVESTOR_MENTOR_STARTUPS_PER_WEEK = 5
 
   searchable do
     # full-text search fields - can add :stored => true if you don't want to hit db
@@ -194,6 +194,10 @@ class User < ActiveRecord::Base
 
   def mentor?
     roles?(:mentor) or roles?(:nreduce_mentor)
+  end
+
+  def nreduce_mentor?
+    roles?(:nreduce_mentor)
   end
 
   def investor?
@@ -425,7 +429,7 @@ class User < ActiveRecord::Base
   end
 
   def can_connect_with_startups?
-    (self.num_startups_connected_with_this_week < User::INVESTOR_STARTUPS_PER_WEEK) && self.roles?(:approved_investor) 
+    (self.num_startups_connected_with_this_week < User::INVESTOR_MENTOR_STARTUPS_PER_WEEK) && (self.roles?(:approved_investor) || self.roles?(:nreduce_mentor)) 
   end
 
   def twitter_authentication
