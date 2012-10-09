@@ -31,7 +31,7 @@
               %br
               %br
               %h1
-                = link_to 'View Your Investment Profile', investment_profile_startup_path
+                = link_to 'View Your Investment Profile', investment_profile_startup_path(@startup)
                 &nbsp;&nbsp;|&nbsp;&nbsp;
                 = link_to 'View Investor Feedback', startup_ratings_path(@startup)
         - else
