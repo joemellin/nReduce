@@ -50,6 +50,11 @@ Background job processor with multiple queues. Admins can see job status at /res
     
     RAILS_ENV=production PIDFILE=./tmp/pids/resque.pid BACKGROUND=yes QUEUE=* bundle exec rake environment resque:work
 
+### Resque Scheduler
+Handles delayed jobs, start only ONE worker, which pushes delayed jobs onto resque job queue when scheduled:
+
+    RAILS_ENV=production PIDFILE=./tmp/pids/resque_scheduler.pid BACKGROUND=yes bundle exec rake environment resque:scheduler
+
 ### Whenever
 For sending periodic emails to remind everyone to check in (see config/schedule.rb). To write the tasks to the crontab on the server:
 
