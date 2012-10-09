@@ -29,7 +29,7 @@ gem 'rails_admin' # full admin package
 gem 'backup', "~> 3.0.24" # db backup
 gem 'whenever' # cron scheduling
 gem 'resque'
-gem 'resque-scheduler' # delayed jobs in resque
+gem 'resque-scheduler', :require => 'resque_scheduler' # delayed jobs in resque
 gem 'exception_notification'
 gem 'json', '~> 1.7.3' # much faster than activerecord -- http://flori.github.com/json/
 gem 'ancestry' # for threaded comments
