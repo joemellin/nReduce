@@ -274,12 +274,12 @@ class Checkin < ActiveRecord::Base
 
   # Returns true if the 'before' section of the checkin was completed
   def before_completed?
-    !self.start_focus.blank? and !self.start_video_url.blank?
+    !self.start_focus.blank? and (!self.start_video_url.blank? || !self.before_video.blank?)
   end
 
   # Returns true if the 'after' section of the checkin was completed
   def after_completed?
-    !self.end_video_url.blank?
+    !self.end_video_url.blank? || !self.after_video.blank?
   end
 
   def self.video_url_is_unique?(url)
