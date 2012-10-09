@@ -2,7 +2,7 @@ class User < ActiveRecord::Base
   obfuscate_id :spin => 94062493
   include Connectable # methods for relationships
   acts_as_mappable
-  has_paper_trail :ignore => [:unread_nc, :weekly_class_id, :setup, :cached_skill_list, :cached_industry_list]
+  has_paper_trail :ignore => [:unread_nc, :weekly_class_id, :setup, :cached_skill_list, :cached_industry_list, :email_on, :setup, :onboarded]
   belongs_to :startup
   belongs_to :meeting
   belongs_to :intro_video, :class_name => 'Video', :dependent => :destroy
@@ -56,7 +56,6 @@ class User < ActiveRecord::Base
 
   before_create :set_default_settings
   after_create :mailchimp!
-  after_create :notify_classmates_of_new_team
   after_destroy :remove_from_mailchimp
   before_save :geocode_location
   before_save :ensure_roles_exist

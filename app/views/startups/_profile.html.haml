@@ -4,7 +4,7 @@
   .span12{:style => 'padding: 0'}
     .row{:style => 'padding: 0px'}
       .span5{:style => 'padding-left: 45px'}
-        = image_tag @startup.logo_url(:medium), :width => 400, :height => 400
+        = image_tag @startup.logo_url(:lg_square), :width => 400, :height => 400
       .span5{:style => 'margin-left: -35px'}
         %p
           %small Startup:
@@ -14,13 +14,13 @@
             %small Oneliner:
           %h3= h(@startup.one_liner)
 
-        - unless @startup.website_url.blank?
+        - if @startup.website_url.present? && @startup.website_url_to_uri.present?
           %p{:style => 'padding-top: 20px'}
             %small Website:
           %h3= link_to_external @startup.website_url_to_uri.hostname, @startup.website_url
-          %p{:style => 'padding-top: 20px'}
-            %small Industry:
-          %h3 #{h(@startup.industry_list)}
+        %p{:style => 'padding-top: 20px'}
+          %small Industry:
+        %h3 #{h(@startup.industry_list)}
       .span2.greylink
         .row.center
           %p{:style => 'padding-top: 20px'}

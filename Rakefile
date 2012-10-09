@@ -7,3 +7,4 @@ require File.expand_path('../config/application', __FILE__)
 Nreduce::Application.load_tasks
 
 require 'resque/tasks'
+require 'resque_scheduler/tasks'

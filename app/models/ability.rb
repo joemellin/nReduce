@@ -315,5 +315,8 @@ class Ability
     can :manage, Rsvp do |r|
       r.user_id == user.id
     end
+  
+    # Anyone can see demo day
+    can [:read, :show, :show_startup], DemoDay
   end
 end
