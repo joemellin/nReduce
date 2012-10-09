@@ -1,0 +1,54 @@
+.investors
+  .startup
+    = form_for current_user.startup, :url => '/startup/', :remote => true, :html => {:class => 'form-vertical startup'} do |f|
+      = hidden_field_tag 'dont_render_form', true
+      .row
+        .span4
+          %p
+        .span4.center
+          %h1
+            %small Board Room
+        .span4
+          .right{:style => 'margin: 15px 0px 20px 0px'}
+            .left
+              %h3 Seeking Investment
+            .left{:style => 'margin-left: 10px'}
+              = f.check_box :investable, :class => 'investable'
+            .clear
+            %br/
+            .left
+              %h3 Seeking Mentorship
+            .left{:style => 'margin-left: 10px'}
+              = f.check_box :mentorable, :class => 'mentorable'
+            .clear
+          .clear
+    %hr/
+    %br/
+    - if @startup_elements.present?
+      .row.investor_profile_inactive
+        %center
+          
+          %br/
+          %br/
+          %h2
+            Get Feedback From Mentors, Investors and Apply to Become an nStar
+
+          %br/
+          %h3{:style => 'margin-bottom: 10px'} To Be Eligible:
+          .startup_elements
+            - @startup_elements.each do |k,v|
+              .element
+                - if v[:passed]
+                  &#x2713;
+                - else
+                  •
+                  = v[:value]
+                = k.to_s.titleize
+    - else
+      = render 'ratings/startup'
+
+    
+
+
+
+

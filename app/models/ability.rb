@@ -7,6 +7,7 @@ class Ability
     user ||= User.new
 
     cannot :manage, Video
+    cannot :see_ratings_page, User
 
     # Admins can do anything
     if user.admin?
@@ -47,10 +48,13 @@ class Ability
 
         can [:new, :create], Instrument
 
-        can :read, Rating, :startup_id => user.startup_id if user.startup.can_access_mentors_and_investors?
-
         can :manage, Video, :startup_id => user.startup_id
 
+        # Allow them to see ratings page because they need to turn on/off investable and mentorable
+        can :read, Rating, :startup_id => user.startup_id
+
+        # This is only if they have selected as investable or mentorable and pass all req's
+        can :see_ratings_page, User if user.startup.can_access_mentors_and_investors?
       end
 
       # Can destroy if they were assigned as receiver or created it
@@ -207,8 +211,9 @@ class Ability
     #
 
     cannot [:read_post, :repost], Comment
+
     can :read_post, Comment do |c|
-      c.original_post? && user.startup.second_degree_connection_ids.include?(c.startup_id)
+      c.original_post? && user.startup_id.present? && user.startup.second_degree_connection_ids.include?(c.startup_id)
     end
     can :repost, Comment do |c|
       user.startup_id.present? && user.startup.second_degree_connection_ids.include?(c.startup_id)

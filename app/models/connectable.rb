@@ -27,7 +27,7 @@ module Connectable
 
   def second_degree_connection_ids
     return nil unless self.is_a?(Startup)
-    Relationship.second_degree_connection_ids_for_startup(self)
+    Relationship.second_degree_connection_ids_for_startup(self) + [self.id]
   end
 
   def second_degree_connections
