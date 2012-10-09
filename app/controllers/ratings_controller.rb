@@ -4,18 +4,22 @@ class RatingsController < ApplicationController
   load_and_authorize_resource
   
   def index
-    if params[:startup_id].present? && current_user.entrepreneur?
-      load_obfuscated_startup_nested
-      authorize! :manage, @startup
-      @ratings = @startup.ratings.ordered
-      unless @ratings.blank?
-        @weakest_element_data = Rating.weakest_element_arr_from_ratings(@ratings)
-        @contact_in_data = Rating.contact_in_arr_from_ratings(@ratings)
+    if current_user.entrepreneur?
+      @startup = current_user.startup
+      if current_user.startup.can_access_mentors_and_investors?
+        @ratings = @ratings.ordered
+        unless @ratings.blank?
+          @weakest_element_data = Rating.chart_data_from_ratings(@ratings, :weakest_element)
+          @contact_in_data = Rating.chart_data_from_ratings(@ratings, :contact_in)
+        end
+      else
+        @startup_elements = @startup.mentor_and_investor_elements
       end
-      render :action => :startup
-      return
+      render :action => :entrepreneur
     else
+      authorize! :see_ratings_page, current_user
       calculate_suggested_startup_completeness
+      render :action => :mentor_investor
     end
   end
 

@@ -48,7 +48,7 @@ $ ->
     # http://www.youtube.com/?watch?v=id
     return true if string.match(/^http\:\/\/.*youtube\.com\/watch\?v\=.+$/)
     # http://www.youtu.be/?watch=id
-    return true if string.match(/^http\:\/\/.*youtu\.be\/watch\?v\=.+$/)
+    return true if string.match(/^http\:\/\/.*youtu\.be\/.+$/)
     # http://www.youtube.com/embed/id
     return true if string.match(/^http\:\/\/.*youtube\.com\/embed\/.+$/)
     false

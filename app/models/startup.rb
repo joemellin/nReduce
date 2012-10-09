@@ -181,19 +181,18 @@ class Startup < ActiveRecord::Base
     passed = 0
     elements.each{|name, e| passed += 1 if e[:passed] == true }
     elements[:total] = {:value => "#{passed} of #{elements.size}", :passed => passed == elements.size}
-    # uncomment this to fake being ready
-    #elements[:total] = {:value => 'passed', :passed => true}
     elements
   end
 
-   # Returns true if mentor & investor elements all pass and they haven't invited an nreduce mentor in the last week
+   # Returns true if mentor & investor elements all pass
+   # commented out: they haven't invited an nreduce mentor in the last week
   def can_access_mentors_and_investors?
-    can_invite = true
-    relationships = self.relationships.startup_to_user.approved.where(['created_at > ?', Time.now - 1.week]).includes(:connected_with)
-    relationships.each do |r|
-      can_invite = false if r.connected_with.roles?(:nreduce_mentor)
-    end
-    (mentor_and_investor_elements[:total][:passed] == true) and can_invite
+    # relationships = self.relationships.startup_to_user.approved.where(['created_at > ?', Time.now - 1.week]).includes(:connected_with)
+    # relationships.each do |r|
+    #   can_invite = false if r.connected_with.roles?(:nreduce_mentor)
+    # end
+    (self.investable? || self.mentorable?) && mentor_and_investor_elements[:total][:passed] == true
+    true
   end
 
   # They can enter from their weekly class if they have completed their profile and are connected to four other startups
