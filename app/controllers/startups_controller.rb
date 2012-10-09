@@ -140,10 +140,12 @@ class StartupsController < ApplicationController
     if @startup.save
       respond_to do |format|
         format.js
-        format.html { redirect_to '/startup' }
+        format.html { redirect_to @startup }
       end
     else
       @message = "Could not save: #{@startup.errors.full_messages.join(', ')}."
+      @profile_elements = @startup.profile_elements
+      @profile_completeness_percent = (@startup.profile_completeness_percent * 100).round
       respond_to do |format|
         format.js
         format.html { render :edit }

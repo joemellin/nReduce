@@ -2,3 +2,5 @@ site_url: "http://localhost:3000"
 
 paperclip_config:
   path: "/Users/josh/Project/nreduce/public/:class/:style/:updated_at.:extension"
+
+screenr_recorder_id: '2cff4d6294124e32bb4c3804743a4f0f'

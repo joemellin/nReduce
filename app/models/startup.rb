@@ -33,7 +33,7 @@ class Startup < ActiveRecord::Base
   accepts_nested_attributes_for :screenshots, :reject_if => proc {|attributes| attributes.all? {|k,v| v.blank?} }, :allow_destroy => true
   accepts_nested_attributes_for :intro_video, :reject_if => proc {|attributes| attributes.all? {|k,v| v.blank?} }, :allow_destroy => true
   accepts_nested_attributes_for :pitch_video, :reject_if => proc {|attributes| attributes.all? {|k,v| v.blank?} }, :allow_destroy => true
-  accepts_nested_attributes_for :invites, :reject_if => proc {|attributes| attributes.all? {|k,v| v.blank?} }, :allow_destroy => true
+  accepts_nested_attributes_for :invites, :reject_if => proc {|attributes| attributes[:email].blank? }, :allow_destroy => true
 
   validates_presence_of :name
   validate :check_video_urls_are_valid

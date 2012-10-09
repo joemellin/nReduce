@@ -37,7 +37,7 @@
 .row
   .span12{:style => 'padding: 0'}
     .row{:style => 'padding: 0px'}
-      .span5{:style => 'padding-left: 45px'}= image_tag @user.pic_url(:square), :width => 400, :height => 400
+      .span5{:style => 'padding-left: 45px'}= image_tag @user.pic_url(:lg_square), :width => 400, :height => 400
       .span5{:style => 'margin-left: -35px'}
         %h1{:style => 'font-size: 50px; margin-top: 5px'}= h(@user.name)
         - unless @user.one_liner.blank?
