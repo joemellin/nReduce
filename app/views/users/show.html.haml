@@ -106,15 +106,17 @@
         = render 'startups/horizontal_list', :startups => @user.connected_to('Startup')
         %br
 - elsif !@user.startup.blank?
-  .row
-    .span12
-      %p{:style => 'padding-top: 20px'}
-        %small #{h(@user.name).possessive} Teammates
-      %br/
-      %hr
-  .row
-    .span12{:style => 'padding-top: 20px'}
-      = render 'startups/team_members', :team_members => @user.startup.team_members - [@user], :add_team_member => (@user.id == current_user.id ? true : false)
+  - team_members = @user.startup.team_members - [@user]
+  - unless team_members.blank?
+    .row
+      .span12
+        %p{:style => 'padding-top: 20px'}
+          %small #{h(@user.name).possessive} Teammates
+        %br/
+        %hr
+    .row
+      .span12{:style => 'padding-top: 20px'}
+        = render 'startups/team_members', :team_members => team_members, :add_team_member => false
 
 - if !@current_invite.blank?
   - if @current_invite.invite_type == Invite::MENTOR || @current_invite.invite_type == Invite::NREDUCE_MENTOR
