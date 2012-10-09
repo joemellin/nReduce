@@ -27,7 +27,6 @@
               - if in_before_window
                 - showed_before = showed_button =  true
                 = link_to("'Before' video", edit_checkin_path(current_checkin), :class => 'btn btn-success')
-                was submitted
         - if in_after_window and current_checkin.blank?
           = link_to "Submit 'After' Video", new_checkin_path, :class => 'btn btn-success'
           - showed_button = true
