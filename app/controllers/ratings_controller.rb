@@ -7,7 +7,7 @@ class RatingsController < ApplicationController
     if current_user.entrepreneur?
       @startup = current_user.startup
       if current_user.startup.can_access_mentors_and_investors?
-        @ratings = @ratings.ordered
+        @ratings = @startup.ratings.ordered
         unless @ratings.blank?
           @weakest_element_data = Rating.chart_data_from_ratings(@ratings, :weakest_element)
           @contact_in_data = Rating.chart_data_from_ratings(@ratings, :contact_in)
