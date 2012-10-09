@@ -15,8 +15,8 @@
     %br/
     - displayed_line = true
     - c = 0
-  / - elsif c % 4 == 0 && c != 0
-  /   .clear
+  - elsif c % 4 == 0 && c != 0
+    .clear
   - c += 1
   .team.left{:align => 'center', :style => 'width: 270px'}
     .top{:align => 'center', :onclick => "$.get('#{this_startup_url}'); return false;"}
