@@ -40,7 +40,7 @@ class Video < ActiveRecord::Base
 
   # Mock - this method should return a string of html to play the video
   def embed_code_html(width = 500, height = 315)
-    '[video embed]'
+    '[video saved - will display when done]'
   end
 
   # Mock - to be implemented on any external video classes that inherit from the Video class
@@ -152,7 +152,7 @@ class Video < ActiveRecord::Base
     if details['thumbnails'].present? && details['thumbnails']['thumbnail'].present? && details['thumbnails']['thumbnail'].last['_content'].match(/default\..*\.jpg/) == nil
       self.remote_image_url = details['thumbnails']['thumbnail'].last['_content']
       self.save
-    else
+    elsif queue_again
       Resque.enqueue_in(5.minutes, Video, self.id, true)
       false
     end

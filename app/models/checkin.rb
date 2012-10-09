@@ -26,9 +26,9 @@ class Checkin < ActiveRecord::Base
 
   validates_presence_of :startup_id
   validates_presence_of :start_focus, :message => "can't be blank", :if => lambda { Checkin.in_before_time_window? }
-  validates_presence_of :start_video_url, :message => "can't be blank", :if => lambda { Checkin.in_before_time_window? }
-  validates_presence_of :end_video_url, :message => "can't be blank", :if =>  lambda { Checkin.in_after_time_window? }
-  validates_presence_of :accomplished, :message => "must be selected", :if => lambda { Checkin.in_after_time_window? }
+  validates_presence_of :before_video, :message => "can't be blank", :if => lambda { Checkin.in_before_time_window? }
+  validates_presence_of :after_video, :message => "can't be blank", :if =>  lambda { Checkin.in_after_time_window? }
+  validates_inclusion_of :accomplished, :in => [true, false], :message => "must be selected", :if => lambda { Checkin.in_after_time_window? }
   validate :check_video_urls_are_valid
   validate :measurement_is_present_if_launched
 
@@ -274,12 +274,12 @@ class Checkin < ActiveRecord::Base
 
   # Returns true if the 'before' section of the checkin was completed
   def before_completed?
-    !self.start_focus.blank? and !self.start_video_url.blank?
+    !self.start_focus.blank? and (!self.start_video_url.blank? || !self.before_video.blank?)
   end
 
   # Returns true if the 'after' section of the checkin was completed
   def after_completed?
-    !self.end_video_url.blank?
+    !self.end_video_url.blank? || !self.after_video.blank?
   end
 
   def self.video_url_is_unique?(url)

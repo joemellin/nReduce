@@ -55,14 +55,14 @@
       - unless is_post_page
         .left.commentlinks.postcontent{:style => 'padding-left:40px; padding-top:4px'}
           .row
-            - content = is_post_page ? comment.content : truncate(comment.content, :length => 180, :omission => "... #{link_to('read more', post_path(comment))}")
+            - content = is_post_page ? comment.content : truncate(h(comment.content), :length => 180, :omission => "... #{link_to('read more', post_path(comment))}")
             = auto_link(simple_format(content), :html => { :target => '_blank' }){ |text| truncate(text, :length => 30) }
       .clear
       - if is_post_page
         .post.original{:style => 'margin-bottom: 10px'}
           .row
             .span
-              %h1{:style => 'padding:20px 60px 40px 60px'}= comment.content
+              %h1{:style => 'padding:20px 60px 40px 60px'}=  auto_link(simple_format(h(comment.content)), :all, :target => '_blank')
 
           - unless comment.responders.blank?
             %h3 Discussion with:
@@ -91,7 +91,7 @@
         
         - unless comment.awesome_count == 0
           %strong= pluralize(comment.awesome_count, 'like')
-        .content{:style=> 'color: #585858; font-size: 1.9em'}= simple_format(h(comment.content))
+        .content{:style=> 'color: #585858; font-size: 1.9em'}= auto_link(simple_format(h(comment.content)), :all, :target => '_blank' )
         = link_to 'Reply', reply_to_comment_path(comment), :remote => true
         - if is_owner
           &nbsp;•&nbsp;

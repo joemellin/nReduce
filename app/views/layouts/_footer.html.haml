@@ -12,7 +12,7 @@
     %br/
     %br/
     
-- if user_signed_in? && @weekly_class.blank?
+- if user_signed_in? && @weekly_class.blank? && !@setup
   .row.center
     %center
       .coworking_location_tab

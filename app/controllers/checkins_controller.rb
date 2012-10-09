@@ -34,6 +34,7 @@ class CheckinsController < ApplicationController
     if @checkin.save
       save_completed_state_and_redirect_checkin(@checkin, was_completed)
     else
+      logger.info "ERRORS: #{@checkin.errors.full_messages}"
       set_disabled_states_and_add_measurement(@checkin)
       render :action => :edit
     end
@@ -51,6 +52,7 @@ class CheckinsController < ApplicationController
     if @checkin.update_attributes(params[:checkin])
       save_completed_state_and_redirect_checkin(@checkin, was_completed)
     else
+      logger.info "ERRORS: #{@checkin.errors.full_messages}"
       set_disabled_states_and_add_measurement(@checkin)
       render :action => :edit
     end

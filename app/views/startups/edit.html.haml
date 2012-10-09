@@ -6,6 +6,7 @@
 
 .row
   .span8
+    = @startup.errors.full_messages.join(' ')
     = semantic_form_for @startup, :url => '/startup/', :html => {:class => "form-horizontal", :multipart => true} do |f|
       - if @setup
         .control-group{:style => 'padding-top: 0'}
@@ -15,7 +16,6 @@
       = render "startups/fields", :f => f
       .form.center{:style => 'margin-bottom: 40px; padding-top: 20px'}
         = f.submit "Save Profile", :class => "btn btn-success btn-large"
-    = render 'startups/invite_modal'
   - unless @setup
     .span3
       .row{:style => 'margin-bottom: 40px; padding-top: 0px'}

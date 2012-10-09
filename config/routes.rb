@@ -15,6 +15,8 @@ Nreduce::Application.routes.draw do
     # Resque Admin
     constraints admin_constraint do
       require 'resque/server'
+      require 'resque_scheduler'
+      require 'resque_scheduler/server'
       mount Resque::Server.new, :at => "/resque"
     end
     # Main Admin - has logic built-in to restrict to admins

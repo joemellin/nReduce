@@ -15,7 +15,7 @@
 %br/
 - unless @relationship.message.blank?
   %br/
-  %p "#{simple_format(h(@relationship.message))}"
+  %p #{simple_format(h("\"#{@relationship.message}\""))}
 %br
 %br
 %h3= link_to 'View Request', add_teams_relationships_url

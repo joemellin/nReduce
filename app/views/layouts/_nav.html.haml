@@ -20,8 +20,8 @@
             %strong #{link_to @demo_day.name, '/d'}
             ends in
           = render 'layouts/countdown', :time => @demo_day.ends_at
-      - elsif @weekly_class.blank? && user_signed_in? && current_user.entrepreneur?
-        = render 'startups/countdown_and_checkin', :startup => @startup || current_user.startup
+      - elsif @weekly_class.blank? && user_signed_in? && current_user.entrepreneur? && current_user.startup_id.present?
+        = render 'startups/countdown_and_checkin', :startup => current_user.startup
       - else
         &nbsp;
     .span3
@@ -76,6 +76,6 @@
               %li= link_to "Journalists", public_press_path
               %li= link_to "Join", sign_up_path
             %li= link_to "Login", login_path
-      - if @demo_day && !user_signed_in?
-        .right{:style => 'margin-right: 20px'}= link_to 'Founders Join', sign_up_path, :class => 'btn btn-large btn-success'
+      / - if @demo_day && !user_signed_in?
+      /   .right{:style => 'margin-right: 20px'}= link_to 'Founders Join', sign_up_path, :class => 'btn btn-large btn-success'
       .clear

@@ -33,7 +33,7 @@ class Startup < ActiveRecord::Base
   accepts_nested_attributes_for :screenshots, :reject_if => proc {|attributes| attributes.all? {|k,v| v.blank?} }, :allow_destroy => true
   accepts_nested_attributes_for :intro_video, :reject_if => proc {|attributes| attributes.all? {|k,v| v.blank?} }, :allow_destroy => true
   accepts_nested_attributes_for :pitch_video, :reject_if => proc {|attributes| attributes.all? {|k,v| v.blank?} }, :allow_destroy => true
-  accepts_nested_attributes_for :invites, :reject_if => proc {|attributes| attributes.all? {|k,v| v.blank?} }, :allow_destroy => true
+  accepts_nested_attributes_for :invites, :reject_if => proc {|attributes| attributes[:email].blank? }, :allow_destroy => true
 
   validates_presence_of :name
   validate :check_video_urls_are_valid
@@ -456,7 +456,7 @@ class Startup < ActiveRecord::Base
   protected
 
   def notify_classmates_of_new_startup
-    Notification.create_for_new_team_joined(self)
+    Notification.create_for_new_team_joined(self, WeeklyClass.current_class)
   end
 
   def reset_cached_elements
