@@ -80,7 +80,7 @@ class UserMailer < ActionMailer::Base
 
   def new_comment_for_post(notification)
     @comment = notification.attachable
-    @original_post = @comment.original
+    @original_post = @comment.root
     @user = notification.user
     @owner = @comment.root.user_id == @user.id
     if @owner
