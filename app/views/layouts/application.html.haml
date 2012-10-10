@@ -22,10 +22,10 @@
     = js_settings
     = csrf_meta_tags
   %body
-    - if user_signed_in? && !@setup
+    - if user_signed_in? && !@setup && !@demo_day
       -# Helper defined in application_helper.rb
       = image_tag background_image_path, :class => 'bg'
-    .wrapper{:class => user_signed_in? && !@setup ? 'logged_in' : ''}
+    .wrapper{:class => user_signed_in? && !@setup && !@demo_day ? 'logged_in' : ''}
       .container
         .header
           = render 'layouts/nav', :hide_nav => @hide_nav == true
