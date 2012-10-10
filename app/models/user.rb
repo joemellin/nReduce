@@ -135,7 +135,7 @@ class User < ActiveRecord::Base
   end
 
   def self.force_email_on
-    [:nudge, :user, :new_team_joined, :weekly_class] # user is new mentor
+    [:nudge, :user, :new_team_joined, :weekly_class, :join_next_week] # user is new mentor
   end
 
   def self.user_countries
