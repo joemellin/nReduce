@@ -16,16 +16,6 @@ $ ->
       validateYoutubeForm(field)
   )
 
-  # $('form.startup .invites .startup_add_teammate_btn').click( ->
-  #   counter = $('#startup_invite_counter').val()
-  #   $.ajax(
-  #     type: 'POST',
-  #     url: "/startup/add_invite_field",
-  #     data: {c: counter},
-  #     dataType: 'script'
-  #   )
-  # )
-
   $('form.startup .invites .startup_invite_btn').click( ->
     data = $('form.startup .invites .startup_invite').serializeArray()
     $.ajax(
