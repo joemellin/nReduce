@@ -1,0 +1,3 @@
+= div_for invite do
+  = "#{invite.to_name} (#{Invite.types[invite.invite_type].titleize})"
+  = link_to '<i class="icon icon-remove"></i>'.html_safe, invite_path(invite), :method => :delete, :remote => true, :confirm => "Are you sure you want to cancel the invite to #{invite.to_name}?"

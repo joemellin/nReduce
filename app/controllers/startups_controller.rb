@@ -15,6 +15,14 @@ class StartupsController < ApplicationController
     redirect_to :action => :edit unless @startup.new_record?
   end
 
+  def invite_ajax
+    @invite = Invite.new(params[:startup][:invite])
+    @success = true if @invite.save
+    respond_to do |format|
+      format.js { render :action => :invite_ajax }
+    end
+  end
+
     # Invite startups
   def invite
     if request.post?

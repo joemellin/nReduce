@@ -43,7 +43,10 @@ class InvitesController < ApplicationController
     if @invite.to_id == current_user.id
       redirect_to current_user
     else
-      redirect_to edit_startup_path(@startup)
+      respond_to do |format|
+        format.js
+        format.html { redirect_to edit_startup_path(@startup) }
+      end
     end
   end
   
