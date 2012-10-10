@@ -7,8 +7,6 @@ class Video < ActiveRecord::Base
   attr_accessor :youtube_url
 
   before_validation :extract_id_from_youtube_url
-  before_save :check_if_needs_vimeo_upload, :unless => :new_record?
-  before_save :flag_for_vimeo_upload, :if => :new_record?
   after_save :queue_transfer_to_vimeo
   after_destroy :remove_from_vimeo_and_delete_local_file
 
@@ -77,26 +75,13 @@ class Video < ActiveRecord::Base
     Vimeo::Advanced::Video.new(Settings.apis.vimeo.client_id, Settings.apis.vimeo.client_secret, :token => Settings.apis.vimeo.access_token, :secret => Settings.apis.vimeo.access_token_secret)
   end
 
-    # Method to take the external video and save it to our vimeo account
-  # First it saves it locally, then it uploads to vimeo, finally saves object
+  # Method to take the external video and save it to our vimeo account
+  # First it saves it locally, then it uploads to vimeo, finally saves object (adds vimeo_id to object on success)
   def transfer_to_vimeo!
     return true if self.vimeo_id.present?
     # Use individually implemented method to save file locally
     self.save_external_video_locally
-    # Transfer to vimeo
-    self.upload_to_vimeo(true)
-    raise "Vimeo: video could not be uploaded from local file: #{path_to_local_file}" if self.vimeo_id.blank?
-    self.save
-    # Check to see if it has been encoded
-    Resque.enqueue_in(5.minutes, Video, self.id, true)
-  end
-
-  # Transfers a local file (using local_file_path) to vimeo account
-  # Adds vimeo_id to model on success - does not save
-  # delete_on_success will delete the local file if it is successfully uploaded
-  def upload_to_vimeo(delete_on_success = false)
-
-    # Vimeo upload
+    # Upload to vimeo
     begin
       upload = Vimeo::Advanced::Upload.new(Settings.apis.vimeo.client_id, Settings.apis.vimeo.client_secret, :token => Settings.apis.vimeo.access_token, :secret => Settings.apis.vimeo.access_token_secret)
       uploaded_video = upload.upload(self.local_file_path)
@@ -110,14 +95,22 @@ class Video < ActiveRecord::Base
     end
 
     # Remove local file
-    if delete_on_success && self.vimeo_id.present?
+    if self.vimeo_id.present?
       FileUtils.rm(self.local_file_path)
       self.local_file_path = nil
     end
+    
+    # Ensure upload completed successfully
+    raise "Vimeo: video could not be uploaded from local file: #{path_to_local_file}" if self.vimeo_id.blank?
+    
+    # Save vimeo id
+    self.save
 
-    self.vimeo_id.blank? ? false : true
+    # Check to see if it has been encoded & grab thumbnail images
+    Resque.enqueue_in(5.minutes, Video, self.id)
   end
 
+  # Set privacy on vimeo
   def set_desired_vimeo_permissions
     begin
       video = Vimeo::Advanced::Video.new(Settings.apis.vimeo.client_id, Settings.apis.vimeo.client_secret, :token => Settings.apis.vimeo.access_token, :secret => Settings.apis.vimeo.access_token_secret)
@@ -137,12 +130,14 @@ class Video < ActiveRecord::Base
     true
   end
 
+  # Get details of video from Vimeo API
   def vimeo_details
     return nil if self.vimeo_id.blank?
     response = Video.vimeo_client.get_info(self.vimeo_id)
     return !response['video'].blank? ? response['video'].first : nil
   end
 
+  # Check if encoded on vimeo, save thumbnail url
   def check_if_encoded_and_get_thumbnail_urls(queue_again = false)
     details = self.vimeo_details
     return false if details.blank?
@@ -153,18 +148,20 @@ class Video < ActiveRecord::Base
       self.remote_image_url = details['thumbnails']['thumbnail'].last['_content']
       self.save
     elsif queue_again
-      Resque.enqueue_in(5.minutes, Video, self.id, true)
+      Resque.enqueue_in(5.minutes, Video, self.id) # queue to check and see if it got encoded
       false
     end
   end
 
   # Downloads video and transfers to Vimeo
-  def self.perform(video_id, check_if_encoded = false)
+  def self.perform(video_id)
     v = Video.find(video_id)
+    # Return if already completed transfer to Vimeo (right now no way to force re-encode)
+    return true if v.vimeod?
     begin
-      if v.vimeod? && check_if_encoded
+      if v.vimeo_id.present?
         self.check_if_encoded_and_get_thumbnail_urls(true)
-      else 
+      else
         # Transfer it to vimeo and queue encoding check
         v.transfer_to_vimeo! 
       end
@@ -174,26 +171,14 @@ class Video < ActiveRecord::Base
     end
   end
 
-  def flag_for_vimeo_upload
-    @transfer_to_vimeo = true
-  end
-
-  # only queues if flag_for_vimeo_upload is called
-  def queue_transfer_to_vimeo(force_transfer = false)
-    if @transfer_to_vimeo == true || force_transfer
-      Resque.enqueue(Video, self.id)
-      @transfer_to_vimeo = false
-    end
+  # Queue for transfer if it hasn't been vimeod yet
+  def queue_transfer_to_vimeo
+    Resque.enqueue(Video, self.id) unless self.vimeod?
   end
 
   # END VIMEO-SPECIFIC METHODS
 
   protected
-
-  # Queue for upload to vimeo if the external id (linked video) has changed
-  def check_if_needs_vimeo_upload
-    self.flag_for_vimeo_upload if self.external_id.present? && self.external_id_changed?
-  end
 
   # Pulls youtube id from youtube_url attribute
   def extract_id_from_youtube_url
