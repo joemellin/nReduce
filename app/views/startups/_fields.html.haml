@@ -16,30 +16,36 @@
           &nbsp;
           = link_to '<i class="icon icon-remove"></i>'.html_safe, remove_team_member_startup_path(:user_id => u.id), :method => :post, :confirm => "Are you sure you want to remove #{u.name}?"
 
-  .control-group{:style => 'margin-bottom: 40px; padding-top: 20px'}
-    = label_tag 'Invite', 'Invite Team Members, Mentors & Investors', :class => 'control-label'
+  .control-group
+    = label_tag 'Pending Invites', 'Pending Invites', :class => 'control-label'
     .controls
       - pending_invites = @startup.invites.not_accepted.ordered.all
+      .pending_invites
+        - pending_invites.each do |invite|
+          = render 'startups/pending_invite', :invite => invite
+
+  .control-group{:style => 'margin-bottom: 10px'}
+    = label_tag 'Invite', 'Invite People', :class => 'control-label'
+    .controls
       - new_invite = Invite.new(:startup => @startup, :from_id => current_user.id)
       - unless @startup.account_setup?
         - new_invite.weekly_class_id = @startup.team_members.first.weekly_class_id
-      - pending_invites += [new_invite]
-      - c = 0
       .invites
-        - pending_invites.each do |invite|
-          - if invite.new_record?
-            %div{:style => 'margin: 10px 0 20px 0'}
-              = render 'startups/invite_fields', :invite => invite, :c => c
-              = link_to '<i class="icon-plus"></i>'.html_safe, '#', :class => 'btn startup_add_teammate_btn'
-              %a{:href => '#', :rel => 'tooltip', :title => 'Team members will get full access to post and view checkins, and participate in nReduce. Mentors and investors will be able to view and comment on all of your checkins.'}
-                %i.icon-question-sign
-            - c += 1
-          - else
-            %div
-              = "#{invite.to_name} (#{Invite.types[invite.invite_type].titleize})"
-              = link_to '<i class="icon icon-remove"></i>'.html_safe, invite_path(invite), :method => :delete, :confirm => "Are you sure you want to cancel the invite to #{invite.to_name}?"
-      = hidden_field_tag 'invite_counter', c, :id => 'startup_invite_counter'
-    
+        %div{:style => 'margin: 10px 0 20px 0'}
+          = f.fields_for :invite, new_invite do |i|
+            = i.hidden_field :startup_id, :class => 'startup_invite'
+            = i.hidden_field :from_id, :class => 'startup_invite'
+            = i.hidden_field :weekly_class_id, :class => 'startup_invite'
+            %div{:style => 'margin-bottom: 5px'}
+              - Invite.available_types.each do |id, name|
+                .left{:style => 'margin-right: 10px'}
+                  = i.radio_button :invite_type, id, :class => 'startup_invite invite_type'
+                  = name
+              .clear
+            = i.text_field :email, :placeholder => 'email address', :class => 'span2 startup_invite email'
+            = link_to '<i class="icon-user"></i> Add'.html_safe, '#', :class => 'btn startup_invite_btn'
+            %a{:href => '#', :rel => 'tooltip', :title => 'Team members will get full access to post and view checkins, and participate in nReduce. Mentors and investors will be able to view and comment on all of your checkins.'}
+              %i.icon-question-sign
 
 .control-group{error_css(@startup, :one_liner)}
   = f.label :one_liner, :class => 'control-label'

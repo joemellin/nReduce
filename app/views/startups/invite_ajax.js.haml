@@ -1,0 +1,5 @@
+- if @success
+  :plain
+    $('form.startup .invites .startup_invite.email').val('');
+    $('form.startup .invites .startup_invite.invite_type').prop('checked', false);
+    $('form.startup .pending_invites').append("#{escape_javascript(render('startups/pending_invite', :invite => @invite))}");
