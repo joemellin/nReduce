@@ -70,7 +70,7 @@ class WeeklyClass < ActiveRecord::Base
   end
 
   def previous_class
-    WeeklyClass.where(['week < ?', self.week]).first
+    WeeklyClass.where(['week < ?', self.week]).order('week DESC').first
   end
 
   def activate_all_completed_startups
