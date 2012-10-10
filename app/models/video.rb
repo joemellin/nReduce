@@ -160,7 +160,7 @@ class Video < ActiveRecord::Base
     return true if v.vimeod?
     begin
       if v.vimeo_id.present?
-        self.check_if_encoded_and_get_thumbnail_urls(true)
+        v.check_if_encoded_and_get_thumbnail_urls(true)
       else
         # Transfer it to vimeo and queue encoding check
         v.transfer_to_vimeo! 
