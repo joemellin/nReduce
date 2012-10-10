@@ -106,8 +106,8 @@ class Video < ActiveRecord::Base
     # Save vimeo id
     self.save
 
-    # Check to see if it has been encoded & grab thumbnail images
-    Resque.enqueue_in(5.minutes, Video, self.id)
+    # Check to see if it has been encoded & grab thumbnail images - it can take a while on vimeo
+    Resque.enqueue_in(20.minutes, Video, self.id)
   end
 
   # Set privacy on vimeo
@@ -148,7 +148,7 @@ class Video < ActiveRecord::Base
       self.remote_image_url = details['thumbnails']['thumbnail'].last['_content']
       self.save
     elsif queue_again
-      Resque.enqueue_in(5.minutes, Video, self.id) # queue to check and see if it got encoded
+      Resque.enqueue_in(20.minutes, Video, self.id) # queue to check and see if it got encoded
       false
     end
   end
