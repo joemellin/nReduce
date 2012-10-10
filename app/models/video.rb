@@ -166,8 +166,7 @@ class Video < ActiveRecord::Base
         v.transfer_to_vimeo! 
       end
     rescue
-      # If it fails to download or video hasn't encoded yet, enqueue
-      v.queue_transfer_to_vimeo
+      # Fails to download or video hasn't encoded yet
     end
   end
 
