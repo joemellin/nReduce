@@ -47,11 +47,11 @@ $ ->
 
   isValidYoutubeUrl = (string) ->
     # http://www.youtube.com/?watch?v=id
-    return true if string.match(/^http\:\/\/.*youtube\.com\/watch\?v\=.+$/)
+    return true if string.match(/^https?\:\/\/.*youtube\.com\/watch\?v\=.+$/)
     # http://www.youtu.be/?watch=id
-    return true if string.match(/^http\:\/\/.*youtu\.be\/.+$/)
+    return true if string.match(/^https?\:\/\/.*youtu\.be\/.+$/)
     # http://www.youtube.com/embed/id
-    return true if string.match(/^http\:\/\/.*youtube\.com\/embed\/.+$/)
+    return true if string.match(/^https?\:\/\/.*youtube\.com\/embed\/.+$/)
     false
 
   enableCheckinFormIfComplete = (add_timer = false) ->
