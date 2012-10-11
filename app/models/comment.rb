@@ -5,7 +5,6 @@ class Comment < ActiveRecord::Base
   belongs_to :parent, :class_name => 'Comment'
   belongs_to :original, :class_name => 'Comment'
   has_many :reposts, :class_name => 'Comment', :foreign_key => 'original_id', :dependent => :destroy
-  has_one :startup, :through => :checkin
   has_many :awesomes, :as => :awsm, :dependent => :destroy
   has_many :notifications, :as => :attachable
   has_many :user_actions, :as => :attachable
@@ -48,6 +47,13 @@ class Comment < ActiveRecord::Base
         nil
       end
     }
+  end
+
+  # Custom logic to select from checkin or post
+  def startup
+    return Startup.where(:id => self.startup_id) if self.startup_id.present?
+    return self.checkin.startup if self.checkin_id.present
+    nil
   end
 
   # Need custom logic or else it also selects itself
