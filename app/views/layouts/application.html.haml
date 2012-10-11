@@ -22,10 +22,10 @@
     = js_settings
     = csrf_meta_tags
   %body
-    - if user_signed_in? && !@setup && !@demo_day
+    - if show_background_image?
       -# Helper defined in application_helper.rb
       = image_tag background_image_path, :class => 'bg'
-    .wrapper{:class => user_signed_in? && !@setup && !@demo_day ? 'logged_in' : ''}
+    .wrapper{:class => show_background_image? ? 'logged_in' : ''}
       .container
         .header
           = render 'layouts/nav', :hide_nav => @hide_nav == true
@@ -34,7 +34,7 @@
           - if @setup and !@weekly_class
             .row
               .left= render 'layouts/left_nav'
-              .left.content_right{:style => 'border-left: 1px solid #cccccc;'}= yield
+              .left.content_right{:style => "border-left: 1px solid #cccccc; #{@setup ? 'padding-top: 0' : ''}" }= yield
               .clear
           - else
             = yield

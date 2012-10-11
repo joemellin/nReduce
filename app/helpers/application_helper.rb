@@ -174,5 +174,8 @@ module ApplicationHelper
     url ||= Settings.coworking_locations.uptown_espresso.images[0]
     "http://assets.nreduce.com/coworking/#{url}"
   end
-  
+
+  def show_background_image?
+    user_signed_in? && !@setup && !@demo_day && !@hide_background_image
+  end
 end

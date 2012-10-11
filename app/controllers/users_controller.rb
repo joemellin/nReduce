@@ -23,6 +23,7 @@ class UsersController < ApplicationController
   end
 
   def account_type
+    @hide_background_image = true
     # Save account type if post
     if request.post?
       current_user.set_account_type(params[:roles], !params[:reset].blank?) unless params[:roles].blank?
