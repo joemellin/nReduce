@@ -1,6 +1,6 @@
-- startup ||= @startup
+- startup ||= nil
 - no_twitter_follow ||= false
-- unless @current_question.blank?
+- unless @current_question.blank? || startup.blank?
   .right
     - if user_signed_in? && current_user.startup_id == startup.id
       = link_to "Next Question", answer_startup_question_path(startup, @current_question), :method => :post, :remote => :true, :class => 'btn btn-large'

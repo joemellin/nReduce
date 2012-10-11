@@ -213,10 +213,10 @@ class Ability
     cannot [:read_post, :repost], Comment
 
     can :read_post, Comment do |c|
-      c.original_post? && user.startup_id.present? && user.startup.second_degree_connection_ids.include?(c.startup_id)
+      c.original_post? && user.startup_id.present? && (Comment.hottest_post_id == c.id || user.startup.second_degree_connection_ids.include?(c.startup_id))
     end
     can :repost, Comment do |c|
-      user.startup_id.present? && user.startup.second_degree_connection_ids.include?(c.startup_id)
+      user.startup_id.present? && (Comment.hottest_post_id == c.id || user.startup.second_degree_connection_ids.include?(c.startup_id))
     end
 
     can [:new, :create], Invite
