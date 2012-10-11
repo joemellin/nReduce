@@ -33,6 +33,7 @@ class StartupsController < ApplicationController
         @invite.invite_type = Invite::STARTUP
         if @invite.save
           flash[:notice] = "Thanks! #{@invite.email} has been invited."
+          @invite = Invite.new # reset for next invite
         else
           flash[:alert] = "#{@invite.errors.full_messages.join('. ')}."
         end
