@@ -50,11 +50,32 @@ class Comment < ActiveRecord::Base
     }
   end
 
+  # Need custom logic or else it also selects itself
+  def reposts
+    Comment.where(:original_id => self.id).where(['id != ?', self.id])
+  end
+
+  def can_be_viewed_by?(user)
+    # Can only be viewed by people with a startup
+    return false if user.startup_id.blank?
+    # Anyone can view the hottest post
+    return true if Comment.hottest_post_id == self.id
+    startup_ids = user.startup.second_degree_connection_ids
+    # Return true if one of this person's connections created this comment
+    return true if startup_ids.include?(self.startup_id)
+    # Return true if this was reposted by one of their connections
+    reposted_by_startup_ids = self.reposts.map{|r| r.startup_id }
+    # Check if intersection of both arrays is not empty
+    return true if !(startup_ids & reposted_by_startup_ids).empty?
+    false
+  end
+
   # Posts this comment (like re-tweeting) from a new user. It will save the originator and then the post is also
   def repost_by(user)
     c = Comment.new
     c.content = self.content
-    c.original = self
+    # if this was a repost itself, use this post's original
+    c.original = self.original ? self.original : self
     c.user = user
     c.original.save if c.save # update cache on responders
     c
@@ -113,8 +134,9 @@ class Comment < ActiveRecord::Base
   # If this is a root post then we can delete it
   def safe_destroy
     if self.is_root? && self.original_post?
+      puts "here"
       Comment.transaction do
-        self.children.each{|c| c.destroy }
+        self.descendants.each{|c| c.destroy }
       end
       self.destroy
     else

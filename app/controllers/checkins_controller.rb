@@ -22,8 +22,8 @@ class CheckinsController < ApplicationController
   def new
     @checkin.startup = current_user.startup
     set_disabled_states_and_add_measurement(@checkin)
-    @before_disabled = true
-    @after_disabled = false
+    # @before_disabled = true
+    # @after_disabled = false
     render :action => :edit
   end
 
