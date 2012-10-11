@@ -62,14 +62,7 @@
 
   - nreduce_id = Startup.nreduce_id
   - if !current_user.startup_id.blank? and !nreduce_id.blank?
-    .right
-      - if current_user.weekly_class_id.present?
-        %h3= link_to 'Your Weekly Class', current_user.weekly_class
-      - else
-        %p
-    .left
-      %h3= link_to 'View nReduce\'s latest checkin', latest_startup_checkins_path(:startup_id => nreduce_id)
-    .clear
+    %h3= link_to 'View nReduce\'s latest checkin', latest_startup_checkins_path(:startup_id => nreduce_id)
 
   - if @show_mentor_message
     %hr{:style => 'margin: 20px 0 20px 0;'}

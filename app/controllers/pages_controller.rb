@@ -1,5 +1,5 @@
 class PagesController < ApplicationController
-  before_filter :login_required, :only => [:community_guidelines]
+  before_filter :login_required, :only => [:community_guidelines, :tutorial]
   
   def mentor
   end
@@ -18,6 +18,9 @@ class PagesController < ApplicationController
   end
 
   def community_guidelines
+  end
+
+  def tutorial
   end
 
   def nstar
