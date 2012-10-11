@@ -11,7 +11,9 @@
     
     .progress{:align => 'left'}
       .bar{:style => "width: #{@profile_completeness_percent}%"}
-    - unless @profile_elements.blank?
-      %div{:align => 'left'}!= format_profile_elements(@profile_elements)
+    - unless @profile_elements.blank? || @profile_completeness_percent == 100
+      %div{:align => 'left'}
+        %strong To Do:
+        != format_profile_elements(@profile_elements)
   .clear
   

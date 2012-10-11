@@ -220,14 +220,14 @@ class Startup < ActiveRecord::Base
   end
 
     # Returns hash of all elements + each team member's completeness as 
-  def profile_elements
+  def profile_elements(show_team_member_details = false)
     elements = {
       :elevator_pitch => (!self.elevator_pitch.blank? && (self.elevator_pitch.size > 10)), 
       :markets => !self.cached_industry_list.blank?,
       :one_liner => self.one_liner.present?
     }
     self.team_members.each do |tm|
-      elements[tm.name.to_url.to_sym] = tm.profile_completeness_percent
+      elements[tm.name.to_url.to_sym] = show_team_member_details ? tm.profile_elements : tm.profile_completeness_percent
     end
     #elements[:at_least_four_connections] = self.connected_to_ids('Startup').size >= 4
     elements
