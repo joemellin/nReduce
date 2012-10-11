@@ -134,7 +134,7 @@ class StartupsController < ApplicationController
   #
 
   def edit
-    @profile_elements = @startup.profile_elements
+    @profile_elements = @startup.profile_elements(true)
     @profile_completeness_percent = (@startup.profile_completeness_percent * 100).round
     @screenshots = @startup.screenshots.ordered
     # Build up to 4 screenshots

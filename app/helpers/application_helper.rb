@@ -130,20 +130,29 @@ module ApplicationHelper
 
   def format_profile_elements(elements)
     return '' if elements.blank?
-    elements.map{|name, is_complete|
+    r = ['']
+    elements.each do |name, is_complete|
       ret = ''
-      # if team then the value is an integer of % completeness
-      if is_complete.is_a?(Float)
-        if is_complete == 1.0
-          ret += "&#x2713; #{name.to_s.titleize}"
-        else
-          ret += "#{name.to_s.titleize} #{(is_complete * 100).round}% complete"
+      # if team member with attributes then grab embedded hash
+      if is_complete.is_a?(Hash)
+        team_mate = format_profile_elements(is_complete)
+        unless team_mate.blank?
+          ret += "<br /><strong>#{name.to_s.titleize}</strong>#{team_mate}" 
         end
-      # otherwise boolean
       else
-        ret += (is_complete ? '&#x2713; ' : '') + name.to_s.titleize
+        # if team then the value is an integer of % completeness
+        if is_complete.is_a?(Float)
+          unless is_complete == 1.0
+            ret += "#{name.to_s.titleize} #{(is_complete * 100).round}% complete"
+          end
+        # otherwise boolean
+        elsif !is_complete
+          ret += name.to_s.titleize
+        end
       end
-    }.join('<br />')
+      r << ret unless ret.blank? 
+    end
+    r.join('<br />')
   end
 
   # returns boolean whether the field should be showd
