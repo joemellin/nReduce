@@ -149,6 +149,7 @@ hr {
 .inline-block { display: inline-block; }
 
 .wrapper {
+  height: 100%;
   .nstar_banner {
     background: image-url('nstar_banner_s.png') no-repeat right top;
     .clickable {
@@ -161,6 +162,7 @@ hr {
     }
   }
   > .container {
+    height: 100%;
 
 
     .nav {
@@ -253,7 +255,7 @@ hr {
 }
 
 .coworking_location_tab {
-  margin-top: 100px;
+  margin-top: 10px;
   background-color: #26A9EB;
   padding: 6px 8px 6px 8px;
   border-radius: 15px 15px 0 0;
