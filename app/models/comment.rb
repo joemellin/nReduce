@@ -28,15 +28,26 @@ class Comment < ActiveRecord::Base
   scope :not_deleted, where(:deleted => false)
 
   # Finds the hottest post 24 hours ago until time
-  def self.hottest_post_for_time(time)
-    beginning_of_day = time - 24.hours
-    # Find posts created less than three days ago, with activity in the last 24 hours
-    active_posts = Comment.posts.where(['created_at > ? AND updated_at >= ? AND updated_at <= ?', beginning_of_day - 3.days, beginning_of_day, time])
-    # Sort by posts with the most activity (technically doesn't know what day they responded)
-    hottest_post = active_posts.sort{|a,b| a.responder_ids.flatten.size <=> b.responder_ids.flatten.size }.last
-    # Only return post if anyone actually responded
-    return hottest_post if hottest_post.present? && hottest_post.responder_ids.present?
-    return nil
+  def self.hottest_post
+    comment_id = Comment.hottest_post_id
+    Comment.find(comment_id) if comment_id.present?
+  end
+
+  def self.hottest_post_id
+    Cache.get('hottest_post', 1.hour, true){
+      time = Time.now
+      beginning_of_day = time - 24.hours
+      # Find posts created less than three days ago, with activity in the last 24 hours
+      active_posts = Comment.posts.where(['created_at > ? AND updated_at >= ? AND updated_at <= ?', beginning_of_day - 3.days, beginning_of_day, time])
+      # Sort by posts with the most activity (technically doesn't know what day they responded)
+      hottest_post = active_posts.sort{|a,b| a.responder_ids.flatten.size <=> b.responder_ids.flatten.size }.last
+      # Only return post if anyone actually responded
+      if hottest_post.present? && hottest_post.responder_ids.present?
+        hottest_post.id 
+      else
+        nil
+      end
+    }
   end
 
   # Posts this comment (like re-tweeting) from a new user. It will save the originator and then the post is also

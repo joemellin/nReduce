@@ -46,7 +46,7 @@
       .span6
         .current_question
           - unless @current_question.blank?
-            = render 'questions/current_question'
+            = render 'questions/current_question', :startup => @startup
   - unless @after
     .ask_a_question{:align => 'center'}
       %h2
