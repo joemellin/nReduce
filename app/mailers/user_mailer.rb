@@ -12,7 +12,8 @@ class UserMailer < ActionMailer::Base
   def join_next_week(notification)
     @weekly_class = notification.attachable
     @user = notification.user
-    mail(:to => @user.email, :subject => "Would you like to join next week's class?")
+    @stats = @weekly_class.stats_for_completed_startups
+    mail(:to => @user.email, :subject => "Come join us")
   end
 
   def new_checkin(notification)

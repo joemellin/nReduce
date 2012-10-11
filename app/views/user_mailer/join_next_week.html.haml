@@ -1,31 +1,23 @@
 = render :partial => 'header'
 %p Hi!
 
-%P We saw that you didn't join this week's class of startups in nReduce, would you like to come back for next week?
+%p We sorry that you missed joining this week's class of founders.
 
-%p If so, simply #{link_to("join next week's class", join_weekly_class_url(@weekly_class)} and complete your profile.
+%p We had #{pluralize(@stats[:num_startups], 'startup')} startups join
 
-%p If not, let us know if you have any questions or problems.
+%p From #{pluralize(@stats[:num_industries], 'industry')} industries
+
+%p Around the globe in #{pluralize(@stats[:num_countries], 'country')}.
+
+%h3.h3= link_to "Are you ready for awesomeness?", join_weekly_class_url(@weekly_class)
+
+%p
+  %strong nReduce:
+  Build a better company - Collaborate with founders - Get feedback from mentors and investors
 
 %p
   Best,
   %br/
   :plain
     - Joe &amp; Josh
-
-
-/ 96 Teams Joined Last Weeks Class.
-
-/ From 30 Industries 
-
-/ And 12 countries
-
-/ Are you ready to Awesomeness?
-
-/ Link
-
-/ Build a better company.
-
-/ Collaborate with other founders.
-
-/ Get feedback from mentors and investors.
+= render :partial => 'footer'

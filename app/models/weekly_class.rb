@@ -75,13 +75,19 @@ class WeeklyClass < ActiveRecord::Base
 
   def activate_all_completed_startups
     activated = []
-    self.startups.each do |s|
-      if s.can_enter_nreduce?
-        s.force_setup_complete!
-        activated << s
-      end
+    self.completed_startups.each do |s|
+      s.force_setup_complete!
+      activated << s
     end
     activated
+  end
+
+  def completed_startups
+    completed = []
+    self.startups.each do |s|
+      completed << s if s.can_enter_nreduce?
+    end
+    completed
   end
 
   # all startups who haven't completed their profile
@@ -157,15 +163,32 @@ class WeeklyClass < ActiveRecord::Base
     self.clusters = WeeklyClass.create_clusters(self.users)
   end
 
+  def stats_for_completed_startups
+    Cache.get(['wcstats', self], 10.minutes){
+      users = User.where(:startup_id => self.incomplete_startups.map{|s| s.id }).all
+      calculate_stats_for_users(users)
+    }.symbolize
+  end
+
+  def calculate_stats_for_users(users)
+    {
+      :num_users => users.size,
+      :num_startups => users.map{|u| u.startup_id }.uniq.size,
+      :num_countries => users.map{|u| u.country }.uniq.size,
+      :num_industries => ActsAsTaggableOn::Tagging.where(:taggable_type => 'User', :taggable_id => users.map{|u| u.id }).group(:tag_id).count.keys.size
+    }
+  end
+
   protected
 
   def calculate_cached_fields
     us = self.users
     if us.present? && us.size != self.num_users
-      self.num_users = us.size
-      self.num_startups = us.map{|u| u.startup_id }.uniq.size
-      self.num_countries = us.map{|u| u.country }.uniq.size
-      self.num_industries = ActsAsTaggableOn::Tagging.where(:taggable_type => 'User', :taggable_id => us.map{|u| u.id }).group(:tag_id).count.keys.size
+      stats = self.calculate_stats_for_users(us)
+      self.num_users = stats[:num_users]
+      self.num_startups = stats[:num_startups]
+      self.num_countries = stats[:num_countries]
+      self.num_industries = stats[:num_industries]
       self.clusters = WeeklyClass.create_clusters(us)
     else
       self.clusters = []
