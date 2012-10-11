@@ -1,4 +1,6 @@
 class ViddlerVideo < Video
+  after_destroy :remove_from_viddler
+
   @@client = nil
 
   def self.client
@@ -68,5 +70,11 @@ type="application/x-shockwave-flash"  pluginspage="http://www.macromedia.com/go/
     raise "Viddler: did not return html5 video source" if remote_url.blank?
     # Save it locally
     self.save_file_locally(remote_url, extension)
+  end
+
+  protected
+
+  def remove_from_viddler
+    ViddlerVideo.client.post('viddler.videos.delete', :video_id => self.external_id)
   end
 end
