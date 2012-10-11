@@ -190,6 +190,7 @@ Nreduce::Application.routes.draw do
   match '/mentor' => "pages#mentor", :as => :public_mentors
   match '/investor' => "pages#investor", :as => :public_investors
   match '/press' => "pages#press", :as => :public_press
+  match '/tutorial' => "pages#tutorial", :as => :tutorial
   match '/community_guidelines' => "pages#community_guidelines", :as => :community_guidelines
 
   # Url redirection
