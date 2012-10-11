@@ -8,6 +8,7 @@ class Ability
 
     cannot :manage, Video
     cannot :see_ratings_page, User
+    cannot [:read_post, :repost], Comment
 
     # Admins can do anything
     if user.admin?
@@ -55,6 +56,13 @@ class Ability
 
         # This is only if they have selected as investable or mentorable and pass all req's
         can :see_ratings_page, User if user.startup.can_access_mentors_and_investors?
+
+        can :read_post, Comment do |c|
+          c.original_post? && c.can_be_viewed_by?(user)
+        end
+        can :repost, Comment do |c|
+          c.can_be_viewed_by?(user)
+        end
       end
 
       # Can destroy if they were assigned as receiver or created it
@@ -209,15 +217,6 @@ class Ability
     #
     # All Users
     #
-
-    cannot [:read_post, :repost], Comment
-
-    can :read_post, Comment do |c|
-      c.original_post? && user.startup_id.present? && (Comment.hottest_post_id == c.id || user.startup.second_degree_connection_ids.include?(c.startup_id))
-    end
-    can :repost, Comment do |c|
-      user.startup_id.present? && (Comment.hottest_post_id == c.id || user.startup.second_degree_connection_ids.include?(c.startup_id))
-    end
 
     can [:new, :create], Invite
 
