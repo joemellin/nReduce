@@ -3,7 +3,7 @@
     %h2= @total_num_ratings
     #{"# of Teams Reviewed"}
   .span1
-    %h2 ??
+    %h2= @total_value_adds
     #{"# of Value Adds"}
   .span1
     %h2 ??
@@ -11,17 +11,20 @@
   .span9
     .right
       You have met #{@num_startups_left}/#{@total_suggested_startups} startups you were matched with this week.
+      .progress{:align => 'left'}
+        .bar{:style => "width: #{@pct_complete}%"}
       - if @num_startups_left > 0 && can?(:investor_mentor_connect_with_startups, current_user)
-        = link_to 'Meet Teams', new_rating_path, :class => 'btn btn-success btn-large'
+        .right= link_to 'Meet Teams', new_rating_path, :class => 'btn btn-success btn-large'
+        .clear
     .clear
 
 .row
   .span4
     %p
   .span2 Goal
-  .span2 Accomplished?
-  .span2 Metric
-  .span2 Help Needed
+  .span1 Accomplished?
+  .span1 Metric
+  .span4 Help Needed
 - @checkins_by_week.each do |week, checkins|
   .row
     - time_window = Week.window_for_integer(week)
@@ -39,7 +42,7 @@
           %p
         - else
           = checkin.start_focus
-      .span2= checkin.accomplished? ? 'Yes' : 'No'
+      .span1= checkin.accomplished? ? 'Yes' : 'No'
       .span1
         %p
-      .span3= truncate(checkin.end_comments, :length => 100)
+      .span4= truncate(checkin.end_comments, :length => 100)
