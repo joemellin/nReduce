@@ -76,7 +76,7 @@ class User < ActiveRecord::Base
   bitmask :setup, :as => [:account_type, :onboarding, :profile, :invite_startups, :welcome]
 
   # Number of startups an investor can contact per week
-  INVESTOR_MENTOR_STARTUPS_PER_WEEK = 5
+  INVESTOR_MENTOR_STARTUPS_PER_WEEK = 50
 
   searchable do
     # full-text search fields - can add :stored => true if you don't want to hit db
