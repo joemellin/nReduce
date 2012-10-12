@@ -51,11 +51,12 @@ class Checkin < ActiveRecord::Base
   end
 
   # Returns a given number of checkins for startups
-  def self.for_startups(startups = [], num_weeks = 4)
+  def self.for_startups_by_week(startups = [], num_weeks = 4)
+    return {} if startups.blank?
     week = Week.integer_for_time(Time.now)
     1.upto(num_weeks){ week = Week.previous(week) }
     checkins = Checkin.where(:startup_id => startups.map{|s| s.id }).where(['week >= ?', week]).order('week DESC').all
-    Hash.by_key(checkins, :startup_id, nil, true)
+    Hash.by_key(checkins, :week, nil, true)
   end
 
   def self.in_a_checkin_window?
