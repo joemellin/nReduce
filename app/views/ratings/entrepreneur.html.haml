@@ -3,7 +3,7 @@
     .entry_page
       .row
         .span4{:align => 'center'}
-          .box= image_tag 'nstar_m.png', :style => 'width: 230px; height: 195px'
+          .box.nstar= image_tag 'nstar_m.png', :style => 'width: 230px; height: 195px'
           %h3 Compete to Become an #{link_to 'nStar', nstar_path}
         .span4{:align => 'center'}
           .box.mentors
@@ -14,6 +14,7 @@
           .box.investors
             Coming Soon
           %h3 Get Feedback From Investors
+      %br/
       %br/
       %hr/
       %br/
@@ -39,15 +40,15 @@
             .right.after
               After
               - if @current_checkin.after_completed?
-                .completed &#x2717;
+                .completed &#x2713;
               - else
-                .incomplete &#x2713;
+                .incomplete &#x2717;
             .left.before
               Before
               - if @current_checkin.before_completed?
-                .completed &#x2717;
+                .completed &#x2713;
               - else
-                .incomplete &#x2713;
+                .incomplete &#x2717;
             .clear
 
         
