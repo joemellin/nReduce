@@ -55,8 +55,14 @@ class Checkin < ActiveRecord::Base
     return {} if startups.blank?
     week = Week.integer_for_time(Time.now)
     1.upto(num_weeks){ week = Week.previous(week) }
-    checkins = Checkin.where(:startup_id => startups.map{|s| s.id }).where(['week >= ?', week]).order('week DESC').all
-    Hash.by_key(checkins, :week, nil, true)
+    alphabetical_ids = startups.sort{|a,b| a.name.downcase <=> b.name.downcase }.map{|s| s.id }
+    checkins = Checkin.where(:startup_id => alphabetical_ids).where(['week >= ?', week]).order('week ASC').includes(:measurement).all
+    c_by_week = Hash.by_key(checkins, :week, nil, true)
+    # Sort each week of checkins by startup name
+    c_by_week.each do |week, checkins|
+      checkins.sort_by!{|checkin| alphabetical_ids.index(checkin.startup_id) }
+    end
+    c_by_week
   end
 
   def self.in_a_checkin_window?

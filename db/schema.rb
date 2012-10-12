@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121002191713) do
+ActiveRecord::Schema.define(:version => 20121012173557) do
 
   create_table "authentications", :force => true do |t|
     t.string   "provider"
@@ -124,6 +124,7 @@ ActiveRecord::Schema.define(:version => 20121002191713) do
     t.float    "value"
     t.datetime "created_at",    :null => false
     t.datetime "updated_at",    :null => false
+    t.float    "delta"
   end
 
   create_table "meeting_messages", :force => true do |t|
@@ -300,12 +301,12 @@ ActiveRecord::Schema.define(:version => 20121002191713) do
     t.string   "pitch_video_url"
     t.integer  "setup"
     t.boolean  "investable",           :default => false
-    t.text     "business_model"
-    t.date     "founding_date"
-    t.string   "market_size"
     t.integer  "week"
     t.integer  "intro_video_id"
     t.integer  "pitch_video_id"
+    t.text     "business_model"
+    t.date     "founding_date"
+    t.string   "market_size"
     t.string   "tokbox_session_id"
     t.string   "cached_industry_list"
     t.boolean  "mentorable",           :default => false
@@ -397,7 +398,6 @@ ActiveRecord::Schema.define(:version => 20121002191713) do
     t.string   "intro_video_url"
     t.integer  "roles"
     t.integer  "onboarded"
-    t.boolean  "admin"
     t.integer  "email_on"
     t.integer  "setup"
     t.integer  "intro_video_id"
@@ -432,10 +432,10 @@ ActiveRecord::Schema.define(:version => 20121002191713) do
     t.integer  "vimeo_id"
     t.datetime "created_at",                         :null => false
     t.datetime "updated_at",                         :null => false
-    t.integer  "startup_id"
     t.boolean  "vimeod",          :default => false
     t.string   "type"
     t.string   "title"
+    t.integer  "startup_id"
     t.string   "image"
     t.string   "external_url"
   end
