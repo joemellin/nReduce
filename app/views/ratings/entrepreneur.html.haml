@@ -36,20 +36,23 @@
         .span5
           %h2 2) Submit a Before & After Video Last Week
           .checkin
-            .week= @current_checkin.time_label
-            .right.after
-              After
-              - if @current_checkin.after_completed?
-                .completed &#x2713;
-              - else
-                .incomplete &#x2717;
-            .left.before
-              Before
-              - if @current_checkin.before_completed?
-                .completed &#x2713;
-              - else
-                .incomplete &#x2717;
-            .clear
+            - if @previous_checkin.present?
+              .week= @previous_checkin.time_label
+              .right.after
+                After
+                - if @previous_checkin.after_completed?
+                  .completed &#x2713;
+                - else
+                  .incomplete &#x2717;
+              .left.before
+                Before
+                - if @previous_checkin.before_completed?
+                  .completed &#x2713;
+                - else
+                  .incomplete &#x2717;
+              .clear
+            - else
+              .week (none)
 
         
   - else

@@ -138,6 +138,10 @@ class Startup < ActiveRecord::Base
     Checkin.find(cid) if cid.present?
   end
 
+  def previous_checkin
+    checkins.ordered.where(['created_at < ? AND created_at > ?', Checkin.prev_after_checkin, Checkin.prev_after_checkin - 1.week]).first
+  end
+
   def current_checkin_id
     Cache.get(['current_checkin', self], nil, true){
       c = checkins.ordered.where(['created_at > ?', Checkin.prev_after_checkin]).first
@@ -208,7 +212,7 @@ class Startup < ActiveRecord::Base
 
   def investor_mentor_elements(show_startup_details = false)
     profile_completeness = self.profile_completeness_percent
-    checkin_last_week = self.current_checkin
+    checkin_last_week = self.previous_checkin
     num_screenshots = self.screenshots.count
     elements = {
       :checked_in_within_the_last_week => checkin_last_week.present? && checkin_last_week.completed?,
