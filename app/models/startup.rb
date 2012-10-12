@@ -134,11 +134,15 @@ class Startup < ActiveRecord::Base
    # Returns the checkin for this nReduce week (Tue 4pm - next Tue 4pm)
   def current_checkin(reset_cache = false)
     self.reset_current_checkin_cache if reset_cache
-    cid = Cache.get(['current_checkin', self], nil, true){
+    cid = self.current_checkin_id
+    Checkin.find(cid) if cid.present?
+  end
+
+  def current_checkin_id
+    Cache.get(['current_checkin', self], nil, true){
       c = checkins.ordered.where(['created_at > ?', Checkin.prev_after_checkin]).first
       c.id if c.present?
     }
-    Checkin.find(cid) if cid.present?
   end
 
   def reset_current_checkin_cache
@@ -164,40 +168,23 @@ class Startup < ActiveRecord::Base
     Checkin.num_consecutive_checkins_for_startup(self)
   end
 
-    # Returns hash of all requirements to be allowed to search for a mentor - and whether this startup has met them
-  def mentor_and_investor_elements
-    #consecutive_checkins = self.number_of_consecutive_checkins
-    #num_awesomes = self.awesomes.count
-    #my_rating = self.rating.blank? ? 0 : self.rating
-    profile_completeness = self.profile_completeness_percent
-    checkin_last_week = self.current_checkin
-    elements = {
-      #:consecutive_checkins => { :value => consecutive_checkins, :passed => consecutive_checkins >= 4 },
-      #:num_awesomes => {:value => num_awesomes, :passed => num_awesomes >= 10 },
-      #:community_status => {:value => my_rating, :passed => my_rating >= 1.0 },
-      :checked_in_within_the_last_week => {:value => nil, :passed => checkin_last_week.present? && checkin_last_week.completed? },
-      :startup_profile_completeness => {:value => "#{(profile_completeness * 100).round}%", :passed => profile_completeness == 1.0 }
-    }
-    passed = 0
-    elements.each{|name, e| passed += 1 if e[:passed] == true }
-    elements[:total] = {:value => "#{passed} of #{elements.size}", :passed => passed == elements.size}
-    elements
-  end
-
-   # Returns true if mentor & investor elements all pass
-   # commented out: they haven't invited an nreduce mentor in the last week
-  def can_access_mentors_and_investors?
-    # relationships = self.relationships.startup_to_user.approved.where(['created_at > ?', Time.now - 1.week]).includes(:connected_with)
-    # relationships.each do |r|
-    #   can_invite = false if r.connected_with.roles?(:nreduce_mentor)
-    # end
-    (self.investable? || self.mentorable?) && mentor_and_investor_elements[:total][:passed] == true
-    true
-  end
-
   # They can enter from their weekly class if they have completed their profile and are connected to four other startups
   def can_enter_nreduce?
     self.profile_completeness_percent == 1.0 && self.connected_to_ids('Startup').size >= 4
+  end
+
+      # Returns hash of all elements + each team member's completeness as 
+  def profile_elements(show_team_member_details = false)
+    elements = {
+      :elevator_pitch => (!self.elevator_pitch.blank? && (self.elevator_pitch.size > 10)), 
+      :markets => !self.cached_industry_list.blank?,
+      :one_liner => self.one_liner.present?
+    }
+    self.team_members.each do |tm|
+      elements["#{tm.name.possessive} Profile".to_url.to_sym] = show_team_member_details ? tm.profile_elements : tm.profile_completeness_percent
+    end
+    #elements[:at_least_four_connections] = self.connected_to_ids('Startup').size >= 4
+    elements
   end
 
     # Calculates profile completeness for all factors
@@ -219,32 +206,43 @@ class Startup < ActiveRecord::Base
     }.to_f
   end
 
-    # Returns hash of all elements + each team member's completeness as 
-  def profile_elements(show_team_member_details = false)
+  def investor_mentor_elements(show_startup_details = false)
+    profile_completeness = self.profile_completeness_percent
+    checkin_last_week = self.current_checkin
+    num_screenshots = self.screenshots.count
     elements = {
-      :elevator_pitch => (!self.elevator_pitch.blank? && (self.elevator_pitch.size > 10)), 
-      :markets => !self.cached_industry_list.blank?,
-      :one_liner => self.one_liner.present?
+      :checked_in_within_the_last_week => checkin_last_week.present? && checkin_last_week.completed?,
+      :pitch_video => self.pitch_video_url.present?,
+      :four_screenshots => num_screenshots == 4 ? true : (num_screenshots == 0 ? 0 : (num_screenshots.to_f / 4.0).round(2))
     }
-    self.team_members.each do |tm|
-      elements[tm.name.to_url.to_sym] = show_team_member_details ? tm.profile_elements : tm.profile_completeness_percent
+    if show_startup_details
+      elements[:startup_profile_completeness] = self.profile_elements(true)
+    else
+      elements[:startup_profile_completeness] = profile_completeness == 1.0 ? true : profile_completeness
     end
-    #elements[:at_least_four_connections] = self.connected_to_ids('Startup').size >= 4
+    self.team_members.each do |tm|
+      elements["#{tm.name} Intro Video".to_url.to_sym] = tm.intro_video_url.present?
+    end
     elements
   end
 
-  def investor_profile_completeness_percent
-    total = completed = 0.0
-    completed += 1 unless self.pitch_video_url.blank?
-    total += 1
-    self.team_members.each do |tm|
-      completed += 1 unless tm.intro_video_url.blank?
-      total += 1
+  def investor_mentor_completeness_percent
+    completed = 0.0
+    pe = self.investor_mentor_elements
+    total = pe.size.to_f
+    pe.each do |k,v|
+      if v.is_a?(Float)
+        completed += v
+      elsif v == true
+        completed += 1.0
+      end
     end
-    num_screenshots = self.screenshots.count
-    completed += (num_screenshots.to_f / Startup::NUM_SCREENSHOTS.to_f) unless num_screenshots == 0
-    total += 1
     (completed / total).round(2)
+  end
+     # Returns true if mentor & investor elements all pass
+   # commented out: they haven't invited an nreduce mentor in the last week
+  def can_access_mentors_and_investors?
+    (self.investable? || self.mentorable?) && investor_mentor_completeness_percent == 1.0
   end
 
   def self.stages

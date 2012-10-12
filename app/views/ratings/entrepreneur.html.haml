@@ -34,16 +34,8 @@
             Get Feedback From Mentors, Investors and Apply to Become an nStar
 
           %br/
-          %h3{:style => 'margin-bottom: 10px'} To Be Eligible:
-          .startup_elements
-            - @startup_elements.each do |k,v|
-              .element
-                - if v[:passed]
-                  &#x2713;
-                - else
-                  •
-                  = v[:value]
-                = k.to_s.titleize
+          %h3{:style => 'margin-bottom: 10px'} To Be Eligible You Need To Complete:
+          .startup_elements!= format_profile_elements(@startup_elements)
     - else
       = render 'ratings/startup'
 
