@@ -86,7 +86,7 @@ class RatingsController < ApplicationController
   protected
 
   def calculate_suggested_startup_completeness
-    @total_suggested_startups = 5
+    @total_suggested_startups = User::INVESTOR_MENTOR_STARTUPS_PER_WEEK
     @num_startups_left = current_user.suggested_relationships('Startup').count
     return if @num_startups_left == 0
     @pct_complete = ((@num_startups_left.to_f / @total_suggested_startups.to_f) * 100).to_i
