@@ -37,6 +37,7 @@ class Checkin < ActiveRecord::Base
 
   @queue = :checkin_message
 
+    # Returns hash of {:startup_id => current_checkin}
   def self.current_checkin_for_startups(startups = [])
     return {} if startups.blank?
     # next_checkin = Checkin.next_checkin_type_and_time
@@ -47,6 +48,14 @@ class Checkin < ActiveRecord::Base
       checkins = Checkin.where(:startup_id => startups.map{|s| s.id }).where(['completed_at > ?', start_time])
     end
     checkins.inject({}){|res, e| res[e.startup_id] = e; res }
+  end
+
+  # Returns a given number of checkins for startups
+  def self.for_startups(startups = [], num_weeks = 4)
+    week = Week.integer_for_time(Time.now)
+    1.upto(num_weeks){ week = Week.previous(week) }
+    checkins = Checkin.where(:startup_id => startups.map{|s| s.id }).where(['week >= ?', week]).order('week DESC').all
+    Hash.by_key(checkins, :startup_id, nil, true)
   end
 
   def self.in_a_checkin_window?

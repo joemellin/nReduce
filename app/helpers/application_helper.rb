@@ -137,7 +137,7 @@ module ApplicationHelper
       if is_complete.is_a?(Hash)
         team_mate = format_profile_elements(is_complete)
         unless team_mate.blank?
-          ret += "<br /><strong>#{name.to_s.titleize}</strong>#{team_mate}" 
+          ret += "<strong>#{name.to_s.titleize}</strong>#{team_mate}" 
         end
       else
         # if team then the value is an integer of % completeness

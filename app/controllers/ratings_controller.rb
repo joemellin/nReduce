@@ -13,11 +13,14 @@ class RatingsController < ApplicationController
           @contact_in_data = Rating.chart_data_from_ratings(@ratings, :contact_in)
         end
       else
-        @startup_elements = @startup.mentor_and_investor_elements
+        @startup_elements = @startup.investor_mentor_elements(true)
       end
       render :action => :entrepreneur
     else
       authorize! :see_ratings_page, current_user
+      @startups = @entity.connected_to
+      # Will grab four weeks of checkins for these startups
+      @checkins_by_startup = Checkin.for_startups(@startups, 4)
       calculate_suggested_startup_completeness
       render :action => :mentor_investor
     end
