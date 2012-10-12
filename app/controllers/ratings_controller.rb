@@ -23,6 +23,7 @@ class RatingsController < ApplicationController
       @checkins_by_week = Checkin.for_startups_by_week(startups, 20)
       @startups_by_id =  Hash.by_key(startups, :id)
       @total_num_ratings = current_user.ratings.count
+      @total_value_adds = current_user.ratings_awesomes.count
       # Will grab four weeks of checkins for these startups
       calculate_suggested_startup_completeness
       render :action => :mentor_investor

@@ -23,6 +23,7 @@ class User < ActiveRecord::Base
   has_many :connected_with_relationships, :as => :connected_with, :class_name => 'Relationship', :dependent => :destroy
   has_many :screenshots
   has_many :ratings
+  has_many :ratings_awesomes, :through => :ratings, :source => :awesomes
   has_many :questions
 
   # Include default devise modules. Others available are:
