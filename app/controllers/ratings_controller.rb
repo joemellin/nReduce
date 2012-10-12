@@ -19,11 +19,18 @@ class RatingsController < ApplicationController
     else
       authorize! :see_ratings_page, current_user
       # startups = Hash.by_key(current_user.connected_to, :id)
-      startups = Startup.limit(50).all
+      startups = Startup.limit(10).all + [Startup.find(319)]
       @checkins_by_week = Checkin.for_startups_by_week(startups, 20)
       @startups_by_id =  Hash.by_key(startups, :id)
       @total_num_ratings = current_user.ratings.count
       @total_value_adds = current_user.ratings_awesomes.count
+      if current_user.investor?
+        @user_type = 'Investor'
+        @total_people = User.with_roles(:investor).count 
+      elsif current_user.mentor?
+        @user_type = 'Mentor'
+        @total_people = User.with_roles(:mentor).count
+      end
       # Will grab four weeks of checkins for these startups
       calculate_suggested_startup_completeness
       render :action => :mentor_investor
@@ -87,7 +94,7 @@ class RatingsController < ApplicationController
 
   def calculate_suggested_startup_completeness
     @total_suggested_startups = User::INVESTOR_MENTOR_STARTUPS_PER_WEEK
-    @num_startups_left = current_user.suggested_relationships('Startup').count
+    @num_startups_left = current_user.suggested_relationships('Startup').count - @total_suggested_startups
     return if @num_startups_left == 0
     @pct_complete = ((@num_startups_left.to_f / @total_suggested_startups.to_f) * 100).to_i
   end
