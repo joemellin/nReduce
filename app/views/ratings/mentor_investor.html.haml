@@ -1,8 +1,45 @@
-%h1 Review Startups
-%br/
-%br/
-- if @num_startups_left > 0 && can?(:investor_mentor_connect_with_startups, current_user)
-  You have #{pluralize(@num_startups_left, 'startup')} to review.
-  = link_to 'Start Now', new_rating_path, :class => 'btn btn-success btn-large'
-- else
-  Thanks for reviewing startups - we will email you when we have more to check out.
+.row
+  .span1
+    %h2= @total_num_ratings
+    #{"# of Teams Reviewed"}
+  .span1
+    %h2 ??
+    #{"# of Value Adds"}
+  .span1
+    %h2 ??
+    Your Rank of XX
+  .span9
+    .right
+      You have met #{@num_startups_left}/#{@total_suggested_startups} startups you were matched with this week.
+      - if @num_startups_left > 0 && can?(:investor_mentor_connect_with_startups, current_user)
+        = link_to 'Meet Teams', new_rating_path, :class => 'btn btn-success btn-large'
+    .clear
+
+.row
+  .span4
+    %p
+  .span2 Goal
+  .span2 Accomplished?
+  .span2 Metric
+  .span2 Help Needed
+- @checkins_by_week.each do |week, checkins|
+  .row
+    - time_window = Week.window_for_integer(week)
+    .span12
+      #{time_window.first.strftime('%b %-d')}-#{time_window.last.strftime('%b %-d')}
+  - checkins.each do |checkin|
+    - startup = @startups_by_id[checkin.startup_id]
+    .row
+      .span2
+        - startup.team_members.each do |tm|
+          = image_tag(user_avatar_url(tm))
+      .span2= startup.name
+      .span2
+        - if checkin.start_focus.blank?
+          %p
+        - else
+          = checkin.start_focus
+      .span2= checkin.accomplished? ? 'Yes' : 'No'
+      .span1
+        %p
+      .span3= truncate(checkin.end_comments, :length => 100)

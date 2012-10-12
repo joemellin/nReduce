@@ -27,19 +27,15 @@
     - if @startup_elements.present?
       .row.investor_profile_inactive
         %center
-          
           %br/
           %br/
           %h2
             Get Feedback From Mentors, Investors and Apply to Become an nStar
-
           %br/
           %h3{:style => 'margin-bottom: 10px'} To Be Eligible You Need To Complete:
           .startup_elements!= format_profile_elements(@startup_elements)
     - else
       = render 'ratings/startup'
-
-    
 
 
 

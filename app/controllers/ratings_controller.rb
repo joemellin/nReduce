@@ -18,9 +18,12 @@ class RatingsController < ApplicationController
       render :action => :entrepreneur
     else
       authorize! :see_ratings_page, current_user
-      @startups = @entity.connected_to
+      # startups = Hash.by_key(current_user.connected_to, :id)
+      startups = Startup.limit(50).all
+      @checkins_by_week = Checkin.for_startups_by_week(startups, 20)
+      @startups_by_id =  Hash.by_key(startups, :id)
+      @total_num_ratings = current_user.ratings.count
       # Will grab four weeks of checkins for these startups
-      @checkins_by_startup = Checkin.for_startups(@startups, 4)
       calculate_suggested_startup_completeness
       render :action => :mentor_investor
     end
