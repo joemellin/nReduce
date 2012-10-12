@@ -8,16 +8,16 @@
   .span1
     %h2 ??
     Your Rank of XX
-  .span9
-    .right
+  .span2
+    %p
+  .span7
+    .center
       You have met #{@num_startups_left}/#{@total_suggested_startups} startups you were matched with this week.
-      .progress{:align => 'left'}
-        .bar{:style => "width: #{@pct_complete}%"}
-      - if @num_startups_left > 0 && can?(:investor_mentor_connect_with_startups, current_user)
-        .right= link_to 'Meet Teams', new_rating_path, :class => 'btn btn-success btn-large'
-        .clear
-    .clear
-
+    .progress{:align => 'left'}
+      .bar{:style => "width: #{@pct_complete}%"}
+    - if @num_startups_left > 0 && can?(:investor_mentor_connect_with_startups, current_user)
+      .right= link_to 'Meet Teams', new_rating_path, :class => 'btn btn-success btn-large'
+      .clear
 .row
   .span4
     %p
