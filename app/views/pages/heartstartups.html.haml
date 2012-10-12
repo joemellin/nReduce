@@ -1,15 +1,16 @@
 - content_for :subtitle do
   nReduce Hearts Startups
-
-.span12.center= image_tag 'heartstartups.png'
-.home_page.myriad_light.center{:style => 'padding-top: 20px'}
-  %h3 And so do these Awesome People!
-  %br/
-  %br/
+.row{:style => 'padding-top: 60px'}
+  .span12.center= image_tag 'heartstartups.png'
+.row{:style => 'padding-top: 20px'}
+  .home_page.myriad_light.center
+    %h3 And so do these Awesome People!
+    %br/
+    %br/
 .row
-  .span3.center= image_tag 'nengine.png'
-  .span3.center= image_tag 'nblueseed.png'
-  .span3.center= image_tag 'ncofounderslab.png'
-  .span3.center= image_tag 'angelco.png'
+  .span3.center= link_to image_tag('nengine.png'), 'http://engineadvocacy.org/', :target => '_blank'
+  .span3.center= link_to image_tag('nblueseed.png'), 'http://blueseed.co/', :target => '_blank'
+  .span3.center= link_to image_tag('ncofounderslab.png'), 'http://www.cofounderslab.com/', :target => '_blank'
+  .span3.center= link_to image_tag('angelco.png'), 'http://www.angel.co', :target => '_blank'
 .row
-  .span3.center= image_tag 'f6s.png'
+  .span3.center= link_to image_tag('f6s.png'), 'http://www.f6s.com/', :target => '_blank'
