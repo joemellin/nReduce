@@ -216,7 +216,7 @@ class Startup < ActiveRecord::Base
       :four_screenshots => num_screenshots == 4 ? true : (num_screenshots == 0 ? 0 : (num_screenshots.to_f / 4.0).round(2))
     }
     if show_startup_details
-      elements[:startup_profile_completeness] = self.profile_elements(true)
+      elements.merge!(self.profile_elements(true))
     else
       elements[:startup_profile_completeness] = profile_completeness == 1.0 ? true : profile_completeness
     end

@@ -1,4 +1,52 @@
 .board_room {
+  .entry_page {
+    .box {
+      border-radius: 15px;
+      border: 4px solid #26A9EB;
+      width: 250px;
+      height: 250px;
+      padding: 10px;
+      margin-bottom: 5px;
+      color: #666;
+      font-size: 20px;
+    }
+    .box.mentors {
+      .number {
+        font-size: 140px;
+        line-height: 200px;
+      }
+    }
+    .box.investors {
+      font-size: 60px;
+      line-height: 100px;
+    }
+    .startup_elements, .checkin {
+      margin-left: auto;
+      margin-right: auto;
+      width: 200px;
+    }
+    .checkin {
+      margin-top: 20px;
+      font-size: 16px;
+      .week {
+        text-align: center; 
+      }
+      .before, .after {
+        margin: 20px;
+        text-align: center;
+      }
+      .completed, .incomplete {
+        font-size: 80px;
+        line-height: 80px;
+      }
+      .completed {
+        color: green;
+      }
+      .incomplete {
+        color: #666;
+      }
+    }
+  }
   .ranking {
     h2 { font-size: 5em; }
     margin-right: 50px;

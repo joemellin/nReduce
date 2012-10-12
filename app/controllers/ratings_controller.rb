@@ -13,7 +13,9 @@ class RatingsController < ApplicationController
           @contact_in_data = Rating.chart_data_from_ratings(@ratings, :contact_in)
         end
       else
+        @num_mentors = User.with_roles(:nreduce_mentor).count
         @startup_elements = @startup.investor_mentor_elements(true)
+        @current_checkin = @startup.current_checkin
       end
       render :action => :entrepreneur
     else
@@ -29,7 +31,7 @@ class RatingsController < ApplicationController
         @total_people = User.with_roles(:investor).count 
       elsif current_user.mentor?
         @user_type = 'Mentor'
-        @total_people = User.with_roles(:mentor).count
+        @total_people = User.with_roles(:nreduce_mentor).count
       end
       # Will grab four weeks of checkins for these startups
       calculate_suggested_startup_completeness
