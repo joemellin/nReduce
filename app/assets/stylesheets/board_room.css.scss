@@ -1,0 +1,75 @@
+.board_room {
+  .ranking {
+    h2 { font-size: 5em; }
+    margin-right: 50px;
+  }
+  .num_met {
+    margin-bottom: 8px;
+  }
+  .teams {
+    margin-top: 15px;
+    border-top: 1px solid #efefef;
+    .header {
+      padding-top: 6px;
+      font-weight: bold;
+      margin-bottom: -20px;
+      .goal { padding-left: 140px; }
+      .accomplished { margin-left: -30px; }
+    }
+    .week {
+      .description {
+        background-color: #fff;
+        color: #666;
+        font-size: 1.2em;
+        padding: 4px;
+        margin-top: 30px;
+        border-bottom: 1px solid #efefef;
+      }
+      .team {
+        height: 75px;
+        overflow-y: hidden;
+        padding-top: 8px;
+        margin-bottom: 8px;
+        background-image: -ms-linear-gradient(top, #FFFFFF 0%, #EFEFEF 100%);
+        background-image: -moz-linear-gradient(top, #FFFFFF 0%, #EFEFEF 100%);
+        background-image: -o-linear-gradient(top, #FFFFFF 0%, #EFEFEF 100%);
+        background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #FFFFFF), color-stop(1, #EFEFEF));
+        background-image: -webkit-linear-gradient(top, #FFFFFF 0%, #EFEFEF 100%);
+        background-image: linear-gradient(to bottom, #FFFFFF 0%, #EFEFEF 100%);
+
+        .team_members {
+          padding: 8px 0 0 4px;
+        }
+        .name, .help {
+          padding: 4px;
+        }
+        .help a, .goal a{
+          color: #666;
+        }
+        .help { padding-right: 15px;}
+        .name {
+          width: 130px;
+          font-weight: 600;
+          font-size: 1.4em;
+          line-height: 68px;
+        }
+        .goal, .help {
+          line-height: 68px;
+          font-size: 1.2em;
+        }
+        .accomplished, .not_accomplished, .metric {
+          font-size: 1.4em;
+          font-weight: bold;
+          line-height: 68px;
+        }
+        .metric { white-space:nowrap; }
+        .accomplished, .metric .increase {
+          color: green;
+        }
+        .metric .decrease, .not_accomplished {
+          color: #666;
+        }
+      }
+    }
+  }
+}
