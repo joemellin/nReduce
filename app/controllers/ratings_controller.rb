@@ -14,7 +14,7 @@ class RatingsController < ApplicationController
         end
       else
         @num_mentors = User.with_roles(:nreduce_mentor).count
-        @startup_elements = @startup.investor_mentor_elements(true)
+        @startup_elements = @startup.investor_mentor_elements
         @previous_checkin = @startup.previous_checkin
       end
       render :action => :entrepreneur
