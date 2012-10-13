@@ -195,22 +195,12 @@ class Startup < ActiveRecord::Base
     # Returns total percent out of 1 (eg: 0.25 for 25% completeness)
   def profile_completeness_percent
     Cache.get(['profile_c', self], nil, true){
-      total = completed = 0.0
-      self.profile_elements.each do |element, is_completed|
-        total += 1.0
-        # Team member completeness %
-        if is_completed.is_a? Float
-          completed += is_completed
-        # Boolean completeness
-        else
-          completed += 1.0 if is_completed
-        end
-      end
+      completed, total = calculate_completeness(self.profile_elements)
       (completed / total).round(2)
     }.to_f
   end
 
-  def investor_mentor_elements(show_startup_details = false)
+  def investor_mentor_elements
     profile_completeness = self.profile_completeness_percent
     checkin_last_week = self.previous_checkin
     num_screenshots = self.screenshots.count
@@ -218,14 +208,10 @@ class Startup < ActiveRecord::Base
       :startup_profile => {
         :checked_in_last_week => checkin_last_week.present? && checkin_last_week.completed?,
         :pitch_video => self.pitch_video_url.present?,
-        :four_screenshots => num_screenshots == 4 ? true : (num_screenshots == 0.0 ? 0.0 : (num_screenshots.to_f / 4.0).round(2))
+        :add_four_screenshots => num_screenshots == 4 ? true : (num_screenshots == 0.0 ? 0.0 : (num_screenshots.to_f / 4.0).round(2))
       }
     }
-    if show_startup_details
-      elements[:startup_profile].merge!(self.profile_elements(true))
-    else
-      elements[:startup_profile_completeness] = profile_completeness == 1.0 ? true : profile_completeness
-    end
+    elements[:startup_profile].merge!(self.profile_elements(true))
     self.team_members.each do |tm|
       elements["#{tm.name} Intro Video".to_url.to_sym] = tm.intro_video_url.present?
     end
@@ -233,18 +219,26 @@ class Startup < ActiveRecord::Base
   end
 
   def investor_mentor_completeness_percent
-    completed = 0.0
-    pe = self.investor_mentor_elements
-    total = pe.size.to_f
-    pe.each do |k,v|
-      if v.is_a?(Float)
-        completed += v
-      elsif v == true
-        completed += 1.0
-      end
-    end
+    completed, total = calculate_completeness(self.investor_mentor_elements)
     (completed / total).round(2)
   end
+
+  def calculate_completeness(hash, completed = 0.0, total = 0.0)
+    hash.each do |k,v|
+      if v.is_a?(Hash)
+        completed, total = calculate_completeness(v, completed, total)
+      else
+        if v.is_a?(Float)
+          completed += v
+        elsif v == true
+          completed += 1.0
+        end
+        total += 1.0
+      end
+    end
+    [completed, total]
+  end
+
      # Returns true if mentor & investor elements all pass
    # commented out: they haven't invited an nreduce mentor in the last week
   def can_access_mentors_and_investors?
