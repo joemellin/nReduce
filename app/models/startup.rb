@@ -215,12 +215,14 @@ class Startup < ActiveRecord::Base
     checkin_last_week = self.previous_checkin
     num_screenshots = self.screenshots.count
     elements = {
-      :checked_in_within_the_last_week => checkin_last_week.present? && checkin_last_week.completed?,
-      :pitch_video => self.pitch_video_url.present?,
-      :four_screenshots => num_screenshots == 4 ? true : (num_screenshots == 0.0 ? 0.0 : (num_screenshots.to_f / 4.0).round(2))
+      :startup_profile => {
+        :checked_in_last_week => checkin_last_week.present? && checkin_last_week.completed?,
+        :pitch_video => self.pitch_video_url.present?,
+        :four_screenshots => num_screenshots == 4 ? true : (num_screenshots == 0.0 ? 0.0 : (num_screenshots.to_f / 4.0).round(2))
+      }
     }
     if show_startup_details
-      elements.merge!(self.profile_elements(true))
+      elements[:startup_profile].merge!(self.profile_elements(true))
     else
       elements[:startup_profile_completeness] = profile_completeness == 1.0 ? true : profile_completeness
     end
