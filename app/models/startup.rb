@@ -223,6 +223,8 @@ class Startup < ActiveRecord::Base
     (completed / total).round(2)
   end
 
+  # Will calculate profile completeness on multi-dimensional hash
+  # Returns array of [completed, total] float values
   def calculate_completeness(hash, completed = 0.0, total = 0.0)
     hash.each do |k,v|
       if v.is_a?(Hash)
