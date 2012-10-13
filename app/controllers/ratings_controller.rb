@@ -60,7 +60,8 @@ class RatingsController < ApplicationController
     @instrument = @startup.instruments.first
     @measurements = @instrument.measurements.ordered_asc.all unless @instrument.blank?
 
-    @checkins = @startup.checkins.ordered
+    @checkins = @startup.checkins.ordered.first
+    #@checkins ||= Checkin.completed.limit(1)
   end
 
   def create
@@ -96,7 +97,7 @@ class RatingsController < ApplicationController
 
   def calculate_suggested_startup_completeness
     @total_suggested_startups = User::INVESTOR_MENTOR_STARTUPS_PER_WEEK
-    @num_startups_left = current_user.suggested_relationships('Startup').count - @total_suggested_startups
+    @num_startups_left = (current_user.suggested_relationships('Startup').count - @total_suggested_startups).abs
     return if @num_startups_left == 0
     @pct_complete = ((@num_startups_left.to_f / @total_suggested_startups.to_f) * 100).to_i
   end
