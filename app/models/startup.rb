@@ -244,7 +244,7 @@ class Startup < ActiveRecord::Base
      # Returns true if mentor & investor elements all pass
    # commented out: they haven't invited an nreduce mentor in the last week
   def can_access_mentors_and_investors?
-    (self.investable? || self.mentorable?) && investor_mentor_completeness_percent == 1.0
+    investor_mentor_completeness_percent == 1.0
   end
 
   def self.stages
