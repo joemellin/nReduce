@@ -217,7 +217,7 @@ class Startup < ActiveRecord::Base
     elements = {
       :checked_in_within_the_last_week => checkin_last_week.present? && checkin_last_week.completed?,
       :pitch_video => self.pitch_video_url.present?,
-      :four_screenshots => num_screenshots == 4 ? true : (num_screenshots == 0 ? 0 : (num_screenshots.to_f / 4.0).round(2))
+      :four_screenshots => num_screenshots == 4 ? true : (num_screenshots == 0.0 ? 0.0 : (num_screenshots.to_f / 4.0).round(2))
     }
     if show_startup_details
       elements.merge!(self.profile_elements(true))
