@@ -61,7 +61,10 @@ class RatingsController < ApplicationController
     @measurements = @instrument.measurements.ordered_asc.all unless @instrument.blank?
 
     @checkins = @startup.checkins.ordered.first
-    #@checkins ||= Checkin.completed.limit(1)
+    @checkins ||= Checkin.completed.limit(1)
+
+    @videos = User.find(810).videos.vimeod.all
+    @vimeo_js = true
   end
 
   def create

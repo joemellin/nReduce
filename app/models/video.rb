@@ -13,6 +13,8 @@ class Video < ActiveRecord::Base
   validates_presence_of :external_id
   validate :video_is_unique
 
+  scope :vimeod, where(:vimeod => true)
+
   mount_uploader :image, BaseUploader # carrierwave file uploads
 
   @queue = :video
@@ -30,7 +32,7 @@ class Video < ActiveRecord::Base
   # Method to get embed code - no matter what kind of video
   def embed_code(width = 500, height = 315)
     if self.vimeod?
-      '<iframe src="http://player.vimeo.com/video/' + self.vimeo_id.to_s + '?title=0&byline=0&portrait=0" width="' + width.to_s + '" height="' + height.to_s + '" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>'
+      '<iframe src="http://player.vimeo.com/video/' + self.vimeo_id.to_s + '?api=1&player_id=video_' + self.id.to_s + '&title=0&byline=0&portrait=0" id="video_' + self.id.to_s + '" width="' + width.to_s + '" height="' + height.to_s + '" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>'
     else
       self.embed_code_html(width, height)
     end
@@ -202,11 +204,14 @@ class Video < ActiveRecord::Base
 
   def remove_from_vimeo_and_delete_local_file
     # Remove video from vimeo
-    if self.vimeo_id.present?
-      video = Vimeo::Advanced::Video.new(Settings.apis.vimeo.client_id, Settings.apis.vimeo.client_secret, :token => Settings.apis.vimeo.access_token, :secret => Settings.apis.vimeo.access_token_secret)
-      video.delete(self.vimeo_id)
+    begin
+      if self.vimeo_id.present?
+        video = Vimeo::Advanced::Video.new(Settings.apis.vimeo.client_id, Settings.apis.vimeo.client_secret, :token => Settings.apis.vimeo.access_token, :secret => Settings.apis.vimeo.access_token_secret)
+        video.delete(self.vimeo_id)
+      end
+      FileUtils.rm(self.local_file_path) if self.local_file_path.present? && File.exists?(self.local_file_path)
+    rescue
+      logger.info "Couldn't delete Vimeo Video with id #{self.vimeo_id}."
     end
-
-    FileUtils.rm(self.local_file_path) if self.local_file_path.present? && File.exists?(self.local_file_path)
   end
 end

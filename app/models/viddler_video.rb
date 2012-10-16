@@ -75,6 +75,10 @@ type="application/x-shockwave-flash"  pluginspage="http://www.macromedia.com/go/
   protected
 
   def remove_from_viddler
-    ViddlerVideo.client.post('viddler.videos.delete', :video_id => self.external_id)
+    begin
+      ViddlerVideo.client.post('viddler.videos.delete', :video_id => self.external_id)
+    rescue
+      logger.info "Couldn't delete Viddler Video with id #{self.external_id}."
+    end
   end
 end

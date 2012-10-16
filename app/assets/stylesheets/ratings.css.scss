@@ -8,3 +8,15 @@
     .with-errors { padding-left: 10px; }
   }
 }
+
+.video_player {
+  .title {
+    font-size: 1.4em;
+  }
+  .thumbnail {
+    margin: 0 10px 10px 0;
+  }
+  .thumbnail.active {
+    border: 2px solid green;
+  }
+}

@@ -23,6 +23,12 @@ class PagesController < ApplicationController
   def tutorial
   end
 
+  def coworking_location
+    respond_to do |format|
+      format.js
+    end
+  end
+
   def nstar
     @rsvp = Rsvp.new
     @rsvp.demo_day_id = DemoDay.first.id unless DemoDay.first.blank?
