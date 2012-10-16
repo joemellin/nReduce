@@ -18,6 +18,9 @@
     - if @tokbox
       = javascript_include_tag "http://static.opentok.com/v0.91/js/TB.min.js"
 
+    - if @vimeo_js
+      = javascript_include_tag 'http://a.vimeocdn.com/js/froogaloop2.min.js'
+
     = raw content_for(:head)
     = js_settings
     = csrf_meta_tags
