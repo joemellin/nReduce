@@ -42,6 +42,7 @@ class Startup < ActiveRecord::Base
   validates_presence_of :industry_list, :if => :created_but_not_setup_yet?
 
   before_save :format_url
+  before_save :encode_pitch_video
   after_save :reset_cached_elements
   after_create :initiate_relationships_from_invites
   after_create :notify_classmates_of_new_startup
@@ -494,5 +495,16 @@ class Startup < ActiveRecord::Base
       err = true
     end
     err
+  end
+
+  def encode_pitch_video
+    if self.pitch_video_url.present? && (self.pitch_video_url_changed? || self.pitch_video_id.blank?)
+      ext_id = Youtube.id_from_url(self.pitch_video_url)
+      self.pitch_video = Youtube.where(:external_id => ext_id).first
+      self.pitch_video ||= Youtube.new
+      self.pitch_video.external_id = ext_id
+      self.pitch_video.user = self.team_members.first
+    end
+    true
   end
 end

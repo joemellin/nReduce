@@ -61,8 +61,10 @@ class User < ActiveRecord::Base
   after_destroy :remove_from_mailchimp
   before_save :geocode_location
   before_save :ensure_roles_exist
+  before_save :encode_youtube_video
   after_save :reset_cached_elements
   after_save :initialize_teammate_invites_from_emails
+  
 
   acts_as_taggable_on :skills, :industries
 
@@ -702,5 +704,15 @@ class User < ActiveRecord::Base
 
   def new_entrepreneur?
     self.entrepreneur? && self.new_record?
+  end
+
+  def encode_youtube_video
+    if self.intro_video_url.present? && (self.intro_video_url_changed? || self.intro_video_id.blank?)
+      ext_id = Youtube.id_from_url(self.intro_video_url)
+      self.intro_video = Youtube.where(:external_id => ext_id).first
+      self.intro_video ||= Youtube.new
+      self.intro_video.external_id = ext_id
+    end
+    true
   end
 end
