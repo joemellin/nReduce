@@ -233,6 +233,8 @@ class StartupsController < ApplicationController
     @screenshots = @startup.screenshots.ordered
     @instrument = @startup.instruments.first
     @measurements = @instrument.measurements.ordered_asc.all unless @instrument.blank?
+    @videos = @startup.investor_videos
+    @vimeo_js = true
   end
 
   def search
