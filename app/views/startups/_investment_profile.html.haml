@@ -11,32 +11,27 @@
         = industries.size == 1 ? 'Industry: ' : 'Industries: '
         = industries.join(', ')
     .clear
-  .left.video
-    - vid_url = Youtube.embed_url(@startup.pitch_video_url)
-    - if vid_url.blank?
-      [ no pitch video ]
-    - else
-      %iframe{:width => '500', :height => '315', :src => vid_url, :frameborder => 0, :allowfullscreen => true}
-
-    - unless @screenshots.blank?
-      %h3 Product Screenshots
-
-      - c = 0
-      - @screenshots.each do |s|
-        .screenshot.screenshot_modal.left{'data-id' => c}= link_to image_tag(s.image_url(:small)), '#'
-        - c += 1
+  .left.video_player
+    .title
+    - c = 0
+    - @videos.each do |v|
+      - if c == 0
+        .video_wrapper!= display_video(v)
+      - else
+        .hide.video_wrapper!= display_video(v)
+      - c += 1
+    .thumbnails
+      - @videos.each do |v|
+        .left.thumbnail{:class => c == 0 ? 'active' : '', 'data-video-id' => "video_#{v.id}", :style => "background: url('#{v.image_url(:small)}') no-repeat center;"}= image_tag 'play_button.png'
       .clear
 
-      #screenshots_modal.modal.hide
-        .modal-body
-          #screenshots_carousel.carousel.slide
-            .carousel-inner
-              - c = 0
-              - @screenshots.each do |s|
-                .item{:class => c == 0 ? 'active' : ''}= image_tag s.image_url
-                - c += 1
-            %a.carousel-control.left{:href => '#screenshots_carousel', 'data-slide' => 'prev'} &lsaquo;
-            %a.carousel-control.right{:href => '#screenshots_carousel', 'data-slide' => 'next'} &rsaquo;
+
+  - video_data = @videos.map{|v| {:video_id => "video_#{v.id}", :title => 'No data'}}
+
+  :javascript
+    $(function() {
+      vp = new VideoPlayer(#{video_data.to_json}, true);
+    });
 
   .left.checkin_history
     %p{:style => 'font-size: 1em'}
@@ -53,21 +48,42 @@
       = render 'investors/chart', :measurements => @measurements
     - else
       = image_tag 'prelaunch_chart.png'
-
-    %h3 Business Model
-    = simple_format(h(@startup.business_model))
-
-    - unless @startup.market_size.blank?
-      %p
-        %strong Market Size:
-        $#{@startup.market_size}
-        %i (self reported)
-    - unless @startup.founding_date.blank?
-      %p
-        %strong Date Founded:
-        #{@startup.founding_date.strftime('%B %d, %Y')}
-
   .clear
+
+  %h3 Business Model
+  = simple_format(h(@startup.business_model))
+
+  - unless @startup.market_size.blank?
+    %p
+      %strong Market Size:
+      $#{@startup.market_size}
+      %i (self reported)
+  - unless @startup.founding_date.blank?
+    %p
+      %strong Date Founded:
+      #{@startup.founding_date.strftime('%B %d, %Y')}
+
+  - unless @screenshots.blank?
+    %h3 Product Screenshots
+
+    - c = 0
+    - @screenshots.each do |s|
+      .screenshot.screenshot_modal.left{'data-id' => c}= link_to image_tag(s.image_url(:small)), '#'
+      - c += 1
+    .clear
+
+    #screenshots_modal.modal.hide
+      .modal-body
+        #screenshots_carousel.carousel.slide
+          .carousel-inner
+            - c = 0
+            - @screenshots.each do |s|
+              .item{:class => c == 0 ? 'active' : ''}= image_tag s.image_url
+              - c += 1
+          %a.carousel-control.left{:href => '#screenshots_carousel', 'data-slide' => 'prev'} &lsaquo;
+          %a.carousel-control.right{:href => '#screenshots_carousel', 'data-slide' => 'next'} &rsaquo;
+
+ 
 
   .team_members
     %h3 Team

@@ -32,43 +32,60 @@ class window.VideoPlayer
   current_index: null
 
   # Videos should be array of JSON objects, each with a title and video_id attribute
-  initialize = (@videos = [], @autoplay = false) ->
+  constructor: (@videos = [], @autoplay = false) ->
     # Add click listeners for other videos to be played
-    vp = @
-    $('.video_player .thumbnail').click =>
-      vp.playVideo(vp.video_ids.indexOf($(this).data('video-id')))
-    @playVideo(0) if @autoplay
+    vplayer = @
+    $('.video_player .thumbnail').click ->
+      vplayer.playVideo(vp.indexForVideoId($(this).data('video-id')))
+    @triggerAutoplay() if @autoplay 
 
-  playVideo = (index) ->
-    # stop and hide currently playing video
-    if @current_index?
-      current_video = $("##{@videos[current_index].video_id}")[0]
-      if current_video?
-        $f(iframe).api('pause')
-        current_video.hide()
-        $(".video_player .thumbnail[data-video-id=[#{@videos[current_index].video_id}]").removeClass('active')
-      end
-    end
+  triggerAutoplay: ->
+    # Make sure all videos are loaded
+    last_video_id = @videos[@videos.length - 1].video_id
+    vplayer = @
+    $("##{last_video_id}").load( ->
+      vplayer.playVideo(0)
+    )
+
+  playVideo: (index) ->
     # Make sure video exists
     return unless @videos[index]?
+
+    # stop and hide currently playing video
+    if @current_index?
+      current_video = $("##{@videos[@current_index].video_id}")
+      if current_video?
+        $f(current_video[0]).api('pause')
+        current_video.parent().hide()
+        $(".video_player .thumbnail[data-video-id=#{@videos[@current_index].video_id}]").removeClass('active')
+    
     # get video iframe to be played
     video = @videos[index]
-    iframe = $("##{id}")[0]
-    player = $f(iframe)
+    iframe = $("##{video.video_id}")
+    player = $f(iframe[0])
     @current_index = index
     # show this video
-    iframe.show()
-    $(".video_player .thumbnail[data-video-id=[#{video.video_id}]").addClass('active')
+    iframe.parent().show()
+    vplayer = @
+    $(".video_player .thumbnail[data-video-id=#{video.video_id}]").addClass('active')
     player.addEvent('ready', (id) ->
-      player.addEvent('finish', =>
-        @videoFinished(index)
+      player.addEvent('finish', ->
+        vplayer.videoFinished(index)
       )
-      $('.video_player .title').text(video.title) if video.title?
+      # don't show text for now
+      #$('.video_player .title').text(video.title) if video.title?
       # Start playing
       player.api('play')
     )
 
-  videoFinished = (index) ->
+  indexForVideoId: (video_id) ->
+    c = 0
+    for video in @videos
+      return c if video.video_id == video_id 
+      c += 1
+    null
+
+  videoFinished: (index) ->
     @playVideo(index + 1) if @autoplay
 
 

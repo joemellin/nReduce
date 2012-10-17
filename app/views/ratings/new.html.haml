@@ -1,26 +1,4 @@
 .investors
-  - c = 0
-  .video_player
-    .title
-    - @videos.each do |v|
-      - if c == 0
-        != display_video(v)
-      - else
-        .hide.video_wrapper!= display_video(v)
-      - c += 1
-    .thumbnails
-      - @videos.each do |v|
-        .thumbnail.left{:class => c == 0 ? 'active' : '', 'data-video-id' => "video_#{v.id}"}= image_tag v.image_url(:small)
-      .clear
-
-
-  - video_data = @videos.map{|v| {:video_id => v.id, :title => 'No data'}}
-
-  :javascript
-    // $('#video_#{@videos.first.id}').load(function(){
-    //   vimeoAutoplayVideos([#{@videos.map{|v| "'video_#{v.id}'" }.join(',')}]);
-    // });
-    vp = new VideoPlayer(#{video_data.to_json}, true);
 
   = render 'startups/investment_profile'
   %br/

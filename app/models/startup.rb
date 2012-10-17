@@ -131,6 +131,10 @@ class Startup < ActiveRecord::Base
     self.connected_to('User')
   end
 
+  def investor_videos
+    (self.intro_video + self.team_members.each{|tm| tm.intro_video}).delete_if{|v| v.blank? }
+  end
+
    # Returns the checkin for this nReduce week (Tue 4pm - next Tue 4pm)
   def current_checkin(reset_cache = false)
     self.reset_current_checkin_cache if reset_cache

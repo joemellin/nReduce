@@ -41,7 +41,6 @@ class Notification < ActiveRecord::Base
     n
   end
 
-
     # Notifies all startups that are joining the same
   def self.create_for_new_team_joined(startup, weekly_class)
     # need to reload startup as team members are cached (and are nil) when created
@@ -54,7 +53,6 @@ class Notification < ActiveRecord::Base
       Notification.create_and_send(u, startup, :new_team_joined)
     end
   end
-
 
   def self.create_for_join_next_week(startup, next_weeks_class)
     startup.team_members.each do |u|

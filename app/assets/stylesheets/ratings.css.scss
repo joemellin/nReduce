@@ -10,13 +10,20 @@
 }
 
 .video_player {
+  margin-right: 15px;
   .title {
     font-size: 1.4em;
   }
-  .thumbnail {
-    margin: 0 10px 10px 0;
+  .thumbnails {
+    margin-left: 10px;    
+    .thumbnail {
+      cursor: pointer;
+      margin: 0 10px 10px 0;
+      border: 4px solid white;
+    }
+    .thumbnail.active {
+      border: 4px solid green;
+    }
   }
-  .thumbnail.active {
-    border: 2px solid green;
-  }
+  
 }
