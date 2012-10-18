@@ -133,7 +133,7 @@ class Startup < ActiveRecord::Base
   end
 
   def investor_videos
-    ([self.intro_video] + self.team_members.each{|tm| tm.intro_video}).delete_if{|v| v.blank? }
+    ([self.intro_video] + self.team_members.map{|tm| tm.intro_video}).delete_if{|v| v.blank? }
   end
 
    # Returns the checkin for this nReduce week (Tue 4pm - next Tue 4pm)
