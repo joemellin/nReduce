@@ -64,7 +64,7 @@
                   .clear
                 .span1
                   - if checkin.accomplished.nil?
-                    .not_accomplished --
+                    .not_accomplished ?
                   - elsif checkin.accomplished?
                     .accomplished Yes
                   - else
@@ -72,10 +72,12 @@
                 - delta = checkin.measurement.present? ? checkin.measurement.delta : nil
                 .span1
                   .metric
-                    - if checkin.completed? && checkin.measurement.blank?
+                    - if !startup.launched?
                       = image_tag('prelaunch.png')
                     - else
-                      - if delta.nil? || delta == 0.0
+                      - if delta.nil?
+                        ?
+                      - elsif delta == 0.0
                         \--
                       - elsif delta > 0
                         .increase #{image_tag('uparrow.png')} #{delta.round}%
