@@ -198,8 +198,8 @@ class Checkin < ActiveRecord::Base
     current_week = Checkin.week_integer_for_time(Checkin.prev_after_checkin)
     if checkins.first.week < current_week
       while(current_week != checkins.first.week)
-        arr << [false, false]
         current_week = Checkin.previous_week(current_week)
+        arr << [false, false]
       end
     end
     checkins.each do |c|
