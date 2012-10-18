@@ -33,21 +33,43 @@
       vp = new VideoPlayer(#{video_data.to_json}, true);
     });
 
-  .left.checkin_history
-    %p{:style => 'font-size: 1em'}
-      Checkin
-      %br/
-      History:
-    - @checkin_history.each do |status|
-      .left.checkin{:class => status.first == true ? 'done' : ''} &nbsp;
-      .left.checkin{:class => status.last == true ? 'done' : ''} &nbsp;
-      .clear
-  .left.traction
-    %h3 Traction
-    - if !@instrument.blank? && !@measurements.blank?
-      = render 'investors/chart', :measurements => @measurements
-    - else
-      = image_tag 'prelaunch_chart.png'
+  .left
+    .left.checkin_history
+      %p{:style => 'font-size: 1em'}
+        Checkin
+        %br/
+        History:
+      - @checkin_history.each do |status|
+        .left.checkin{:class => status.first == true ? 'done' : ''} &nbsp;
+        .left.checkin{:class => status.last == true ? 'done' : ''} &nbsp;
+        .clear
+    .left.traction
+      %h3 Traction
+      - if !@instrument.blank? && !@measurements.blank?
+        = render 'investors/chart', :measurements => @measurements
+      - else
+        = image_tag 'prelaunch_chart.png'
+    .clear
+    - unless @screenshots.blank?
+      .screenshots
+        %h3 Product Screenshots
+
+        - c = 0
+        - @screenshots.each do |s|
+          .screenshot.screenshot_modal.left{'data-id' => c}= link_to image_tag(s.image_url(:small)), '#'
+          - c += 1
+        .clear
+
+      #screenshots_modal.modal.hide
+        .modal-body
+          #screenshots_carousel.carousel.slide
+            .carousel-inner
+              - c = 0
+              - @screenshots.each do |s|
+                .item{:class => c == 0 ? 'active' : ''}= image_tag s.image_url
+                - c += 1
+            %a.carousel-control.left{:href => '#screenshots_carousel', 'data-slide' => 'prev'} &lsaquo;
+            %a.carousel-control.right{:href => '#screenshots_carousel', 'data-slide' => 'next'} &rsaquo;
   .clear
 
   %h3 Business Model
@@ -63,26 +85,6 @@
       %strong Date Founded:
       #{@startup.founding_date.strftime('%B %d, %Y')}
 
-  - unless @screenshots.blank?
-    .screenshots
-      %h3 Product Screenshots
-
-      - c = 0
-      - @screenshots.each do |s|
-        .screenshot.screenshot_modal.left{'data-id' => c}= link_to image_tag(s.image_url(:small)), '#'
-        - c += 1
-      .clear
-
-    #screenshots_modal.modal.hide
-      .modal-body
-        #screenshots_carousel.carousel.slide
-          .carousel-inner
-            - c = 0
-            - @screenshots.each do |s|
-              .item{:class => c == 0 ? 'active' : ''}= image_tag s.image_url
-              - c += 1
-          %a.carousel-control.left{:href => '#screenshots_carousel', 'data-slide' => 'prev'} &lsaquo;
-          %a.carousel-control.right{:href => '#screenshots_carousel', 'data-slide' => 'next'} &rsaquo;
 
   .team_members
     %h3 Team
