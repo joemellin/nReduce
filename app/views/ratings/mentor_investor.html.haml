@@ -4,7 +4,7 @@
       %p
     .span4
       .center.num_met
-        You have met #{@num_startups_left}/#{@total_suggested_startups} startups you were matched with this week.
+        You have met #{@num_startups_completed}/#{@total_suggested_startups} startups you were matched with this week.
       .progress
         .bar{:style => "width: #{@pct_complete}%"}
       - if @num_startups_left > 0 && can?(:investor_mentor_connect_with_startups, current_user)
