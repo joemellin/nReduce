@@ -116,8 +116,12 @@ class Startup < ActiveRecord::Base
 
   def self.nreduce_id
     Cache.get('nreduce_id', nil, true){
-      Startup.named('nreduce').to_param
+      Startup.named('nreduce').id
     }
+  end
+
+  def self.nreduce_obfuscated_id
+    ObfuscateId.hide(Startup.nreduce_id)
   end
 
   def launched?

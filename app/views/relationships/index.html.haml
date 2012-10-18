@@ -60,7 +60,7 @@
       - elsif c != 0 and c % 4 == 0
         .clear
 
-  - nreduce_id = Startup.nreduce_id
+  - nreduce_id = Startup.nreduce_obfuscated_id
   - if !current_user.startup_id.blank? and !nreduce_id.blank?
     %h3= link_to 'View nReduce\'s latest checkin', latest_startup_checkins_path(:startup_id => nreduce_id)
 
