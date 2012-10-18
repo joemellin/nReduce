@@ -110,22 +110,31 @@ module Connectable
     return false if !suggested.blank? and (suggested.size >= limit)
 
     # Find all startups this person is connected to, has been suggested, and has rejected
-    ignore_startup_ids = (self.received_relationships.where(:entity_type => 'Startup') + self.initiated_relationships.where(:connected_with_type => 'Startup')).map{|r| r.connected_with_id }
+    if self.is_a?(Startup)
+      ignore_startup_ids = (self.received_relationships.where(:entity_type => 'Startup') + self.initiated_relationships.where(:connected_with_type => 'Startup')).map{|r| r.connected_with_id }
+    elsif self.is_a?(User)
+      ignore_startup_ids = (self.relationships.where(:entity_type => 'Startup') + self.connected_with_relationships.where(:connected_with_type => 'Startup')).map{|r| r.connected_with_id }
+    end
     ignore_startup_ids << self.id if self.is_a?(Startup) # make sure this startup doesn't appear in suggested startups
     ignore_startup_ids << Startup.nreduce_id # hide nreduce from suggested startups
     ignore_startup_ids.uniq!
 
     # Find all startups that checked in last week
-    end_after = Checkin.prev_after_checkin
-    start_after = end_after - 24.hours
-    checkins = Checkin.completed.where(['completed_at >= ? AND completed_at <= ?', start_after, end_after]).includes(:startup).all
+    if self.entrepreneur? || self.is_a?(Startup)
+      end_after = Checkin.prev_after_checkin
+      start_after = end_after - 24.hours
+      checkins = Checkin.completed.where(['completed_at >= ? AND completed_at <= ?', start_after, end_after]).includes(:startup).all
+      startups = checkins.map{|c| c.startup }
+    elsif self.mentor? || self.investor?
+      startups = Startup.all_that_can_access_mentors_investors
+    end
 
-    return suggested if checkins.blank?
+    return suggested if startups.blank?
 
-    1.upto(checkins.size) do
+    1.upto(startups.size) do
       break if suggested.size >= limit
       # Randomly get a startup from one that checked in last week
-      s = checkins.sample.startup
+      s = startups.sample
       # Make sure startup still exists
       next if s.blank?
       # Don't add if they're already connected or we're going to suggest them

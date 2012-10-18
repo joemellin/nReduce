@@ -136,6 +136,16 @@ class Startup < ActiveRecord::Base
     ([self.pitch_video] + self.team_members.map{|tm| tm.intro_video }).delete_if{|v| v.blank? }
   end
 
+  def self.all_that_can_access_mentors_investors
+    return Startup.limit(10)
+    ids = Cache.get('s_i_m', 10.minutes){
+      startup_ids = []
+      Startup.where('investable = 1 OR mentorable = 1').all.map{|s| startup_ids << s.id if s.can_access_mentors_and_investors? }
+      startup_ids
+    }
+    Startup.find(ids)
+  end
+
    # Returns the checkin for this nReduce week (Tue 4pm - next Tue 4pm)
   def current_checkin(reset_cache = false)
     self.reset_current_checkin_cache if reset_cache
