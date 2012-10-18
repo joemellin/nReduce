@@ -277,7 +277,7 @@ class Ability
       u.investor? || (u.entrepreneur? and !u.startup_id.blank?)
     end
 
-    can :see_ratings_page, User if user.nreduce_mentor? || user.investor?
+    can :see_ratings_page, User if user.mentor? || user.investor?
 
     # Investor can see startups if they have contacted less than one startup this week.
     can :investor_mentor_connect_with_startups, User do |u|
