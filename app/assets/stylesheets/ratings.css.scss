@@ -24,6 +24,22 @@
     .thumbnail.active {
       border: 4px solid green;
     }
+  } 
+}
+
+.screenshots {
+  margin-top: 20px;
+}
+
+.team_members {
+  margin-top: 20px;
+  .team_member {
+    .pic {
+      margin-bottom: 15px;
+      img {
+        width: 150px;
+        height: 150px;
+      }
+    }
   }
-  
 }
