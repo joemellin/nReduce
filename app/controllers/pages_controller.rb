@@ -12,7 +12,7 @@ class PagesController < ApplicationController
     #@demo_day = DemoDay.where(:day => Date.today).first
     @home = true
     if user_signed_in?
-      redirect_to work_room_path
+      redirect_to current_user.entrepreneur? ? work_room_path : board_room_path
       return
     end
   end
