@@ -182,6 +182,11 @@ class Video < ActiveRecord::Base
     self.save # will automatically re-queue upload
   end
 
+  # Will find all videos that have been transfered to vimeo but not successfully encoded and try uploading them again.
+  def self.redo_failed_vimeo_transfers
+    Video.where('vimeo_id IS NOT NULL AND vimeod = 0').each{|v| v.redo_vimeo_transfer }
+  end
+
   # END VIMEO-SPECIFIC METHODS
 
   protected
