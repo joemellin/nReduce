@@ -98,7 +98,7 @@
               = link_to_external image_tag('linkedin_32.png'), team_member.linkedin_url
           %p
             %small
-              Skills: #{truncate(team_member.skill_list, :length => 60)}
+              Skills: #{truncate(team_member.skill_list.to_s, :length => 60)}
               %br/
               Located: #{team_member.location}
     .clear
