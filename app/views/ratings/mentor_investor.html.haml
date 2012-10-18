@@ -60,7 +60,7 @@
                     - if checkin.start_focus.blank?
                       %p
                     - else
-                      = truncate(checkin.start_focus, :length => 40)
+                      = truncate(checkin.start_focus, :length => 30)
                   .clear
                 .span1
                   - if checkin.accomplished.nil?
