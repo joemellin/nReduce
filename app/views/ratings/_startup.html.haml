@@ -22,7 +22,7 @@
             %h3 #{r.user.name} would like to connect with you.
           .clear
         - else
-          %h3 Anonymous #{r.mentor? ? 'Mentor' : 'Investor'} saw you #{distance_of_time_in_words_to_now(r.created_at)} ago
+          %h3 Anonymous #{r.user.mentor? ? 'Mentor' : 'Investor'} saw you #{distance_of_time_in_words_to_now(r.created_at)} ago
           .left
             %strong Result:
             - if r.contact_never?
@@ -40,6 +40,6 @@
             .right{:style => 'font-size: .85em; margin-right: 10px;', :align => 'right'}
               Did this feedback help your startup?
               %br/
-              %small Thank the #{r.mentor? ? 'mentor' : 'investor'} by giving them a "#{Awesome.label_for_type('Rating')}"
+              %small Thank the #{r.user.mentor? ? 'mentor' : 'investor'} by giving them a "#{Awesome.label_for_type('Rating')}"
             .clear
         %hr{:style => 'margin: 10px 0 10px 0'}/
