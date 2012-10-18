@@ -10,14 +10,14 @@
       - if @num_startups_left > 0 && can?(:investor_mentor_connect_with_startups, current_user)
         .center= link_to 'Meet Teams', new_rating_path, :class => 'btn btn-success btn-large'
     .span4
-      .ranking.right
-        %h2= @total_num_ratings
-        Team#{@total_num_ratings == 1 ? '' : 's'} Reviewed
-      .ranking.right
-        %h2= @total_value_adds
-        Value Add#{@total_value_adds == 1 ? '' : 's'}
-        %a{:href => '#', :rel => 'tooltip', :title => 'If a team finds your feedback helpful they can give you a value add'}
-          %i.icon-question-sign
+      / .ranking.right
+      /   %h2= @total_num_ratings
+      /   Team#{@total_num_ratings == 1 ? '' : 's'} Reviewed
+      / .ranking.right
+      /   %h2= @total_value_adds
+      /   Value Add#{@total_value_adds == 1 ? '' : 's'}
+      /   %a{:href => '#', :rel => 'tooltip', :title => 'If a team finds your feedback helpful they can give you a value add'}
+      /     %i.icon-question-sign
       / .ranking.right
       /   %h2 ??
       /   Your Rank out of #{pluralize(@total_people, @user_type)}
