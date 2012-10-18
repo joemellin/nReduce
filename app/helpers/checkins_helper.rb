@@ -25,8 +25,10 @@ module CheckinsHelper
     ''
   end
 
-  def display_video(video, show_image = false, width = 500, height = 315)
-    if show_image && video.image?
+  def display_video(video, show_image = false, width = 500, height = 315, small_x = false)
+    if video.blank?
+      image_tag(small_x ? 'novideo_s.png' : 'novideo.png', :style => "width: #{width}px; height: #{height}px;")
+    elsif video.present? && show_image && video.image?
       image_tag video.image.url(:medium), :width => width, :height => height
     else
       video.embed_code(width, height)

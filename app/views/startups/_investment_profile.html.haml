@@ -64,13 +64,14 @@
       #{@startup.founding_date.strftime('%B %d, %Y')}
 
   - unless @screenshots.blank?
-    %h3 Product Screenshots
+    .screenshots
+      %h3 Product Screenshots
 
-    - c = 0
-    - @screenshots.each do |s|
-      .screenshot.screenshot_modal.left{'data-id' => c}= link_to image_tag(s.image_url(:small)), '#'
-      - c += 1
-    .clear
+      - c = 0
+      - @screenshots.each do |s|
+        .screenshot.screenshot_modal.left{'data-id' => c}= link_to image_tag(s.image_url(:small)), '#'
+        - c += 1
+      .clear
 
     #screenshots_modal.modal.hide
       .modal-body
@@ -83,14 +84,12 @@
           %a.carousel-control.left{:href => '#screenshots_carousel', 'data-slide' => 'prev'} &lsaquo;
           %a.carousel-control.right{:href => '#screenshots_carousel', 'data-slide' => 'next'} &rsaquo;
 
- 
-
   .team_members
     %h3 Team
     - @startup.team_members.each do |team_member|
       .team_member.left
-        .top
-          = link_to(image_tag(user_avatar_url(team_member)), team_member)
+        .top.pic
+          = link_to(image_tag(user_avatar_url(team_member, :square)), team_member)
         .bottom
           %h4
             = link_to team_member.name, team_member
