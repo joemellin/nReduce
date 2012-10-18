@@ -32,7 +32,7 @@ class Measurement < ActiveRecord::Base
   end
 
   def previous_measurement
-    Measurement.where(:instrument_id => self.instrument_id).where(['created_at < ?', self.created_at || Time.now]).first
+    Measurement.where(:instrument_id => self.instrument_id).where(['created_at < ?', self.created_at || Time.now]).order('created_at DESC').first
   end
 
   def calculate_delta(prev = nil)
