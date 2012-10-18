@@ -36,10 +36,17 @@ class Measurement < ActiveRecord::Base
   end
 
   def calculate_delta(prev = nil)
-    prev ||= self.previous_measurement
-    return true if self.value.blank? || prev.blank? || prev.value.blank?
-    #delta = (((self.value - prev.value) / prev.value) * 100.0).round(2) unless prev.blank?
-    #self.delta = delta if delta.is_a?(Float)
+    begin
+      prev ||= self.previous_measurement
+      return true if self.value.blank? || prev.blank? || prev.value.blank?
+      if prev.value != 0.0
+        delta = (((self.value - prev.value) / prev.value) * 100.0).round(2) unless prev.blank?
+      end
+      delta = 0.0 if delta.nil? || !delta.is_a?(Float)
+    rescue
+      delta = 0.0
+    end
+    self.delta = delta
     true
   end
 
