@@ -137,7 +137,6 @@ class Startup < ActiveRecord::Base
   end
 
   def self.all_that_can_access_mentors_investors
-    return Startup.limit(10)
     ids = Cache.get('s_i_m', 10.minutes){
       startup_ids = []
       Startup.where('investable = 1 OR mentorable = 1').all.map{|s| startup_ids << s.id if s.can_access_mentors_and_investors? }
