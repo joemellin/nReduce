@@ -54,7 +54,7 @@
                   .team_members
                     - startup.team_members.each do |tm|
                       = link_to image_tag(user_avatar_url(tm)), tm, :title => tm.name, :alt => tm.name
-                .span4
+                .span4{:style => 'margin-left: 6px'}
                   .name.left= link_to startup.name, startup
                   .goal.left
                     - if checkin.start_focus.blank?
