@@ -177,6 +177,11 @@ class Video < ActiveRecord::Base
     Resque.enqueue(Video, self.id) unless self.vimeod?
   end
 
+  def redo_vimeo_transfer
+    self.remove_from_vimeo_and_delete_local_file
+    self.save # will automatically re-queue upload
+  end
+
   # END VIMEO-SPECIFIC METHODS
 
   protected
@@ -210,6 +215,8 @@ class Video < ActiveRecord::Base
         video.delete(self.vimeo_id)
       end
       FileUtils.rm(self.local_file_path) if self.local_file_path.present? && File.exists?(self.local_file_path)
+      self.vimeo_id = nil
+      self.vimeod = false
     rescue
       logger.info "Couldn't delete Vimeo Video with id #{self.vimeo_id}."
     end
