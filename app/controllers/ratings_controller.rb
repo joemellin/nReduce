@@ -21,7 +21,7 @@ class RatingsController < ApplicationController
     else
       authorize! :see_ratings_page, current_user
       startups = current_user.connected_to
-      #startups = Startup.limit(10).all + [Startup.find(319)]
+      startups = Startup.limit(10).all + [Startup.find(319)] if Rails.env.development?
       @checkins_by_week = Checkin.for_startups_by_week(startups, 20)
       @startups_by_id =  Hash.by_key(startups, :id)
       @total_num_ratings = current_user.ratings.count
