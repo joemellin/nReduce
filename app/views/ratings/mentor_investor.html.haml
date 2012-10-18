@@ -70,10 +70,12 @@
                 - delta = checkin.measurement.present? ? checkin.measurement.delta : nil
                 .span1
                   .metric
-                    - if checkin.measurement.blank? || delta.nil?
+                    - if checkin.measurement.blank?
                       = image_tag('prelaunch.png')
                     - else
-                      - if delta > 0
+                      - if delta.nil? || delta == 0.0
+                        No change
+                      - elsif delta > 0
                         .increase #{image_tag('uparrow.png')} #{delta.round}%
                       - elsif delta < 0
                         .decrease #{image_tag('downarrow.png')} #{delta.abs.round}%
