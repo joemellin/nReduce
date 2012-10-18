@@ -90,10 +90,7 @@
     - @startup.team_members.each do |team_member|
       .team_member.left
         .top
-          - if !team_member.intro_video_url.blank?
-            %iframe{:width => '225', :height => '160', :src => Youtube.embed_url(team_member.intro_video_url), :frameborder => 0, :allowfullscreen => true}
-          - else
-            = link_to(image_tag(user_avatar_url(team_member)), team_member)
+          = link_to(image_tag(user_avatar_url(team_member)), team_member)
         .bottom
           %h4
             = link_to team_member.name, team_member
