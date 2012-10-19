@@ -7,7 +7,7 @@ class Ability
     user ||= User.new
 
     cannot :manage, Video
-    cannot :see_ratings_page, User
+    cannot [:see_ratings_page, :read_posts], User
     cannot [:read_post, :repost], Comment
 
     # Admins can do anything
@@ -19,7 +19,7 @@ class Ability
     elsif !user.new_record? and user.has_startup_or_is_mentor_or_investor?
     
       # Abilities if user has a startup
-      if !user.startup_id.blank?
+      if user.startup_id.present?
         can [:manage, :onboard, :onboard_next, :remove_team_member], Startup, :id => user.startup_id
 
         cannot :invite_mentor, Startup # have to remove this ability since we just assigned manage
@@ -324,5 +324,7 @@ class Ability
   
     # Anyone can see demo day
     can [:read, :show, :show_startup], DemoDay
+
+    cannot :read_posts, User unless user.startup_id.present?
   end
 end

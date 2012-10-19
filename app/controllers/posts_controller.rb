@@ -3,6 +3,7 @@ class PostsController < ApplicationController
   load_and_authorize_resource :comment, :parent => false
 
   def index
+    authorize! :read_posts, current_user
     connection_ids = current_user.startup.second_degree_connection_ids
     # Load all comments from this person's 1st and 2nd degree connections, as well as all original posts if these are reposts
     # Groups by original id so we don't get dupes from shares
