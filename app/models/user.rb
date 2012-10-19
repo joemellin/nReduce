@@ -69,6 +69,7 @@ class User < ActiveRecord::Base
   acts_as_taggable_on :skills, :industries
 
   scope :mentor, where(:mentor => true)
+  scope :geocoded, where('lat IS NOT NULL AND lng IS NOT NULL')
 
   mount_uploader :pic, PicUploader # carrierwave file uploads
 
