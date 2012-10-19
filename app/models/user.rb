@@ -56,15 +56,14 @@ class User < ActiveRecord::Base
   validates_presence_of :linkedin_url, :if => :profile_fields_required?
   validates_presence_of :startup, :if => :new_entrepreneur?
 
+  before_validation :encode_intro_video
   before_create :set_default_settings
   after_create :mailchimp!
   after_destroy :remove_from_mailchimp
   before_save :geocode_location
   before_save :ensure_roles_exist
-  before_save :encode_intro_video
   after_save :reset_cached_elements
   after_save :initialize_teammate_invites_from_emails
-  
 
   acts_as_taggable_on :skills, :industries
 
@@ -709,6 +708,7 @@ class User < ActiveRecord::Base
 
   def encode_intro_video
     if self.intro_video_url.present? && (self.intro_video_url_changed? || self.intro_video_id.blank?)
+      self.intro_video.destroy unless self.intro_video.blank?
       ext_id = Youtube.id_from_url(self.intro_video_url)
       self.intro_video = Youtube.where(:external_id => ext_id).first
       self.intro_video ||= Youtube.new
