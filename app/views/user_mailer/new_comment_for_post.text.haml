@@ -1,0 +1,21 @@
+- if @owner
+  #{@comment.user.name} responded to your post!\n
+- else
+  #{@comment.user.name} responded to your comment!\n
+\n
+\n
+#{@comment.user.name}
+- if @comment.user.startup_id.present?
+  of Team #{@comment.user.startup.name}
+- if @owner
+  wrote on your "#{truncate(@original_post.content, :length => 30)}" post:\n
+- elsif @comment.parent.blank? && @comment.parent.user_id == @user.id
+  They wrote in response to your comment "#{truncate(@comment.parent.content, :length => 30)}":\n
+- else
+  They wrote:\n
+\n
+#{h(@comment.content)}\n
+\n
+\n
+\n
+Respond to #{@comment.user.name}: #{post_url(@original_post)}
