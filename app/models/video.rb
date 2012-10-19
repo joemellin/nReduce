@@ -143,15 +143,21 @@ class Video < ActiveRecord::Base
   def check_if_encoded_and_get_thumbnail_urls(queue_again = false)
     details = self.vimeo_details
     return false if details.blank?
-    # Set as transcoded if it has completed
-    self.vimeod = true if details['is_transcoding'].to_i == 0
-    # Save image thumbnails
-    if details['thumbnails'].present? && details['thumbnails']['thumbnail'].present? && details['thumbnails']['thumbnail'].last['_content'].match(/default\..*\.jpg/) == nil
-      self.remote_image_url = details['thumbnails']['thumbnail'].last['_content']
+    # If it's already been tried twice just re-upload it
+    if self.ecc >= 2
+      self.redo_vimeo_transfer
+    else
+      # Set as transcoded if it has completed
+      self.vimeod = true if details['is_transcoding'].to_i == 0
+      # Save image thumbnails
+      if details['thumbnails'].present? && details['thumbnails']['thumbnail'].present? && details['thumbnails']['thumbnail'].last['_content'].match(/default\..*\.jpg/) == nil
+        self.remote_image_url = details['thumbnails']['thumbnail'].last['_content']
+      elsif queue_again
+        self.ecc += 1
+        Resque.enqueue_in(20.minutes, Video, self.id) # queue to check and see if it got encoded
+        false
+      end
       self.save
-    elsif queue_again
-      Resque.enqueue_in(20.minutes, Video, self.id) # queue to check and see if it got encoded
-      false
     end
   end
 
