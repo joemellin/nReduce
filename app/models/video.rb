@@ -145,6 +145,7 @@ class Video < ActiveRecord::Base
     return false if details.blank?
     # If it's already been tried twice just re-upload it
     if self.ecc >= 2
+      self.ecc = 0
       self.redo_vimeo_transfer
     else
       # Set as transcoded if it has completed
