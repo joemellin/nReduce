@@ -131,7 +131,7 @@ class WeeklyClass < ActiveRecord::Base
 
     clusters = []
     clustered = []
-    while users.size < clustered.size
+    while users.size > clustered.size
       users_left = users - clustered
 
       # Choose a random point
@@ -157,7 +157,7 @@ class WeeklyClass < ActiveRecord::Base
       # Ideally we should find the true center and reassign the lat/lng based on that
       # c.recenter
       # I was using users.delete(e) but that has the potential to delete from the database, so using a slower method now
-      added_users.each{|e| clustered << e }
+      added_users.each{|u| clustered << u }
       clusters.push(c)
     end
     # Sort by clusters that are biggest first
