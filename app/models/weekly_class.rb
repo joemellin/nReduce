@@ -159,8 +159,12 @@ class WeeklyClass < ActiveRecord::Base
     clusters.sort{|a,b| a.user_ids.size <=> b.user_ids.size }.reverse
   end
 
+  # Create clusters from active users last week
   def create_clusters
-    self.clusters = WeeklyClass.create_clusters(self.users)
+    curr_week = Checkin.week_integer_for_time(Time.now)
+    previous_week = Week.previous(curr_week)
+    user_ids = UserAction.where(['created_at > ?', self.time_window.first - 1.week]).group(:user_id).map{|ua| ua.user_id }
+    self.clusters = WeeklyClass.create_clusters(User.where(:id => user_ids).geocoded) unless user_ids.blank?
   end
 
   def stats_for_completed_startups
@@ -189,10 +193,8 @@ class WeeklyClass < ActiveRecord::Base
       self.num_startups = stats[:num_startups]
       self.num_countries = stats[:num_countries]
       self.num_industries = stats[:num_industries]
-      self.clusters = WeeklyClass.create_clusters(us)
-    else
-      self.clusters = []
     end
+    self.create_clusters if self.clusters.blank?
     true
   end
 end
