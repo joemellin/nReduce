@@ -5,9 +5,11 @@ class Video < ActiveRecord::Base
 
   attr_accessible :external_id, :user_id, :type, :vimeo_id, :image, :remote_image_url, :image_cache, :external_url, :youtube_url
   attr_accessor :youtube_url
+  attr_accessor :force_queue_to_vimeo
 
   before_validation :extract_id_from_youtube_url
-  after_save :queue_transfer_to_vimeo
+  after_create :queue_transfer_to_vimeo
+  before_save :queue_transfer_to_vimeo
   after_destroy :remove_from_vimeo_and_delete_local_file
 
   validates_presence_of :external_id
@@ -179,13 +181,23 @@ class Video < ActiveRecord::Base
     end
   end
 
+  def queue_transfer_to_vimeo?
+    # Flag manually set to force queue
+    return true if self.force_queue_to_vimeo
+    # Video doesn't have vimeo id, and isn't a new record (because callback is set on after_create)
+    return true if !self.vimeod? && self.vimeo_id.blank? && !self.new_record?
+    return false
+  end
+
   # Queue for transfer if it hasn't been vimeod yet
   def queue_transfer_to_vimeo
-    Resque.enqueue(Video, self.id) unless self.vimeod?
+    Resque.enqueue(Video, self.id) if self.queue_transfer_to_vimeo?
+    true
   end
 
   def redo_vimeo_transfer
     self.remove_from_vimeo_and_delete_local_file
+    self.force_queue_to_vimeo = true
     self.save # will automatically re-queue upload
   end
 
@@ -232,5 +244,6 @@ class Video < ActiveRecord::Base
     rescue
       logger.info "Couldn't delete Vimeo Video with id #{self.vimeo_id}."
     end
+    true
   end
 end
