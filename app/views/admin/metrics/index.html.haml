@@ -10,7 +10,7 @@
 .row
   .span6
     %h3 
-    = render 'ratings/bar_chart', :title => '# of Active Teams per Startup', :data => @active_teams_data, :type => 'area', :chart_id => 'active_teams_data'
+    = render 'ratings/bar_chart', :title => '# of Active Teams per Startup', :data => @active_teams_data, :type => 'area', :chart_id => 'active_teams_data', :tooltip_enabled => true, :y_tick_interval => 5
 
   .span6
     = render 'investors/chart', :title => 'Startups Activated per Week', :measurements => @activation_data, :chart_id => 'activations_by_week'
