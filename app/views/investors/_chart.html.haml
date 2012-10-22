@@ -1,18 +1,20 @@
 -# Doc: http://api.highcharts.com/highchart
+- title ||= h(@instrument.name)
 - measurements ||= @instrument.measurements.ordered_asc.all
+- chart_id ||= 'chart'
 
-#chart.chart
+.chart{:id => chart_id}
 :plain
   <script type="text/javascript">
   var chart;
   $(document).ready(function() {
     chart = new Highcharts.Chart({
       chart: {
-        renderTo: 'chart',
+        renderTo: '#{chart_id}',
         type: 'area'
       },
       title: {
-        text: '#{h(@instrument.name)}'
+        text: '#{title}'
       },
       credits: {
         enabled: false
@@ -26,11 +28,11 @@
             return this.value;
           }
         },
-        categories: [#{measurements.map{|m| "'#{m.created_at.strftime('%b %d')}'" }.join(',')}]
+        categories: [#{measurements.map{|m| "'#{m.key}'" }.join(',')}]
       },
       yAxis: {
         title: {
-          text: '#{h(@instrument.name)}'
+          text: '#{title}'
         },
         labels: {
           formatter: function() {
@@ -53,7 +55,7 @@
         }
       },
       series: [{
-        name: '#{h(@instrument.name)}',
+        name: '#{title}',
         data: [#{measurements.map{|m| m.value }.join(',')}]
       }]
     });

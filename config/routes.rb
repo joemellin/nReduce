@@ -5,6 +5,7 @@ Nreduce::Application.routes.draw do
   end
 
   namespace 'admin' do
+    resources :metrics, :only => [:index]
     resources :mentors, :only => [:index, :show, :update]
     resources :users, :only => [:show, :index] do
       member do

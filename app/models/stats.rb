@@ -110,4 +110,93 @@ class Stats
     end
     results
   end
+
+  def self.checkins_per_week_for_chart(since = 10.weeks)
+    Checkin.group(:week).where(['created_at > ?', Time.now - since]).order(:week).count.map{|week, num| OpenStruct.new(:key => week, :value => num) }
+  end
+
+  def self.comments_per_week_for_chart(since = 10.weeks)
+    c_by_w = {}
+    Comment.where(['created_at > ?', Time.now - since]).each do |c| 
+      week = Week.integer_for_time(c.created_at, :before_checkin)
+      c_by_w[week] ||= 0
+      c_by_w[week] += 1
+    end
+    c_by_w.sort.map{|arr| OpenStruct.new(:key => arr.first, :value => arr.last) }
+  end
+
+  def self.startups_activated_per_week_for_chart(since = 10.weeks)
+    s_by_w = {}
+    Startup.where(['created_at > ?', Time.now - since]).each do |s| 
+      next unless s.account_setup?
+      week = Week.integer_for_time(s.created_at, :before_checkin)
+      s_by_w[week] ||= 0
+      s_by_w[week] += 1
+    end
+    s_by_w.sort.map{|arr| OpenStruct.new(:key => arr.first, :value => arr.last) }
+  end
+
+     # Creates data for chart that displays how many active connections there are per startup, per week
+   # Active connection is someone who has checked in that week
+   # Returns {:categories => [201223, 201224, 201225], :series => [{'0 Connections' => [35, 45, 56]}, {'1 Connection' => [23, 26, 15]}]}
+   # hash with week as key, value is number of startups 
+  def self.connections_per_startup_for_chart(since = 10.weeks,  max_active = 10)
+    # Populate categories
+    tmp_data = {}
+    current = Week.integer_for_time(Time.now)
+    last = Week.integer_for_time(Time.now - since)
+    while current > last
+      tmp_data[current] = {}
+      current = Week.previous(current)
+    end
+    calc_data = tmp_data.dup
+
+    # Load checkins into hash keyed by startup id, and then by week
+    checkins_by_startup = {}
+    Checkin.where(['week > ?', current]).all.each do |c|
+      checkins_by_startup[c.startup_id] ||= {}
+      checkins_by_startup[c.startup_id][c.week] = c
+    end
+    Startup.all.each do |s|
+      # First get relationship and checkin history for startup
+      rh = Relationship.history_for_entity(s, 'Startup')['Startup']
+
+      next if checkins_by_startup[s.id].blank?
+        
+      # For each week they were active (checked in), count how many of their connections were active (checked in)
+      checkins_by_startup[s.id].each do |week, checkin|
+        # Now check each startup they were connected to and see if they connected and checked in that week
+
+        active_connections_this_week = 0
+
+        checkin_window = checkin.time_window
+        unless rh.blank?
+          rh.each do |startup_id, rel_window|
+            # See if they were connected before checkin window closed, and that the relationship didn't end before checkin window closed
+            # Should it check to see if you're connected after to give comments?
+            if rel_window.first < checkin_window.last && rel_window.last > checkin_window.last
+              # Now see if this startup checked in this week
+              if checkins_by_startup[startup_id].present? && checkins_by_startup[startup_id][week].present?
+                active_connections_this_week += 1
+              end
+            end
+          end
+          active_connections_this_week = max_active if active_connections_this_week > max_active
+        end
+
+        calc_data[week][active_connections_this_week] ||= 0
+        calc_data[week][active_connections_this_week] += 1
+      end
+    end
+
+    categories = tmp_data.keys
+    series = {}
+    0.upto(max_active).each do |num_connections|
+      series[num_connections] = []
+      categories.each do |week|
+        series[num_connections] << (calc_data[week][num_connections].present? ? calc_data[week][num_connections] : 0)
+      end
+    end
+    {:categories => categories, :series => series }
+   end
 end
