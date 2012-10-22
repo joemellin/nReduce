@@ -8,7 +8,7 @@ class Video < ActiveRecord::Base
   attr_accessor :force_queue_to_vimeo
 
   before_validation :extract_id_from_youtube_url
-  after_create :queue_transfer_to_vimeo
+  after_create :force_queue_to_vimeo
   before_save :queue_transfer_to_vimeo
   after_destroy :remove_from_vimeo_and_delete_local_file
 
@@ -181,24 +181,21 @@ class Video < ActiveRecord::Base
     end
   end
 
-  def queue_transfer_to_vimeo?
-    # Flag manually set to force queue
-    return true if self.force_queue_to_vimeo
-    # Video doesn't have vimeo id, and isn't a new record (because callback is set on after_create)
-    return true if !self.vimeod? && self.vimeo_id.blank? && !self.new_record?
-    return false
+  def queue_transfer_to_vimeo(force_transfer = false)
+    Resque.enqueue(Video, self.id) if force_transfer || (self.external_id_changed? && !self.new_record?)
+    true
   end
 
-  # Queue for transfer if it hasn't been vimeod yet
-  def queue_transfer_to_vimeo
-    Resque.enqueue(Video, self.id) if self.queue_transfer_to_vimeo?
+  # need this method so I can use it in after_create callback
+  def force_queue_to_vimeo
+    self.queue_transfer_to_vimeo(true)
     true
   end
 
   def redo_vimeo_transfer
     self.remove_from_vimeo_and_delete_local_file
-    self.force_queue_to_vimeo = true
-    self.save # will automatically re-queue upload
+    self.save
+    self.force_queue_to_vimeo
   end
 
   # Will find all videos that have been transfered to vimeo but not successfully encoded and try uploading them again.
