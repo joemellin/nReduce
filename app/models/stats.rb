@@ -126,14 +126,21 @@ class Stats
   end
 
   def self.startups_activated_per_week_for_chart(since = 10.weeks)
-    s_by_w = {}
-    Startup.where(['created_at > ?', Time.now - since]).each do |s| 
-      next unless s.account_setup?
-      week = Week.integer_for_time(s.created_at, :before_checkin)
-      s_by_w[week] ||= 0
-      s_by_w[week] += 1
+    date_start = Time.now - since
+    a_by_w = {}
+    current = Week.integer_for_time(Time.now)
+    last = Week.integer_for_time(date_start)
+    while current > last
+      a_by_w[current] = 0
+      current = Week.previous(current)
     end
-    s_by_w.sort.map{|arr| OpenStruct.new(:key => arr.first, :value => arr.last) }
+    c_by_s = Hash.by_key(Checkin.ordered.all, :startup_id, nil, true)
+    c_by_s.each do |startup_id, checkins|
+      # Skip unless their first checkin was after the date limit
+      next unless checkins.first.time_window.first > date_start
+      a_by_w[checkins.first.week] += 1
+    end
+    a_by_w.sort.map{|arr| OpenStruct.new(:key => arr.first, :value => arr.last) }
   end
 
      # Creates data for chart that displays how many active connections there are per startup, per week
