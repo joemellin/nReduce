@@ -3,6 +3,8 @@
 - data ||= {}
 - title ||= ''
 - type ||= 'column'
+- tooltip_enabled ||= false
+- y_tick_interval ||= 1
 
 .chart{:id => chart_id}
 :plain
@@ -40,7 +42,7 @@
             return this.value;
           }
         },
-        tickInterval: 1
+        tickInterval: #{y_tick_interval}
       },
       plotOptions: {
         area: {
@@ -58,7 +60,7 @@
         }
       },
       tooltip: {
-        enabled: false
+        enabled: #{tooltip_enabled}
       },
       legend: {
         layout: 'vertical',
