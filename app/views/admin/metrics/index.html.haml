@@ -1,0 +1,27 @@
+%h2 Metrics Dashboard
+
+.row
+  .span6
+    = render 'investors/chart', :title => 'Checkins', :measurements => @checkin_data, :chart_id => 'checkins_by_week'
+
+  .span6
+    = render 'investors/chart', :title => 'Comments', :measurements => @comment_data, :chart_id => 'comments_by_week'
+
+.row
+  .span6
+    %h3 
+    = render 'ratings/bar_chart', :title => '# of Active Teams per Startup', :data => @active_teams_data, :type => 'line', :chart_id => 'active_teams_data'
+
+  .span6
+    %h3 # of Activations
+    = render 'investors/chart', :title => 'Startups Activated per Week', :measurements => @activation_data, :chart_id => 'activations_by_week'
+
+.row
+  .span6
+    %h3 Satisfaction
+    [ Coming Soon ]
+
+.row
+  .span12
+    %h3 Retention, by Week
+    [ coming soon]

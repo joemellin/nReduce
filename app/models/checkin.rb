@@ -274,6 +274,10 @@ class Checkin < ActiveRecord::Base
     Checkin.week_for_time(self.created_at || Time.now)
   end
 
+  def time_window
+    Week.window_for_integer(self.week)
+  end
+
   def submitted?
     !submitted_at.blank?
   end

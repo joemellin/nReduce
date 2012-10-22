@@ -50,6 +50,11 @@ class Measurement < ActiveRecord::Base
     true
   end
 
+  # for use with charts
+  def key
+    created_at.strftime('%b %d')
+  end
+
   protected
 
   def reset_startup_measurement_cache

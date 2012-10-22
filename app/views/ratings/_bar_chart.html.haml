@@ -2,6 +2,8 @@
 -# Data should be passed in as a k/v hash, with multiple series in the array, ex: {:categories => ['Traction', Team'], :series => {'Investor' => [23, 4]}, {'Mentor' => [3,5]}}
 - data ||= {}
 - title ||= ''
+- type ||= 'column'
+
 .chart{:id => chart_id}
 :plain
   <script type="text/javascript">
@@ -10,7 +12,7 @@
     chart = new Highcharts.Chart({
       chart: {
         renderTo: '#{chart_id}',
-        type: 'column'
+        type: '#{type}'
       },
       title: {
         text: '#{title}'
