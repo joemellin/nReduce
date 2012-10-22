@@ -13,7 +13,6 @@
     = render 'ratings/bar_chart', :title => '# of Active Teams per Startup', :data => @active_teams_data, :type => 'line', :chart_id => 'active_teams_data'
 
   .span6
-    %h3 # of Activations
     = render 'investors/chart', :title => 'Startups Activated per Week', :measurements => @activation_data, :chart_id => 'activations_by_week'
 
 .row
