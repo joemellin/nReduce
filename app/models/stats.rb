@@ -199,10 +199,10 @@ class Stats
 
    # Find all startups who have done a checkin, and then track their continued activity til the present
   def self.weekly_retention_for_chart(since = 10.weeks)
-    checkins_by_startup = Stats.checkins_by_startup_and_week(Time.now - since)
     # find first startup and limit weeks to start there
     first_startup_joined_at = Startup.order('created_at ASC').first.created_at
     weeks = Stats.generate_week_hash(first_startup_joined_at)
+    checkins_by_startup = Stats.checkins_by_startup_and_week(weeks.keys.first)
     startups = Hash.by_key(Startup.where(:id => checkins_by_startup.keys).all, :id)
 
     # Group startups by date created
@@ -226,6 +226,31 @@ class Stats
       weeks[week] = active_per_week
     end
     { :categories => weeks.keys, :series => weeks }
+  end
+
+  def self.comments_per_checkin_for_chart(since = 10.weeks, max_comments = 10)
+    weeks = Stats.generate_week_hash(Time.now - since)
+    checkins = Checkin.where(['week >= ?', weeks.keys.first]).all
+    comments_per_checkin = Comment.where(:checkin_id => checkins.map{|c| c.id }).group(:checkin_id).count
+    # Populate weeks hash with array for each # of comments
+    weeks.keys.each do |week|
+      # change to array
+      weeks[week] = []
+      0.upto(max_comments) do |num|
+        weeks[week] << 0
+      end
+    end
+
+    # count number of comments each checkin got, grouped by week
+    checkins.each do |c|
+      if comments_per_checkin[c.id].present?
+        num = comments_per_checkin[c.id] > max_comments ? max_comments : comments_per_checkin[c.id]
+      else
+        num = 0
+      end
+      weeks[c.week][num] += 1
+    end
+    {:categories => weeks.keys, :series => weeks}    
   end
 
   def self.checkins_by_startup_and_week(since_week = nil)
