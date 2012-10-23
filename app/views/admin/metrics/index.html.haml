@@ -23,4 +23,4 @@
 .row
   .span12
     %h3 Retention, by Week
-    [ coming soon]
+    = render 'ratings/bar_chart', :title => 'Retention: Active Teams by Week', :data => @retention_data, :type => 'area', :chart_id => 'retention_data', :tooltip_enabled => true, :y_tick_interval => 5

@@ -149,22 +149,12 @@ class Stats
    # hash with week as key, value is number of startups
   def self.connections_per_startup_for_chart(since = 10.weeks,  max_active = 10)
     # Populate categories
-    tmp_data = {}
-    current = Week.integer_for_time(Time.now)
-    last = Week.integer_for_time(Time.now - since)
-    while current > last
-      tmp_data[current] = {}
-      current = Week.previous(current)
-    end
+    tmp_data = Stats.generate_week_hash(Time.now - since)
     calc_data = tmp_data.dup
 
     # Load checkins into hash keyed by startup id, and then by week
-    checkins_by_startup = {}
-    Checkin.where(['week > ?', current]).all.each do |c|
-      checkins_by_startup[c.startup_id] ||= {}
-      checkins_by_startup[c.startup_id][c.week] = c
-    end
-    
+    checkins_by_startup = Stats.checkins_by_startup_and_week(tmp_data.keys.last)
+
     Startup.all.each do |s|
       # First get relationship and checkin history for startup
       rh = Relationship.history_for_entity(s, 'Startup')['Startup']
@@ -204,5 +194,65 @@ class Stats
       end
     end
     {:categories => categories, :series => series }
-   end
+  end
+
+
+   # Find all startups who have done a checkin, and then track their continued activity til the present
+  def self.weekly_retention_for_chart(since = 10.weeks)
+    checkins_by_startup = Stats.checkins_by_startup_and_week(Time.now - since)
+    # find first startup and limit weeks to start there
+    first_startup_joined_at = Startup.order('created_at ASC').first.created_at
+    weeks = Stats.generate_week_hash(first_startup_joined_at)
+    startups = Hash.by_key(Startup.where(:id => checkins_by_startup.keys).all, :id)
+
+    # Group startups by date created
+    weeks.keys.each do |week|
+      time_window = Week.window_for_integer(week, :before_checkin)
+      ids = []
+      startups.values.each do |s|
+        ids << s.id if time_window.first <= s.created_at && time_window.last >= s.created_at
+      end
+
+      # Now iterate through each week and see if these startups were active
+      active_per_week = []
+      weeks.keys.each do |week|
+        num = 0
+        ids.each do |startup_id|
+          num += 1 if checkins_by_startup[startup_id].present? && checkins_by_startup[startup_id][week.to_i].present?
+        end
+        active_per_week << num
+      end
+
+      weeks[week] = active_per_week
+    end
+    { :categories => weeks.keys, :series => weeks }
+  end
+
+  def self.checkins_by_startup_and_week(since_week = nil)
+    # Load checkins into hash keyed by startup id, and then by week
+    checkins_by_startup = {}
+    checkins = since_week.present? ? Checkin.where(['week >= ?', since_week]).all : Checkin.all
+    checkins.each do |c|
+      checkins_by_startup[c.startup_id] ||= {}
+      checkins_by_startup[c.startup_id][c.week] = c
+    end
+    checkins_by_startup
+  end
+
+  def self.generate_week_hash(since_date = nil)
+    since_date ||= Time.now - 10.weeks
+    tmp = []
+    current = Week.integer_for_time(Time.now)
+    last = Week.integer_for_time(since_date)
+    while current > last
+      tmp << current
+      current = Week.previous(current)
+    end
+    # create hash
+    weeks = {}
+    tmp.reverse.each do |week|
+      weeks[week] = {}
+    end
+    weeks
+  end
 end
