@@ -153,7 +153,7 @@ class Stats
     calc_data = tmp_data.dup
 
     # Load checkins into hash keyed by startup id, and then by week
-    checkins_by_startup = Stats.checkins_by_startup_and_week(tmp_data.keys.last)
+    checkins_by_startup = Stats.checkins_by_startup_and_week(tmp_data.keys.first)
 
     Startup.all.each do |s|
       # First get relationship and checkin history for startup
