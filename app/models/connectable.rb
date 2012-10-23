@@ -120,7 +120,7 @@ module Connectable
     ignore_startup_ids.uniq!
 
     # Find all startups that checked in last week
-    if self.entrepreneur? || self.is_a?(Startup)
+    if self.is_a?(Startup) || (self.is_a?(User) && self.entrepreneur?)
       end_after = Checkin.prev_after_checkin
       start_after = end_after - 24.hours
       checkins = Checkin.completed.where(['completed_at >= ? AND completed_at <= ?', start_after, end_after]).includes(:startup).all

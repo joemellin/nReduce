@@ -143,10 +143,10 @@ class Stats
     a_by_w.sort.map{|arr| OpenStruct.new(:key => arr.first, :value => arr.last) }
   end
 
-     # Creates data for chart that displays how many active connections there are per startup, per week
+   # Creates data for chart that displays how many active connections there are per startup, per week
    # Active connection is someone who has checked in that week
    # Returns {:categories => [201223, 201224, 201225], :series => [{'0 Connections' => [35, 45, 56]}, {'1 Connection' => [23, 26, 15]}]}
-   # hash with week as key, value is number of startups 
+   # hash with week as key, value is number of startups
   def self.connections_per_startup_for_chart(since = 10.weeks,  max_active = 10)
     # Populate categories
     tmp_data = {}
@@ -164,6 +164,7 @@ class Stats
       checkins_by_startup[c.startup_id] ||= {}
       checkins_by_startup[c.startup_id][c.week] = c
     end
+    
     Startup.all.each do |s|
       # First get relationship and checkin history for startup
       rh = Relationship.history_for_entity(s, 'Startup')['Startup']
@@ -183,9 +184,7 @@ class Stats
             # Should it check to see if you're connected after to give comments?
             if rel_window.first < checkin_window.last && rel_window.last > checkin_window.last
               # Now see if this startup checked in this week
-              if checkins_by_startup[startup_id].present? && checkins_by_startup[startup_id][week].present?
-                active_connections_this_week += 1
-              end
+              active_connections_this_week += 1 if checkins_by_startup[startup_id].present? && checkins_by_startup[startup_id][week].present?
             end
           end
           active_connections_this_week = max_active if active_connections_this_week > max_active
