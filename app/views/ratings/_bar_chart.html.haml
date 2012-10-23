@@ -5,6 +5,7 @@
 - type ||= 'column'
 - tooltip_enabled ||= false
 - y_tick_interval ||= 1
+- y_axis_label ||= 'Number of People'
 
 .chart{:id => chart_id}
 :plain
@@ -22,9 +23,6 @@
       credits: {
         enabled: false
       },
-      legend: {
-        enabled: false
-      },
       xAxis: {
         labels: {
           formatter: function() {
@@ -35,7 +33,7 @@
       },
       yAxis: {
         title: {
-          text: 'Number of People'
+          text: '#{y_axis_label}'
         },
         labels: {
           formatter: function() {
@@ -63,11 +61,11 @@
         enabled: #{tooltip_enabled}
       },
       legend: {
-        layout: 'vertical',
-        align: 'right',
+        layout: 'horizontal',
+        align: 'left',
         verticalAlign: 'top',
-        x: -100,
-        y: 100,
+        x: 50,
+        y: 50,
         floating: true,
         borderWidth: 1,
         backgroundColor: '#FFFFFF',
