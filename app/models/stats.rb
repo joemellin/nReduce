@@ -188,9 +188,9 @@ class Stats
     categories = tmp_data.keys
     series = {}
     max_active.downto(0).each do |num_connections|
-      series[num_connections] = []
+      series[num_connections.to_s] = []
       categories.each do |week|
-        series[num_connections] << (calc_data[week][num_connections].present? ? calc_data[week][num_connections] : 0)
+        series[num_connections.to_s] << (calc_data[week][num_connections].present? ? calc_data[week][num_connections] : 0)
       end
     end
     {:categories => categories, :series => series }
