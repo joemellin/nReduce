@@ -229,16 +229,17 @@ class Stats
   end
 
   def self.comments_per_checkin_for_chart(since = 10.weeks, max_comments = 10)
-    weeks = Stats.generate_week_hash(Time.now - since)
-    checkins = Checkin.where(['week >= ?', weeks.keys.first]).all
+    weeks = Stats.generate_week_hash(Time.now - since).keys
+    checkins = Checkin.where(['week >= ?', weeks.first]).all
     comments_per_checkin = Comment.where(:checkin_id => checkins.map{|c| c.id }).group(:checkin_id).count
     # Populate weeks hash with array for each # of comments
-    weeks.keys.each do |week|
-      # change to array
-      weeks[week] = []
-      0.upto(max_comments) do |num|
-        weeks[week] << 0
-      end
+    data = {}
+    blank_arr = []
+    1.upto(weeks.size).each do |i|
+      blank_arr << 0
+    end
+    0.upto(max_comments) do |num|
+      data[num.to_s] = blank_arr.dup
     end
 
     # count number of comments each checkin got, grouped by week
@@ -248,9 +249,9 @@ class Stats
       else
         num = 0
       end
-      weeks[c.week][num] += 1
+      data[num.to_s][weeks.index(c.week)] += 1
     end
-    {:categories => weeks.keys, :series => weeks}    
+    {:categories => weeks, :series => data}    
   end
 
   def self.checkins_by_startup_and_week(since_week = nil)
