@@ -238,7 +238,7 @@ class Stats
     1.upto(weeks.size).each do |i|
       blank_arr << 0
     end
-    0.upto(max_comments) do |num|
+    max_comments.downto(0) do |num|
       data[num.to_s] = blank_arr.dup
     end
 
