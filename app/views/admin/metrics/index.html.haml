@@ -14,13 +14,12 @@
 
   .span6
     = render 'investors/chart', :title => 'Startups Activated per Week', :measurements => @activation_data, :chart_id => 'activations_by_week'
+.row
+  .span12
+    %h3 Retention, by Week
+    = render 'ratings/bar_chart', :title => 'Retention: Active Teams by Week', :data => @retention_data, :type => 'area', :chart_id => 'retention_data', :tooltip_enabled => true, :y_tick_interval => 5
 
 .row
   .span6
     %h3 Satisfaction
     [ Coming Soon ]
-
-.row
-  .span12
-    %h3 Retention, by Week
-    = render 'ratings/bar_chart', :title => 'Retention: Active Teams by Week', :data => @retention_data, :type => 'area', :chart_id => 'retention_data', :tooltip_enabled => true, :y_tick_interval => 5
