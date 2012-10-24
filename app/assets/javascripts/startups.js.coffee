@@ -34,6 +34,7 @@ $ ->
     if isValidYoutubeUrl(url)
       $("##{video_id} .video_type").val('Youtube')
       $("##{video_id} .completed").show()
+      $('##{video_id} .current_video').hide()
     else
       $("##{video_id} .completed").hide()
 

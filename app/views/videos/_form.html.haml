@@ -1,18 +1,19 @@
 - video_id ||= 'new_video'
-- if f.object.type == 'ViddlerVideo'
-  - show_video_type = :viddler
-- elsif f.object.type == 'Screenr'
-  - show_video_type = :screenr
-- elsif f.object.type == 'Youtube' || f.object.errors.has_key?(:youtube_url)
-  - show_video_type = :youtube
-- else
-  - show_video_type = nil
+- show_video_type = nil
+- unless f.object.valid?
+  - if f.object.type == 'ViddlerVideo'
+    - show_video_type = :viddler
+  - elsif f.object.type == 'Screenr'
+    - show_video_type = :screenr
+  - elsif f.object.type == 'Youtube' || f.object.errors.has_key?(:youtube_url)
+    - show_video_type = :youtube
 .video_form{:id => video_id}
   .fields.control-group
     - if !f.object.new_record? || f.object.external_id.present?
-      %h3 Current video:
-      != f.object.embed_code
-      %br/
+      .current_video
+        %h3 Current video:
+        != f.object.embed_code
+        %br/
       %h3 Or, record a new version:
       = f.hidden_field :id, :class => 'video_id'
     = f.hidden_field :type, :class => 'video_type'
