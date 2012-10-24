@@ -39,7 +39,7 @@ class Startup < ActiveRecord::Base
   validate :check_video_urls_are_valid
   validates_presence_of :one_liner, :if => :created_but_not_setup_yet?
   validates_presence_of :elevator_pitch, :if => :created_but_not_setup_yet?
-  #validates_presence_of :industry_list, :if => :created_but_not_setup_yet?
+  validates_presence_of :industry_list, :if => :created_but_not_setup_yet?
 
   before_validation :encode_pitch_video
   before_save :format_url
