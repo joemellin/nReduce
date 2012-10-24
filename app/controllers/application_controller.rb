@@ -94,7 +94,6 @@ class ApplicationController < ActionController::Base
     controller_action_arr = [controller_name.to_sym, action_name.to_sym]
     # Don't redirect if here for demo day
     return true if [:questions, :demo_day].include?(controller_action_arr.first)
-
     if current_user.account_setup?
       return true
     else

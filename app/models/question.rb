@@ -7,7 +7,7 @@ class Question < ActiveRecord::Base
 
   serialize :supporter_ids, Array
 
-  attr_accessible :content, :startup, :startup_id, :tweet
+  attr_accessible :content, :startup, :startup_id, :tweet, :user
 
   validates :user_id, :startup_id, :presence => true
   validates :content, :length => { :maximum => 90, :minimum => 10 }

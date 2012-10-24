@@ -27,7 +27,7 @@ class Notification < ActiveRecord::Base
    # - Create a notification object that is displayed to user on the site
    # - Adds email to resque queue, if their notification settings allow it
    # Possible actions: new_checkin, relationship_request, relationship_approved, new_comment
-  def self.create_and_send(user, object, action, message = nil)
+  def self.create_and_send(user, object, action, message = nil, deliver_immediately = false)
     return unless Notification.actions.include?(action)
     n = Notification.new
     n.attachable = object
@@ -36,7 +36,13 @@ class Notification < ActiveRecord::Base
     n.message = message || "You have a new #{object.class.to_s.downcase}"
     if n.save
       n.user.update_unread_notifications_count
-      Resque.enqueue(Notification, n.id) if n.email_user?
+      if n.email_user?
+        if Rails.env.test? || deliver_immediately
+          return Notification.perform(n.id)
+        else
+          Resque.enqueue(Notification, n.id)
+        end
+      end
     end
     n
   end

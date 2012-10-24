@@ -12,7 +12,7 @@ class Video < ActiveRecord::Base
   before_save :queue_transfer_to_vimeo
   after_destroy :remove_from_vimeo_and_delete_local_file
 
-  validates_presence_of :external_id
+  validates_presence_of :external_id, :message => 'URL is not valid'
   validate :video_is_unique
 
   scope :vimeod, where(:vimeod => true)
