@@ -21,7 +21,7 @@ class Checkin < ActiveRecord::Base
   after_validation :check_submitted_completed_times
   before_save :notify_user
   before_create :assign_week
-  after_create :reset_startup_checkin_cache
+  after_save :reset_startup_checkin_cache
   after_destroy :reset_startup_checkin_cache
 
   validates_presence_of :startup_id
