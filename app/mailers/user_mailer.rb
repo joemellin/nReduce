@@ -5,6 +5,7 @@ class UserMailer < ActionMailer::Base
   def new_team_joined(notification)
     @startup = notification.attachable
     @to = notification.user
+    puts @startup.team_members.first
     @weekly_class = @startup.team_members.first.weekly_class
     mail(:to => @to.email, :subject => "Team #{@startup.name} just joined your class!")
   end
