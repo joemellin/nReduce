@@ -1,6 +1,6 @@
 class Admin::MetricsController < ApplicationController
   before_filter :admin_required
-  caches_action :index, :expires_in => 10.minutes
+  #caches_action :index, :expires_in => 10.minutes
 
   def index
     @checkin_data = Stats.checkins_per_week_for_chart(2.months)
