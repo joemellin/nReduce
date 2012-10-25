@@ -137,7 +137,7 @@ class Stats
     c_by_s = Hash.by_key(Checkin.ordered.all, :startup_id, nil, true)
     c_by_s.each do |startup_id, checkins|
       # Skip unless their first checkin was after the date limit
-      next unless checkins.first.time_window.first > date_start
+      next unless checkins.last.time_window.first > date_start
       a_by_w[checkins.first.week] += 1
     end
     a_by_w.sort.map{|arr| OpenStruct.new(:key => arr.first, :value => arr.last) }
