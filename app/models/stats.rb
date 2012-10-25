@@ -283,14 +283,14 @@ class Stats
   end
 
   def self.checkin_comments_correlation
-    # Calculate week by week. 
+    # Calculate week by week
     # After receiving comments one week, how many startups checkin next week?
     # After not receiving any comments, does a startup checkin next week?
     checkins_by_week = Hash.by_key(Checkin.all, :week, nil, true)
-    comments_by_checkin = Hash.by_key(Comment.all, :checkin_id, nil, true)
+    comments_by_checkin = Hash.by_key(Comment.where('checkin_id IS NOT NULL').all, :checkin_id, nil, true)
     user_ids_by_startup = {}
-    User.all.each{|u| user_ids_by_startup[u.startup_id] ||= []; user_ids_by_startup[u.startup_id] << u.id }
-    data = [['Week', 'No Comments - No Checkin', 'No Comments - Checkin', 'Comments - Checked In', 'Comments - No Checkin']]
+    User.all.each{|u| next if u.startup_id.blank?; user_ids_by_startup[u.startup_id] ||= []; user_ids_by_startup[u.startup_id] << u.id }
+    data = [['Week', 'No Comments - No Checkin', 'Comments - No Checkin', 'No Comments - Checkin', 'Comments - Checked In', 'Total # Checkins']]
     got_comments_ids = []
     no_comments_ids = []
     checkins_by_week.each do |week, checkins|
@@ -313,17 +313,21 @@ class Stats
         end
       end
 
-      data << [week, no_comments_no_checkin, no_comments_checkin, comments_checkin, comments_no_checkin]
+      data << [week, no_comments_no_checkin, comments_no_checkin, no_comments_checkin, comments_checkin, checkins.size]
 
       got_comments_ids = []
       no_comments_ids = []
+      all_ids = []
 
       checkins.each do |c|
+        all_ids << c.startup_id
         # Save whether they did/didn't receive comments this week
         if comments_by_checkin[c.id].present?
           not_by_startup = false
-          # ignore comments made by the startup who made the checkin
-          comments_by_checkin[c.id].each{|com| not_by_startup = true if user_ids_by_startup[c.startup_id].blank? || !user_ids_by_startup[c.startup_id].include?(com.user_id) }
+          # Ignore comments made by the startup who made the checkin
+          comments_by_checkin[c.id].each do |com|
+            not_by_startup = true if user_ids_by_startup[c.startup_id].blank? || !user_ids_by_startup[c.startup_id].include?(com.user_id)
+          end
           if not_by_startup
             got_comments_ids << c.startup_id
           else
@@ -333,7 +337,7 @@ class Stats
           no_comments_ids << c.startup_id
         end
       end
-      prev_week = week
+      
     end
     data
   end
