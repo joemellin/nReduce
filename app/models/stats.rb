@@ -134,10 +134,10 @@ class Stats
       a_by_w[current] = 0
       current = Week.previous(current)
     end
-    c_by_s = Hash.by_key(Checkin.ordered.all, :startup_id, nil, true)
+    c_by_s = Hash.by_key(Checkin.order('created_at ASC').all, :startup_id, nil, true)
     c_by_s.each do |startup_id, checkins|
       # Skip unless their first checkin was after the date limit
-      next unless checkins.last.time_window.first > date_start
+      next unless checkins.first.time_window.first > date_start
       a_by_w[checkins.first.week] += 1
     end
     a_by_w.sort.map{|arr| OpenStruct.new(:key => arr.first, :value => arr.last) }
@@ -280,5 +280,61 @@ class Stats
       weeks[week] = {}
     end
     weeks
+  end
+
+  def self.checkin_comments_correlation
+    # Calculate week by week. 
+    # After receiving comments one week, how many startups checkin next week?
+    # After not receiving any comments, does a startup checkin next week?
+    checkins_by_week = Hash.by_key(Checkin.all, :week, nil, true)
+    comments_by_checkin = Hash.by_key(Comment.all, :checkin_id, nil, true)
+    user_ids_by_startup = {}
+    User.all.each{|u| user_ids_by_startup[u.startup_id] ||= []; user_ids_by_startup[u.startup_id] << u.id }
+    data = [['Week', 'No Comments - No Checkin', 'No Comments - Checkin', 'Comments - Checked In', 'Comments - No Checkin']]
+    got_comments_ids = []
+    no_comments_ids = []
+    checkins_by_week.each do |week, checkins|
+      comments_checkin = comments_no_checkin = no_comments_checkin = no_comments_no_checkin = 0
+      checked_in_ids = checkins.map{|c| c.startup_id }
+      
+      got_comments_ids.each do |startup_id|
+        if checked_in_ids.include?(startup_id)
+          comments_checkin += 1
+        else
+          comments_no_checkin += 1
+        end
+      end
+
+      no_comments_ids.each do |startup_id|
+        if checked_in_ids.include?(startup_id)
+          no_comments_checkin += 1
+        else
+          no_comments_no_checkin += 1
+        end
+      end
+
+      data << [week, no_comments_no_checkin, no_comments_checkin, comments_checkin, comments_no_checkin]
+
+      got_comments_ids = []
+      no_comments_ids = []
+
+      checkins.each do |c|
+        # Save whether they did/didn't receive comments this week
+        if comments_by_checkin[c.id].present?
+          not_by_startup = false
+          # ignore comments made by the startup who made the checkin
+          comments_by_checkin[c.id].each{|com| not_by_startup = true if user_ids_by_startup[c.startup_id].blank? || !user_ids_by_startup[c.startup_id].include?(com.user_id) }
+          if not_by_startup
+            got_comments_ids << c.startup_id
+          else
+            no_comments_ids << c.startup_id
+          end
+        else
+          no_comments_ids << c.startup_id
+        end
+      end
+      prev_week = week
+    end
+    data
   end
 end
