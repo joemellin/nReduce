@@ -282,7 +282,7 @@ class Stats
     weeks
   end
 
-  def self.checkin_comments_correlation
+  def self.checkin_comments_correlation(above_num_comments = 0)
     # Calculate week by week
     # After receiving comments one week, how many startups checkin next week?
     # After not receiving any comments, does a startup checkin next week?
@@ -323,12 +323,12 @@ class Stats
         all_ids << c.startup_id
         # Save whether they did/didn't receive comments this week
         if comments_by_checkin[c.id].present?
-          not_by_startup = false
+          not_by_startup = []
           # Ignore comments made by the startup who made the checkin
           comments_by_checkin[c.id].each do |com|
-            not_by_startup = true if user_ids_by_startup[c.startup_id].blank? || !user_ids_by_startup[c.startup_id].include?(com.user_id)
+            not_by_startup << com if user_ids_by_startup[c.startup_id].blank? || !user_ids_by_startup[c.startup_id].include?(com.user_id)
           end
-          if not_by_startup
+          if not_by_startup.size > above_num_comments
             got_comments_ids << c.startup_id
           else
             no_comments_ids << c.startup_id
