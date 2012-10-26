@@ -34,6 +34,7 @@ class Relationship < ActiveRecord::Base
   scope :passed, where(:status => Relationship::PASSED)
   scope :startup_to_user, where(:entity_type => 'Startup', :connected_with_type => 'User')
   scope :startup_to_startup, where(:entity_type => 'Startup', :connected_with_type => 'Startup')
+  scope :not_suggested, where(:status => [Relationship::PENDING, Relationship::APPROVED, Relationship::REJECTED])
 
   # Context of the relationship
   bitmask :context, :as => [:startup_startup, :startup_mentor, :startup_investor]

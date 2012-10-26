@@ -341,4 +341,58 @@ class Stats
     end
     data
   end
+
+  def self.relationships_data_for_startups(since = 4.weeks)
+    data = [['Startup Id', 'Week', '# Active Connections', '# Connections', '# Comments Received', 'Total Initiated', 'Total Received', 'Pending', 'Accepted', 'Rejected/Removed', 'Rejected/Removed By Other']]
+    rel_history = {}
+    weeks = Stats.generate_week_hash(Time.now - since)
+    startups_by_id = Hash.by_key(Startup.all, :id)
+    users_by_startup = Hash.by_key(User.where('startup_id IS NOT NULL').all, :startup_id, nil, true)
+    weeks.keys.each do |week|
+      time_window = Week.window_for_integer(week, :before_checkin)
+      checkins_by_startup = Hash.by_key(Checkin.where(:week => week).order(:startup_id).all, :startup_id)
+      checkins_by_startup.each do |startup_id, checkin|
+        startup = startups_by_id[startup_id]
+        # Find out who they were connected with this week
+        rel_history[startup.id] ||= Relationship.history_for_entity(startup, 'Startup')['Startup']
+
+        connected_with_ids = []
+        num_active_connections = 0
+        unless rel_history[startup.id].blank?
+          rel_history[startup.id].each do |s_id, history|
+            connected_with_ids << s_id if history.first < time_window.first && history.last > time_window.first
+          end
+
+          # How many of their connections checked in?
+          connected_with_ids.each{|id| num_active_connections += 1 if checkins_by_startup[id].present? }
+        end
+
+        # Number of comments they received on this checkin not by their team
+        num_comments_received = Comment.where(:checkin_id => checkin.id).where("user_id NOT IN (#{users_by_startup[startup.id].map{|u| u.id }.join(',')})").count
+
+        # Find all relationships (that aren't suggested relationships)
+        relationships = startup.initiated_relationships.not_suggested.where(["created_at > ? AND created_at < ?", time_window.first, time_window.last])
+
+        total_initiated = total_received = num_rejected = num_rejected_by_other = num_pending = num_accepted = 0
+
+        relationships.each do |r|
+          inv = r.inverse_relationship
+          # they initiated it
+          next unless inv.present?
+          if r.created_at < inv.created_at
+            total_initiated += 1
+            num_rejected += 1 if r.rejected?
+          # the other startup initiated it
+          elsif r.created_at > inv.created_at
+            total_received += 1
+            num_rejected_by_other if r.rejected?
+          end
+          num_pending += 1 if r.pending?
+          num_accepted += 1 if r.approved?
+        end
+        data << [startup.id, week, num_active_connections, connected_with_ids.size, num_comments_received, total_initiated, total_received, num_pending, num_accepted, num_rejected, num_rejected_by_other]
+      end
+    end
+    data
+  end
 end
