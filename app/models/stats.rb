@@ -368,7 +368,8 @@ class Stats
         end
 
         # Number of comments they received on this checkin not by their team
-        num_comments_received = Comment.where(:checkin_id => checkin.id).where("user_id NOT IN (#{users_by_startup[startup.id].map{|u| u.id }.join(',')})").count
+        team_member_ids = users_by_startup[startup.id].blank? ? [] : users_by_startup[startup.id].map{|u| u.id }
+        num_comments_received = Comment.where(:checkin_id => checkin.id).where("user_id NOT IN (#{team_member_ids.join(',')})").count
 
         # Find all relationships (that aren't suggested relationships)
         relationships = startup.initiated_relationships.not_suggested.where(["created_at > ? AND created_at < ?", time_window.first, time_window.last])
