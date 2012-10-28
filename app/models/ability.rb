@@ -9,6 +9,7 @@ class Ability
     cannot :manage, Video
     cannot [:see_ratings_page, :read_posts], User
     cannot [:read_post, :repost], Comment
+    can :add_teams, Relationship
 
     # Admins can do anything
     if user.admin?
@@ -283,6 +284,9 @@ class Ability
     can :investor_mentor_connect_with_startups, User do |u|
       (u.investor? || u.nreduce_mentor?) && u.can_connect_with_startups?
     end
+
+    # Investors can't review startups to add teams
+    cannot :add_teams, Relationship if user.investor?
 
     # Everyone can see users
     can :read, User

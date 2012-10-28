@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121023070548) do
+ActiveRecord::Schema.define(:version => 20121027160325) do
 
   create_table "authentications", :force => true do |t|
     t.string   "provider"
@@ -242,6 +242,8 @@ ActiveRecord::Schema.define(:version => 20121023070548) do
     t.integer  "context"
     t.string   "reason"
     t.datetime "pending_at"
+    t.boolean  "initiated",           :default => false
+    t.datetime "removed_at"
   end
 
   add_index "relationships", ["entity_id", "entity_type", "status"], :name => "relationship_index"

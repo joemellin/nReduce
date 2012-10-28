@@ -19,7 +19,7 @@
   .span4{:style => 'margin-bottom: 20px'}
     - if @checkin.startup.website_url.present? && @checkin.startup.website_url_to_uri.present?
       .left
-        %h2= link_to_external @checkin.startup.website_url_to_uri.hostname, @checkin.startup.website_url
+        %h2= link_to_external @checkin.startup.website_url_to_uri.hostname, @checkin.startup.website_url, :source => 'checkin'
     .clear
 %hr{:style => 'padding-bottom: 0px'}
 .row

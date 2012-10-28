@@ -1,5 +1,5 @@
 class RelationshipsController < ApplicationController
-  around_filter :record_user_action, :only => [:index]
+  around_filter :record_user_action, :except => [:add_teams]
   before_filter :login_required
   before_filter :load_requested_or_users_startup, :only => [:index, :add_teams]
   load_and_authorize_resource :except => [:index, :add_teams]
@@ -61,15 +61,24 @@ class RelationshipsController < ApplicationController
   end
 
   def add_teams
+    authorize! :add_teams, Relationship
     if current_user.mentor?
       @entity = current_user
     elsif @startup
       @entity = @startup
+
+      # Load next startup - if they need to approve startups then next to approve
+      @relationship = @entity.pending_relationships.last
+      
+      @relationship ||= @startup.suggested_relationships('Startup').first unless @startup.blank?
+
+      @relationship = @startup.initiated_relationships.first
     end
      # Suggested, pending relationships and invited startups
-    @suggested_startups = @startup.suggested_startups(10) unless @startup.blank?
-    @pending_relationships = @entity.pending_relationships
-    @invited_startups = current_user.sent_invites.to_startups.not_accepted.ordered
+    #@suggested_startups = @startup.suggested_startups(10) unless @startup.blank?
+    #@pending_relationships = @entity.pending_relationships
+    #@invited_startups = current_user.sent_invites.to_startups.not_accepted.ordered
+
     @modal = true
     if session[:checkin_completed] == true && !@startup.blank?
       @checkin_completed = true
@@ -142,6 +151,8 @@ class RelationshipsController < ApplicationController
     else
       flash[:alert] = "Sorry but the relationship couldn't be removed at this time."
     end
+    # Save user action as removed unless it was a rejection
+    @ua = {:action => UserAction.id_for('relationships_remove')} if @relationship.removed?
     if request.xhr?
       respond_to do |format|
         format.js { render :action => 'update_modal' }

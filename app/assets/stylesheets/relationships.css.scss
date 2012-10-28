@@ -76,5 +76,21 @@
       }
     }
   }
+
+  .relationship_request {
+    .iframe { 
+      border: 2px solid #ccc;
+    }
+    .message {
+      margin-top: 10px;
+      font-size: 1.5em;
+      font-weight: 600;
+    }
+    .btn {
+      line-height: 1.6em;
+      margin-bottom: 15px;
+      min-width: 150px;
+    }
+  }
 }
 

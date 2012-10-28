@@ -69,6 +69,10 @@ class WeeklyClass < ActiveRecord::Base
     incomplete_startups
   end
 
+  def clusters
+    self['clusters'].blank? ? [] : self['clusters']
+  end
+
   def previous_class
     WeeklyClass.where(['week < ?', self.week]).order('week DESC').first
   end

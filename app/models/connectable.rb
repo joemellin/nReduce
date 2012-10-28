@@ -12,6 +12,15 @@ module Connectable
     "#{self.class}_#{self.id}"
   end
 
+    # Loads only the startups that are considered active (checked in last two weeks)
+  def active_startups
+    Startup.active.where(:id => self.connected_to_ids('Startup'))
+  end
+
+  def num_active_startups
+    Startup.active.where(:id => self.connected_to_ids('Startup')).count
+  end
+
     # Entities this one is connected to, of a specific class
     # uses cache
   def connected_to(class_name_string = 'Startup')
