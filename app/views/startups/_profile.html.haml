@@ -17,7 +17,7 @@
         - if @startup.website_url.present? && @startup.website_url_to_uri.present?
           %p{:style => 'padding-top: 20px'}
             %small Website:
-          %h3= link_to_external @startup.website_url_to_uri.hostname, @startup.website_url
+          %h3= link_to_external @startup.website_url_to_uri.hostname, @startup.website_url, :source => 'profile'
         %p{:style => 'padding-top: 20px'}
           %small Industry:
         %h3 #{h(@startup.industry_list)}

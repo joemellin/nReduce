@@ -1,0 +1,130 @@
+- content_for :subtitle do
+  Add Teams
+
+= render 'startups/invite_modal'
+- if @checkin_completed == true
+  #checkin_completed.modal.hide
+    .modal-body.center{:align => 'center'}
+      - if @number_of_consecutive_checkins > 1
+        %p You have completed #{@number_of_consecutive_checkins} consecutive checkins.
+      - else
+        %p You have completed your checkin.
+      .right{:style => 'margin-right: -15px'}= image_tag 'hand_silhouette.png', :width => 270, :height => 220
+      .right{:style => 'width: 250px; height: 270px; position: relative;'}
+        %div{:style => 'position: absolute; top: 30%; right: 30%; height: 270px;'}
+          %h2{:style => 'font-size: 50px; line-height: 50px'}
+            Way to
+            %br/
+            do it!
+      
+      .clear
+
+      %h3{:style => 'color: #666'} You now have four new suggested connections.
+      %br/
+      %a.btn.btn-success.btn-large{:href => '#', 'data-dismiss' => 'modal'} View Teams
+  :javascript
+    $('#checkin_completed').modal();
+
+
+.relationships
+  .row
+    .span4= link_to '<i class="icon-arrow-left"></i> Back'.html_safe, relationships_path, :class => 'btn btn-large'
+    .span3{:align => 'center'}
+      %h2 
+        %small Add Teams
+    .span5{:align => 'right'}
+      = form_for Invite.new, :url => invite_with_confirm_startups_path, :remote => true, :html => { :class => 'form-inline invite_form' } do |f|
+        %p Search by Startup Name
+        = text_field_tag 'startup_name', '', :placeholder => 'Startup Name', :class => 'startups-autocomplete'
+        = f.submit 'Search'.html_safe, :class => 'btn'
+  %hr/
+  %br/
+
+  .row.teams
+    / Relationship Requests
+    /
+    .span3.received
+      .header
+        %h3 Received Invites
+      - if @pending_relationships.size > 0
+        - @pending_relationships.each do |r|
+          - entity = r.entity
+          .team{:align => 'center'}
+            .top{:align => 'center', :onclick => "window.location = '#{url_for(entity)}';"}
+              - img = entity.is_a?(Startup) ? entity.logo_url(:square) : entity.pic_url(:square)
+              .background{:style => "background-image: url('#{img}'); cursor: pointer;"} &nbsp;
+              - if entity.is_a?(Startup)
+                .members{:align => 'center'}
+                  - entity.team_members.shuffle.first(3).each do |tm|
+                    .inline-block{:style => 'margin-left: 4px'}= image_tag(user_avatar_url(tm), :title => tm.name, :style => 'width: 50px; height: 50px;')
+            .bottom
+              %h3= link_to truncate(entity.name, :length => 20), entity
+              
+              = link_to '<i class="icon-remove"></i> Ignore'.html_safe, reject_relationship_path(r), :class => 'btn', :method => :post
+              &nbsp;
+              = link_to 'View <i class="icon-arrow-right icon-white"></i>'.html_safe, entity, :class => 'btn btn-success'
+      - else
+        %center (none)
+
+    / Suggested teams
+    /
+
+    - if current_user.entrepreneur? and !@suggested_startups.blank?
+      .span6
+        .suggested.well
+          .header
+            %h2 Your Weekly Suggested Teams
+          - @suggested_startups.each do |s|
+            .block
+              / - if !s.cached_relationship.blank? && !s.cached_relationship.message.blank?
+              /   .left
+              /     %p{:color => '#999'} Suggested because of #{s.cached_relationship.message}:
+              .left.team{:align => 'center'}
+                .top{:align => 'center', :onclick => "window.location = '#{url_for(s)}';"}
+                  .background{:style => "background-image: url('#{s.logo_url(:square)}'); cursor: pointer;"} &nbsp;
+                  .members{:align => 'center'}
+                    - s.team_members.shuffle.first(3).each do |tm|
+                      .inline-block{:style => 'margin-left: 4px'}= image_tag(user_avatar_url(tm), :title => tm.name, :style => 'width: 50px; height: 50px;')
+                .bottom
+                  %h3= link_to truncate(s.name, :length => 20), startup_path(s)
+                  / - unless s.cached_relationship.blank?
+                  /   = link_to '<i class="icon-refresh"></i> Pass'.html_safe, reject_relationship_path(s.cached_relationship), :class => 'btn', :method => :post
+                  /   &nbsp;&nbsp;
+                  / = link_to 'View <i class="icon-arrow-right icon-white"></i>'.html_safe, startup_path(s, :suggested => 1), :class => 'btn btn-success'
+              .left.team_details
+                .right= link_to 'View Team', startup_path(s, :suggested => 1), :class => 'btn btn-success btn-large'
+                .left{:style => 'padding-top: 10px'}
+                  %h4
+                    %strong #{s.rating.blank? ? '0' : s.rating.round(2)}
+                    %small{:style => 'color: #333'} Community Score 
+                .clear
+                %p= simple_format(h(s.elevator_pitch))
+                .right.bold= pluralize(s.checkins.count, 'Checkin')
+                .left.bold= pluralize(s.awesomes.count, 'Awesome')
+                .clear
+              .clear
+
+    / Invited teams
+    /
+    .span3.invited
+      .header
+        %h3 Invited Startups
+      - if @invited_startups.size > 0
+        - @invited_startups.each do |i|
+          .team{:align => 'center'}
+            .top{:style => "background-image: url('#{image_path('pendingteam.png')}'); cursor: pointer;"}
+              .background &nbsp;
+            .bottom
+              %h3= i.to_name
+              = form_for Nudge.new(:invite_id => i.id), :html => {:id => "new_nudge_invite_#{i.id}"} do |f|
+                = f.hidden_field :invite_id
+                = link_to '<i class="icon-hand-left icon"></i> Nudge'.html_safe, '#', :title => "Nudge #{i.to_name} to join nReduce", :onclick => "$('#new_nudge_invite_#{i.id}').submit();", :class => 'btn'
+      - else
+        %center (none)
+      / Invite teams
+      /
+      / .team.invite_team_modal{:align => 'center'}
+      /   .top{:style => "background-image: url('#{image_path('addteam.png')}'); cursor: pointer;"}
+      /     .background &nbsp;
+      /   .bottom
+      /     %h3= link_to '+ Invite Team', '#', :class => 'invite_team_modal'

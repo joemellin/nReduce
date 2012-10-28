@@ -59,18 +59,7 @@
             %small Located: 
           %h3 #{h(@user.location)}
         %br
-        - unless @user.linkedin_url.blank?
-          = link_to_external image_tag('linkedin_32.png'), @user.linkedin_url
-        - unless @user.twitter.blank?
-          = link_to_external image_tag('twitter_32.png'), "https://twitter.com/#!/#{@user.twitter.sub('@', '')}"
-        - unless @user.github_url.blank?
-          = link_to_external image_tag('github_32.png'), @user.github_url
-        - unless @user.dribbble_url.blank?
-          = link_to_external image_tag('dribbble_32.png'), @user.dribbble_url
-        - unless @user.blog_url.blank?
-          = link_to_external image_tag('blog_32.png'), @user.blog_url
-        - unless @user.facebook_url.blank?
-          = link_to_external image_tag('facebook_32.png'), @user.facebook_url
+        = render 'users/profile_icons', :user => @user
       .span2.greylink
         .row.center
           %p{:style => 'padding-top: 20px'}

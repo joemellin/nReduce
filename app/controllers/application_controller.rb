@@ -1,4 +1,5 @@
 class ApplicationController < ActionController::Base
+  around_filter :record_user_action, :only => [:ciao]
   before_filter :hc_url_fix
   before_filter :show_nstar_banner
   before_filter :authenticate_if_staging
@@ -7,6 +8,7 @@ class ApplicationController < ActionController::Base
   # Visit an external site
   def ciao
     redirect_to '/' && return if params[:url].blank?
+    @ua = {:action => UserAction.id_for('external_url'), :data => {:source => params[:source]}}
     url = Base64.decode64(params[:url])
     url = "http://#{url}" unless url.match(/https?:\/\//) != nil
     redirect_to url

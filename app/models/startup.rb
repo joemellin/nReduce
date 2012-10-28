@@ -1,7 +1,7 @@
 class Startup < ActiveRecord::Base
   obfuscate_id :spin => 29406582
   include Connectable # methods for relationships
-  has_paper_trail :ignore => [:setup, :cached_industry_list]
+  has_paper_trail :ignore => [:setup, :cached_industry_list, :active]
   belongs_to :main_contact, :class_name => 'User'
   belongs_to :meeting
   belongs_to :intro_video, :class_name => 'Video', :dependent => :destroy
@@ -55,6 +55,8 @@ class Startup < ActiveRecord::Base
   scope :launched, where('launched_at IS NOT NULL')
   scope :with_intro_video, where('intro_video_url IS NOT NULL')
   scope :with_logo, where('logo IS NOT NULL')
+  scope :active, where(:active => true)
+  scope :inactive, where(:inactive => true)
 
   bitmask :setup, :as => [:profile, :invite_team_members, :intro_video]
 
@@ -101,6 +103,29 @@ class Startup < ActiveRecord::Base
   # def to_param
   #   "#{ObfuscateId.hide(self.id)}-#{self.name.to_url}"
   # end
+
+  # Searches all teams and identifies who has checked in the last two weeks - they are marked as active. All others are inactive
+  def self.identify_active_teams
+    weeks = []
+    # Current week (so count if they've done before and we're in this week)
+    weeks << Week.integer_for_time(Checkin.prev_after_checkin, :after_checkin)
+    # Check previous full week
+    weeks << Week.integer_for_time(Checkin.prev_after_checkin - 1.week, :after_checkin)
+    # And another week before that
+    weeks << Week.previous(weeks.first)
+    all_ids = Startup.all.map{|s| s.id }
+
+    # Count all startups who have checked in last two weeks. If count is 0, they are inactive
+    active = []
+    Checkin.where(:week => weeks).group(:startup_id).count.each do |startup_id, num_checkins|
+      active << startup_id if num_checkins > 0
+    end
+    # Update all startups' state who are not already set correctly
+    Startup.where(:id => active).where(:active => false).each{|s| s.active = true; s.save }
+    inactive = all_ids - active
+    Startup.where(:id => inactive).where(:active => true).each{|s| s.active = false; s.save(:validate => false) }
+    "#{active.size} Active Teams, #{inactive.size} Inactive Teams"
+  end
 
   def self.registration_open?
     true

@@ -9,7 +9,7 @@
         %h1 #{@startup.name}
         %p{:style => 'margin-bottom: 2px'}= h(@startup.one_liner)
         - if @startup.website_url.present?
-          %h3= link_to_external @startup.website_url, @startup.website_url
+          %h3= link_to_external @startup.website_url, @startup.website_url, :source => 'demo_day'
     .span3
       %center
         = link_to "<i class=\"icon-envelope\"></i> Contact #{@startup.name}".html_safe, '#', :class => 'btn btn-large', :onclick => "$('.investor_contact').modal('show');"
@@ -108,7 +108,7 @@
                   %h3= h(@startup.one_liner)
                 - unless @startup.website_url_to_uri.blank?
                   %h3
-                    %small= link_to_external @startup.website_url_to_uri.hostname, @startup.website_url
+                    %small= link_to_external @startup.website_url_to_uri.hostname, @startup.website_url, :source => 'demo_day'
                 .row
                   .span2
                     - unless @startup.company_goal.blank?
