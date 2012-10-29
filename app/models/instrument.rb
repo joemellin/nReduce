@@ -33,6 +33,10 @@ class Instrument < ActiveRecord::Base
   protected
 
   def one_instrument_per_startup
-    self.errors.add(:startup_id, 'already has a metric saved') if self.startup.instruments.count >= 1
+    if self.new_record?
+      self.errors.add(:startup_id, 'already has a metric saved') if self.startup.instruments.count >= 1
+    else
+      self.errors.add(:startup_id, 'already has a metric saved') if self.startup.instruments.where(['id != ?', self.id]).count >= 1
+    end
   end
 end

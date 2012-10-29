@@ -56,7 +56,7 @@ class Startup < ActiveRecord::Base
   scope :with_intro_video, where('intro_video_url IS NOT NULL')
   scope :with_logo, where('logo IS NOT NULL')
   scope :active, where(:active => true)
-  scope :inactive, where(:inactive => true)
+  scope :inactive, where(:active => false)
 
   bitmask :setup, :as => [:profile, :invite_team_members, :intro_video]
 

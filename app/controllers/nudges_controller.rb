@@ -26,4 +26,13 @@ class NudgesController < ApplicationController
     end
     redirect_to relationships_path
   end
+
+  def nudge_all_inactive
+    nudges = []
+    @startup.inactive_startups.each do |s|
+      nudges << Nudge.create(:from_id => current_user, :startup_id => s.id)
+    end
+    flash[:notice] = "#{nudges.size} teams have been nudged!"
+    redirect_to relationships_path
+  end
 end

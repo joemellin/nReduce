@@ -93,9 +93,13 @@ class RelationshipsController < ApplicationController
       @num_checkins = @review_startup.checkins.count
       @num_awesomes = @review_startup.awesomes.count
       if @relationship.suggested?
-        @num_invites_sent = @startup.initiated_relationships.pending.where(['pending_at > ?', Time.now - 1.week]).count
-        @pct_complete = ((@num_invites_sent.to_f / Startup::NUM_ACTIVE_REQUIRED.to_f) * 100).round
-        @num_left_to_invite = Startup::NUM_ACTIVE_REQUIRED - @num_invites_sent
+        if @startup.num_active_startups >= Startup::NUM_ACTIVE_REQUIRED
+          @pct_complete = 100
+        else
+          @num_invites_sent = @startup.initiated_relationships.pending.where(['pending_at > ?', Time.now - 1.week]).count
+          @pct_complete = ((@num_invites_sent.to_f / Startup::NUM_ACTIVE_REQUIRED.to_f) * 100).round
+          @num_left_to_invite = Startup::NUM_ACTIVE_REQUIRED - @num_invites_sent
+        end
         @ua = {:action => UserAction.id_for('relationships_suggest'), :data => {:id => @review_startup.id}}
       else
         @ua = {:action => UserAction.id_for('relationships_show'), :data => {:id => @review_startup.id}} 

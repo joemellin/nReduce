@@ -17,6 +17,10 @@ module Connectable
     Startup.active.where(:id => self.connected_to_ids('Startup'))
   end
 
+  def inactive_startups
+    Startup.inactive.where(:id => self.connected_to_ids('Startup'))
+  end
+
   def num_active_startups
     Cache.get(['n_a_s', self], nil, true){
       Startup.active.where(:id => self.connected_to_ids('Startup')).count
