@@ -26,7 +26,7 @@ class UserAction < ActiveRecord::Base
       'relationships_remove' => 5,
       'checkins_show' => 6,
       'relationships_show' => 7,
-      'startups_suggest' => 8,
+      'relationships_suggest' => 8,
       'external_link' => 9
     }
   end

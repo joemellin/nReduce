@@ -3,10 +3,12 @@
   .row
     .span2{:style => 'margin: 31px 0 60px 31px;'}= link_to(image_tag(user_signed_in? && !@setup ? 'nglow.png' : 'nreduce_s.png'), (@demo_day.present? ? '/d' : "/"))
     - if user_signed_in? && !@setup && current_user.entrepreneur? && current_user.startup.account_setup?
-      .span2.center{:style => 'margin: 60px 0 0 0;'}
-        = link_to '<i class="icon icon-user"></i> Add Teams'.html_safe , add_teams_relationships_path, :class => 'btn'
+      .span2{:style => 'margin: 60px 0 0 0;'}
+        .left= link_to '<i class="icon icon-user"></i> Add Teams'.html_safe , add_teams_relationships_path, :class => 'btn add_teams'
         - unless current_user.unread_nc == 0
-          %span.badge.badge-success= current_user.unread_nc
+          .left.unread_nc
+            %span.badge.badge-success= current_user.unread_nc
+        .clear
     - else
       .span1
         %p
