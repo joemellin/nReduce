@@ -123,9 +123,13 @@ class Startup < ActiveRecord::Base
       active << startup_id if num_checkins > 0
     end
     # Update all startups' state who are not already set correctly
-    Startup.where(:id => active).where(:active => false).each{|s| s.active = true; s.save }
+    Startup.transaction do
+      Startup.where(:id => active).where(:active => false).each{|s| s.active = true; s.save }
+    end
     inactive = all_ids - active
-    Startup.where(:id => inactive).where(:active => true).each{|s| s.active = false; s.save(:validate => false) }
+    Startup.transaction do
+      Startup.where(:id => inactive).where(:active => true).each{|s| s.active = false; s.save(:validate => false) }
+    end
     "#{active.size} Active Teams, #{inactive.size} Inactive Teams"
   end
 
