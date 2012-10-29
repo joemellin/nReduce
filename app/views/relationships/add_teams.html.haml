@@ -55,25 +55,45 @@
           %br/
           = link_to 'Next <i class="icon-arrow-right"></i>'.html_safe, reject_relationship_path(@relationship), :method => :post, :class => 'btn btn-large'
       %hr/
-      .row
-        .span12
-          .startup
-            .inline-block
+      .startup
+        .row
+          .span12
+            .square.logo_and_details
               = image_tag @relationship.entity.logo_url(:square)
-              .name= @relationship.entity.name
-              .one_liner= @relationship.entity.one_liner
-
+              %center
+                .name= @relationship.entity.name
+                .one_liner= @relationship.entity.one_liner
 
             - @relationship.entity.team_members.shuffle.first(3).each do |tm|
-              .team_member.inline-block{:style => 'margin-left: 4px'}
-                = image_tag(user_avatar_url(tm), :title => tm.name, :style => 'width: 50px; height: 50px;')
-                .name= h(tm.name)
-                - unless tm.location.blank?
-                  .location= h(tm.location)
-                = render 'users/profile_icons', :user => tm
+              .team_member.square
+                = image_tag(tm.pic_url(:square), :title => tm.name, :class => 'rounded')
+                %center
+                  .name= h(tm.name)
+                  - unless tm.location.blank?
+                    .location= h(tm.location)
+                  = render 'users/profile_icons', :user => tm, :source => 'add_teams'
+            .clear
+        .row
+          .span12.stats
+            .stat.center
+              %h2 #{@startup.rating.round(2)}
+              Community Rating
+            .stat.center
+              %h2 #{@num_checkins}
+              Weeks Worked
+            .stat.center
+              %h2 #{@num_awesomes}
+              Awesomes
+            .left.startups_in_common
+              - if @startups_in_common.present?
+                - @startups_in_common.each do |s|
+                  = link_to image_tag(s.logo_url(:small), :title => s.name, :alt => s.name, :class => 'rounded'), s
+                %br/
+                #{pluralize(@startups_in_common.size, 'Connection')} in Common
             .clear
 
-          - if @relationship.entity.website_url.present? && @startup.website_url_to_uri.present?
-            %center
-              = link_to_external "#{@relationship.entity.name.possessive} Website", @startup.website_url, :source => 'add_teams'
-            %iframe.iframe{:width => 900, :height => 600, :frameborder => 0, :src => @startup.website_url}
+      - if @relationship.entity.website_url.present? && @startup.website_url_to_uri.present?
+        .website.center
+          = link_to_external "#{@relationship.entity.name.possessive} Website", @startup.website_url, :source => 'add_teams'
+          %hr/
+          %iframe.iframe{:width => 900, :height => 600, :frameborder => 0, :src => @startup.website_url}
