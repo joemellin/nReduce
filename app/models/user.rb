@@ -240,7 +240,7 @@ class User < ActiveRecord::Base
   end
 
   def update_unread_notifications_count
-    self.unread_nc = self.notifications.unread.count
+    self.unread_nc = self.notifications.where(:action => 'relationship_request').unread.count
     self.save(:validate => false)
   end
 

@@ -2,11 +2,11 @@ class Relationship < ActiveRecord::Base
   # include the Connectable module in any classes you want some nice instance methods available for dealing with relationships
   belongs_to :entity, :polymorphic => true
   belongs_to :connected_with, :polymorphic => true
-  has_many :notifications, :as => :attachable
+  has_many :notifications, :as => :attachable, :dependent => :destroy
   has_many :user_actions, :as => :attachable
 
   attr_accessible :context, :entity, :entity_id, :entity_type, :connected_with, :connected_with_id, 
-    :connected_with_type, :status, :approved_at, :rejected_at, :silent, :message, :pending_at
+    :connected_with_type, :status, :approved_at, :rejected_at, :silent, :message, :pending_at, :initiated
 
   attr_accessor :silent
 
@@ -54,7 +54,7 @@ class Relationship < ActiveRecord::Base
       :entity => entity, 
       :connected_with => connected_with, 
       :status => Relationship::SUGGESTED, 
-      :silent => true, 
+      :silent => true,
       :context => context, 
       :message => message, 
       :initiated => true
@@ -170,6 +170,8 @@ class Relationship < ActiveRecord::Base
             inv.save
             Notification.create_for_relationship_approved(self)
           end
+          # Clear out notifications for this relationship
+          self.notifications.each{|n| n.mark_as_read }
           # Reset relationship cache for both startups involved
           self.reset_cache_for_entities_involved
         end
@@ -205,6 +207,9 @@ class Relationship < ActiveRecord::Base
         inv.save
       end
       self.save
+       # Clear out notifications for this relationship
+      self.notifications.each{|n| n.mark_as_read }
+      # Reset relationship cache for both startups involved
       self.reset_cache_for_entities_involved
     end
     true
@@ -261,6 +266,8 @@ class Relationship < ActiveRecord::Base
   def reset_cache_for_entities_involved
     Cache.delete(['connections', "#{entity_type.downcase}_#{entity_id}"])
     Cache.delete(['connections', "#{connected_with_type.downcase}_#{connected_with_id}"])
+    Cache.delete(['n_a_s', "#{entity_type.downcase}_#{entity_id}"])
+    Cache.delete(['n_a_s', "#{connected_with_type.downcase}_#{connected_with_id}"])
     if self.context == [:startup_startup]
       Cache.delete(['2d', "#{entity_type.downcase}_#{entity_id}"])
       Cache.delete(['2d', "#{connected_with_type.downcase}_#{connected_with_id}"])

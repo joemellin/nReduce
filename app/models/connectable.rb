@@ -18,7 +18,9 @@ module Connectable
   end
 
   def num_active_startups
-    Startup.active.where(:id => self.connected_to_ids('Startup')).count
+    Cache.get(['n_a_s', self], nil, true){
+      Startup.active.where(:id => self.connected_to_ids('Startup')).count
+    }.to_i    
   end
 
     # Entities this one is connected to, of a specific class
@@ -113,10 +115,13 @@ module Connectable
     Startup.find(startup_ids.first(limit)).map{|s| s.cached_relationship = r_by_id[s.id] unless r_by_id[s.id].blank?; s }
   end
 
-   def generate_suggested_connections(limit = 10)
+  # Goes through active startups and suggests possible connections
+  # Returns an array of suggested relationships
+
+  def generate_suggested_connections(limit = 5)
     # See if they are over limit of suggested connections
-    suggested = self.suggested_startups(limit + 5)
-    return false if !suggested.blank? and (suggested.size >= limit)
+    relationships = self.suggested_relationships('Startup')
+    return false if !relationships.blank? and (relationships.size >= limit)
 
     # Find all startups this person is connected to, has been suggested, and has rejected
     if self.is_a?(Startup)
@@ -130,175 +135,40 @@ module Connectable
 
     # Find all startups that checked in last week
     if self.is_a?(Startup) || (self.is_a?(User) && self.entrepreneur?)
-      end_after = Checkin.prev_after_checkin
-      start_after = end_after - 24.hours
-      checkins = Checkin.completed.where(['completed_at >= ? AND completed_at <= ?', start_after, end_after]).includes(:startup).all
-      startups = checkins.map{|c| c.startup }
+      startups = Startup.active.all.shuffle
+
+      # Sort startups if this is a startup and they have less than the req'd # of active connections
+      # This will suggest other startups that are also active but have few connections and few pending connections
+      if self.is_a?(Startup) && self.num_active_startups < Startup::NUM_ACTIVE_REQUIRED
+        num_pending = Relationship.where(:connected_with_id => startups.map{|s| s.id }, :connected_with_type => 'Startup').pending.group(:connected_with_id).count
+        ranking = {}
+        startups.each do |s|
+          if num_pending[s.id].blank?
+            ranking[s.id] = 0 
+          else
+            # ranking is: (num active required - num active connections) / num pending connections
+            ranking[s.id] = (Startup::NUM_ACTIVE_REQUIRED - s.num_active_startups) / num_pending[s.id]
+          end
+        end
+        startups.sort{|a,b| ranking[a.id] <=> ranking[b.id] }.reverse!
+      end 
     elsif self.mentor? || self.investor?
       startups = Startup.all_that_can_access_mentors_investors
     end
 
-    return suggested if startups.blank?
+    return relationships if startups.blank?
 
-    1.upto(startups.size) do
+    suggested = []
+
+    startups.each do |s|
       break if suggested.size >= limit
-      # Randomly get a startup from one that checked in last week
-      s = startups.sample
-      # Make sure startup still exists
-      next if s.blank?
       # Don't add if they're already connected or we're going to suggest them
       next if ignore_startup_ids.include?(s.id) || suggested.include?(s)
       # Suggest connection
-      Relationship.suggest_connection(self, s, :startup_startup)
+      relationships << Relationship.suggest_connection(self, s, :startup_startup)
       suggested << s
     end
 
-    suggested
-  end
-
-    # Generate suggestion connections that this startup might like to connect to - based on similar industries and company goal
-  def generate_suggested_connections_old(limit = 4)
-    startups = []
-    # See if they are over limit of suggested connections
-    suggested = self.suggested_startups(limit + 5)
-    return false if !suggested.blank? and (suggested.size >= limit)
-    num_suggested = suggested.size
-
-    # Find all startups this person is connected to, has been suggested, and has rejected
-    ignore_startup_ids = (self.received_relationships.where(:entity_type => 'Startup') + self.initiated_relationships.where(:connected_with_type => 'Startup')).map{|r| r.connected_with_id }
-    ignore_startup_ids << self.id if self.is_a?(Startup) # make sure this startup doesn't appear in suggested startups
-    ignore_startup_ids << Startup.nreduce_id # hide nreduce from suggested startups
-    ignore_startup_ids.uniq!
-
-     # Create lambda to add startups that will create a suggested relationship when passed an array of startups
-    suggest_startups = Proc.new {|startups, message|
-      startups.each do |s|
-        break if num_suggested >= limit
-        Relationship.suggest_connection(self, s, :startup_startup, message)
-        num_suggested += 1
-      end
-    }
-
-    industry_ids = self.industries.map{|t| t.id }
-
-    # If this object is an investor then just pull companies that say they are looking for investment
-    if self.is_a?(User) and self.investor?
-      search = Startup.search do
-        with :investable, true
-        with(:num_checkins).greater_than(1) # (greater_than is greater than or equal to)
-        without :id, ignore_startup_ids
-        order_by :rating, :desc
-        order_by :num_checkins, :desc
-        paginate :per_page => limit
-      end
-      unless search.results.blank?
-        startups += search.results
-        ignore_startup_ids += startups.map{|s| s.id }
-        suggest_startups.call(startups, nil)
-      end
-
-    # If this is a startup do some searches for matching companies
-    elsif self.is_a?(Startup)
-
-      # Matching on all industries & company goal
-      unless industry_ids.blank?
-        search = Startup.search do
-          all_of do
-            with :industry_tag_ids, industry_ids
-          end
-          with(:num_checkins).greater_than(1) # (greater_than is greater than or equal to)
-          with(:num_pending_relationships).less_than(10)
-          with :company_goal, self.company_goal
-          without :id, ignore_startup_ids
-          order_by :rating, :desc
-          order_by :num_checkins, :desc
-          paginate :per_page => limit
-        end
-        unless search.results.blank?
-          startups += search.results
-          ignore_startup_ids += startups.map{|s| s.id }
-          suggest_startups.call(startups, 'same industry & company goal')
-        end
-      end
-      
-
-      # Matching on all industries
-      if startups.size < limit && !industry_ids.blank?
-        search = Startup.search do
-          all_of do
-            with :industry_tag_ids, industry_ids
-          end
-          with(:num_checkins).greater_than(1)
-          with(:num_pending_relationships).less_than(10)
-          without :id, ignore_startup_ids
-          order_by :rating, :desc
-          order_by :num_checkins, :desc
-          paginate :per_page => limit
-        end
-        unless search.results.blank?
-          startups += search.results
-          ignore_startup_ids += startups.map{|s| s.id }
-          suggest_startups.call(startups, 'same industry')
-        end
-      end
-
-      # Matching on any industry
-      if startups.size < limit && !industry_ids.blank?
-        search = Startup.search do
-          any_of do
-            with :industry_tag_ids, industry_ids
-          end
-          with(:num_checkins).greater_than(1)
-          with(:num_pending_relationships).less_than(10)
-          without :id, ignore_startup_ids
-          order_by :rating, :desc
-          order_by :num_checkins, :desc
-          paginate :per_page => limit
-        end
-        unless search.results.blank?
-          startups += search.results
-          ignore_startup_ids += startups.map{|s| s.id }
-          suggest_startups.call(startups, 'same industry')
-        end
-      end
-
-      # Matching on company stage
-      if startups.size < limit and !self.stage.blank?
-        search = Startup.search do
-          with :stage, self.stage
-          with(:num_checkins).greater_than(1)
-          with(:num_pending_relationships).less_than(10)
-          without :id, ignore_startup_ids
-          order_by :rating, :desc
-          order_by :num_checkins, :desc
-          paginate :per_page => 2
-        end
-        unless search.results.blank?
-          startups += search.results
-          ignore_startup_ids += startups.map{|s| s.id }
-          suggest_startups.call(startups, "same company stage")
-        end
-      end
-
-      # Matching on company goal
-      if startups.size < limit and !self.company_goal.blank?
-        search = Startup.search do
-          with :company_goal, self.company_goal
-          with(:num_checkins).greater_than(1)
-          with(:num_pending_relationships).less_than(10)
-          without :id, ignore_startup_ids
-          order_by :rating, :desc
-          order_by :num_checkins, :desc
-          paginate :per_page => 2
-        end
-        unless search.results.blank?
-          startups += search.results
-          ignore_startup_ids += startups.map{|s| s.id }
-          suggest_startups.call(startups, "same company goal")
-        end
-      end
-    end
-
-    startups
+    relationships
   end
 end
