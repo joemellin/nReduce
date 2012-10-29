@@ -35,7 +35,7 @@ class Notification < ActiveRecord::Base
     n.action = action
     n.message = message || "You have a new #{object.class.to_s.downcase}"
     if n.save
-      n.user.update_unread_notifications_count
+      n.user.update_unread_notifications_count if n.action.to_sym == :relationship_request
       if n.email_user?
         if Rails.env.test? || deliver_immediately
           return Notification.perform(n.id)
@@ -185,5 +185,11 @@ class Notification < ActiveRecord::Base
   # Checkins user settings to see if they want to be emailed on this action
   def email_user?
     self.user.email_for?(self.attachable_type.downcase) || self.user.email_for?(self.action)
+  end
+
+  def mark_as_read(dont_update_user = false)
+    self.read_at = Time.now
+    self.save
+    self.user.update_unread_notifications_count unless dont_update_user
   end
 end

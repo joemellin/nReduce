@@ -1,5 +1,5 @@
 class RelationshipsController < ApplicationController
-  around_filter :record_user_action, :except => [:add_teams]
+  around_filter :record_user_action
   before_filter :login_required
   before_filter :load_requested_or_users_startup, :only => [:index, :add_teams]
   load_and_authorize_resource :except => [:index, :add_teams]
@@ -62,6 +62,8 @@ class RelationshipsController < ApplicationController
 
   def add_teams
     authorize! :add_teams, Relationship
+    # Clear flash from approve/reject relationships action if present
+    flash[:notice] = nil
     if current_user.mentor?
       @entity = current_user
     elsif @startup
@@ -69,17 +71,37 @@ class RelationshipsController < ApplicationController
 
       # Load next startup - if they need to approve startups then next to approve
       @relationship = @entity.pending_relationships.last
+
+      @review_startup = @relationship.entity unless @relationship.blank?
       
-      @relationship ||= @startup.suggested_relationships('Startup').first unless @startup.blank?
+      # Otherwise load suggested startup
+      @relationship ||= @startup.suggested_relationships('Startup').first
 
-      @relationship = @startup.initiated_relationships.first
+      # If they have none left, generate more
+      @relationship = @startup.generate_suggested_connections(5).first if @relationship.blank?
 
-      @startups_in_common = Relationship.startups_in_common(@relationship.entity, @startup)
+      # If there are none left to suggest
+      if @relationship.blank?
+        flash[:alert] = "You have no more connection requests, and there are no more active teams to suggest this week."
+        redirect_to '/'
+        return
+      end
 
-      @num_checkins = @relationship.entity.checkins.count
-      @num_awesomes = @relationship.entity.awesomes.count
+      @review_startup ||= @relationship.connected_with
+
+      @startups_in_common = Relationship.startups_in_common(@review_startup, @startup)
+      @num_checkins = @review_startup.checkins.count
+      @num_awesomes = @review_startup.awesomes.count
+      if @relationship.suggested?
+        @num_invites_sent = @startup.initiated_relationships.pending.where(['pending_at > ?', Time.now - 1.week]).count
+        @pct_complete = ((@num_invites_sent.to_f / Startup::NUM_ACTIVE_REQUIRED.to_f) * 100).round
+        @num_left_to_invite = Startup::NUM_ACTIVE_REQUIRED - @num_invites_sent
+        @ua = {:action => UserAction.id_for('startups_suggest')}
+      else
+        @ua = {:action => UserAction.id_for('relationships_show')}
+      end
     end
-     # Suggested, pending relationships and invited startups
+    # Suggested, pending relationships and invited startups
     #@suggested_startups = @startup.suggested_startups(10) unless @startup.blank?
     #@pending_relationships = @entity.pending_relationships
     #@invited_startups = current_user.sent_invites.to_startups.not_accepted.ordered

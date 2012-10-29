@@ -45,13 +45,25 @@
       .row
         .span10
           - if @relationship.pending?
-            %h4 Connection Request from #{@relationship.entity.team_members.map{|u| u.name }.join(', ')} of Team #{@relationship.entity.name}:
+            %h4.bold Connection Request from #{@review_startup.team_members.map{|u| u.name }.join(', ')} of Team #{@review_startup.name}
             - if @relationship.message.present?
               .message= simple_format(h("\"#{@relationship.message}\""))
           - else
-            %h4 Suggested Connection:
+            .row
+              .span3
+                %h4.bold Suggested Connection
+              .span6
+                .center
+                  - if @pct_complete < 100
+                    %h4 You have less than #{Startup::NUM_ACTIVE_REQUIRED} active teams. Please invite #{@num_left_to_invite} more #{@num_left_to_invite == 1 ? 'startup' : 'startups'} to connect.
+                    .progress{:align => 'left'}
+                      .bar{:style => "width: #{@pct_complete}%"}
+                    %p Having #{Startup::NUM_ACTIVE_REQUIRED}+ active teams gives more opportunity for collaboration
         .span2{:align => 'right'}
-          = link_to 'Approve & Next <i class="icon-arrow-right icon-white"></i>'.html_safe, approve_relationship_path(@relationship), :method => :post, :class => 'btn btn-large btn-success'
+          - if @relationship.suggested?
+            = link_to 'Invite & Next <i class="icon-arrow-right icon-white"></i>'.html_safe, '#', :class => 'btn btn-large btn-success', :onclick => "$('.relationship_request.modal').modal(); return false;"
+          - else
+            = link_to 'Connect & Next <i class="icon-arrow-right icon-white"></i>'.html_safe, approve_relationship_path(@relationship), :method => :post, :class => 'btn btn-large btn-success'
           %br/
           = link_to 'Next <i class="icon-arrow-right"></i>'.html_safe, reject_relationship_path(@relationship), :method => :post, :class => 'btn btn-large'
       %hr/
@@ -59,17 +71,19 @@
         .row
           .span12
             .square.logo_and_details
-              = image_tag @relationship.entity.logo_url(:square)
+              = image_tag @review_startup.logo_url(:square)
               %center
-                .name= @relationship.entity.name
-                .one_liner= @relationship.entity.one_liner
+                .name= @review_startup.name
+                .one_liner= @review_startup.one_liner
 
-            - @relationship.entity.team_members.shuffle.first(3).each do |tm|
+            - @review_startup.team_members.shuffle.first(3).each do |tm|
               .team_member.square
                 = image_tag(tm.pic_url(:square), :title => tm.name, :class => 'rounded')
                 %center
                   .name= h(tm.name)
-                  - unless tm.location.blank?
+                  - if tm.location.blank?
+                    .location &nbsp;
+                  - else
                     .location= h(tm.location)
                   = render 'users/profile_icons', :user => tm, :source => 'add_teams'
             .clear
@@ -92,8 +106,10 @@
                 #{pluralize(@startups_in_common.size, 'Connection')} in Common
             .clear
 
-      - if @relationship.entity.website_url.present? && @startup.website_url_to_uri.present?
+      - if @review_startup.website_url.present? && @startup.website_url_to_uri.present?
         .website.center
-          = link_to_external "#{@relationship.entity.name.possessive} Website", @startup.website_url, :source => 'add_teams'
+          = link_to_external "#{@review_startup.name.possessive} Website", @startup.website_url, :source => 'add_teams'
           %hr/
-          %iframe.iframe{:width => 900, :height => 600, :frameborder => 0, :src => @startup.website_url}
+          %iframe.iframe{:width => '100%', :height => 600, :frameborder => 0, :src => @startup.website_url}
+
+= render 'relationships/request_modal', :relationship => @relationship, :form_id => 'add_teams_request', :not_remote => true

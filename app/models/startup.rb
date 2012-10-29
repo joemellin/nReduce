@@ -43,7 +43,7 @@ class Startup < ActiveRecord::Base
 
   before_validation :encode_pitch_video
   before_save :format_url
-  after_save :reset_cached_elements
+  before_save :reset_cached_elements
   after_create :initiate_relationships_from_invites
   after_create :notify_classmates_of_new_startup
 
@@ -61,6 +61,8 @@ class Startup < ActiveRecord::Base
   bitmask :setup, :as => [:profile, :invite_team_members, :intro_video]
 
   NUM_SCREENSHOTS = 4
+  # Number of active startups you need
+  NUM_ACTIVE_REQUIRED = 6
 
   # Uses Sunspot gem with Solr backend. Docs: http://outoftime.github.com/sunspot/docs/index.html
   # https://github.com/outoftime/sunspot
@@ -502,7 +504,8 @@ class Startup < ActiveRecord::Base
   end
 
   def reset_cached_elements
-    Cache.delete(['profile_c', self])
+    Cache.delete(['profile_c', self]) # reset profile completeness
+    Cache.delete(['n_a_s', self]) if self.active_changed? # reset number of active startups
     true
   end
 
