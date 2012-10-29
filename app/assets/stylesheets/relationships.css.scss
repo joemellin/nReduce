@@ -108,17 +108,23 @@
       }
       .startups_in_common {
         max-width: 350px;
+        margin-top: 15px;
       }
-      .square, .stat {
+      .square {
         margin-right: 15px;
         width: 220px;
         float: left;
-
       }
       .stats {
-        margin-top: 25px;
+        margin-top: 5px;
+        margin-right: 15px;
+        text-align: center;
+        width: 130px;
+        float: left;
         h2 {
-          margin-bottom: 5px;
+          margin-top: 15px;
+          margin-bottom: 3px;
+          line-height: 26px;
         }
       }
       .team_member {
@@ -126,11 +132,10 @@
         margin-left: 4px;
       }
       .logo_and_details, .team_member {
-        img.rounded {
-          -webkit-border-radius: 15px;
-          -moz-border-radius: 15px;
-          border-radius: 15px;
+        .rounded {
+          border: 1px solid #ccc;
           margin: 0 10px 0 10px;
+          
         }
       }
     }

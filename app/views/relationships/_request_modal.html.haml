@@ -15,7 +15,7 @@
       = f.hidden_field :connected_with_type
       - unless relationship.context.blank?
         = hidden_field_tag 'relationship[context]', relationship.context.to_s
-      %p Please write a quick message to explain why you think they would be a great match for your startup:
+      %p Please write a quick message and say hello, and why you are excited about connecting with them.
       = f.text_area :message, :size => '120x5', :class => 'span4'
       %br/
       %br/
