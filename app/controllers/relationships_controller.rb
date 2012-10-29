@@ -62,8 +62,6 @@ class RelationshipsController < ApplicationController
 
   def add_teams
     authorize! :add_teams, Relationship
-    # Clear flash from approve/reject relationships action if present
-    flash[:notice] = nil
     if current_user.mentor?
       @entity = current_user
     elsif @startup
@@ -82,7 +80,7 @@ class RelationshipsController < ApplicationController
 
       # If there are none left to suggest
       if @relationship.blank?
-        flash[:alert] = "You have no more connection requests, and there are no more active teams to suggest this week."
+        flash[:notice] = "Those are all the teams you can connect to - check back next week for more teams."
         redirect_to '/'
         return
       end
@@ -145,7 +143,7 @@ class RelationshipsController < ApplicationController
         r.update_attribute('connected', true) if !r.startup_relationship.blank? && (r.startup_relationship == @relationship)
       end
       if suggested
-        flash[:notice] = "Your connection has been requested with #{@relationship.connected_with.name}"
+        flash[:notice] = "Your request has been sent to #{@relationship.connected_with.name}."
       else
         flash[:notice] = "You are now connected to #{@relationship.entity.name}."
       end
@@ -175,7 +173,7 @@ class RelationshipsController < ApplicationController
       if prev_status_pending
         flash[:notice] = "You have ignored the connection request from #{removed.name}."
       elsif prev_status_suggested
-        flash[:notice] = "You have passed on that suggested connection."
+        #flash[:notice] = "You have passed on that suggested connection."
       else
         flash[:notice] = "You have removed #{removed.name} from your group."
       end

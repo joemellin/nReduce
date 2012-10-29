@@ -71,14 +71,31 @@
         .row
           .span12
             .square.logo_and_details
-              = image_tag @review_startup.logo_url(:square)
+              .rounded= image_tag @review_startup.logo_url(:square)
               %center
                 .name= @review_startup.name
                 .one_liner= @review_startup.one_liner
 
+              - if @startups_in_common.present?
+                .startups_in_common
+                  - @startups_in_common.each do |s|
+                    = link_to image_tag(s.logo_url(:small), :title => s.name, :alt => s.name, :class => 'rounded'), s
+                  %br/
+                  #{pluralize(@startups_in_common.size, 'Connection')} in Common
+                  
+            .left.stats.center
+              .stat
+                %h2 #{@startup.rating.round(2)}
+                Community Rating
+              .stat
+                %h2 #{@num_checkins}
+                Weeks Worked
+              .stat
+                %h2 #{@num_awesomes}
+                Awesomes
             - @review_startup.team_members.shuffle.first(3).each do |tm|
               .team_member.square
-                = image_tag(tm.pic_url(:square), :title => tm.name, :class => 'rounded')
+                .rounded= image_tag(tm.pic_url(:square), :title => tm.name)
                 %center
                   .name= h(tm.name)
                   - if tm.location.blank?
@@ -87,29 +104,13 @@
                     .location= h(tm.location)
                   = render 'users/profile_icons', :user => tm, :source => 'add_teams'
             .clear
-        .row
-          .span12.stats
-            .stat.center
-              %h2 #{@startup.rating.round(2)}
-              Community Rating
-            .stat.center
-              %h2 #{@num_checkins}
-              Weeks Worked
-            .stat.center
-              %h2 #{@num_awesomes}
-              Awesomes
-            .left.startups_in_common
-              - if @startups_in_common.present?
-                - @startups_in_common.each do |s|
-                  = link_to image_tag(s.logo_url(:small), :title => s.name, :alt => s.name, :class => 'rounded'), s
-                %br/
-                #{pluralize(@startups_in_common.size, 'Connection')} in Common
-            .clear
+            
+          
 
       - if @review_startup.website_url.present? && @startup.website_url_to_uri.present?
         .website.center
-          = link_to_external "#{@review_startup.name.possessive} Website", @startup.website_url, :source => 'add_teams'
+          = link_to_external "#{@review_startup.name.possessive} Website", @review_startup.website_url, :source => 'add_teams'
           %hr/
-          %iframe.iframe{:width => '100%', :height => 600, :frameborder => 0, :src => @startup.website_url}
+          %iframe.iframe{:width => '100%', :height => 600, :frameborder => 0, :src => @review_startup.website_url}
 
 = render 'relationships/request_modal', :relationship => @relationship, :form_id => 'add_teams_request', :not_remote => true
