@@ -78,9 +78,6 @@
   }
 
   .relationship_request {
-    .iframe { 
-      border: 2px solid #ccc;
-    }
     .message {
       margin-top: 10px;
       font-size: 1.5em;
@@ -90,6 +87,49 @@
       line-height: 1.6em;
       margin-bottom: 15px;
       min-width: 150px;
+    }
+    .startup {
+      margin-top: 15px;
+      .logo_and_details {
+        .name { font-weight: bold; }
+      }
+      .name {
+        font-size: 1.4em;
+        margin: 15px 0 4px 0;
+      }
+      .startups_in_common {
+        max-width: 350px;
+      }
+      .square, .stat {
+        margin-right: 15px;
+        width: 220px;
+        float: left;
+      }
+      .stats {
+        margin-top: 25px;
+        h2 {
+          margin-bottom: 5px;
+        }
+      }
+      .team_member {
+        .location { margin-bottom: 15px; }
+        margin-left: 4px;
+      }
+      .logo_and_details, .team_member {
+        img.rounded {
+          -webkit-border-radius: 15px;
+          -moz-border-radius: 15px;
+          border-radius: 15px;
+        }
+      }
+    }
+    .website {
+      margin-top: 50px;
+      a { font-size: 1.4em;}
+      .iframe {
+        margin-top: 15px;
+        border: 2px solid #ccc;
+      }
     }
   }
 }

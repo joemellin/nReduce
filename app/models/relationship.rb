@@ -139,6 +139,13 @@ class Relationship < ActiveRecord::Base
     end
   end
 
+  # Returns the startups that these two entities are both connected to
+  def self.startups_in_common(entity1, entity2)
+    common = Relationship.all_connection_ids_for(entity1)['Startup'] & Relationship.all_connection_ids_for(entity2)['Startup']
+    return Startup.where(:id => common) unless common.blank?
+    []
+  end
+
   # Approve the friendship and create a record in the opposite direction so friendship is easy to query
   def approve!
     # If this is a suggested relationship simply set to pending so the other person sees it

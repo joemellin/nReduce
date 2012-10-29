@@ -73,6 +73,11 @@ class RelationshipsController < ApplicationController
       @relationship ||= @startup.suggested_relationships('Startup').first unless @startup.blank?
 
       @relationship = @startup.initiated_relationships.first
+
+      @startups_in_common = Relationship.startups_in_common(@relationship.entity, @startup)
+
+      @num_checkins = @relationship.entity.checkins.count
+      @num_awesomes = @relationship.entity.awesomes.count
     end
      # Suggested, pending relationships and invited startups
     #@suggested_startups = @startup.suggested_startups(10) unless @startup.blank?
