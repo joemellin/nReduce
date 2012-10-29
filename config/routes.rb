@@ -28,7 +28,11 @@ Nreduce::Application.routes.draw do
 
   resources :authentications, :checkins, :notifications, :rsvps
 
-  resources :nudges, :only => [:create, :show]
+  resources :nudges, :only => [:create, :show] do
+    collection do
+      post 'nudge_all_inactive'
+    end
+  end
 
   resources :investors do
     collection do
