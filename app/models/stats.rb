@@ -167,12 +167,16 @@ class Stats
 
         active_connections_this_week = 0
 
+        # Checkin window is from start of after checkin for each week
         checkin_window = checkin.time_window
+        start_after_checkin = checkin_window.last - 24.hours
+        end_after_checkin = checkin_window.last
+
         unless rh.blank?
           rh.each do |startup_id, rel_window|
-            # See if they were connected before checkin window closed, and that the relationship didn't end before checkin window closed
+            # See if they were connected during the after checkin window and that the relationship didn't end before checkin window closed
             # Should it check to see if you're connected after to give comments?
-            if rel_window.first < checkin_window.last && rel_window.last > checkin_window.last
+            if rel_window.first < start_after_checkin && rel_window.last > end_after_checkin
               # Now see if this startup checked in this week
               active_connections_this_week += 1 if checkins_by_startup[startup_id].present? && checkins_by_startup[startup_id][week].present?
             end
