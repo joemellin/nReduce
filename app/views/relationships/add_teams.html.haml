@@ -85,7 +85,7 @@
 
             .left.stats.center
               .stat
-                %h2 #{@review_startup.rating.round(2)}
+                %h2 #{@review_startup.rating.blank? ? 0 : @review_startup.rating.round(2)}
                 Community Rating
               .stat
                 %h2 #{@num_checkins}
