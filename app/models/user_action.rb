@@ -27,7 +27,11 @@ class UserAction < ActiveRecord::Base
       'checkins_show' => 6,
       'relationships_show' => 7,
       'relationships_suggest' => 8,
-      'external_link' => 9
+      'external_link' => 9,
+      'pages_home' => 10,
+      'registrations_new' => 11,
+      'weekly_classes_show' => 12,
+      'checkins_create' => 13
     }
   end
 

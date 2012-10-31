@@ -3,8 +3,8 @@ class Admin::MetricsController < ApplicationController
   caches_action :index, :expires_in => 10.minutes
 
   def index
-    @checkin_data = Stats.checkins_per_week_for_chart(2.months)
-    @comment_data = Stats.comments_per_week_for_chart(2.months)
+    #@checkin_data = Stats.checkins_per_week_for_chart(2.months)
+    #@comment_data = Stats.comments_per_week_for_chart(2.months)
     @comments_per_checkin_data = Stats.comments_per_checkin_for_chart(2.months)
     @active_teams_data = Stats.connections_per_startup_for_chart(2.months)
     @activation_data = Stats.startups_activated_per_week_for_chart(2.months)

@@ -207,7 +207,7 @@ class Stats
 
     # Group startups by date created
     weeks.keys.each do |week|
-      time_window = Week.window_for_integer(week, :before_checkin)
+      time_window = Week.window_for_integer(week, :after_checkin)
       ids = []
       startups.values.each do |s|
         ids << s.id if time_window.first <= s.created_at && time_window.last >= s.created_at
@@ -349,7 +349,7 @@ class Stats
     startups_by_id = Hash.by_key(Startup.all, :id)
     users_by_startup = Hash.by_key(User.where('startup_id IS NOT NULL').all, :startup_id, nil, true)
     weeks.keys.each do |week|
-      time_window = Week.window_for_integer(week, :before_checkin)
+      time_window = Week.window_for_integer(week, :after_checkin)
       checkins_by_startup = Hash.by_key(Checkin.where(:week => week).order(:startup_id).all, :startup_id)
       checkins_by_startup.each do |startup_id, checkin|
         startup = startups_by_id[startup_id]
@@ -397,7 +397,7 @@ class Stats
     startups_by_id = Hash.by_key(Startup.all, :id)
     users_by_startup = Hash.by_key(User.where('startup_id IS NOT NULL').all, :startup_id, nil, true)
     weeks.keys.each do |week|
-      time_window = Week.window_for_integer(week, :before_checkin)
+      time_window = Week.window_for_integer(week, :after_checkin)
       checkins_by_startup = Hash.by_key(Checkin.where(:week => week).order(:startup_id).all, :startup_id)
       checkins_by_startup.each do |startup_id, checkin|
         startup = startups_by_id[startup_id]
@@ -447,5 +447,17 @@ class Stats
       end
     end
     data
+  end
+
+  def self.activation_funnel_for_startup
+    # Group home page visits by IP address and browser
+    UserAction.where(:action => UserAction.id_for('pages_home'))
+
+    UserAction.where(:action => UserAction.id_for('registrations_new'))
+
+    UserAction.where(:action => UserAction.id_for('weekly_classes_show'))
+
+    UserAction.where(:action => UserAction.id_for('checkins_create'))
+
   end
 end

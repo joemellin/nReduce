@@ -33,8 +33,8 @@
         Embed Youtube Video
     .video_embed_cancel{:class => show_video_type.present? ? '' : 'hide'}
       .button= link_to '<i class="icon-arrow-left"></i> Use Different Video Type'.html_safe, '#', :class => 'btn btn-large', 'data-video-id' => video_id
-    .viddler_embed.video_embed{:class => show_video_type == :viddler ? '' : 'hide'}
-      = render 'videos/viddler_recorder', :video_id => video_id
+    / .viddler_embed.video_embed{:class => show_video_type == :viddler ? '' : 'hide'}
+    /   = render 'videos/viddler_recorder', :video_id => video_id
     .screenr_embed.video_embed{:class => show_video_type == :screenr ? '' : 'hide'}
       = render 'videos/screenr_recorder', :video_id => video_id
     .youtube_embed.video_embed{:class => show_video_type == :youtube ? '' : 'hide'}

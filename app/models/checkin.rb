@@ -275,7 +275,7 @@ class Checkin < ActiveRecord::Base
   end
 
   def time_window
-    Week.window_for_integer(self.week)
+    Week.window_for_integer(self.week, :after_checkin)
   end
 
   def submitted?
