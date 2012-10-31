@@ -470,16 +470,25 @@ class Stats
     tmp_data = {}
     action_ids.each{|aid| tmp_data[aid] = blank_arr.dup }
 
-    # In the future can group by session id / user id
+    recorded = {}
+    # Dedupe is using session id as the unique identifier
     UserAction.where(:action => action_ids).where(['created_at > ?', Time.now - since]).includes(:user).each do |ua|
-      add = 0
-      # If a checkin only count if this was their first checkin
-      if ua.action == action_ids.first
-        add = 1 if Checkin.where(:startup_id => ua.user.startup_id).where(['created_at < ?', ua.created_at - 5.minutes]).count == 0 # give it a 5 min grace period
+      add = false
+      date = ua.created_at.to_date
+      recorded[date] ||= {}
+      recorded[date][ua.session_id] ||= []
+      if recorded[date][ua.session_id].include?(ua.action)
+        add = false
+      elsif ua.action == action_ids.first # If a checkin only count if this was their first checkin
+        add = true if Checkin.where(:startup_id => ua.user.startup_id).where(['created_at < ?', ua.created_at - 5.minutes]).count == 0 # give it a 5 min grace period
       else
-        add = 1
+        add = true
       end
-      tmp_data[ua.action][days.index(ua.created_at.to_date)] += add
+      if add
+        tmp_data[ua.action][days.index(date)] += 1
+        # Record that we have this action for this session, so don't record it again
+        recorded[date][ua.session_id] << ua.action
+      end
     end
 
     data = {}
