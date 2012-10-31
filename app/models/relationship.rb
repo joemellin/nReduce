@@ -2,11 +2,11 @@ class Relationship < ActiveRecord::Base
   # include the Connectable module in any classes you want some nice instance methods available for dealing with relationships
   belongs_to :entity, :polymorphic => true
   belongs_to :connected_with, :polymorphic => true
-  has_many :notifications, :as => :attachable
+  has_many :notifications, :as => :attachable, :dependent => :destroy
   has_many :user_actions, :as => :attachable
 
   attr_accessible :context, :entity, :entity_id, :entity_type, :connected_with, :connected_with_id, 
-    :connected_with_type, :status, :approved_at, :rejected_at, :silent, :message, :pending_at
+    :connected_with_type, :status, :approved_at, :rejected_at, :silent, :message, :pending_at, :initiated
 
   attr_accessor :silent
 
@@ -20,6 +20,7 @@ class Relationship < ActiveRecord::Base
   REJECTED = 3
   SUGGESTED = 4
   PASSED = 5
+  REMOVED = 6
 
   validates_presence_of :entity_id
   validates_presence_of :entity_type
@@ -30,10 +31,12 @@ class Relationship < ActiveRecord::Base
   scope :pending, where(:status => Relationship::PENDING)
   scope :approved, where(:status => Relationship::APPROVED)
   scope :rejected, where(:status => Relationship::REJECTED)
+  scope :removed, where(:status => Relationship::REMOVED)
   scope :suggested, where(:status => Relationship::SUGGESTED)
   scope :passed, where(:status => Relationship::PASSED)
   scope :startup_to_user, where(:entity_type => 'Startup', :connected_with_type => 'User')
   scope :startup_to_startup, where(:entity_type => 'Startup', :connected_with_type => 'Startup')
+  scope :not_suggested, where(:status => [Relationship::PENDING, Relationship::APPROVED, Relationship::REJECTED, Relationship::REMOVED])
 
   # Context of the relationship
   bitmask :context, :as => [:startup_startup, :startup_mentor, :startup_investor]
@@ -47,13 +50,28 @@ class Relationship < ActiveRecord::Base
    # Create a suggested connectino for an entity - it is created silently (no notifications)
   def self.suggest_connection(entity, connected_with, context = :startup_startup, message = nil)
     return nil if Relationship.between(entity, connected_with).present?
-    Relationship.create(:entity => entity, :connected_with => connected_with, :status => Relationship::SUGGESTED, :silent => true, :context => context, :message => message)
+    Relationship.create(
+      :entity => entity, 
+      :connected_with => connected_with, 
+      :status => Relationship::SUGGESTED, 
+      :silent => true,
+      :context => context, 
+      :message => message, 
+      :initiated => true
+    )
   end
 
   # Start a relationship between two entities - same as calling create
   # @silent when set to true doesn't notify user of connection
   def self.start_between(entity, connected_with, context = :startup_startup, silent = false)
-    Relationship.create(:entity => entity, :connected_with => connected_with, :status => Relationship::PENDING, :silent => silent, :context => context)
+    Relationship.create(
+      :entity => entity, 
+      :connected_with => connected_with, 
+      :status => Relationship::PENDING, 
+      :silent => silent, 
+      :context => context, 
+      :initiated => true
+    )
   end
 
     # Finds relationship between two entities
@@ -106,6 +124,28 @@ class Relationship < ActiveRecord::Base
     entity.relationships.pending
   end
 
+  # Iterate through old relationships and figure out using dates which was the originator of the relationship
+  def self.assign_initiated_relationships
+    Relationship.not_suggested.each do |r|
+      inv = r.inverse_relationship
+      next if inv.blank?
+      if r.created_at < inv.created_at
+        r.initiated = true
+        r.save
+      else
+        inv.initiated = true
+        inv.save
+      end
+    end
+  end
+
+  # Returns the startups that these two entities are both connected to
+  def self.startups_in_common(entity1, entity2)
+    common = Relationship.all_connection_ids_for(entity1)['Startup'] & Relationship.all_connection_ids_for(entity2)['Startup']
+    return Startup.where(:id => common) unless common.blank?
+    []
+  end
+
   # Approve the friendship and create a record in the opposite direction so friendship is easy to query
   def approve!
     # If this is a suggested relationship simply set to pending so the other person sees it
@@ -130,6 +170,8 @@ class Relationship < ActiveRecord::Base
             inv.save
             Notification.create_for_relationship_approved(self)
           end
+          # Clear out notifications for this relationship
+          self.notifications.each{|n| n.mark_as_read }
           # Reset relationship cache for both startups involved
           self.reset_cache_for_entities_involved
         end
@@ -146,10 +188,28 @@ class Relationship < ActiveRecord::Base
   # Reject the friendship (or pass on a suggestion), but don't delete records
   def reject_or_pass!
     Relationship.transaction do
-      new_status = self.suggested? ? PASSED : REJECTED
-      self.update_attributes(:status => new_status, :rejected_at => Time.now) unless self.rejected?
+      if self.pending?
+        self.status = REJECTED
+        self.rejected_at = Time.now
+      elsif self.approved?
+        self.status = REMOVED
+        self.removed_at = Time.now
+      elsif self.suggested?
+        self.status = PASSED
+        self.rejected_at = Time.now
+      end
       inv = self.inverse_relationship
-      inv.update_attributes(:status => new_status, :rejected_at => Time.now) unless inv.blank? or (inv.rejected? or inv.passed?)
+      inv = nil if inv.present? && (inv.rejected? || inv.passed? || inv.removed?)
+      unless inv.blank?
+        inv.status = self.status
+        inv.removed_at = self.removed_at
+        inv.rejected_at = self.rejected_at
+        inv.save
+      end
+      self.save
+       # Clear out notifications for this relationship
+      self.notifications.each{|n| n.mark_as_read }
+      # Reset relationship cache for both startups involved
       self.reset_cache_for_entities_involved
     end
     true
@@ -168,6 +228,7 @@ class Relationship < ActiveRecord::Base
     r.entity_type = self.connected_with_type
     r.connected_with_id = self.entity_id
     r.connected_with_type = self.entity_type
+    r.initiated = false
     r
   end
 
@@ -191,6 +252,10 @@ class Relationship < ActiveRecord::Base
     self.status == PASSED
   end
 
+  def removed?
+    self.status == REMOVED
+  end
+
     # Returns boolean true if entity is involved in this relationship - checks without db query
   def is_involved?(entity)
     return true if entity_type == entity.class.to_s and entity_id == entity.id
@@ -201,6 +266,8 @@ class Relationship < ActiveRecord::Base
   def reset_cache_for_entities_involved
     Cache.delete(['connections', "#{entity_type.downcase}_#{entity_id}"])
     Cache.delete(['connections', "#{connected_with_type.downcase}_#{connected_with_id}"])
+    Cache.delete(['n_a_s', "#{entity_type.downcase}_#{entity_id}"])
+    Cache.delete(['n_a_s', "#{connected_with_type.downcase}_#{connected_with_id}"])
     if self.context == [:startup_startup]
       Cache.delete(['2d', "#{entity_type.downcase}_#{entity_id}"])
       Cache.delete(['2d', "#{connected_with_type.downcase}_#{connected_with_id}"])
@@ -258,7 +325,16 @@ class Relationship < ActiveRecord::Base
     rel.each do |r|
       next if r.approved_at.blank? # ignore relationships that were rejected without ever being approved
       relationships[r.connected_with_type] ||= {}
-      relationships[r.connected_with_type][r.connected_with_id] = [r.approved_at, r.rejected_at.blank? ? Time.now : r.rejected_at]
+      if r.rejected_at.blank?
+        if r.removed_at.blank?
+          end_at = Time.now
+        else
+          end_at = r.removed_at
+        end
+      else
+        end_at = r.rejected_at
+      end
+      relationships[r.connected_with_type][r.connected_with_id] = [r.approved_at, end_at]
     end
     relationships
   end

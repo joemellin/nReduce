@@ -6,12 +6,13 @@
 .relationships
   .row.teams{:style => 'padding-top: 20px;'}
     - c = 0
-    - num = @startups.size
+    - num = @startups.inject(0){|res, element| res += 1 if element.active?; res }
     - @startups.each do |s|
+      - next unless s.active?
+      - owner = (@startup && (s.id == @startup.id))
       - current_checkin = @checkins_by_startup[s.id]
       - this_startup_url = (current_checkin and current_checkin.completed?) ? latest_startup_checkins_url(s) : startup_url(s)
       - logo_path = s.logo_url(:square)
-      - owner = (@startup && (s.id == @startup.id))
       .team.span3{:align => 'center'}
         .top{:align => 'center', :onclick => "window.location = '#{this_startup_url}';"}
           .background{:style => "background-image: url('#{logo_path}'); cursor: pointer;"} &nbsp;
@@ -60,9 +61,43 @@
       - elsif c != 0 and c % 4 == 0
         .clear
 
-  - nreduce_id = Startup.nreduce_id
-  - if !current_user.startup_id.blank? and !nreduce_id.blank?
-    %h3= link_to 'View nReduce\'s latest checkin', latest_startup_checkins_path(:startup_id => nreduce_id)
+  .center
+    - nreduce_id = Startup.nreduce_obfuscated_id
+    - if current_user.entrepreneur? and !nreduce_id.blank?
+      .inline-block{:style => 'margin-right: 25px'}
+        %h3= link_to 'View nReduce\'s Latest Checkin', latest_startup_checkins_path(:startup_id => nreduce_id)
+    .inline-block{:style => 'margin-left: 25px'}
+      %h3= link_to 'View Your Teams on Vacation', '#', :onclick => "$('.inactive_teams').toggle(); return false;"
+    .clear
+  .inactive_teams.hide
+    .row
+      .span2
+        %p
+      .span6
+        %p Teams who take time off or do not check in for 2 or more weeks go on vacation. When they come back to work they will appear in your active teams. You are still more than welcome to nudge them :)
+      .span2
+        = link_to 'Nudge All', nudge_all_inactive_nudges_path, :class => 'btn btn-success btn-large', :method => :post
+    - c = 0
+    .row.teams{:style => 'padding-top: 20px;'}
+      - @startups.each do |s|
+        - next if s.active?
+        - this_startup_url = startup_url(s)
+        - logo_path = s.logo_url(:square)
+        .team.span3{:align => 'center'}
+          .top{:align => 'center', :onclick => "window.location = '#{this_startup_url}';"}
+            .background{:style => "background-image: url('#{logo_path}'); cursor: pointer;"} &nbsp;
+            .members{:align => 'center'}
+              - s.team_members.shuffle.first(3).each do |tm|
+                .inline-block{:style => 'margin-left: 4px'}= image_tag(user_avatar_url(tm), :title => tm.name, :style => 'width: 50px; height: 50px;')
+          .bottom{:align => 'center'}
+            %h3= link_to truncate(s.name, :length => 20), startup_path(s)
+            = form_for Nudge.new(:startup_id => s.id), :html => {:id => "new_nudge_startup_#{s.id}"} do |f|
+              = f.hidden_field :startup_id
+              = link_to '<i class="icon-hand-left icon"></i> Nudge'.html_safe, '#', :title => "Nudge #{s.name} to complete their check-in with an email!", :onclick => "$('#new_nudge_startup_#{s.id}').submit();", :class => 'btn'
+        - c += 1
+        - if c != 0 and c % 4 == 0
+          .clear
+      .clear
 
   - if @show_mentor_message
     %hr{:style => 'margin: 20px 0 20px 0;'}
@@ -92,7 +127,7 @@
         %br/
         %p
           P.S. To meet your fellow nReduce mentors who are also passionate about helping startups, click the
-          = link_to 'mentor tab', mentors_path
+          = link_to 'board room', board_room_path
           in the menu bar!
       .span3
         &nbsp;

@@ -166,6 +166,20 @@ hr {
 
 
     .nav {
+      .add_teams {
+        line-height: 1.4em;
+        font-size: 1.2em;
+        font-weight: normal;
+        color: #666;
+      }
+      .unread_nc {
+        margin-top: -8px;
+        margin-left: -9px;
+        .badge {
+           background-color: green;
+           font-size: 12px;
+        }
+      }
       margin-right: 20px;
       margin-bottom: 0px;
       .padding {

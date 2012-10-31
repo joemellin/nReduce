@@ -1,0 +1,23 @@
+- if @owner
+  You Have Feedback!\n
+- else
+  #{@comment.user.name} responded to you!\n
+\n
+\n
+#{@comment.user.name}\n
+- if @comment.user.roles?(:mentor)
+  (mentor)
+- elsif !@comment.user.startup_id.blank?
+  of Team #{@comment.user.startup.name}
+- if @owner
+  wrote on your #{@checkin.time_label} check-in:\n
+- elsif @comment.parent.blank? && @comment.parent.user_id == @user.id
+  They wrote in response to your comment "#{truncate(@comment.parent.content, :length => 30)}":\n
+- else
+  They wrote:\n
+\n
+"#{h(@comment.content)}"\n
+\n
+\n
+\n
+Respond to #{@comment.user.name}: #{checkin_url(@checkin)}

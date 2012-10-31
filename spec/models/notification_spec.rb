@@ -8,8 +8,4 @@ describe Notification do
   it "should clear notification count" do
     pending
   end
-
-  it "shouldn't notify you for your own actions" do
-    pending
-  end
 end

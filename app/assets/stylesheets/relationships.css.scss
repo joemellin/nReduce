@@ -3,6 +3,9 @@
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
 .relationships, .weekly_classes {
+  .inactive_teams {
+    margin-top: 20px;
+  }
   .invite_form {
     padding-top: 10px;
   }
@@ -73,6 +76,75 @@
         .team_details {
           width: 290px;
         }
+      }
+    }
+  }
+
+  .relationship_request {
+    h4 { 
+      font-size: 1.25em;
+    }
+    .progress {
+      margin-top: 15px;
+    }
+    .message {
+      margin-top: 15px;
+      font-size: 1.5em;
+      font-weight: 600;
+    }
+    .btn {
+      line-height: 1.6em;
+      margin-bottom: 15px;
+      min-width: 150px;
+    }
+    .startup {
+      margin-top: 15px;
+      .logo_and_details {
+        .name { font-weight: bold; }
+      }
+      .name {
+        font-size: 1.4em;
+        margin: 15px 0 4px 0;
+      }
+      .startups_in_common {
+        max-width: 350px;
+        margin-top: 15px;
+      }
+      .square {
+        margin-right: 15px;
+        width: 220px;
+        float: left;
+      }
+      .stats {
+        margin-top: 5px;
+        margin-right: 15px;
+        text-align: center;
+        width: 130px;
+        float: left;
+        h2 {
+          margin-top: 15px;
+          margin-bottom: 3px;
+          line-height: 26px;
+        }
+      }
+      .team_member {
+        .location { margin-bottom: 15px; }
+        margin-left: 4px;
+      }
+      .logo_and_details, .team_member {
+        .rounded {
+          border: 1px solid #ccc;
+          margin: 0 10px 0 10px;
+          
+        }
+      }
+    }
+    .website {
+      margin-top: 50px;
+      a { font-size: 1.4em;}
+      .iframe {
+        margin-top: 15px;
+        border: 2px solid #ccc;
       }
     }
   }

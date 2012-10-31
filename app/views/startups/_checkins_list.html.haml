@@ -1,11 +1,14 @@
-.row
-  .span12{:align => 'center'}
-    %h2{:style => 'padding-top: 40px'} Team #{h(@startup.name).possessive} Progress
-    %hr
-    %br
-    - if @checkins.size == 0
-      %p
-        %strong They haven't made any check-ins yet.
+- investor_view ||= false
+
+- unless investor_view
+  .row
+    .span12{:align => 'center'}
+      %h2{:style => 'padding-top: 40px'} Team #{h(@startup.name).possessive} Progress
+      %hr
+      %br
+      - if @checkins.size == 0
+        %p
+          %strong They haven't made any check-ins yet.
 - @checkins.each do |c|
   .row
     .span3
@@ -41,4 +44,5 @@
         %p
           Comments
           %span.badge= c.comment_count
-      %p= link_to 'View Discussion', [@startup, c], :class => 'btn'
+      - unless investor_view
+        %p= link_to 'View Discussion', [@startup, c], :class => 'btn'

@@ -5,13 +5,17 @@ class Video < ActiveRecord::Base
 
   attr_accessible :external_id, :user_id, :type, :vimeo_id, :image, :remote_image_url, :image_cache, :external_url, :youtube_url
   attr_accessor :youtube_url
+  attr_accessor :force_queue_to_vimeo
 
   before_validation :extract_id_from_youtube_url
-  after_save :queue_transfer_to_vimeo
+  after_create :force_queue_to_vimeo
+  before_save :queue_transfer_to_vimeo
   after_destroy :remove_from_vimeo_and_delete_local_file
 
-  validates_presence_of :external_id
+  validates_presence_of :external_id, :message => 'URL is not valid'
   validate :video_is_unique
+
+  scope :vimeod, where(:vimeod => true)
 
   mount_uploader :image, BaseUploader # carrierwave file uploads
 
@@ -30,7 +34,7 @@ class Video < ActiveRecord::Base
   # Method to get embed code - no matter what kind of video
   def embed_code(width = 500, height = 315)
     if self.vimeod?
-      '<iframe src="http://player.vimeo.com/video/' + self.vimeo_id.to_s + '?title=0&byline=0&portrait=0" width="' + width.to_s + '" height="' + height.to_s + '" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>'
+      '<iframe src="http://player.vimeo.com/video/' + self.vimeo_id.to_s + '?api=1&player_id=video_' + self.id.to_s + '&title=0&byline=0&portrait=0" id="video_' + self.id.to_s + '" width="' + width.to_s + '" height="' + height.to_s + '" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>'
     else
       self.embed_code_html(width, height)
     end
@@ -141,15 +145,22 @@ class Video < ActiveRecord::Base
   def check_if_encoded_and_get_thumbnail_urls(queue_again = false)
     details = self.vimeo_details
     return false if details.blank?
-    # Set as transcoded if it has completed
-    self.vimeod = true if details['is_transcoding'].to_i == 0
-    # Save image thumbnails
-    if details['thumbnails'].present? && details['thumbnails']['thumbnail'].present? && details['thumbnails']['thumbnail'].last['_content'].match(/default\..*\.jpg/) == nil
-      self.remote_image_url = details['thumbnails']['thumbnail'].last['_content']
+    # If it's already been tried twice just re-upload it
+    if self.ecc >= 2
+      self.ecc = 0
+      self.redo_vimeo_transfer
+    else
+      # Set as transcoded if it has completed
+      self.vimeod = true if details['is_transcoding'].to_i == 0
+      # Save image thumbnails
+      if details['thumbnails'].present? && details['thumbnails']['thumbnail'].present? && details['thumbnails']['thumbnail'].last['_content'].match(/default\..*\.jpg/) == nil
+        self.remote_image_url = details['thumbnails']['thumbnail'].last['_content']
+      elsif queue_again
+        self.ecc += 1
+        Resque.enqueue_in(20.minutes, Video, self.id) # queue to check and see if it got encoded
+        false
+      end
       self.save
-    elsif queue_again
-      Resque.enqueue_in(20.minutes, Video, self.id) # queue to check and see if it got encoded
-      false
     end
   end
 
@@ -170,9 +181,26 @@ class Video < ActiveRecord::Base
     end
   end
 
-  # Queue for transfer if it hasn't been vimeod yet
-  def queue_transfer_to_vimeo
-    Resque.enqueue(Video, self.id) unless self.vimeod?
+  def queue_transfer_to_vimeo(force_transfer = false)
+    Resque.enqueue(Video, self.id) if force_transfer || (self.external_id_changed? && !self.new_record?)
+    true
+  end
+
+  # need this method so I can use it in after_create callback
+  def force_queue_to_vimeo
+    self.queue_transfer_to_vimeo(true)
+    true
+  end
+
+  def redo_vimeo_transfer
+    self.remove_from_vimeo_and_delete_local_file
+    self.save
+    self.force_queue_to_vimeo
+  end
+
+  # Will find all videos that have been transfered to vimeo but not successfully encoded and try uploading them again.
+  def self.redo_failed_vimeo_transfers
+    Video.where('vimeo_id IS NOT NULL AND vimeod = 0').each{|v| v.redo_vimeo_transfer }
   end
 
   # END VIMEO-SPECIFIC METHODS
@@ -202,11 +230,17 @@ class Video < ActiveRecord::Base
 
   def remove_from_vimeo_and_delete_local_file
     # Remove video from vimeo
-    if self.vimeo_id.present?
-      video = Vimeo::Advanced::Video.new(Settings.apis.vimeo.client_id, Settings.apis.vimeo.client_secret, :token => Settings.apis.vimeo.access_token, :secret => Settings.apis.vimeo.access_token_secret)
-      video.delete(self.vimeo_id)
+    begin
+      if self.vimeo_id.present?
+        video = Vimeo::Advanced::Video.new(Settings.apis.vimeo.client_id, Settings.apis.vimeo.client_secret, :token => Settings.apis.vimeo.access_token, :secret => Settings.apis.vimeo.access_token_secret)
+        video.delete(self.vimeo_id)
+      end
+      FileUtils.rm(self.local_file_path) if self.local_file_path.present? && File.exists?(self.local_file_path)
+      self.vimeo_id = nil
+      self.vimeod = false
+    rescue
+      logger.info "Couldn't delete Vimeo Video with id #{self.vimeo_id}."
     end
-
-    FileUtils.rm(self.local_file_path) if self.local_file_path.present? && File.exists?(self.local_file_path)
+    true
   end
 end

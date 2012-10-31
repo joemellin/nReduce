@@ -25,6 +25,7 @@ class User < ActiveRecord::Base
   has_many :ratings
   has_many :ratings_awesomes, :through => :ratings, :source => :awesomes
   has_many :questions
+  has_many :videos
 
   # Include default devise modules. Others available are:
   # :token_authenticatable, :confirmable,
@@ -55,6 +56,7 @@ class User < ActiveRecord::Base
   validates_presence_of :linkedin_url, :if => :profile_fields_required?
   validates_presence_of :startup, :if => :new_entrepreneur?
 
+  before_validation :encode_intro_video
   before_create :set_default_settings
   after_create :mailchimp!
   after_destroy :remove_from_mailchimp
@@ -66,6 +68,7 @@ class User < ActiveRecord::Base
   acts_as_taggable_on :skills, :industries
 
   scope :mentor, where(:mentor => true)
+  scope :geocoded, where('lat IS NOT NULL AND lng IS NOT NULL')
 
   mount_uploader :pic, PicUploader # carrierwave file uploads
 
@@ -77,7 +80,7 @@ class User < ActiveRecord::Base
   bitmask :setup, :as => [:account_type, :onboarding, :profile, :invite_startups, :welcome]
 
   # Number of startups an investor can contact per week
-  INVESTOR_MENTOR_STARTUPS_PER_WEEK = 50
+  INVESTOR_MENTOR_STARTUPS_PER_WEEK = 5
 
   searchable do
     # full-text search fields - can add :stored => true if you don't want to hit db
@@ -237,7 +240,7 @@ class User < ActiveRecord::Base
   end
 
   def update_unread_notifications_count
-    self.unread_nc = self.notifications.unread.count
+    self.unread_nc = self.notifications.where(:action => 'relationship_request').unread.count
     self.save(:validate => false)
   end
 
@@ -701,5 +704,16 @@ class User < ActiveRecord::Base
 
   def new_entrepreneur?
     self.entrepreneur? && self.new_record?
+  end
+
+  def encode_intro_video
+    if self.intro_video_url.present? && (self.intro_video_url_changed? || self.intro_video_id.blank?)
+      self.intro_video.destroy unless self.intro_video.blank?
+      ext_id = Youtube.id_from_url(self.intro_video_url)
+      self.intro_video = Youtube.where(:external_id => ext_id).first
+      self.intro_video ||= Youtube.new
+      self.intro_video.external_id = ext_id
+    end
+    true
   end
 end

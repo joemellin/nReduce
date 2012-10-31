@@ -44,23 +44,24 @@
               - else
                 Authorized with
                 = image_tag('twitter_32.png', :alt => 'Twitter', :title => 'Twitter')
-          .row{:style => 'margin-top:40px'}
-            %h3 Team Member Intro Videos
-            %p Investors invest in people not ideas. To help them better learn about you and your team, each team must member record and upload an intro video covering:
-            %ol.myriad_light{:style => 'font-size: 16px'}
-              %br/
-              %li Who are you?
-              %br/
-              %li What have you done?
-              %br/
-              %li
-                Why are you doing this startup?
+          - if @user.entrepreneur?
+            .row{:style => 'margin-top:40px'}
+              %h3 Team Member Intro Videos
+              %p Investors invest in people not ideas. To help them better learn about you and your team, each team must member record and upload an intro video covering:
+              %ol.myriad_light{:style => 'font-size: 16px'}
                 %br/
+                %li Who are you?
                 %br/
-                %strong Example:
+                %li What have you done?
                 %br/
-                %br/
-                :plain
-                  <iframe width="300" height="189" src="http://www.youtube.com/embed/ITq61YDVBbM?rel=0" frameborder="0" allowfullscreen></iframe>
+                %li
+                  Why are you doing this startup?
+                  %br/
+                  %br/
+                  %strong Example:
+                  %br/
+                  %br/
+                  :plain
+                    <iframe width="300" height="189" src="http://www.youtube.com/embed/ITq61YDVBbM?rel=0" frameborder="0" allowfullscreen></iframe>
 
-            
+              

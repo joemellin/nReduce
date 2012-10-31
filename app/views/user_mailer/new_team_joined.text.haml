@@ -1,0 +1,14 @@
+Team "#{@startup.name}" has joined your class!\n
+\n
+There are now #{pluralize(@weekly_class.startups.count, 'startup')} joining with you!\n
+\n
+Market: #{@startup.industry_list}\n
+\n
+Location: #{@startup.team_members.map{|tm| tm.location }.uniq.join(', ')}\n
+\n
+- if @to.is_joe?
+  - @startup.team_members.each do |tm|
+    #{tm.name}: #{tm.email}\n
+    \n
+  \n
+View Your Class: #{weekly_class_url(@weekly_class)}

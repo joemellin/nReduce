@@ -41,6 +41,5 @@ describe WeeklyClass do
     # Create their startups - they will auto-notify all other members of the class
     startup = FactoryGirl.create(:startup, :team_members => [user])
     startup2 = FactoryGirl.create(:startup2, :team_members => [user2])
-
   end
 end

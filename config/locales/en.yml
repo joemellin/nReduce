@@ -37,4 +37,8 @@ en:
       rating: "You need to set your startup as investable to see investor ratings."
     read_post:
       comment: "You aren't authorized to read that post."
+    read_posts:
+      user: "Sorry but only entrepreneurs have access to the water cooler."
+    add_teams:
+      relationship: "Sorry but you aren't allowed to add teams through that page."
 

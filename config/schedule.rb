@@ -28,6 +28,16 @@ every :monday, :at => '4pm' do
   runner "Checkin.send_after_checkin_email"
 end
 
+# Identify active/inactive teams after the 'after' checkin
+every :tuesday, :at => '4:30pm' do 
+  runner "Startup.identify_active_teams"
+end
+
+# Identify active/inactive teams after the 'before' checkin
+every :wednesday, :at => '4:30pm' do 
+  runner "Startup.identify_active_teams"
+end 
+
 # Send 'before' video reminder on Wednesday at 4am (12 hours before due)
 every :wednesday, :at => '4am' do
   runner "Checkin.send_before_checkin_email"

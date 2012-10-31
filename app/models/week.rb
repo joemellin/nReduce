@@ -58,8 +58,8 @@ class Week
   end
 
    # Pass in a week integer, ex: 201223, and it will pass back an array of the start time and end time for that week
-  def self.window_for_integer(week, offset = nil)
-    offset = Week.time_window_offsets[:join_class].first unless offset.blank?
+  def self.window_for_integer(week, offset_type = :join_class)
+    offset = Week.time_window_offsets[offset_type].first unless offset_type.blank?
     week = week.to_s
     year = week.slice!(0..3)
     return [] if year.blank? || week.blank?

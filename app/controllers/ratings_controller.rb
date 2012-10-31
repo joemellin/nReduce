@@ -13,13 +13,15 @@ class RatingsController < ApplicationController
           @contact_in_data = Rating.chart_data_from_ratings(@ratings, :contact_in)
         end
       else
-        @startup_elements = @startup.investor_mentor_elements(true)
+        @num_mentors = User.with_roles(:nreduce_mentor).count
+        @startup_elements = @startup.investor_mentor_elements
+        @previous_checkin = @startup.previous_checkin
       end
       render :action => :entrepreneur
     else
       authorize! :see_ratings_page, current_user
-      # startups = Hash.by_key(current_user.connected_to, :id)
-      startups = Startup.limit(10).all + [Startup.find(319)]
+      startups = current_user.connected_to
+      startups = Startup.limit(10).all + [Startup.find(319)] if Rails.env.development?
       @checkins_by_week = Checkin.for_startups_by_week(startups, 20)
       @startups_by_id =  Hash.by_key(startups, :id)
       @total_num_ratings = current_user.ratings.count
@@ -29,7 +31,7 @@ class RatingsController < ApplicationController
         @total_people = User.with_roles(:investor).count 
       elsif current_user.mentor?
         @user_type = 'Mentor'
-        @total_people = User.with_roles(:mentor).count
+        @total_people = User.with_roles(:nreduce_mentor).count
       end
       # Will grab four weeks of checkins for these startups
       calculate_suggested_startup_completeness
@@ -58,7 +60,11 @@ class RatingsController < ApplicationController
     @instrument = @startup.instruments.first
     @measurements = @instrument.measurements.ordered_asc.all unless @instrument.blank?
 
-    @checkins = @startup.checkins.ordered
+    last_checkin = @startup.checkins.ordered.first
+    @checkins = last_checkin.present? ? [last_checkin] : []
+   
+    @videos = @startup.investor_videos #User.find(810).videos.vimeod.all
+    @vimeo_js = true
   end
 
   def create
@@ -94,8 +100,9 @@ class RatingsController < ApplicationController
 
   def calculate_suggested_startup_completeness
     @total_suggested_startups = User::INVESTOR_MENTOR_STARTUPS_PER_WEEK
-    @num_startups_left = current_user.suggested_relationships('Startup').count - @total_suggested_startups
+    @num_startups_left = current_user.suggested_relationships('Startup').count
     return if @num_startups_left == 0
-    @pct_complete = ((@num_startups_left.to_f / @total_suggested_startups.to_f) * 100).to_i
+    @num_startups_completed = (@total_suggested_startups - @num_startups_left).abs
+    @pct_complete = ((@num_startups_completed.to_f / @total_suggested_startups.to_f) * 100).to_i
   end
 end

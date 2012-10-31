@@ -1,44 +1,19 @@
 require 'spec_helper'
 
 describe Checkin do
-  before :all do
-    @user = FactoryGirl.create(:user)
+  before :each do
+    # Startup must be created for user so user can be team member on startup
+    @startup = FactoryGirl.build(:startup)
+    @user = FactoryGirl.create(:user, :startup => @startup)
     @checkin = Checkin.new
     @checkin.user_id = @user.id
-    @checkin.startup = FactoryGirl.create(:startup)
+    @checkin.startup = @startup
     @checkin.start_focus = 'Make awesome happen'
-    @valid_youtube_url = 'http://www.youtube.com/watch?v=4vkqBfv8OMM'
-  end
-
-  it "should allow valid youtube urls" do
-    @checkin.start_video_url = 'http://www.youtube.com/watch?v=4vkqBfv8OMM'
-    @checkin.errors[:start_video_url].should be_blank
-
-    @checkin.start_video_url = 'http://youtu.be/Q8FPOcHZSnU'
-    @checkin.errors[:start_video_url].should be_blank
-
-    @checkin.start_video_url = 'http://www.youtube.com/embed/tsh8xvjtalo'
-    @checkin.errors[:start_video_url].should be_blank
-  end
-
-  it "should not allow invalid youtube urls" do
-    @checkin.start_video_url = 'http://google.com'
-    @checkin.valid?
-    @checkin.errors.get(:start_video_url).should == ["invalid Youtube URL"]
-
-    @checkin.start_video_url = 'http://www.youtube.com/testvideo'
-    @checkin.valid?
-    @checkin.errors.get(:start_video_url).should == ["invalid Youtube URL"]
-
-    @checkin.start_video_url = 'http://youtube.fakeurl.com/watch?v=4vkqBfv8OMM'
-    @checkin.valid?
-    @checkin.errors.get(:start_video_url).should == ["invalid Youtube URL"]
+    @checkin.before_video = Youtube.new(:youtube_url => 'http://www.youtube.com/watch?v=4vkqBfv8OMM')
+    @valid_youtube_url = 'http://www.youtube.com/watch?v=4vkq0w0s1MM'
   end
 
   it "should never change the timestamp on submitted at date" do
-    @checkin.start_video_url = @valid_youtube_url
-    @checkin.valid?
-    @checkin.errors.inspect
     @checkin.save.should be_true
 
     submitted_at = @checkin.submitted_at
@@ -46,23 +21,46 @@ describe Checkin do
     submitted_at.should_not be_nil
 
     # Assign new video
-    @checkin.start_video_url = 'http://youtu.be/Q8FPOcHZSnU'
+    @checkin.before_video = Youtube.new(:youtube_url => 'http://youtu.be/Q8FPOcHZSnU')
     @checkin.save
 
     @checkin.submitted_at.should == submitted_at
   end
 
   it "should never change the timestamp on completed at date" do
-    @checkin.start_video_url = @valid_youtube_url
-    @checkin.end_video_url = @valid_youtube_url
+    @checkin.after_video = Youtube.new(:youtube_url => @valid_youtube_url)
     @checkin.end_comments = 'Made it happen!'
     @checkin.save.should be_true
 
     completed_at = @checkin.completed_at
-    @checkin.end_video_url = 'http://www.youtube.com/watch?v=R72kxEmB3EE&feature=g-logo-xit'
+    @checkin.after_video = Youtube.new(:youtube_url => 'http://www.youtube.com/watch?v=R72kxEmB3EE&feature=g-logo-xit')
     @checkin.save.should be_true
 
     @checkin.completed_at.should == completed_at
+  end
+
+  it "should reset current checkin cache when new checkin is created" do
+    @checkin.after_video = Youtube.new(:youtube_url => @valid_youtube_url)
+    @checkin.end_comments = 'Made it happen!'
+    @checkin.created_at = Checkin.prev_after_checkin + 2.days
+    puts @checkin.save
+    puts @checkin.inspect
+
+    # No idea why, but the checkin successfully saves above, but when I try to reload it, the record doesn't exist
+    @checkin.reload
+    
+    @checkin.startup.current_checkin.should == @checkin
+
+    Timecop.travel(Week.next_window_for(:after_checkin).first + 10.minutes) do
+      checkin2 = FactoryGirl.create(:completed_checkin, 
+        :startup => @checkin.startup, 
+        :before_video => Youtube.new(:youtube_url => 'http://www.youtube.com/watch?v=1230fdsanE'),
+        :after_video => Youtube.new(:youtube_url => 'http://www.youtube.com/watch?v=R723840sdfxE')
+      )
+      checkin2.valid?
+      checkin2.save.should == true
+      checkin2.startup.current_checkin.should == checkin2
+    end
   end
 
   it "should return the next checkin is an after checkin at tuesday at 4pm if it's Monday" do
@@ -84,6 +82,14 @@ describe Checkin do
   end
 
   it "should notify this startup's relationships when they complete a checkin" do
-    pending
+    startup2 = FactoryGirl.build(:startup2)
+    user2 = FactoryGirl.create(:user2, :startup => startup2)
+    startup2.reload
+    puts startup2.team_members.inspect
+    r = Relationship.start_between(@startup, startup2)
+    r.approve!
+    @checkin.save
+
+    puts Notification.create_for_new_checkin(@checkin)
   end
 end

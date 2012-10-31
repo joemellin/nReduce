@@ -1,4 +1,60 @@
 .board_room {
+  .entry_page {
+    .box {
+      border-radius: 15px;
+      border: 4px solid #26A9EB;
+      width: 250px;
+      height: 250px;
+      padding: 10px;
+      margin-bottom: 5px;
+      color: #666;
+      font-size: 20px;
+      margin-top: 35px;
+    }
+    .box.nstar {
+      padding-top: 40px;
+      height: 210px;
+    }
+    .box.mentors {
+      .number {
+        font-size: 140px;
+        line-height: 200px;
+      }
+      height: 240px;
+    }
+    .box.investors {
+      font-size: 60px;
+      line-height: 100px;
+      padding-top: 40px;
+      height: 210px;
+    }
+    .startup_elements, .checkin {
+      margin-left: auto;
+      margin-right: auto;
+      width: 200px;
+    }
+    .checkin {
+      margin-top: 20px;
+      font-size: 16px;
+      .week {
+        text-align: center; 
+      }
+      .before, .after {
+        margin: 5px;
+        text-align: center;
+      }
+      .completed, .incomplete {
+        font-size: 80px;
+        line-height: 80px;
+      }
+      .completed {
+        color: green;
+      }
+      .incomplete {
+        color: #666;
+      }
+    }
+  }
   .ranking {
     h2 { font-size: 5em; }
     margin-right: 50px;
@@ -13,7 +69,7 @@
       padding-top: 6px;
       font-weight: bold;
       margin-bottom: -20px;
-      .goal { padding-left: 140px; }
+      .goal { padding-left: 110px; white-space: nowrap; overflow: scroll; }
       .accomplished { margin-left: -30px; }
     }
     .week {
@@ -48,7 +104,7 @@
         }
         .help { padding-right: 15px;}
         .name {
-          width: 130px;
+          width: 120px;
           font-weight: 600;
           font-size: 1.4em;
           line-height: 68px;

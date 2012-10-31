@@ -104,7 +104,7 @@ module ApplicationHelper
   def user_avatar_url(user, size = :small)
     return user.pic_url(size) if user.pic?
     return user.external_pic_url unless user.external_pic_url.blank?
-    return image_path('pic_default_small.png')
+    return image_path("pic_default_#{size}.png")
   end
 
   # this seems to be broken for some reason
@@ -162,15 +162,19 @@ module ApplicationHelper
     return false
   end
 
-  def external_url(url)
-    url_for(ciao_path(:url => Base64.encode64(url)))
+  def external_url(url, source = nil)
+    if source.present?
+      url_for(ciao_path(:url => Base64.encode64(url), :source => source))
+    else
+      url_for(ciao_path(:url => Base64.encode64(url)))
+    end
   end
 
   def link_to_external(title, url, options = {})
     # show modal to investors
     options.merge!(:target => '_blank')
     options.merge!(:class => 'external') if user_signed_in? && current_user.investor?
-    link_to(title, external_url(url), options)
+    link_to(title, external_url(url, options[:source]), options)
   end
 
   def background_image_path
