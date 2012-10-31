@@ -16,6 +16,11 @@
     = render 'ratings/bar_chart', :title => 'Retention: Active Teams by Week', :data => @retention_data, :type => 'area', :chart_id => 'retention_data', :tooltip_enabled => true, :y_tick_interval => 5, :y_axis_label => '# of Startups'
 
 .row
+  .span12
+    %h3 
+    = render 'ratings/bar_chart', :title => 'Activation Funnel, by Day', :data => @activation_funnel_data, :type => 'area', :chart_id => 'activation_funnel_data', :tooltip_enabled => true, :y_tick_interval => 5, :y_axis_label => '# of Actions'
+
+.row
   .span6
     %h3 Satisfaction
     [ Coming Soon ]

@@ -76,8 +76,9 @@ class ApplicationController < ActionController::Base
       @ua ||= {}
       # for user tracking
       elapsed = Time.now - started
-      @ua[:action] = UserAction.id_for("#{controller_name}_#{action_name}")
+      @ua[:action] ||= UserAction.id_for("#{controller_name}_#{action_name}")
       @ua[:ip] = request.remote_ip
+      @ua[:session_id] = request.session_options[:id]
       @ua[:time_taken] = elapsed
       @ua[:browser] = request.env['HTTP_USER_AGENT']
       @ua[:user_id] ||= current_user.id if user_signed_in?

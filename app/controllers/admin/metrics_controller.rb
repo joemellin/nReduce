@@ -9,5 +9,6 @@ class Admin::MetricsController < ApplicationController
     @active_teams_data = Stats.connections_per_startup_for_chart(2.months)
     @activation_data = Stats.startups_activated_per_week_for_chart(2.months)
     @retention_data = Stats.weekly_retention_for_chart(1.year) # do this one for all time
+    @activation_funnel_data = Stats.activation_funnel_for_startups(14.days)
   end
 end

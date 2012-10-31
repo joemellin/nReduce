@@ -453,15 +453,34 @@ class Stats
     data
   end
 
-  def self.activation_funnel_for_startup
-    # Group home page visits by IP address and browser
-    UserAction.where(:action => UserAction.id_for('pages_home'))
+    # Grouped by day
+  def self.activation_funnel_for_startups(since = 14.days)
+    days = []
+    blank_arr = []
+    current = Time.now - since
+    while current < Time.now
+      days << current.to_date
+      blank_arr << 0 #Random.rand(150)
+      current += 1.day
+    end
 
-    UserAction.where(:action => UserAction.id_for('registrations_new'))
+    action_labels = ['checkins_create', 'weekly_classes_show', 'registrations_create', 'registrations_new', 'pages_home']
+    action_ids = action_labels.map{|l| UserAction.id_for(l) }
 
-    UserAction.where(:action => UserAction.id_for('weekly_classes_show'))
+    tmp_data = {}
+    action_ids.each{|aid| tmp_data[aid] = blank_arr.dup }
 
-    UserAction.where(:action => UserAction.id_for('checkins_create'))
+    # In the future can group by session id / user id
+    UserAction.where(:action => action_ids).where(['created_at > ?', Time.now - since]).each do |ua|
+      tmp_data[ua.action][days.index(ua.created_at.to_date)] += 1
+    end
 
+    data = {}
+    tmp_data.each do |action_id, dates|
+      data[action_labels[action_ids.index(action_id)]] = dates
+    end
+
+    # Hash of action => [day, day, day]
+    {:categories => days, :series => data }
   end
 end

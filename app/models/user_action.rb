@@ -2,7 +2,7 @@ class UserAction < ActiveRecord::Base
   belongs_to :user
   belongs_to :attachable, :polymorphic => true
   
-  attr_accessible :attachable, :ip, :action, :url_path, :browser, :data, :time_taken, :user, :user_id, :created_at
+  attr_accessible :attachable, :ip, :action, :url_path, :browser, :data, :time_taken, :user, :user_id, :created_at, :session_id
 
   serialize :data, Hash
 
@@ -31,7 +31,8 @@ class UserAction < ActiveRecord::Base
       'pages_home' => 10,
       'registrations_new' => 11,
       'weekly_classes_show' => 12,
-      'checkins_create' => 13
+      'checkins_create' => 13,
+      'registrations_create' => 14
     }
   end
 
