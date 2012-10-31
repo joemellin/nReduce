@@ -15,8 +15,9 @@
       .clear
 
 - if @before_disabled == true
-  - if @checkin.submitted?
-    %h4 'Before' Submitted
+  / - if @checkin.submitted?
+  /   %h4 'Before' Submitted
+  %p
 - else
   = hidden_field_tag 'checkin_type', 'before', :id => 'checkin_type'
 
@@ -24,8 +25,11 @@
     .span1
       %p
     .span5
+      .control-group{error_css(@checkin, :before_video)}
+        = f.semantic_errors :before_video
       = f.fields_for :before_video do |av|
         = render 'videos/form', :video_id => av.object.new_record? ? 'new_before_video' : "video_#{av.object.id}", :f => av
+        
       - unless @hide_time
         .control-group
           %h3.center{:style => 'padding-top: 10px'}
@@ -40,8 +44,9 @@
           = f.semantic_errors :start_focus
 
 - if @after_disabled == true
-  - if @checkin.completed?
-    %h4 'After' Submitted
+  / - if @checkin.completed?
+  /   %h4 'After' Submitted
+  %p
 - else
   = hidden_field_tag 'checkin_type', 'after', :id => 'checkin_type'
   
@@ -49,6 +54,8 @@
     .span1
       %p 
     .span5
+      .control-group{error_css(@checkin, :after_video)}
+        = f.semantic_errors :after_video
       = f.fields_for :after_video do |av|
         = render 'videos/form', :video_id => av.object.new_record? ? 'new_after_video' : "video_#{av.object.id}", :f => av
         - unless @hide_time
@@ -64,8 +71,8 @@
         = f.hidden_field :accomplished
         .controls
           .btn-group{'data-toggle' => 'buttons-radio'}
-            %button.btn.btn-large.accomplished{:type => 'button', 'data-value' => 'false', :class => (@checkin.accomplished.present? && !@checkin.accomplished?) ? 'active' : ''} No
-            %button.btn.btn-large.accomplished{:type => 'button', 'data-value' => 'true', :class => (@checkin.accomplished.present? && @checkin.accomplished?) ? 'active' : ''} Yes
+            %button.btn.btn-large.accomplished{:type => 'button', 'data-value' => 'false', :class => (!@checkin.accomplished.nil? && @checkin.accomplished? == false) ? 'active' : ''} No
+            %button.btn.btn-large.accomplished{:type => 'button', 'data-value' => 'true', :class => (!@checkin.accomplished.nil? && @checkin.accomplished? == true) ? 'active' : ''} Yes
           = f.semantic_errors :accomplished
 
       .control-group.pre_launch{:class => @checkin.startup.launched? ? 'hide' : ''}
@@ -110,4 +117,4 @@
 .form-controls.center{:style => 'margin-bottom: 10px; padding-top: 20px; '}
   %p{:style => 'padding-top: 20px'}
     &nbsp
-  = f.submit "Submit Checkin", :class => "btn btn-success btn-large submit disabled", :disabled => true
+  = f.submit "Submit Checkin", :class => "btn btn-success btn-large submit"

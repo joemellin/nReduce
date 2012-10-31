@@ -140,7 +140,6 @@ class Comment < ActiveRecord::Base
   # If this is a root post then we can delete it
   def safe_destroy
     if self.is_root? && self.original_post?
-      puts "here"
       Comment.transaction do
         self.descendants.each{|c| c.destroy }
       end
@@ -153,7 +152,7 @@ class Comment < ActiveRecord::Base
   protected
 
   def assign_startup
-    unless self.user.startup_id.blank?
+    if self.user.present? && self.user.startup.present?
       self.startup_id = self.user.startup_id
     end
     true

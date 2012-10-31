@@ -27,7 +27,7 @@ class Notification < ActiveRecord::Base
    # - Create a notification object that is displayed to user on the site
    # - Adds email to resque queue, if their notification settings allow it
    # Possible actions: new_checkin, relationship_request, relationship_approved, new_comment
-  def self.create_and_send(user, object, action, message = nil)
+  def self.create_and_send(user, object, action, message = nil, deliver_immediately = false)
     return unless Notification.actions.include?(action)
     n = Notification.new
     n.attachable = object
@@ -35,12 +35,17 @@ class Notification < ActiveRecord::Base
     n.action = action
     n.message = message || "You have a new #{object.class.to_s.downcase}"
     if n.save
-      n.user.update_unread_notifications_count
-      Resque.enqueue(Notification, n.id) if n.email_user?
+      n.user.update_unread_notifications_count if n.action.to_sym == :relationship_request
+      if n.email_user?
+        if Rails.env.test? || deliver_immediately
+          return Notification.perform(n.id)
+        else
+          Resque.enqueue(Notification, n.id)
+        end
+      end
     end
     n
   end
-
 
     # Notifies all startups that are joining the same
   def self.create_for_new_team_joined(startup, weekly_class)
@@ -54,7 +59,6 @@ class Notification < ActiveRecord::Base
       Notification.create_and_send(u, startup, :new_team_joined)
     end
   end
-
 
   def self.create_for_join_next_week(startup, next_weeks_class)
     startup.team_members.each do |u|
@@ -181,5 +185,11 @@ class Notification < ActiveRecord::Base
   # Checkins user settings to see if they want to be emailed on this action
   def email_user?
     self.user.email_for?(self.attachable_type.downcase) || self.user.email_for?(self.action)
+  end
+
+  def mark_as_read(dont_update_user = false)
+    self.read_at = Time.now
+    self.save
+    self.user.update_unread_notifications_count unless dont_update_user
   end
 end

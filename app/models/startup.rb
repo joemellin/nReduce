@@ -1,7 +1,7 @@
 class Startup < ActiveRecord::Base
   obfuscate_id :spin => 29406582
   include Connectable # methods for relationships
-  has_paper_trail :ignore => [:setup, :cached_industry_list]
+  has_paper_trail :ignore => [:setup, :cached_industry_list, :active]
   belongs_to :main_contact, :class_name => 'User'
   belongs_to :meeting
   belongs_to :intro_video, :class_name => 'Video', :dependent => :destroy
@@ -41,8 +41,9 @@ class Startup < ActiveRecord::Base
   validates_presence_of :elevator_pitch, :if => :created_but_not_setup_yet?
   validates_presence_of :industry_list, :if => :created_but_not_setup_yet?
 
+  before_validation :encode_pitch_video
   before_save :format_url
-  after_save :reset_cached_elements
+  before_save :reset_cached_elements
   after_create :initiate_relationships_from_invites
   after_create :notify_classmates_of_new_startup
 
@@ -54,10 +55,14 @@ class Startup < ActiveRecord::Base
   scope :launched, where('launched_at IS NOT NULL')
   scope :with_intro_video, where('intro_video_url IS NOT NULL')
   scope :with_logo, where('logo IS NOT NULL')
+  scope :active, where(:active => true)
+  scope :inactive, where(:active => false)
 
   bitmask :setup, :as => [:profile, :invite_team_members, :intro_video]
 
   NUM_SCREENSHOTS = 4
+  # Number of active startups you need
+  NUM_ACTIVE_REQUIRED = 6
 
   # Uses Sunspot gem with Solr backend. Docs: http://outoftime.github.com/sunspot/docs/index.html
   # https://github.com/outoftime/sunspot
@@ -101,6 +106,29 @@ class Startup < ActiveRecord::Base
   #   "#{ObfuscateId.hide(self.id)}-#{self.name.to_url}"
   # end
 
+  # Searches all teams and identifies who has checked in the last two weeks - they are marked as active. All others are inactive
+  def self.identify_active_teams
+    weeks = []
+    # Current week (so count if they've done before and we're in this week)
+    weeks << Week.integer_for_time(Checkin.prev_after_checkin, :after_checkin)
+    # Check previous full week
+    weeks << Week.integer_for_time(Checkin.prev_after_checkin - 1.week, :after_checkin)
+    # And another week before that
+    weeks << Week.previous(weeks.first)
+    all_ids = Startup.all.map{|s| s.id }
+
+    # Count all startups who have checked in last two weeks. If count is 0, they are inactive
+    active = []
+    Checkin.where(:week => weeks).group(:startup_id).count.each do |startup_id, num_checkins|
+      active << startup_id if num_checkins > 0
+    end
+    # Update all startups' state who are not already set correctly
+    Startup.where(:id => active).where(:active => false).each{|s| s.active = true; s.save }
+    inactive = all_ids - active
+    Startup.where(:id => inactive).where(:active => true).each{|s| s.active = false; s.save(:validate => false) }
+    "#{active.size} Active Teams, #{inactive.size} Inactive Teams"
+  end
+
   def self.registration_open?
     true
   end
@@ -115,8 +143,12 @@ class Startup < ActiveRecord::Base
 
   def self.nreduce_id
     Cache.get('nreduce_id', nil, true){
-      Startup.named('nreduce').to_param
-    }
+      Startup.named('nreduce').id
+    }.to_i
+  end
+
+  def self.nreduce_obfuscated_id
+    ObfuscateId.hide(Startup.nreduce_id)
   end
 
   def launched?
@@ -131,11 +163,28 @@ class Startup < ActiveRecord::Base
     self.connected_to('User')
   end
 
+  def investor_videos
+    ([self.pitch_video] + self.team_members.map{|tm| tm.intro_video }).delete_if{|v| v.blank? }
+  end
+
+  def self.all_that_can_access_mentors_investors
+    ids = Cache.get('s_i_m', 10.minutes){
+      startup_ids = []
+      Startup.where('investable = 1 OR mentorable = 1').all.map{|s| startup_ids << s.id if s.can_access_mentors_and_investors? }
+      startup_ids
+    }
+    Startup.find(ids)
+  end
+
    # Returns the checkin for this nReduce week (Tue 4pm - next Tue 4pm)
   def current_checkin(reset_cache = false)
     self.reset_current_checkin_cache if reset_cache
     cid = self.current_checkin_id
     Checkin.find(cid) if cid.present?
+  end
+
+  def previous_checkin
+    checkins.ordered.where(['created_at < ? AND created_at > ?', Checkin.prev_after_checkin, Checkin.prev_after_checkin - 1.week]).first
   end
 
   def current_checkin_id
@@ -191,35 +240,23 @@ class Startup < ActiveRecord::Base
     # Returns total percent out of 1 (eg: 0.25 for 25% completeness)
   def profile_completeness_percent
     Cache.get(['profile_c', self], nil, true){
-      total = completed = 0.0
-      self.profile_elements.each do |element, is_completed|
-        total += 1.0
-        # Team member completeness %
-        if is_completed.is_a? Float
-          completed += is_completed
-        # Boolean completeness
-        else
-          completed += 1.0 if is_completed
-        end
-      end
+      completed, total = calculate_completeness(self.profile_elements)
       (completed / total).round(2)
     }.to_f
   end
 
-  def investor_mentor_elements(show_startup_details = false)
+  def investor_mentor_elements
     profile_completeness = self.profile_completeness_percent
-    checkin_last_week = self.current_checkin
+    checkin_last_week = self.previous_checkin
     num_screenshots = self.screenshots.count
     elements = {
-      :checked_in_within_the_last_week => checkin_last_week.present? && checkin_last_week.completed?,
-      :pitch_video => self.pitch_video_url.present?,
-      :four_screenshots => num_screenshots == 4 ? true : (num_screenshots == 0 ? 0 : (num_screenshots.to_f / 4.0).round(2))
+      :startup_profile => {
+        :checked_in_last_week => checkin_last_week.present? && checkin_last_week.completed?,
+        :pitch_video => self.pitch_video_url.present?,
+        :add_four_screenshots => num_screenshots == 4 ? true : (num_screenshots == 0.0 ? 0.0 : (num_screenshots.to_f / 4.0).round(2))
+      }
     }
-    if show_startup_details
-      elements[:startup_profile_completeness] = self.profile_elements(true)
-    else
-      elements[:startup_profile_completeness] = profile_completeness == 1.0 ? true : profile_completeness
-    end
+    elements[:startup_profile].merge!(self.profile_elements(true))
     self.team_members.each do |tm|
       elements["#{tm.name} Intro Video".to_url.to_sym] = tm.intro_video_url.present?
     end
@@ -227,22 +264,32 @@ class Startup < ActiveRecord::Base
   end
 
   def investor_mentor_completeness_percent
-    completed = 0.0
-    pe = self.investor_mentor_elements
-    total = pe.size.to_f
-    pe.each do |k,v|
-      if v.is_a?(Float)
-        completed += v
-      elsif v == true
-        completed += 1.0
-      end
-    end
+    completed, total = calculate_completeness(self.investor_mentor_elements)
     (completed / total).round(2)
   end
+
+  # Will calculate profile completeness on multi-dimensional hash
+  # Returns array of [completed, total] float values
+  def calculate_completeness(hash, completed = 0.0, total = 0.0)
+    hash.each do |k,v|
+      if v.is_a?(Hash)
+        completed, total = calculate_completeness(v, completed, total)
+      else
+        if v.is_a?(Float)
+          completed += v
+        elsif v == true
+          completed += 1.0
+        end
+        total += 1.0
+      end
+    end
+    [completed, total]
+  end
+
      # Returns true if mentor & investor elements all pass
    # commented out: they haven't invited an nreduce mentor in the last week
   def can_access_mentors_and_investors?
-    (self.investable? || self.mentorable?) && investor_mentor_completeness_percent == 1.0
+    investor_mentor_completeness_percent == 1.0
   end
 
   def self.stages
@@ -457,7 +504,8 @@ class Startup < ActiveRecord::Base
   end
 
   def reset_cached_elements
-    Cache.delete(['profile_c', self])
+    Cache.delete(['profile_c', self]) # reset profile completeness
+    Cache.delete(['n_a_s', self]) if self.active_changed? # reset number of active startups
     true
   end
 
@@ -488,5 +536,17 @@ class Startup < ActiveRecord::Base
       err = true
     end
     err
+  end
+
+  def encode_pitch_video
+    if self.pitch_video_url.present? && (self.pitch_video_url_changed? || self.pitch_video_id.blank?)
+      self.pitch_video.destroy unless self.pitch_video.blank?
+      ext_id = Youtube.id_from_url(self.pitch_video_url)
+      self.pitch_video = Youtube.where(:external_id => ext_id).first
+      self.pitch_video ||= Youtube.new
+      self.pitch_video.external_id = ext_id
+      self.pitch_video.user_id = self.team_members.first.id
+    end
+    true
   end
 end

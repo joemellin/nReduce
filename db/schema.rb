@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121012173557) do
+ActiveRecord::Schema.define(:version => 20121027160325) do
 
   create_table "authentications", :force => true do |t|
     t.string   "provider"
@@ -122,9 +122,9 @@ ActiveRecord::Schema.define(:version => 20121012173557) do
   create_table "measurements", :force => true do |t|
     t.integer  "instrument_id"
     t.float    "value"
-    t.datetime "created_at",    :null => false
-    t.datetime "updated_at",    :null => false
-    t.float    "delta"
+    t.datetime "created_at",                  :null => false
+    t.datetime "updated_at",                  :null => false
+    t.float    "delta",         :limit => 10
   end
 
   create_table "meeting_messages", :force => true do |t|
@@ -242,6 +242,8 @@ ActiveRecord::Schema.define(:version => 20121012173557) do
     t.integer  "context"
     t.string   "reason"
     t.datetime "pending_at"
+    t.boolean  "initiated",           :default => false
+    t.datetime "removed_at"
   end
 
   add_index "relationships", ["entity_id", "entity_type", "status"], :name => "relationship_index"
@@ -438,9 +440,8 @@ ActiveRecord::Schema.define(:version => 20121012173557) do
     t.integer  "startup_id"
     t.string   "image"
     t.string   "external_url"
+    t.integer  "ecc",             :default => 0
   end
-
-  add_index "videos", ["external_id", "type"], :name => "index_videos_on_external_id_and_type", :unique => true
 
   create_table "weekly_classes", :force => true do |t|
     t.integer  "week"

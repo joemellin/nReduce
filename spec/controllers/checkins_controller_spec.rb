@@ -67,7 +67,7 @@ describe CheckinsController do
 
       Timecop.freeze(Time.now.beginning_of_week + 3.days + 17.hours) do
         get :edit, :id => @checkin.id
-        response.should redirect_to(checkins_path)
+        response.should redirect_to('/')
         flash[:alert].should == "You aren't within the 'after' check-in time window."
       end
     end

@@ -1,5 +1,5 @@
 class RelationshipsController < ApplicationController
-  around_filter :record_user_action, :only => [:index]
+  around_filter :record_user_action
   before_filter :login_required
   before_filter :load_requested_or_users_startup, :only => [:index, :add_teams]
   load_and_authorize_resource :except => [:index, :add_teams]
@@ -61,15 +61,53 @@ class RelationshipsController < ApplicationController
   end
 
   def add_teams
+    authorize! :add_teams, Relationship
     if current_user.mentor?
       @entity = current_user
     elsif @startup
       @entity = @startup
+
+      # Load next startup - if they need to approve startups then next to approve
+      @relationship = @entity.pending_relationships.last
+
+      @review_startup = @relationship.entity unless @relationship.blank?
+      
+      # Otherwise load suggested startup
+      @relationship ||= @startup.suggested_relationships('Startup').first
+
+      # If they have none left, generate more
+      @relationship = @startup.generate_suggested_connections(5).first if @relationship.blank?
+
+      # If there are none left to suggest
+      if @relationship.blank?
+        flash[:notice] = "Those are all the teams you can connect to - check back next week for more teams."
+        redirect_to '/'
+        return
+      end
+
+      @review_startup ||= @relationship.connected_with
+
+      @startups_in_common = Relationship.startups_in_common(@review_startup, @startup)
+      @num_checkins = @review_startup.checkins.count
+      @num_awesomes = @review_startup.awesomes.count
+      if @relationship.suggested?
+        if @startup.num_active_startups >= Startup::NUM_ACTIVE_REQUIRED
+          @pct_complete = 100
+        else
+          @num_invites_sent = @startup.initiated_relationships.pending.where(['pending_at > ?', Time.now - 1.week]).count
+          @pct_complete = ((@num_invites_sent.to_f / Startup::NUM_ACTIVE_REQUIRED.to_f) * 100).round
+          @num_left_to_invite = Startup::NUM_ACTIVE_REQUIRED - @num_invites_sent
+        end
+        @ua = {:action => UserAction.id_for('relationships_suggest'), :data => {:id => @review_startup.id}}
+      else
+        @ua = {:action => UserAction.id_for('relationships_show'), :data => {:id => @review_startup.id}} 
+      end
     end
-     # Suggested, pending relationships and invited startups
-    @suggested_startups = @startup.suggested_startups(10) unless @startup.blank?
-    @pending_relationships = @entity.pending_relationships
-    @invited_startups = current_user.sent_invites.to_startups.not_accepted.ordered
+    # Suggested, pending relationships and invited startups
+    #@suggested_startups = @startup.suggested_startups(10) unless @startup.blank?
+    #@pending_relationships = @entity.pending_relationships
+    #@invited_startups = current_user.sent_invites.to_startups.not_accepted.ordered
+
     @modal = true
     if session[:checkin_completed] == true && !@startup.blank?
       @checkin_completed = true
@@ -105,7 +143,7 @@ class RelationshipsController < ApplicationController
         r.update_attribute('connected', true) if !r.startup_relationship.blank? && (r.startup_relationship == @relationship)
       end
       if suggested
-        flash[:notice] = "Your connection has been requested with #{@relationship.connected_with.name}"
+        flash[:notice] = "Your request has been sent to #{@relationship.connected_with.name}."
       else
         flash[:notice] = "You are now connected to #{@relationship.entity.name}."
       end
@@ -135,13 +173,15 @@ class RelationshipsController < ApplicationController
       if prev_status_pending
         flash[:notice] = "You have ignored the connection request from #{removed.name}."
       elsif prev_status_suggested
-        flash[:notice] = "You have passed on that suggested connection."
+        #flash[:notice] = "You have passed on that suggested connection."
       else
         flash[:notice] = "You have removed #{removed.name} from your group."
       end
     else
       flash[:alert] = "Sorry but the relationship couldn't be removed at this time."
     end
+    # Save user action as removed unless it was a rejection
+    @ua = {:action => UserAction.id_for('relationships_remove')} if @relationship.removed?
     if request.xhr?
       respond_to do |format|
         format.js { render :action => 'update_modal' }

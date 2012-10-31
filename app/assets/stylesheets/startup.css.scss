@@ -114,6 +114,7 @@ form.startup {
     color: green;
     text-align: center;
     font-size: 2em;
+    padding-top: 40px;
     .record_again {
       line-height: 25px;
       font-size: 12px;
@@ -122,9 +123,9 @@ form.startup {
     }
     .check { 
       color: green;
-      font-size: 250px;
+      font-size: 125px;
       font-weight: bold;
-      line-height: 250px;
+      line-height: 125px;
       vertical-align: middle;
     }
   }

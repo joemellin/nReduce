@@ -5,10 +5,10 @@ $ ->
     val = $(this).data('value')
     $('#checkin_accomplished').val(val)
 
-  if $('form.checkin').length > 0
-    setTimeout( ->
-      enableCheckinFormIfComplete(true)
-    , 1000)
+  # if $('form.checkin').length > 0
+  #   setTimeout( ->
+  #     enableCheckinFormIfComplete(true)
+  #   , 1000)
 
   $('.video_form .youtube_url').change( ->
     field = $(this)
@@ -34,10 +34,9 @@ $ ->
     if isValidYoutubeUrl(url)
       $("##{video_id} .video_type").val('Youtube')
       $("##{video_id} .completed").show()
-      $("##{video_id} .fields").hide()
+      $('##{video_id} .current_video').hide()
     else
       $("##{video_id} .completed").hide()
-      $("##{video_id} .fields").show()
 
   # if they choose to record again
   # $('.video_form .record_again').click ->

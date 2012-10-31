@@ -21,7 +21,7 @@ class Checkin < ActiveRecord::Base
   after_validation :check_submitted_completed_times
   before_save :notify_user
   before_create :assign_week
-  after_create :reset_startup_checkin_cache
+  after_save :reset_startup_checkin_cache
   after_destroy :reset_startup_checkin_cache
 
   validates_presence_of :startup_id
@@ -29,7 +29,7 @@ class Checkin < ActiveRecord::Base
   validates_presence_of :before_video, :message => "can't be blank", :if => lambda { Checkin.in_before_time_window? }
   validates_presence_of :after_video, :message => "can't be blank", :if =>  lambda { Checkin.in_after_time_window? }
   validates_inclusion_of :accomplished, :in => [true, false], :message => "must be selected", :if => lambda { Checkin.in_after_time_window? }
-  validate :check_video_urls_are_valid
+  #validate :check_video_urls_are_valid
   validate :measurement_is_present_if_launched
 
   scope :ordered, order('created_at DESC')
@@ -56,7 +56,7 @@ class Checkin < ActiveRecord::Base
     week = Week.integer_for_time(Time.now)
     1.upto(num_weeks){ week = Week.previous(week) }
     alphabetical_ids = startups.sort{|a,b| a.name.downcase <=> b.name.downcase }.map{|s| s.id }
-    checkins = Checkin.where(:startup_id => alphabetical_ids).where(['week >= ?', week]).order('week ASC').includes(:measurement).all
+    checkins = Checkin.where(:startup_id => alphabetical_ids).where(['week >= ?', week]).order('week DESC').includes(:measurement).all
     c_by_week = Hash.by_key(checkins, :week, nil, true)
     # Sort each week of checkins by startup name
     c_by_week.each do |week, checkins|
@@ -196,19 +196,13 @@ class Checkin < ActiveRecord::Base
     return arr if checkins.blank?
     # add blank elements at the beginning until they've done a checkin - start at end of prev after checkin
     current_week = Checkin.week_integer_for_time(Checkin.prev_after_checkin)
-    if checkins.first.week < current_week
-      while(current_week != checkins.first.week)
-        arr << [false, false]
-        current_week = Checkin.previous_week(current_week)
-      end
-    end
     checkins.each do |c|
-      if current_week == c.week
-        arr << [c.submitted?, c.completed?]
-      else # they missed a week
-        arr << [false, false] 
+      while current_week != c.week
+        arr << [false, false]
+        # move current week back one week until we hit the next checkin
+        current_week = Week.previous(current_week)
       end
-      # move current week back one week
+      arr << [c.submitted?, c.completed?]
       current_week = Week.previous(current_week)
     end
     arr
@@ -278,6 +272,10 @@ class Checkin < ActiveRecord::Base
 
   def time_label
     Checkin.week_for_time(self.created_at || Time.now)
+  end
+
+  def time_window
+    Week.window_for_integer(self.week)
   end
 
   def submitted?

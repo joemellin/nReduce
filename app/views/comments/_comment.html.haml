@@ -77,17 +77,21 @@
       %p
         %i (deleted by author)
     - else
-      .left.pic
-        - title = comment.user.name + (!comment.user.twitter.blank? ? " - @#{comment.user.twitter}" : '')
-        %div= link_to image_tag(user_avatar_url(comment.user, :square), :style => 'width: 100px; height: 100px;', :title => title), user_path(comment.user)
+      - if comment.user.present?
+        .left.pic
+          - title = comment.user.name + (!comment.user.twitter.blank? ? " - @#{comment.user.twitter}" : '')
+          %div= link_to image_tag(user_avatar_url(comment.user, :square), :style => 'width: 100px; height: 100px;', :title => title), user_path(comment.user)
       .left.commentlinks 
         Written by
-        = link_to "#{is_owner ? 'You' : truncate(comment.user.name, :length => 20)}", user_path(comment.user)
-        - if comment.user.roles?(:mentor) or comment.user.roles?(:nreduce_mentor)
-          &nbsp;•&nbsp;Mentor
-        - elsif !comment.user.startup_id.blank?
-          of Team
-          = link_to comment.user.startup.name, startup_path(comment.user.startup)
+        - if comment.user.present?
+          = link_to "#{is_owner ? 'You' : truncate(comment.user.name, :length => 20)}", user_path(comment.user)
+          - if comment.user.roles?(:mentor) or comment.user.roles?(:nreduce_mentor)
+            &nbsp;•&nbsp;Mentor
+          - elsif !comment.user.startup_id.blank?
+            of Team
+            = link_to comment.user.startup.name, startup_path(comment.user.startup)
+        - else
+          a user who has left nReduce.
         
         - unless comment.awesome_count == 0
           %strong= pluralize(comment.awesome_count, 'like')

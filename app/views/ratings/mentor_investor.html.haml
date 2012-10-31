@@ -1,82 +1,94 @@
 .board_room
-  .row
-    .span6
-      .ranking.left
-        %h2= @total_num_ratings
-        Team#{@total_num_ratings == 1 ? '' : 's'} Reviewed
-      .ranking.left
-        %h2= @total_value_adds
-        Value Add#{@total_value_adds == 1 ? '' : 's'}
-        %a{:href => '#', :rel => 'tooltip', :title => 'If a team finds your feedback helpful they can give you a value add'}
-          %i.icon-question-sign
-      .ranking.left
-        %h2 ??
-        Your Rank out of #{pluralize(@total_people, @user_type)}
-      .clear
-    .span6
-      .center.num_met
-        You have met #{@num_startups_left}/#{@total_suggested_startups} startups you were matched with this week.
-      .progress
-        .bar{:style => "width: #{@pct_complete}%"}
-      - if @num_startups_left > 0 && can?(:investor_mentor_connect_with_startups, current_user)
-        .center= link_to 'Meet Teams', new_rating_path, :class => 'btn btn-success btn-large'
-
-
+  - if can? :investor_mentor_connect_with_startups, current_user
+    .row
+      .span4
+        %p
+      .span4
+        .center.num_met
+          You have met #{@num_startups_completed}/#{@total_suggested_startups} startups you were matched with this week.
+        .progress
+          .bar{:style => "width: #{@pct_complete}%"}
+        - if @num_startups_left > 0
+          .center= link_to 'Meet Teams', new_rating_path, :class => 'btn btn-success btn-large'
+      .span4
+        / .ranking.right
+        /   %h2= @total_num_ratings
+        /   Team#{@total_num_ratings == 1 ? '' : 's'} Reviewed
+        / .ranking.right
+        /   %h2= @total_value_adds
+        /   Value Add#{@total_value_adds == 1 ? '' : 's'}
+        /   %a{:href => '#', :rel => 'tooltip', :title => 'If a team finds your feedback helpful they can give you a value add'}
+        /     %i.icon-question-sign
+        / .ranking.right
+        /   %h2 ??
+        /   Your Rank out of #{pluralize(@total_people, @user_type)}
+        .clear
+    %br/
+  %br/
   %h1 Review Your Teams
-
-  .teams
-    .header
-      .row
-        .span2
-          %p
-        .span4
-          .goal Goal
-        .span1
-          .accomplished Accomplished?
-        .span1 Metric
-        .span4 Help Needed
-    - @checkins_by_week.each do |week, checkins|
-      .week
+  
+  - if @startups_by_id.present?
+    .teams
+      .header
         .row
-          - time_window = Week.window_for_integer(week)
-          .span12
-            .description
-              #{time_window.first.strftime('%B %-d')} - #{time_window.last.strftime('%B %-d')}
-        - checkins.each do |checkin|
-          - startup = @startups_by_id[checkin.startup_id]
-          .team
-            .row
-              .span2
-                .team_members
-                  - startup.team_members.each do |tm|
-                    = link_to image_tag(user_avatar_url(tm)), tm, :title => tm.name, :alt => tm.name
-              .span4
-                .name.left= link_to startup.name, startup
-                .goal.left
-                  - if checkin.start_focus.blank?
-                    %p
-                  - else
-                    = truncate(checkin.start_focus, :length => 40)
-                .clear
-              .span1
-                - if checkin.accomplished
-                  .accomplished Yes
-                - else
-                  .not_accomplished No
-              - delta = checkin.measurement.present? ? checkin.measurement.delta : nil
-              .span1
-                .metric
-                  - if checkin.measurement.blank? || delta.nil?
-                    = image_tag('prelaunch.png')
-                  - else
-                    - if delta > 0
-                      .increase #{image_tag('uparrow.png')} #{delta.round}%
-                    - elsif delta < 0
-                      .decrease #{image_tag('downarrow.png')} #{delta.abs.round}%
-                  
-              .span4
-                .help
-                  .right= link_to '<i class="icon-film"></i> View'.html_safe, checkin, :class => 'btn'
-                  .left= truncate(checkin.end_comments, :length => 38)
+          .span2
+            %p
+          .span4{:style => 'margin-left: 6px'}
+            .goal Goal
+          .span1
+            .accomplished Accomplished?
+          .span1 Metric
+          .span4 Help Needed
+      - @checkins_by_week.each do |week, checkins|
+        .week
+          .row
+            - time_window = Week.window_for_integer(week)
+            .span12
+              .description
+                #{time_window.first.strftime('%B %-d')} - #{time_window.last.strftime('%B %-d')}
+          - checkins.each do |checkin|
+            - startup = @startups_by_id[checkin.startup_id]
+            .team
+              .row
+                .span2
+                  .team_members
+                    - startup.team_members.each do |tm|
+                      = link_to image_tag(user_avatar_url(tm)), tm, :title => tm.name, :alt => tm.name
+                .span4{:style => 'margin-left: 6px'}
+                  .name.left= link_to startup.name, startup
+                  .goal.left
+                    - if checkin.start_focus.blank?
+                      %p
+                    - else
+                      = truncate(checkin.start_focus, :length => 30)
                   .clear
-                 
+                .span1
+                  - if checkin.accomplished.nil?
+                    .not_accomplished ?
+                  - elsif checkin.accomplished?
+                    .accomplished Yes
+                  - else
+                    .not_accomplished No
+                - delta = checkin.measurement.present? ? checkin.measurement.delta : nil
+                .span1
+                  .metric
+                    - if !startup.launched?
+                      = image_tag('prelaunch.png')
+                    - else
+                      - if delta.nil?
+                        ?
+                      - elsif delta == 0.0
+                        \--
+                      - elsif delta > 0
+                        .increase #{image_tag('uparrow.png')} #{delta.round}%
+                      - elsif delta < 0
+                        .decrease #{image_tag('downarrow.png')} #{delta.abs.round}%
+                    
+                .span4
+                  .help
+                    .right= link_to '<i class="icon-film"></i> View'.html_safe, checkin, :class => 'btn'
+                    .left= truncate(checkin.end_comments, :length => 38)
+                    .clear
+  - else
+    %br/
+    %h2 If you decide to connect to a startup, their weekly progress will appear here.

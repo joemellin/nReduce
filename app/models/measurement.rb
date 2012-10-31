@@ -32,13 +32,27 @@ class Measurement < ActiveRecord::Base
   end
 
   def previous_measurement
-    Measurement.where(:instrument_id => self.instrument_id).where(['created_at < ?', self.created_at || Time.now]).first
+    Measurement.where(:instrument_id => self.instrument_id).where(['created_at < ?', self.created_at || Time.now]).order('created_at DESC').first
   end
 
   def calculate_delta(prev = nil)
-    prev ||= self.previous_measurement
-    self.delta = (((self.value - prev.value) / prev.value) * 100.0).round(2) unless prev.blank?
-    self.delta
+    begin
+      prev ||= self.previous_measurement
+      return true if self.value.blank? || prev.blank? || prev.value.blank?
+      if prev.value != 0.0
+        delta = (((self.value - prev.value) / prev.value) * 100.0).round(2) unless prev.blank?
+      end
+      delta = 0.0 if delta.nil? || !delta.is_a?(Float)
+    rescue
+      delta = 0.0
+    end
+    self.delta = delta
+    true
+  end
+
+  # for use with charts
+  def key
+    created_at.strftime('%b %d')
   end
 
   protected

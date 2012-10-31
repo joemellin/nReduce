@@ -7,8 +7,9 @@ class Ability
     user ||= User.new
 
     cannot :manage, Video
-    cannot :see_ratings_page, User
+    cannot [:see_ratings_page, :read_posts], User
     cannot [:read_post, :repost], Comment
+    can :add_teams, Relationship
 
     # Admins can do anything
     if user.admin?
@@ -19,7 +20,7 @@ class Ability
     elsif !user.new_record? and user.has_startup_or_is_mentor_or_investor?
     
       # Abilities if user has a startup
-      if !user.startup_id.blank?
+      if user.startup_id.present?
         can [:manage, :onboard, :onboard_next, :remove_team_member], Startup, :id => user.startup_id
 
         cannot :invite_mentor, Startup # have to remove this ability since we just assigned manage
@@ -277,12 +278,15 @@ class Ability
       u.investor? || (u.entrepreneur? and !u.startup_id.blank?)
     end
 
-    can :see_ratings_page, User if user.nreduce_mentor? || user.investor?
+    can :see_ratings_page, User if user.mentor? || user.investor?
 
     # Investor can see startups if they have contacted less than one startup this week.
     can :investor_mentor_connect_with_startups, User do |u|
       (u.investor? || u.nreduce_mentor?) && u.can_connect_with_startups?
     end
+
+    # Investors can't review startups to add teams
+    cannot :add_teams, Relationship if user.investor?
 
     # Everyone can see users
     can :read, User
@@ -324,5 +328,7 @@ class Ability
   
     # Anyone can see demo day
     can [:read, :show, :show_startup], DemoDay
+
+    cannot :read_posts, User unless user.startup_id.present?
   end
 end

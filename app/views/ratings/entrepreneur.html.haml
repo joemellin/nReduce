@@ -1,40 +1,87 @@
-.investors
-  .startup
-    = form_for current_user.startup, :url => '/startup/', :remote => true, :html => {:class => 'form-vertical startup'} do |f|
-      = hidden_field_tag 'dont_render_form', true
+.board_room
+  - if @startup_elements.present?
+    .entry_page
       .row
-        .span4
-          %p
-        .span4.center
-          %h1
-            %small Board Room
-        .span4
-          .right{:style => 'margin: 15px 0px 20px 0px'}
-            .left
-              %h3 Seeking Investment
-            .left{:style => 'margin-left: 10px'}
-              = f.check_box :investable, :class => 'investable'
-            .clear
-            %br/
-            .left
-              %h3 Seeking Mentorship
-            .left{:style => 'margin-left: 10px'}
-              = f.check_box :mentorable, :class => 'mentorable'
-            .clear
-          .clear
-    %hr/
-    %br/
-    - if @startup_elements.present?
-      .row.investor_profile_inactive
+        .span4{:align => 'center'}
+          .box.nstar= image_tag 'nstar_m.png', :style => 'width: 230px; height: 195px'
+          %h3 Compete to Become an #{link_to 'nStar', nstar_path}
+        .span4{:align => 'center'}
+          .box.mentors
+            .number= @num_mentors
+            and counting...
+          %h3 Get Help From nReduce Mentors
+        .span4{:align => 'center'}
+          .box.investors
+            Coming Soon
+          %h3 Get Feedback From Investors
+      %br/
+      %br/
+      %hr/
+      %br/
+      %br/
+      .row
         %center
-          %br/
-          %br/
           %h2
-            Get Feedback From Mentors, Investors and Apply to Become an nStar
+            To Enter the Board Room
           %br/
-          %h3{:style => 'margin-bottom: 10px'} To Be Eligible You Need To Complete:
+          %br/
+      .row
+        .span1
+          %p
+        .span5
+          %h2 1) Complete the Following Elements
           .startup_elements!= format_profile_elements(@startup_elements)
-    - else
+        .span1
+          %p
+        .span5
+          %h2 2) Submit a Before & After Video Last Week
+          .checkin
+            - if @previous_checkin.present?
+              .week= @previous_checkin.time_label
+              .right.after
+                After
+                - if @previous_checkin.after_completed?
+                  .completed &#x2713;
+                - else
+                  .incomplete &#x2717;
+              .left.before
+                Before
+                - if @previous_checkin.before_completed?
+                  .completed &#x2713;
+                - else
+                  .incomplete &#x2717;
+              .clear
+            - else
+              .week (none)
+
+        
+  - else
+    .investors
+      .startup
+        = form_for current_user.startup, :url => '/startup/', :remote => true, :html => {:class => 'form-vertical startup'} do |f|
+          = hidden_field_tag 'dont_render_form', true
+          .row
+            .span4
+              %p
+            .span4.center
+              %h1
+                %small Board Room
+            .span4
+              .right{:style => 'margin: 15px 0px 20px 0px'}
+                .left
+                  %h3 Seeking Investment
+                .left{:style => 'margin-left: 10px'}
+                  = f.check_box :investable, :class => 'investable'
+                .clear
+                %br/
+                .left
+                  %h3 Seeking Mentorship
+                .left{:style => 'margin-left: 10px'}
+                  = f.check_box :mentorable, :class => 'mentorable'
+                .clear
+              .clear
+      %hr/
+      %br/
       = render 'ratings/startup'
 
 

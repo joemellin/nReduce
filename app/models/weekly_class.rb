@@ -69,6 +69,10 @@ class WeeklyClass < ActiveRecord::Base
     incomplete_startups
   end
 
+  def clusters
+    self['clusters'].blank? ? [] : self['clusters']
+  end
+
   def previous_class
     WeeklyClass.where(['week < ?', self.week]).order('week DESC').first
   end
@@ -124,17 +128,21 @@ class WeeklyClass < ActiveRecord::Base
   def self.create_clusters(users, max_radius = 250.0)
     return nil if users.blank?
     # need to dupe or else array gets modified
-    users = users.dup 
+    users = users.dup
+
     # Ensure all users are geocoded
     users.each{|u| u.geocode_from_ip unless u.geocoded? }
 
     clusters = []
-    while users.size > 0
+    clustered = []
+    while users.size > clustered.size
+      users_left = users - clustered
+
       # Choose a random point
-      center = users.sample
+      center = users_left.sample
       
       # Sort by distance from starting point
-      users.sort_by_distance_from(center)
+      users_left.sort_by_distance_from(center)
     
       c = Cluster.new
       c.user_ids = []
@@ -144,7 +152,7 @@ class WeeklyClass < ActiveRecord::Base
       c.lat, c.lng, c.location = center.lat, center.lng, center.location
 
       # this will add the user set as center
-      users.each do |u|
+      users_left.each do |u|
         if u.distance_from(center, :units => :miles) < max_radius
           c.user_ids.push(u.id)
           added_users.push(u)
@@ -152,15 +160,20 @@ class WeeklyClass < ActiveRecord::Base
       end
       # Ideally we should find the true center and reassign the lat/lng based on that
       # c.recenter
-      added_users.each{|e| users.delete(e) }
+      # I was using users.delete(e) but that has the potential to delete from the database, so using a slower method now
+      added_users.each{|u| clustered << u }
       clusters.push(c)
     end
     # Sort by clusters that are biggest first
     clusters.sort{|a,b| a.user_ids.size <=> b.user_ids.size }.reverse
   end
 
+  # Create clusters from active users last week
   def create_clusters
-    self.clusters = WeeklyClass.create_clusters(self.users)
+    curr_week = Checkin.week_integer_for_time(Time.now)
+    previous_week = Week.previous(curr_week)
+    user_ids = UserAction.where(['created_at > ?', self.time_window.first - 1.week]).group(:user_id).map{|ua| ua.user_id }
+    self.clusters = WeeklyClass.create_clusters(User.where(:id => user_ids).geocoded.all) unless user_ids.blank?
   end
 
   def stats_for_completed_startups
@@ -189,10 +202,8 @@ class WeeklyClass < ActiveRecord::Base
       self.num_startups = stats[:num_startups]
       self.num_countries = stats[:num_countries]
       self.num_industries = stats[:num_industries]
-      self.clusters = WeeklyClass.create_clusters(us)
-    else
-      self.clusters = []
     end
+    self.create_clusters if self.clusters.blank?
     true
   end
 end

@@ -2,6 +2,11 @@
 -# Data should be passed in as a k/v hash, with multiple series in the array, ex: {:categories => ['Traction', Team'], :series => {'Investor' => [23, 4]}, {'Mentor' => [3,5]}}
 - data ||= {}
 - title ||= ''
+- type ||= 'column'
+- tooltip_enabled ||= false
+- y_tick_interval ||= 1
+- y_axis_label ||= 'Number of People'
+
 .chart{:id => chart_id}
 :plain
   <script type="text/javascript">
@@ -10,15 +15,12 @@
     chart = new Highcharts.Chart({
       chart: {
         renderTo: '#{chart_id}',
-        type: 'column'
+        type: '#{type}'
       },
       title: {
         text: '#{title}'
       },
       credits: {
-        enabled: false
-      },
-      legend: {
         enabled: false
       },
       xAxis: {
@@ -31,30 +33,39 @@
       },
       yAxis: {
         title: {
-          text: 'Number of People'
+          text: '#{y_axis_label}'
         },
         labels: {
           formatter: function() {
             return this.value;
           }
         },
-        tickInterval: 1
+        tickInterval: #{y_tick_interval}
       },
       plotOptions: {
+        area: {
+            stacking: 'normal',
+            lineColor: '#666666',
+            lineWidth: 1,
+            marker: {
+                lineWidth: 1,
+                lineColor: '#666666'
+            }
+        },
         column: {
           pointPadding: 0.2,
           borderWidth: 1
         }
       },
       tooltip: {
-        enabled: false
+        enabled: #{tooltip_enabled}
       },
       legend: {
-        layout: 'vertical',
-        align: 'right',
+        layout: 'horizontal',
+        align: 'left',
         verticalAlign: 'top',
-        x: -100,
-        y: 100,
+        x: 50,
+        y: 50,
         floating: true,
         borderWidth: 1,
         backgroundColor: '#FFFFFF',

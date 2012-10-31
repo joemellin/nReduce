@@ -1,31 +1,64 @@
-.startup
+.startup.investment_profile
   .headline
     .left.name
       %h2= @startup.name
     .left.details
       %h2= @startup.one_liner
       - unless @startup.website_url.blank?
-        = link_to_external @startup.website_url, @startup.website_url
+        = link_to_external @startup.website_url, @startup.website_url, :source => 'investor_mentor'
       - industries = @startup.industry_list
       - unless industries.blank?
         = industries.size == 1 ? 'Industry: ' : 'Industries: '
         = industries.join(', ')
     .clear
-  .left.video
-    - vid_url = Youtube.embed_url(@startup.pitch_video_url)
-    - if vid_url.blank?
-      [ no pitch video ]
-    - else
-      %iframe{:width => '500', :height => '315', :src => vid_url, :frameborder => 0, :allowfullscreen => true}
-
-    - unless @screenshots.blank?
-      %h3 Product Screenshots
-
-      - c = 0
-      - @screenshots.each do |s|
-        .screenshot.screenshot_modal.left{'data-id' => c}= link_to image_tag(s.image_url(:small)), '#'
-        - c += 1
+  .left.video_player
+    .title
+    - c = 0
+    - @videos.each do |v|
+      - if c == 0
+        .video_wrapper!= display_video(v)
+      - else
+        .hide.video_wrapper!= display_video(v)
+      - c += 1
+    .thumbnails
+      - @videos.each do |v|
+        .left.thumbnail{:class => c == 0 ? 'active' : '', 'data-video-id' => "video_#{v.id}", :style => "background: url('#{v.image_url(:small)}') no-repeat center;"}= image_tag 'play_button.png'
       .clear
+
+
+  - video_data = @videos.map{|v| {:video_id => "video_#{v.id}", :title => 'No data'}}
+
+  :javascript
+    $(function() {
+      vp = new VideoPlayer(#{video_data.to_json}, true);
+    });
+
+  .left
+    .left.checkin_history
+      %p{:style => 'font-size: 1em'}
+        Checkin
+        %br/
+        History:
+      - @checkin_history.each do |status|
+        .left.checkin{:class => status.first == true ? 'done' : ''} &nbsp;
+        .left.checkin{:class => status.last == true ? 'done' : ''} &nbsp;
+        .clear
+    .left.traction
+      %h3 Traction
+      - if !@instrument.blank? && !@measurements.blank?
+        = render 'investors/chart', :measurements => @measurements
+      - else
+        = image_tag 'prelaunch_chart.png'
+    .clear
+    - unless @screenshots.blank?
+      .screenshots
+        %h3 Product Screenshots
+
+        - c = 0
+        - @screenshots.each do |s|
+          .screenshot.screenshot_modal.left{'data-id' => c}= link_to image_tag(s.image_url(:small)), '#'
+          - c += 1
+        .clear
 
       #screenshots_modal.modal.hide
         .modal-body
@@ -37,56 +70,37 @@
                 - c += 1
             %a.carousel-control.left{:href => '#screenshots_carousel', 'data-slide' => 'prev'} &lsaquo;
             %a.carousel-control.right{:href => '#screenshots_carousel', 'data-slide' => 'next'} &rsaquo;
-
-  .left.checkin_history
-    %p{:style => 'font-size: 1em'}
-      Checkin
-      %br/
-      History:
-    - @checkin_history.each do |status|
-      .left.checkin{:class => status.first == true ? 'done' : ''} &nbsp;
-      .left.checkin{:class => status.last == true ? 'done' : ''} &nbsp;
-      .clear
-  .left.traction
-    %h3 Traction
-    - if !@instrument.blank? && !@measurements.blank?
-      = render 'investors/chart', :measurements => @measurements
-    - else
-      = image_tag 'prelaunch_chart.png'
-
-    %h3 Business Model
-    = simple_format(h(@startup.business_model))
-
-    - unless @startup.market_size.blank?
-      %p
-        %strong Market Size:
-        $#{@startup.market_size}
-        %i (self reported)
-    - unless @startup.founding_date.blank?
-      %p
-        %strong Date Founded:
-        #{@startup.founding_date.strftime('%B %d, %Y')}
-
   .clear
+
+  %h3 Business Model
+  = simple_format(h(@startup.business_model))
+
+  - unless @startup.market_size.blank?
+    %p
+      %strong Market Size:
+      $#{@startup.market_size}
+      %i (self reported)
+  - unless @startup.founding_date.blank?
+    %p
+      %strong Date Founded:
+      #{@startup.founding_date.strftime('%B %d, %Y')}
+
 
   .team_members
     %h3 Team
     - @startup.team_members.each do |team_member|
       .team_member.left
-        .top
-          - if !team_member.intro_video_url.blank?
-            %iframe{:width => '225', :height => '160', :src => Youtube.embed_url(team_member.intro_video_url), :frameborder => 0, :allowfullscreen => true}
-          - else
-            = link_to(image_tag(user_avatar_url(team_member)), team_member)
+        .top.pic
+          = link_to(image_tag(user_avatar_url(team_member, :square)), team_member)
         .bottom
           %h4
             = link_to team_member.name, team_member
             - unless team_member.linkedin_url.blank?
               &nbsp;
-              = link_to_external image_tag('linkedin_32.png'), team_member.linkedin_url
+              = link_to_external image_tag('linkedin_32.png'), team_member.linkedin_url, :source => 'investor_mentor'
           %p
             %small
-              Skills: #{team_member.skill_list}
+              Skills: #{truncate(team_member.skill_list.to_s, :length => 60)}
               %br/
               Located: #{team_member.location}
     .clear

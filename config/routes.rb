@@ -5,6 +5,7 @@ Nreduce::Application.routes.draw do
   end
 
   namespace 'admin' do
+    resources :metrics, :only => [:index]
     resources :mentors, :only => [:index, :show, :update]
     resources :users, :only => [:show, :index] do
       member do
@@ -27,7 +28,11 @@ Nreduce::Application.routes.draw do
 
   resources :authentications, :checkins, :notifications, :rsvps
 
-  resources :nudges, :only => [:create, :show]
+  resources :nudges, :only => [:create, :show] do
+    collection do
+      post 'nudge_all_inactive'
+    end
+  end
 
   resources :investors do
     collection do
@@ -191,6 +196,7 @@ Nreduce::Application.routes.draw do
   match '/investor' => "pages#investor", :as => :public_investors
   match '/press' => "pages#press", :as => :public_press
   match '/tutorial' => "pages#tutorial", :as => :tutorial
+  match '/coworking_location' => 'pages#coworking_location', :as => :coworking_location
   match '/community_guidelines' => "pages#community_guidelines", :as => :community_guidelines
 
   # Url redirection

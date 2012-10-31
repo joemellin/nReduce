@@ -110,4 +110,342 @@ class Stats
     end
     results
   end
+
+  def self.checkins_per_week_for_chart(since = 10.weeks)
+    Checkin.group(:week).where(['created_at > ?', Time.now - since]).order(:week).count.map{|week, num| OpenStruct.new(:key => week, :value => num) }
+  end
+
+  def self.comments_per_week_for_chart(since = 10.weeks)
+    c_by_w = {}
+    Comment.where(['created_at > ?', Time.now - since]).each do |c| 
+      week = Week.integer_for_time(c.created_at, :before_checkin)
+      c_by_w[week] ||= 0
+      c_by_w[week] += 1
+    end
+    c_by_w.sort.map{|arr| OpenStruct.new(:key => arr.first, :value => arr.last) }
+  end
+
+  def self.startups_activated_per_week_for_chart(since = 10.weeks)
+    date_start = Time.now - since
+    a_by_w = {}
+    current = Week.integer_for_time(Time.now)
+    last = Week.integer_for_time(date_start)
+    while current > last
+      a_by_w[current] = 0
+      current = Week.previous(current)
+    end
+    c_by_s = Hash.by_key(Checkin.order('created_at ASC').all, :startup_id, nil, true)
+    c_by_s.each do |startup_id, checkins|
+      # Skip unless their first checkin was after the date limit
+      next unless checkins.first.time_window.first > date_start
+      a_by_w[checkins.first.week] += 1
+    end
+    a_by_w.sort.map{|arr| OpenStruct.new(:key => arr.first, :value => arr.last) }
+  end
+
+   # Creates data for chart that displays how many active connections there are per startup, per week
+   # Active connection is someone who has checked in that week
+   # Returns {:categories => [201223, 201224, 201225], :series => [{'0 Connections' => [35, 45, 56]}, {'1 Connection' => [23, 26, 15]}]}
+   # hash with week as key, value is number of startups
+  def self.connections_per_startup_for_chart(since = 10.weeks,  max_active = 10)
+    # Populate categories
+    tmp_data = Stats.generate_week_hash(Time.now - since)
+    calc_data = tmp_data.dup
+
+    # Load checkins into hash keyed by startup id, and then by week
+    checkins_by_startup = Stats.checkins_by_startup_and_week(tmp_data.keys.first)
+
+    Startup.all.each do |s|
+      # First get relationship and checkin history for startup
+      rh = Relationship.history_for_entity(s, 'Startup')['Startup']
+
+      next if checkins_by_startup[s.id].blank?
+        
+      # For each week they were active (checked in), count how many of their connections were active (checked in)
+      checkins_by_startup[s.id].each do |week, checkin|
+        # Now check each startup they were connected to and see if they connected and checked in that week
+
+        active_connections_this_week = 0
+
+        checkin_window = checkin.time_window
+        unless rh.blank?
+          rh.each do |startup_id, rel_window|
+            # See if they were connected before checkin window closed, and that the relationship didn't end before checkin window closed
+            # Should it check to see if you're connected after to give comments?
+            if rel_window.first < checkin_window.last && rel_window.last > checkin_window.last
+              # Now see if this startup checked in this week
+              active_connections_this_week += 1 if checkins_by_startup[startup_id].present? && checkins_by_startup[startup_id][week].present?
+            end
+          end
+          active_connections_this_week = max_active if active_connections_this_week > max_active
+        end
+
+        calc_data[week][active_connections_this_week] ||= 0
+        calc_data[week][active_connections_this_week] += 1
+      end
+    end
+
+    categories = tmp_data.keys
+    series = {}
+    max_active.downto(0).each do |num_connections|
+      series[num_connections.to_s] = []
+      categories.each do |week|
+        series[num_connections.to_s] << (calc_data[week][num_connections].present? ? calc_data[week][num_connections] : 0)
+      end
+    end
+    {:categories => categories, :series => series }
+  end
+
+
+   # Find all startups who have done a checkin, and then track their continued activity til the present
+  def self.weekly_retention_for_chart(since = 10.weeks)
+    # find first startup and limit weeks to start there
+    first_startup_joined_at = Startup.order('created_at ASC').first.created_at
+    weeks = Stats.generate_week_hash(first_startup_joined_at)
+    checkins_by_startup = Stats.checkins_by_startup_and_week(weeks.keys.first)
+    startups = Hash.by_key(Startup.where(:id => checkins_by_startup.keys).all, :id)
+
+    # Group startups by date created
+    weeks.keys.each do |week|
+      time_window = Week.window_for_integer(week, :before_checkin)
+      ids = []
+      startups.values.each do |s|
+        ids << s.id if time_window.first <= s.created_at && time_window.last >= s.created_at
+      end
+
+      # Now iterate through each week and see if these startups were active
+      active_per_week = []
+      weeks.keys.each do |week|
+        num = 0
+        ids.each do |startup_id|
+          num += 1 if checkins_by_startup[startup_id].present? && checkins_by_startup[startup_id][week.to_i].present?
+        end
+        active_per_week << num
+      end
+
+      weeks[week] = active_per_week
+    end
+    { :categories => weeks.keys, :series => weeks }
+  end
+
+  def self.comments_per_checkin_for_chart(since = 10.weeks, max_comments = 10)
+    weeks = Stats.generate_week_hash(Time.now - since).keys
+    checkins = Checkin.where(['week >= ?', weeks.first]).all
+    comments_per_checkin = Comment.where(:checkin_id => checkins.map{|c| c.id }).group(:checkin_id).count
+    # Populate weeks hash with array for each # of comments
+    data = {}
+    blank_arr = []
+    1.upto(weeks.size).each do |i|
+      blank_arr << 0
+    end
+    max_comments.downto(0) do |num|
+      data[num.to_s] = blank_arr.dup
+    end
+
+    # count number of comments each checkin got, grouped by week
+    checkins.each do |c|
+      if comments_per_checkin[c.id].present?
+        num = comments_per_checkin[c.id] > max_comments ? max_comments : comments_per_checkin[c.id]
+      else
+        num = 0
+      end
+      data[num.to_s][weeks.index(c.week)] += 1
+    end
+    {:categories => weeks, :series => data}    
+  end
+
+  def self.checkins_by_startup_and_week(since_week = nil)
+    # Load checkins into hash keyed by startup id, and then by week
+    checkins_by_startup = {}
+    checkins = since_week.present? ? Checkin.where(['week >= ?', since_week]).all : Checkin.all
+    checkins.each do |c|
+      checkins_by_startup[c.startup_id] ||= {}
+      checkins_by_startup[c.startup_id][c.week] = c
+    end
+    checkins_by_startup
+  end
+
+  def self.generate_week_hash(since_date = nil)
+    since_date ||= Time.now - 10.weeks
+    tmp = []
+    current = Week.integer_for_time(Time.now)
+    last = Week.integer_for_time(since_date)
+    while current > last
+      tmp << current
+      current = Week.previous(current)
+    end
+    # create hash
+    weeks = {}
+    tmp.reverse.each do |week|
+      weeks[week] = {}
+    end
+    weeks
+  end
+
+  def self.checkin_comments_correlation(above_num_comments = 0)
+    # Calculate week by week
+    # After receiving comments one week, how many startups checkin next week?
+    # After not receiving any comments, does a startup checkin next week?
+    checkins_by_week = Hash.by_key(Checkin.all, :week, nil, true)
+    comments_by_checkin = Hash.by_key(Comment.where('checkin_id IS NOT NULL').all, :checkin_id, nil, true)
+    user_ids_by_startup = {}
+    User.all.each{|u| next if u.startup_id.blank?; user_ids_by_startup[u.startup_id] ||= []; user_ids_by_startup[u.startup_id] << u.id }
+    data = [['Week', 'No Comments - No Checkin', 'Comments - No Checkin', 'No Comments - Checkin', 'Comments - Checked In', 'Total # Checkins']]
+    got_comments_ids = []
+    no_comments_ids = []
+    checkins_by_week.each do |week, checkins|
+      comments_checkin = comments_no_checkin = no_comments_checkin = no_comments_no_checkin = 0
+      checked_in_ids = checkins.map{|c| c.startup_id }
+      
+      got_comments_ids.each do |startup_id|
+        if checked_in_ids.include?(startup_id)
+          comments_checkin += 1
+        else
+          comments_no_checkin += 1
+        end
+      end
+
+      no_comments_ids.each do |startup_id|
+        if checked_in_ids.include?(startup_id)
+          no_comments_checkin += 1
+        else
+          no_comments_no_checkin += 1
+        end
+      end
+
+      data << [week, no_comments_no_checkin, comments_no_checkin, no_comments_checkin, comments_checkin, checkins.size]
+
+      got_comments_ids = []
+      no_comments_ids = []
+      all_ids = []
+
+      checkins.each do |c|
+        all_ids << c.startup_id
+        # Save whether they did/didn't receive comments this week
+        if comments_by_checkin[c.id].present?
+          not_by_startup = []
+          # Ignore comments made by the startup who made the checkin
+          comments_by_checkin[c.id].each do |com|
+            not_by_startup << com if user_ids_by_startup[c.startup_id].blank? || !user_ids_by_startup[c.startup_id].include?(com.user_id)
+          end
+          if not_by_startup.size > above_num_comments
+            got_comments_ids << c.startup_id
+          else
+            no_comments_ids << c.startup_id
+          end
+        else
+          no_comments_ids << c.startup_id
+        end
+      end
+      
+    end
+    data
+  end
+
+  def self.relationships_data_for_startups(since = 4.weeks)
+    data = [['Startup Id', 'Week', '# Active Connections', '# Connections', 'Total Received', 'Total Accepted']]
+    rel_history = {}
+    weeks = Stats.generate_week_hash(Time.now - since)
+    startups_by_id = Hash.by_key(Startup.all, :id)
+    users_by_startup = Hash.by_key(User.where('startup_id IS NOT NULL').all, :startup_id, nil, true)
+    weeks.keys.each do |week|
+      time_window = Week.window_for_integer(week, :before_checkin)
+      checkins_by_startup = Hash.by_key(Checkin.where(:week => week).order(:startup_id).all, :startup_id)
+      checkins_by_startup.each do |startup_id, checkin|
+        startup = startups_by_id[startup_id]
+        # Find out who they were connected with this week
+        rel_history[startup.id] ||= Relationship.history_for_entity(startup, 'Startup')['Startup']
+
+        connected_with_ids = []
+        num_active_connections = 0
+        unless rel_history[startup.id].blank?
+          rel_history[startup.id].each do |s_id, history|
+            connected_with_ids << s_id if history.first < time_window.first && history.last > time_window.first
+          end
+
+          # How many of their connections checked in?
+          connected_with_ids.each{|id| num_active_connections += 1 if checkins_by_startup[id].present? }
+        end
+
+        # Find all relationships (that aren't suggested relationships)
+        relationships = startup.initiated_relationships.not_suggested.where(["created_at > ? AND created_at < ?", time_window.first, time_window.last])
+
+        total_initiated = total_received = total_accepted = total_same = 0
+
+        relationships.each do |r|
+          inv = r.inverse_relationship
+          # they initiated it
+          next unless inv.present?
+          if r.created_at < inv.created_at
+            total_initiated += 1
+          # the other startup initiated it
+          elsif r.created_at > inv.created_at
+            total_accepted += 1 if r.approved?
+            total_received += 1
+          end
+        end
+        data << [startup.id, week, num_active_connections, connected_with_ids.size, total_received, total_accepted]
+      end
+    end
+    data
+  end
+
+  def self.detailed_relationships_data_for_startups(since = 4.weeks)
+    data = [['Startup Id', 'Week', '# Active Connections', '# Connections', '# Comments Received', 'Total Initiated', 'Total Received', 'Pending', 'Accepted', 'Rejected/Removed', 'Rejected/Removed By Other']]
+    rel_history = {}
+    weeks = Stats.generate_week_hash(Time.now - since)
+    startups_by_id = Hash.by_key(Startup.all, :id)
+    users_by_startup = Hash.by_key(User.where('startup_id IS NOT NULL').all, :startup_id, nil, true)
+    weeks.keys.each do |week|
+      time_window = Week.window_for_integer(week, :before_checkin)
+      checkins_by_startup = Hash.by_key(Checkin.where(:week => week).order(:startup_id).all, :startup_id)
+      checkins_by_startup.each do |startup_id, checkin|
+        startup = startups_by_id[startup_id]
+        # Find out who they were connected with this week
+        rel_history[startup.id] ||= Relationship.history_for_entity(startup, 'Startup')['Startup']
+
+        connected_with_ids = []
+        num_active_connections = 0
+        unless rel_history[startup.id].blank?
+          rel_history[startup.id].each do |s_id, history|
+            connected_with_ids << s_id if history.first < time_window.first && history.last > time_window.first
+          end
+
+          # How many of their connections checked in?
+          connected_with_ids.each{|id| num_active_connections += 1 if checkins_by_startup[id].present? }
+        end
+
+        # Number of comments they received on this checkin not by their team
+        team_member_ids = users_by_startup[startup.id].blank? ? [] : users_by_startup[startup.id].map{|u| u.id }
+        if team_member_ids.blank? # users have been deleted
+          num_comments_received = Comment.where(:checkin_id => checkin.id).count
+        else 
+          num_comments_received = Comment.where(:checkin_id => checkin.id).where("user_id NOT IN (#{team_member_ids.join(',')})").count
+        end
+
+        # Find all relationships (that aren't suggested relationships)
+        relationships = startup.initiated_relationships.not_suggested.where(["created_at > ? AND created_at < ?", time_window.first, time_window.last])
+
+        total_initiated = total_received = num_rejected = num_rejected_by_other = num_pending = num_accepted = 0
+
+        relationships.each do |r|
+          inv = r.inverse_relationship
+          # they initiated it
+          next unless inv.present?
+          if r.created_at < inv.created_at
+            total_initiated += 1
+            num_rejected += 1 if r.rejected?
+          # the other startup initiated it
+          elsif r.created_at > inv.created_at
+            total_received += 1
+            num_rejected_by_other if r.rejected?
+          end
+          num_pending += 1 if r.pending?
+          num_accepted += 1 if r.approved?
+        end
+        data << [startup.id, week, num_active_connections, connected_with_ids.size, num_comments_received, total_initiated, total_received, num_pending, num_accepted, num_rejected, num_rejected_by_other]
+      end
+    end
+    data
+  end
 end

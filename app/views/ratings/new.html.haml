@@ -1,6 +1,14 @@
-.investors 
+.investors
+
   = render 'startups/investment_profile'
   %br/
+
+  - unless @checkins.blank?
+    = render 'startups/checkins_list', :investor_view => true
+    %br/
+    %hr/
+    %br/
+
   %center
     = semantic_form_for [@startup, @rating], :remote => true, :html => {:class => 'form-vertical' } do |f|
       = render 'ratings/fields', :f => f
@@ -12,12 +20,6 @@
   %div{:align => 'center'}
     .progress{:style => 'width: 40%', :align => 'left', :title => "#{@pct_complete}% complete"}
       .bar{:style => "width: #{@pct_complete}%"}
-  
-    / = link_to 'Connect', new_startup_rating_path(@startup, :interested => true), :class => 'btn btn-large btn-success', :remote => true
-    / &nbsp;&nbsp;
-    / = link_to 'Pass', new_startup_rating_path(@startup, :interested => false), :class => 'btn btn-large', :remote => true
-
-  = render 'startups/checkins_list'
 
   #rating_modal.hide
 
