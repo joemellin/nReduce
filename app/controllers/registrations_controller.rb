@@ -1,4 +1,6 @@
 class RegistrationsController < Devise::RegistrationsController
+  around_filter :record_user_action, :only => [:new, :create]
+
   def new
     super
   end

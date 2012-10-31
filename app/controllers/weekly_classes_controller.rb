@@ -1,4 +1,5 @@
 class WeeklyClassesController < ApplicationController
+  around_filter :record_user_action, :only => [:show]
   before_filter :login_required
   load_and_authorize_resource
 
