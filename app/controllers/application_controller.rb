@@ -73,6 +73,7 @@ class ApplicationController < ActionController::Base
     started = Time.now
     yield
     begin
+      return true if @ua == false # set @ua to false if you don't want to record action
       @ua ||= {}
       # for user tracking
       elapsed = Time.now - started

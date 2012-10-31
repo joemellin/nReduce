@@ -471,8 +471,15 @@ class Stats
     action_ids.each{|aid| tmp_data[aid] = blank_arr.dup }
 
     # In the future can group by session id / user id
-    UserAction.where(:action => action_ids).where(['created_at > ?', Time.now - since]).each do |ua|
-      tmp_data[ua.action][days.index(ua.created_at.to_date)] += 1
+    UserAction.where(:action => action_ids).where(['created_at > ?', Time.now - since]).includes(:user).each do |ua|
+      add = 0
+      # If a checkin only count if this was their first checkin
+      if ua.action == action_ids.first
+        add = 1 if Checkin.where(:startup_id => ua.user.startup_id).where(['created_at < ?', ua.created_at - 5.minutes]).count == 0 # give it a 5 min grace period
+      else
+        add = 1
+      end
+      tmp_data[ua.action][days.index(ua.created_at.to_date)] += add
     end
 
     data = {}
