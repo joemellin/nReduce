@@ -75,6 +75,7 @@ Nreduce::Application.routes.draw do
   get "/team" => "pages#team", :as => "team"
   get "/newmodel" => "pages#newmodel", :as => "newmodel"
   get "/local" => "pages#local", :as => "local"
+  get "/helpproto" => "pages#helpproto", :as => "helpproto"
 
   resources :mentors, :only => [:index] do
     collection do
