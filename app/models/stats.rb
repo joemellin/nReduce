@@ -167,12 +167,16 @@ class Stats
 
         active_connections_this_week = 0
 
+        # Checkin window is from start of after checkin for each week
         checkin_window = checkin.time_window
+        start_after_checkin = checkin_window.last - 24.hours
+        end_after_checkin = checkin_window.last
+
         unless rh.blank?
           rh.each do |startup_id, rel_window|
-            # See if they were connected before checkin window closed, and that the relationship didn't end before checkin window closed
+            # See if they were connected during the after checkin window and that the relationship didn't end before checkin window closed
             # Should it check to see if you're connected after to give comments?
-            if rel_window.first < checkin_window.last && rel_window.last > checkin_window.last
+            if rel_window.first < start_after_checkin && rel_window.last > end_after_checkin
               # Now see if this startup checked in this week
               active_connections_this_week += 1 if checkins_by_startup[startup_id].present? && checkins_by_startup[startup_id][week].present?
             end
@@ -207,7 +211,7 @@ class Stats
 
     # Group startups by date created
     weeks.keys.each do |week|
-      time_window = Week.window_for_integer(week, :before_checkin)
+      time_window = Week.window_for_integer(week, :after_checkin)
       ids = []
       startups.values.each do |s|
         ids << s.id if time_window.first <= s.created_at && time_window.last >= s.created_at
@@ -349,7 +353,7 @@ class Stats
     startups_by_id = Hash.by_key(Startup.all, :id)
     users_by_startup = Hash.by_key(User.where('startup_id IS NOT NULL').all, :startup_id, nil, true)
     weeks.keys.each do |week|
-      time_window = Week.window_for_integer(week, :before_checkin)
+      time_window = Week.window_for_integer(week, :after_checkin)
       checkins_by_startup = Hash.by_key(Checkin.where(:week => week).order(:startup_id).all, :startup_id)
       checkins_by_startup.each do |startup_id, checkin|
         startup = startups_by_id[startup_id]
@@ -397,7 +401,7 @@ class Stats
     startups_by_id = Hash.by_key(Startup.all, :id)
     users_by_startup = Hash.by_key(User.where('startup_id IS NOT NULL').all, :startup_id, nil, true)
     weeks.keys.each do |week|
-      time_window = Week.window_for_integer(week, :before_checkin)
+      time_window = Week.window_for_integer(week, :after_checkin)
       checkins_by_startup = Hash.by_key(Checkin.where(:week => week).order(:startup_id).all, :startup_id)
       checkins_by_startup.each do |startup_id, checkin|
         startup = startups_by_id[startup_id]
@@ -447,5 +451,52 @@ class Stats
       end
     end
     data
+  end
+
+    # Grouped by day
+  def self.activation_funnel_for_startups(since = 14.days)
+    days = []
+    blank_arr = []
+    current = Time.now - since
+    while current < Time.now
+      days << current.to_date
+      blank_arr << 0 #Random.rand(150)
+      current += 1.day
+    end
+
+    action_labels = ['checkins_create', 'weekly_classes_show', 'registrations_create', 'registrations_new', 'pages_home']
+    action_ids = action_labels.map{|l| UserAction.id_for(l) }
+
+    tmp_data = {}
+    action_ids.each{|aid| tmp_data[aid] = blank_arr.dup }
+
+    recorded = {}
+    # Dedupe is using session id as the unique identifier
+    UserAction.where(:action => action_ids).where(['created_at > ?', Time.now - since]).includes(:user).each do |ua|
+      add = false
+      date = ua.created_at.to_date
+      recorded[date] ||= {}
+      recorded[date][ua.session_id] ||= []
+      if recorded[date][ua.session_id].include?(ua.action)
+        add = false
+      elsif ua.action == action_ids.first # If a checkin only count if this was their first checkin
+        add = true if Checkin.where(:startup_id => ua.user.startup_id).where(['created_at < ?', ua.created_at - 5.minutes]).count == 0 # give it a 5 min grace period
+      else
+        add = true
+      end
+      if add
+        tmp_data[ua.action][days.index(date)] += 1
+        # Record that we have this action for this session, so don't record it again
+        recorded[date][ua.session_id] << ua.action
+      end
+    end
+
+    data = {}
+    tmp_data.each do |action_id, dates|
+      data[action_labels[action_ids.index(action_id)]] = dates
+    end
+
+    # Hash of action => [day, day, day]
+    {:categories => days, :series => data }
   end
 end

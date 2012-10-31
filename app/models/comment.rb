@@ -65,7 +65,7 @@ class Comment < ActiveRecord::Base
     # Can only be viewed by people with a startup
     return false if user.startup_id.blank?
     # Anyone can view the hottest post
-    return true if Comment.hottest_post_id == self.id
+    return true if Comment.hottest_post_id.to_i == self.id
     startup_ids = user.startup.second_degree_connection_ids
     # Return true if one of this person's connections created this comment
     return true if startup_ids.include?(self.startup_id)

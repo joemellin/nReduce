@@ -1,4 +1,5 @@
 class PagesController < ApplicationController
+  around_filter :record_user_action, :only => [:home]
   before_filter :login_required, :only => [:community_guidelines, :tutorial]
   
   def mentor

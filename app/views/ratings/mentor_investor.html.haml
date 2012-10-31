@@ -42,7 +42,7 @@
       - @checkins_by_week.each do |week, checkins|
         .week
           .row
-            - time_window = Week.window_for_integer(week)
+            - time_window = Week.window_for_integer(week, :after_checkin)
             .span12
               .description
                 #{time_window.first.strftime('%B %-d')} - #{time_window.last.strftime('%B %-d')}

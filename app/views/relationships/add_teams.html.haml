@@ -82,10 +82,10 @@
                     = link_to image_tag(s.logo_url(:small), :title => s.name, :alt => s.name, :class => 'rounded'), s
                   %br/
                   #{pluralize(@startups_in_common.size, 'Connection')} in Common
-                  
+
             .left.stats.center
               .stat
-                %h2 #{@startup.rating.round(2)}
+                %h2 #{@review_startup.rating.round(2)}
                 Community Rating
               .stat
                 %h2 #{@num_checkins}
