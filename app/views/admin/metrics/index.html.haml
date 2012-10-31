@@ -1,13 +1,6 @@
 %h2 Metrics Dashboard
 
 .row
-  .span6
-    = render 'investors/chart', :title => 'Checkins', :measurements => @checkin_data, :chart_id => 'checkins_by_week'
-
-  .span6
-    = render 'investors/chart', :title => 'Comments', :measurements => @comment_data, :chart_id => 'comments_by_week'
-
-.row
   = render 'ratings/bar_chart', :title => '# of Comments per Checkin', :data => @comments_per_checkin_data, :type => 'area', :chart_id => 'comments_per_checkin', :tooltip_enabled => true, :y_tick_interval => 10, :y_axis_label => '# of Checkins'
 
 
@@ -21,6 +14,11 @@
 .row
   .span12
     = render 'ratings/bar_chart', :title => 'Retention: Active Teams by Week', :data => @retention_data, :type => 'area', :chart_id => 'retention_data', :tooltip_enabled => true, :y_tick_interval => 5, :y_axis_label => '# of Startups'
+
+.row
+  .span12
+    %h3 
+    = render 'ratings/bar_chart', :title => 'Activation Funnel, by Day', :data => @activation_funnel_data, :type => 'area', :chart_id => 'activation_funnel_data', :tooltip_enabled => true, :y_tick_interval => 5, :y_axis_label => '# of Actions'
 
 .row
   .span6

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121027160325) do
+ActiveRecord::Schema.define(:version => 20121031140759) do
 
   create_table "authentications", :force => true do |t|
     t.string   "provider"
@@ -289,7 +289,7 @@ ActiveRecord::Schema.define(:version => 20121027160325) do
     t.string   "intro_video_url"
     t.integer  "onboarding_step",      :default => 1
     t.integer  "team_size",            :default => 1
-    t.boolean  "active",               :default => true
+    t.boolean  "active",               :default => false
     t.boolean  "public",               :default => true
     t.datetime "launched_at"
     t.integer  "main_contact_id"
@@ -346,6 +346,7 @@ ActiveRecord::Schema.define(:version => 20121027160325) do
     t.string   "attachable_type"
     t.datetime "created_at",      :null => false
     t.datetime "updated_at",      :null => false
+    t.string   "session_id"
   end
 
   create_table "users", :force => true do |t|
