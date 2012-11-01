@@ -481,7 +481,8 @@ class Stats
     ua_by_session_id = Hash.by_key(UserAction.where(:action => action_ids).where(['created_at > ?', Time.now - since]).order('created_at ASC').includes(:user), :session_id, nil, true)
 
     ua_by_session_id.each do |session_id, uas|
-      add = false
+      next if session_id.blank?
+
       date = uas.first.created_at.to_date
       
       # look for furthest along action (lowest index)
@@ -489,18 +490,16 @@ class Stats
       ua = nil
       checkin_action = action_ids[action_labels.index('checkins_create')]
       uas.each do |a|
-        if action_ids.index(a.action) < furthest_along
+        index = action_ids.index(a.action)
+        if index < furthest_along
           if a.action == checkin_action # If a checkin, only count action if this was their first checkin (give it a 5 min grace period)
             next if Checkin.where(:startup_id => a.user.startup_id).where(['created_at < ?', a.created_at - 5.minutes]).count > 0 
           end
-          furthest_along = a.action
+          furthest_along = index
           ua = a
         end
       end
-
       tmp_data[date][ua.action] += 1 if ua.present?
-
-      #tmp_data[ua.action][days.index(date)] += 1 if ua.present?
     end
 
     # Now figure out correct distribution in percent between all actions
@@ -508,7 +507,6 @@ class Stats
       total = action_hash.values.inject(0){|r, e| r + e }.to_f
       unless total == 0
         action_hash.each do |action_id, num|
-          puts "num: #{num} - total #{total}"
           tmp_data2[action_id][days.index(date)] = num.blank? ? 0 : ((num.to_f / total) * 100).round
         end
       end

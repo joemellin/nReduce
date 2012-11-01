@@ -414,6 +414,7 @@ class Startup < ActiveRecord::Base
   # Forces all setup complete actions to be set and saved for this startup and team members
   def force_setup_complete!
     self.setup = [:profile, :invite_team_members, :intro_video]
+    self.active = true
     self.save
     c = 0
     self.team_members.each do |u|
