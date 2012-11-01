@@ -37,6 +37,35 @@ class Checkin < ActiveRecord::Base
 
   @queue = :checkin_message
 
+    # Will queue up emails to be sent to all startups who haven't checked in yet
+  def self.email_startups_not_completed_checkin_yet
+    ids = Checkin.where(:week => Week.previous(Checkin.current_week)).map{|c| c.startup_id }
+    completed_this_week = Checkin.where(:week => Checkin.current_week).completed.map{|c| c.startup_id }
+    not_completed = (ids - completed_this_week).shuffle
+    if not_completed.size > 0
+      # split them half/half so we can a/b test and send only half an email
+      half = not_completed.size / 2
+      c = 0
+      to_email_ids = []
+      not_completed.each do |id|
+        to_email_ids << id if c < half
+        c += 1
+      end
+      not_emailed = not_completed - to_email_ids
+      puts to_email_ids
+      unless to_email_ids.blank?
+        User.where(:startup_id => to_email_ids).each do |u|
+          Resque.enqueue(Checkin, :after_checkin_now, u.id) if u.account_setup? && u.email_for?('checkin_now')
+        end
+      end
+      msg = "Emailed all users on these startups: #{to_email_ids.join(', ')}. Didn't email these startups: #{not_emailed.join(', ')}."
+    else
+      msg = "All startups have who were active last week completed checkin this week."
+    end
+    File.open(Rails.root + 'checkin_emailed.txt', 'w') {|f| f.write(msg) }
+    return msg
+  end
+
     # Returns hash of {:startup_id => current_checkin}
   def self.current_checkin_for_startups(startups = [])
     return {} if startups.blank?
@@ -154,6 +183,11 @@ class Checkin < ActiveRecord::Base
     Week.integer_for_time(Checkin.week_start_for_time(time))
   end
 
+  # Current week for the after checkin
+  def self.current_week
+    Week.integer_for_time(Time.now, :after_checkin)
+  end
+
   # Pass in a week integer (ex: 20126) and this will pass back the week before, 20125
   def self.previous_week(week)
     Week.previous(week)
@@ -184,6 +218,8 @@ class Checkin < ActiveRecord::Base
       UserMailer.before_checkin_reminder(User.find(user_id)).deliver
     elsif checkin_type.to_sym == :after
       UserMailer.after_checkin_reminder(User.find(user_id)).deliver
+    elsif checkin_type.to_sym == :after_checkin_now
+      UserMailer.checkin_now(User.find(user_id)).deliver
     end
   end
 
