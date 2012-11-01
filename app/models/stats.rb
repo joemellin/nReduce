@@ -286,6 +286,55 @@ class Stats
     weeks
   end
 
+    # Calculate week by week retention
+    # From startups that checked in last week, what % checked in this week
+    # If they did check in, segment by if they did after, before or before & after checkin)
+  def self.weekly_retention_from_checkins
+    checkins_by_week = Hash.by_key(Checkin.all, :week, nil, true)
+    previous_week_ids = []
+    weeks = []
+    count = [:no_checkin, :before_checkin, :after_checkin, :before_after_checkin]
+    data = {}
+    count.each{|c| data[c] = [] }
+    checkins_by_week.each do |week, checkins|
+      weeks << week
+      this_count = {}
+      count.each{|c| this_count[c] = 0 }
+      checkins_by_startup = Hash.by_key(checkins, :startup_id)
+      
+      previous_week_ids.each do |id|
+        c = checkins_by_startup[id]
+        if c.present?
+          if c.before_completed? && !c.after_completed?
+            this_count[:before_checkin] += 1
+          elsif c.before_completed? && c.after_completed?
+            this_count[:before_after_checkin] += 1
+          elsif !c.before_completed? && c.after_completed?
+            this_count[:after_checkin] += 1
+          end
+        else
+          this_count[:no_checkin] += 1
+        end
+      end
+      # Total up and figure out %'s
+      total = this_count.values.inject(0){|r, e| r + e }.to_f
+
+      unless total == 0
+        this_count.each do |label, num|
+          data[label] << ((num.to_f / total) * 100).round(1)
+        end
+      end
+
+      previous_week_ids = []
+      checkins.each do |c|
+        # Save whether they checked in this week
+        previous_week_ids << c.startup_id
+      end
+      
+    end
+    {:categories => weeks, :series => data}
+  end
+
   def self.checkin_comments_correlation(above_num_comments = 0)
     # Calculate week by week
     # After receiving comments one week, how many startups checkin next week?
