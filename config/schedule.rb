@@ -28,6 +28,10 @@ every :monday, :at => '4pm' do
   runner "Checkin.send_after_checkin_email"
 end
 
+every :tuesday, :at => '3:25pm' do
+  runner "Checkin.email_startups_not_completed_checkin_yet"
+end
+
 # Identify active/inactive teams after the 'after' checkin
 every :tuesday, :at => '4:30pm' do 
   runner "Startup.identify_active_teams"
