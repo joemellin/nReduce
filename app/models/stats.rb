@@ -297,7 +297,6 @@ class Stats
     data = {}
     count.each{|c| data[c] = [] }
     checkins_by_week.each do |week, checkins|
-      weeks << week
       this_count = {}
       count.each{|c| this_count[c] = 0 }
       checkins_by_startup = Hash.by_key(checkins, :startup_id)
@@ -323,6 +322,7 @@ class Stats
         this_count.each do |label, num|
           data[label] << ((num.to_f / total) * 100).round(1)
         end
+        weeks << week
       end
 
       previous_week_ids = []
