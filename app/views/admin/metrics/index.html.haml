@@ -14,7 +14,7 @@
 
 .row
   .span12
-    = render 'ratings/bar_chart', :title => 'Retention: Active Teams by Week', :data => @retention_by_checkins_data, :type => 'area', :chart_id => 'retention_checkins_data', :tooltip_enabled => true, :y_tick_interval => 5, :y_axis_label => '% of Checkins'
+    = render 'ratings/bar_chart', :title => 'Retention: Checkins By Teams Active Week Before', :data => @retention_by_checkins_data, :type => 'area', :chart_id => 'retention_checkins_data', :tooltip_enabled => true, :y_tick_interval => 5, :y_axis_label => '% of Checkins'
 
 .row
   .span12
