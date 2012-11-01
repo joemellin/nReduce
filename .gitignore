@@ -29,3 +29,5 @@ solr/data/*
 solr/pids/*
 
 vendor/bundle*
+
+checkin_emailed.txt
