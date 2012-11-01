@@ -11,14 +11,20 @@
 
   .span6
     = render 'investors/chart', :title => 'Startups Activated per Week', :measurements => @activation_data, :chart_id => 'activations_by_week'
+
+.row
+  .span12
+    = render 'ratings/bar_chart', :title => 'Retention: Checkins By Teams Active Week Before', :data => @retention_by_checkins_data, :type => 'area', :chart_id => 'retention_checkins_data', :tooltip_enabled => true, :y_tick_interval => 5, :y_axis_label => '% of Checkins'
+
 .row
   .span12
     = render 'ratings/bar_chart', :title => 'Retention: Active Teams by Week', :data => @retention_data, :type => 'area', :chart_id => 'retention_data', :tooltip_enabled => true, :y_tick_interval => 5, :y_axis_label => '# of Startups'
 
+
 .row
   .span12
     %h3 
-    = render 'ratings/bar_chart', :title => 'Activation Funnel, by Day', :data => @activation_funnel_data, :type => 'area', :chart_id => 'activation_funnel_data', :tooltip_enabled => true, :y_tick_interval => 5, :y_axis_label => '# of Actions'
+    = render 'ratings/bar_chart', :title => 'Activation Funnel, by Day', :data => @activation_funnel_data, :type => 'area', :chart_id => 'activation_funnel_data', :tooltip_enabled => true, :y_tick_interval => 5, :y_axis_label => '% of Users'
 
 .row
   .span6

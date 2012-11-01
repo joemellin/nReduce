@@ -286,6 +286,55 @@ class Stats
     weeks
   end
 
+    # Calculate week by week retention
+    # From startups that checked in last week, what % checked in this week
+    # If they did check in, segment by if they did after, before or before & after checkin)
+  def self.weekly_retention_from_checkins
+    checkins_by_week = Hash.by_key(Checkin.all, :week, nil, true)
+    previous_week_ids = []
+    weeks = []
+    count = [:no_checkin, :before_checkin, :after_checkin, :before_after_checkin]
+    data = {}
+    count.each{|c| data[c] = [] }
+    checkins_by_week.each do |week, checkins|
+      this_count = {}
+      count.each{|c| this_count[c] = 0 }
+      checkins_by_startup = Hash.by_key(checkins, :startup_id)
+      
+      previous_week_ids.each do |id|
+        c = checkins_by_startup[id]
+        if c.present?
+          if c.before_completed? && !c.after_completed?
+            this_count[:before_checkin] += 1
+          elsif c.before_completed? && c.after_completed?
+            this_count[:before_after_checkin] += 1
+          elsif !c.before_completed? && c.after_completed?
+            this_count[:after_checkin] += 1
+          end
+        else
+          this_count[:no_checkin] += 1
+        end
+      end
+      # Total up and figure out %'s
+      total = this_count.values.inject(0){|r, e| r + e }.to_f
+
+      unless total == 0
+        this_count.each do |label, num|
+          data[label] << ((num.to_f / total) * 100).round(1)
+        end
+        weeks << week
+      end
+
+      previous_week_ids = []
+      checkins.each do |c|
+        # Save whether they checked in this week
+        previous_week_ids << c.startup_id
+      end
+      
+    end
+    {:categories => weeks, :series => data}
+  end
+
   def self.checkin_comments_correlation(above_num_comments = 0)
     # Calculate week by week
     # After receiving comments one week, how many startups checkin next week?
@@ -453,7 +502,7 @@ class Stats
     data
   end
 
-    # Grouped by day
+    # Grouped by session, and only counts first checkins
   def self.activation_funnel_for_startups(since = 14.days)
     days = []
     blank_arr = []
@@ -464,36 +513,59 @@ class Stats
       current += 1.day
     end
 
-    action_labels = ['checkins_create', 'weekly_classes_show', 'registrations_create', 'registrations_new', 'pages_home']
+    action_labels = ['checkins_create', 'weekly_classes_show', 'registrations_create', 'registrations_new']
     action_ids = action_labels.map{|l| UserAction.id_for(l) }
 
     tmp_data = {}
-    action_ids.each{|aid| tmp_data[aid] = blank_arr.dup }
-
-    recorded = {}
-    # Dedupe is using session id as the unique identifier
-    UserAction.where(:action => action_ids).where(['created_at > ?', Time.now - since]).includes(:user).each do |ua|
-      add = false
-      date = ua.created_at.to_date
-      recorded[date] ||= {}
-      recorded[date][ua.session_id] ||= []
-      if recorded[date][ua.session_id].include?(ua.action)
-        add = false
-      elsif ua.action == action_ids.first # If a checkin only count if this was their first checkin
-        add = true if Checkin.where(:startup_id => ua.user.startup_id).where(['created_at < ?', ua.created_at - 5.minutes]).count == 0 # give it a 5 min grace period
-      else
-        add = true
+    tmp_data2 = {}
+    days.each do |day|
+      tmp_data[day] = {}
+      action_ids.each do |aid|
+        tmp_data[day][aid] = 0
       end
-      if add
-        tmp_data[ua.action][days.index(date)] += 1
-        # Record that we have this action for this session, so don't record it again
-        recorded[date][ua.session_id] << ua.action
+    end
+    action_ids.each{|aid| tmp_data2[aid] = blank_arr.dup }
+
+    # Dedupe is using session id as the unique identifier
+    ua_by_session_id = Hash.by_key(UserAction.where(:action => action_ids).where(['created_at > ?', Time.now - since]).order('created_at ASC').includes(:user), :session_id, nil, true)
+
+    ua_by_session_id.each do |session_id, uas|
+      next if session_id.blank?
+
+      date = uas.first.created_at.to_date
+      
+      # look for furthest along action (lowest index)
+      furthest_along = 99
+      ua = nil
+      checkin_action = action_ids[action_labels.index('checkins_create')]
+      uas.each do |a|
+        index = action_ids.index(a.action)
+        if index < furthest_along
+          if a.action == checkin_action # If a checkin, only count action if this was their first checkin (give it a 5 min grace period)
+            next if Checkin.where(:startup_id => a.user.startup_id).where(['created_at < ?', a.created_at - 5.minutes]).count > 0 
+          end
+          furthest_along = index
+          ua = a
+        end
+      end
+      tmp_data[date][ua.action] += 1 if ua.present?
+    end
+
+    # Now figure out correct distribution in percent between all actions
+    tmp_data.each do |date, action_hash|
+      total = action_hash.values.inject(0){|r, e| r + e }.to_f
+      unless total == 0
+        action_hash.each do |action_id, num|
+          tmp_data2[action_id][days.index(date)] = num.blank? ? 0 : ((num.to_f / total) * 100).round
+        end
       end
     end
 
+
+    # Now assemble correct data structure and convert absolute values to percent
     data = {}
-    tmp_data.each do |action_id, dates|
-      data[action_labels[action_ids.index(action_id)]] = dates
+    tmp_data2.each do |action_id, action_arr|
+      data[action_labels[action_ids.index(action_id)]] = action_arr
     end
 
     # Hash of action => [day, day, day]
