@@ -74,6 +74,15 @@ class Cache
   end
 
   #
+  # Counters / increment
+  #
+
+  def self.incr(key)
+    key = Cache.key_for(key)
+    $redis.incr(key)
+  end
+
+  #
   # Utility methods
   #
 
