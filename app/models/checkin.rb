@@ -57,7 +57,12 @@ class Checkin < ActiveRecord::Base
 
   def self.show_checkin_experiment_for?(startup_id)
     ids = Cache.get('checkin_experiment')
-    ids.present? && ids.is_a?(Array) && ids.include?(startup_id)
+    if ids.present? && ids.is_a?(Array) && ids.include?(startup_id)
+      # See if the index is divisible by 2 for a/b test
+      return ids.index(startup_id) % 2 == 0
+    else
+      return false
+    end
   end
 
     # Will queue up emails to be sent to all startups who haven't checked in yet
