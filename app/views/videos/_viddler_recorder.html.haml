@@ -1,10 +1,11 @@
-%br/
-%h3 How to Create & Upload a Web Cam Video
-%br/
-%p 1) Click the allow access button below to give access too your web cam.
-%p 2) Press the red "Record" button to start/stop recording
-%p 3) When you have finished recording click "Save" then move to Step 2
-%br/    
+.instructions
+  %br/
+  %h3 How to Create & Upload a Web Cam Video
+  %br/
+  %p 1) Click the allow access button below to give access too your web cam.
+  %p 2) Press the red "Record" button to start/stop recording
+  %p 3) When you have finished recording click "Save" then move to Step 2
+  %br/    
 = ViddlerVideo.embedded_recorder_html(30).html_safe
 
 %h3.message
@@ -22,7 +23,7 @@
       $('##{video_id} .video_external_id').val(video_id);
       $('##{video_id} .video_type').val('ViddlerVideo');
       $('##{video_id} .completed').show();
-      $('##{video_id} .current_video').hide();
+      $('##{video_id} .current_video, ##{video_id} .instructions').hide();
       $('##{video_id} .video_id').remove();
     }
   }

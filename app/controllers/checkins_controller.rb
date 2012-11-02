@@ -22,10 +22,6 @@ class CheckinsController < ApplicationController
   def new
     @checkin.startup = current_user.startup
     set_disabled_states_and_add_measurement(@checkin)
-    if Rails.env.development?
-      @before_disabled = true
-      @after_disabled = false
-    end
     render :action => :edit
   end
 
@@ -121,6 +117,14 @@ class CheckinsController < ApplicationController
     @checkin.after_video = Video.new if @checkin.after_video.blank?
     # disable olark
     @recording_video = true
+
+    if Rails.env.development?
+      @before_disabled = true
+      @after_disabled = false
+      @show_before_experiment = false
+    else
+      @show_before_experiment = Checkin.show_checkin_experiment_for?(@startup.id) if @startup.present?
+    end
   end
 
   def load_obfuscated_checkin

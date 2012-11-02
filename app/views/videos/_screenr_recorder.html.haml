@@ -1,6 +1,6 @@
 - title ||= 'Checkin Video'
 
-%h3.message
+%h3.message.instructions
   %i Loading screen recorder...
   %br/
   %h3 How to Create & Upload a ScreenCast
@@ -49,7 +49,7 @@
       $('##{video_id} .video_external_id').val(screencast.id);
       $('##{video_id} .video_external_url').val(screencast.mp4);
       $('##{video_id} .completed').show();
-      $('##{video_id} .current_video').hide();
+      $('##{video_id} .current_video, ##{video_id} .instructions').hide();
       $('##{video_id} .video_id').remove();
     }
 
