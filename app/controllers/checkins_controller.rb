@@ -121,7 +121,7 @@ class CheckinsController < ApplicationController
     if Rails.env.development?
       @before_disabled = true
       @after_disabled = false
-      @show_before_experiment = false
+      @show_before_experiment = true
     else
       @show_before_experiment = Checkin.show_checkin_experiment_for?(@startup.id) if @startup.present?
     end
