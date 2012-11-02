@@ -29,11 +29,7 @@
         = f.semantic_errors :before_video
       = f.fields_for :before_video do |av|
         = render 'videos/form', :video_id => av.object.new_record? ? 'new_before_video' : "video_#{av.object.id}", :f => av
-        
-      - unless @hide_time
-        .control-group
-          %h3.center{:style => 'padding-top: 10px'}
-            %small You have #{verbose_distance_until_time_from_now(Checkin.next_before_checkin)} to make any changes
+
     .span5{:style => 'padding-left: 70px'}
       .control-group{error_css(@checkin, :start_focus)}
         %p
@@ -50,7 +46,7 @@
 - else
   = hidden_field_tag 'checkin_type', 'after', :id => 'checkin_type'
   
-  .row{:style => 'padding-top: 20px'}
+  .row{:style => 'padding-top: 10px'}
     .span1
       %p 
     .span5
@@ -58,21 +54,16 @@
         = f.semantic_errors :after_video
       = f.fields_for :after_video do |av|
         = render 'videos/form', :video_id => av.object.new_record? ? 'new_after_video' : "video_#{av.object.id}", :f => av
-        - unless @hide_time
-          %h3.center{:style => 'padding-top: 10px'}
-            %small You have #{verbose_distance_until_time_from_now(Checkin.next_after_checkin)} to make any changes
-    .span5{:style => 'padding-left: 20px'}
-      %p{:style => 'padding-top: 10px;'}
-        Last Week's Goal:
-      %h1 #{@checkin.start_focus.blank? ? '(none)' : h(@checkin.start_focus)}
-      %br/
-      %h3 Did you accomplish your goal?
-      .control-group{error_css(@checkin, :accomplished), :style => 'margin-bottom: 30px'}
+    .span5{:style => 'padding-left: 20px; padding-top: 10px'}
+      %h3 Did you accomplish last week's goal?
+      %h2 #{@checkin.start_focus.blank? ? '(none)' : h(@checkin.start_focus)}
+      %p{:style => 'padding-top: 0px;'}
+      .control-group{error_css(@checkin, :accomplished), :style => 'margin-bottom: 10px'}
         = f.hidden_field :accomplished
         .controls
           .btn-group{'data-toggle' => 'buttons-radio'}
-            %button.btn.btn-large.accomplished{:type => 'button', 'data-value' => 'false', :class => (!@checkin.accomplished.nil? && @checkin.accomplished? == false) ? 'active' : ''} No
-            %button.btn.btn-large.accomplished{:type => 'button', 'data-value' => 'true', :class => (!@checkin.accomplished.nil? && @checkin.accomplished? == true) ? 'active' : ''} Yes
+            %button.btn.btn-large.accomplished{:type => 'button', 'data-value' => 'false', :class => (!@checkin.accomplished.nil? && @checkin.accomplished? == false) ? 'active' : ''} Nope :(
+            %button.btn.btn-large.accomplished{:type => 'button', 'data-value' => 'true', :class => (!@checkin.accomplished.nil? && @checkin.accomplished? == true) ? 'active' : ''} Heck Yeah!
           = f.semantic_errors :accomplished
 
       .control-group.pre_launch{:class => @checkin.startup.launched? ? 'hide' : ''}
@@ -108,7 +99,7 @@
                   %i &nbsp;(Past Week)
                 = m.semantic_errors :value
 
-      .control-group{error_css(@checkin, :end_comments), :style => 'margin-top: 20px'}
+      .control-group{error_css(@checkin, :end_comments), :style => 'margin-top: 10px'}
         %h3 How can your fellow nReducers help you?
         .controls
           = f.text_area :end_comments, :size => '200x1', :class => "span4 checkin_end_comments", :placeholder => "Give me feedback on..."
