@@ -10,10 +10,14 @@ class Checkin < ActiveRecord::Base
   has_many :notifications, :as => :attachable
   has_many :user_actions, :as => :attachable
 
+  attr_accessor :next_week_focus
+  attr_accessor :next_week_youtube_url
+
   attr_accessible :start_focus, :start_why, :start_video_url, :end_video_url, :end_comments, 
     :startup_id, :start_comments, :startup, :measurement_attributes, 
-    :before_video_attributes, :after_video_attributes, :accomplished
-
+    :before_video_attributes, :after_video_attributes, :accomplished,
+    :next_week_focus, :next_week_youtube_url
+    
   accepts_nested_attributes_for :measurement, :reject_if => proc {|attributes| attributes.all? {|k,v| v.blank?} }, :allow_destroy => true
   accepts_nested_attributes_for :before_video, :reject_if => proc {|attributes| attributes.all? {|k,v| v.blank?} }, :allow_destroy => true
   accepts_nested_attributes_for :after_video, :reject_if => proc {|attributes| attributes.all? {|k,v| v.blank?} }, :allow_destroy => true
@@ -21,6 +25,7 @@ class Checkin < ActiveRecord::Base
   after_validation :check_submitted_completed_times
   before_save :notify_user
   before_create :assign_week
+  before_save :create_next_week_checkin
   after_save :reset_startup_checkin_cache
   after_destroy :reset_startup_checkin_cache
 
@@ -29,6 +34,7 @@ class Checkin < ActiveRecord::Base
   validates_presence_of :before_video, :message => "can't be blank", :if => lambda { Checkin.in_before_time_window? }
   validates_presence_of :after_video, :message => "can't be blank", :if =>  lambda { Checkin.in_after_time_window? }
   validates_inclusion_of :accomplished, :in => [true, false], :message => "must be selected", :if => lambda { Checkin.in_after_time_window? }
+  validate :next_week_checkin_is_valid
   #validate :check_video_urls_are_valid
   validate :measurement_is_present_if_launched
 
@@ -36,6 +42,23 @@ class Checkin < ActiveRecord::Base
   scope :completed, where('completed_at IS NOT NULL')
 
   @queue = :checkin_message
+
+  def self.add_startups_to_checkin_experiment(startups = [])
+    current_ids = Cache.get('checkin_experiment')
+    current_ids ||= []
+    Cache.set('checkin_experiment', (current_ids + startups.map{|s| s.id }).uniq)
+  end
+
+  def self.remove_startups_from_checkin_experiment(startups = [])
+    current_ids = Cache.get('checkin_experiment')
+    current_ids ||= []
+    Cache.set('checkin_experiment', (current_ids - startups.map{|s| s.id }).uniq)
+  end
+
+  def self.show_checkin_experiment_for?(startup_id)
+    ids = Cache.get('checkin_experiment')
+    ids.present? && ids.is_a?(Array) && ids.include?(startup_id)
+  end
 
     # Will queue up emails to be sent to all startups who haven't checked in yet
   def self.email_startups_not_completed_checkin_yet
@@ -340,7 +363,7 @@ class Checkin < ActiveRecord::Base
     # Assigns week for this checkin, ex: 20125 is week 5 of 2012
     # uses created at date, or if not yet saved, current time
   def assign_week
-    self.week = Checkin.week_integer_for_time(self.created_at || Time.now)
+    self.week ||= Checkin.week_integer_for_time(self.created_at || Time.now)
     true
   end
 
@@ -358,6 +381,27 @@ class Checkin < ActiveRecord::Base
   end
 
   protected
+
+  def create_next_week_checkin
+    return true if self.next_week_focus.blank? && self.next_week_youtube_url.blank?
+    self.assign_week if self.week.blank?
+    c = Checkin.new
+    c.startup_id = self.startup_id
+    c.user_id = self.user_id
+    c.week = Checkin.week_integer_for_time(Checkin.next_before_checkin)
+    c.start_focus = self.next_week_focus
+    c.before_video = Youtube.new(:youtube_url => self.next_week_youtube_url) if self.next_week_youtube_url.present?
+    c.save(:validate => false) # ignore errors for now
+    true
+  end
+
+  def next_week_checkin_is_valid
+    return true if self.next_week_focus.blank? && self.next_week_youtube_url.blank?
+    if self.next_week_youtube_url.present? && self.next_week_focus.blank?
+      self.errors.add(:next_week_focus, 'must be added if you add a before video URL')
+    end
+    true
+  end
 
   def reset_startup_checkin_cache
     self.startup.reset_current_checkin_cache
