@@ -1,11 +1,9 @@
 = render :partial => 'header'
-%h1.h1 Welcome to nReduce
+%h1.h1 It's Go Time!
 %br/
-%h4.h4 #{@invite.startup.name} has listed you as an investor.
+%h3.h3 Drop what you are doing and post your after video now!
 %br
-%p They would like you to join nReduce to keep you up to date on their progress and get feedback from you.
+%h1.h1 #{link_to('Post Video Now', new_checkin_url)}
 %br/
 %br/
-%br/
-%h3= link_to "Get Started", accept_invite_url(:id => @invite.code)
-= render :partial => 'footer'
+%p Away from your computer? Record a video on your phone, upload it to Youtube, and then paste in the URL :)
