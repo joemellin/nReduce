@@ -2,10 +2,8 @@ class UserMailer < ActionMailer::Base
   default from: Settings.default_from_email
   default reply_to: Settings.default_reply_to_email
 
-  def checkin_now(notification)
-    @startup = notification.attachable
-    @to = notification.user
-    mail(:to => @to.email, :subject => "30 Minutes to Checkin!")
+  def checkin_now(user)
+    mail(:to => user.email, :subject => "Stop. Drop. Checkin!")
   end
 
   def new_team_joined(notification)
