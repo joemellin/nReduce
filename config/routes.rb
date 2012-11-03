@@ -116,6 +116,7 @@ Nreduce::Application.routes.draw do
   resources :relationships, :only => [:create, :index] do
     collection do
       get 'add_teams'
+      post 'skip_team'
     end
     member do
       post 'approve'

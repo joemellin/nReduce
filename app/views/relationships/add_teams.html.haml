@@ -60,12 +60,14 @@
                       .bar{:style => "width: #{@pct_complete}%"}
                     %p Having #{Startup::NUM_ACTIVE_REQUIRED}+ active teams gives more opportunity for collaboration
         .span2{:align => 'right'}
-          - if @relationship.suggested?
-            = link_to 'Invite & Next <i class="icon-arrow-right icon-white"></i>'.html_safe, '#', :class => 'btn btn-large btn-success', :onclick => "$('.relationship_request.modal').modal(); return false;"
+          - if @relationship.new_record?
+            = link_to 'Invite & Next <i class="icon-arrow-right icon-white"></i>'.html_safe, '#', :class => 'btn btn-large btn-success', :onclick => "$('.relationship_request.modal').modal(); return false;" 
+            %br/
+            = link_to 'Next <i class="icon-arrow-right"></i>'.html_safe, skip_team_relationships_path(:startup_id => @review_startup.id), :method => :post, :class => 'btn btn-large'
           - else
             = link_to 'Connect & Next <i class="icon-arrow-right icon-white"></i>'.html_safe, approve_relationship_path(@relationship), :method => :post, :class => 'btn btn-large btn-success'
-          %br/
-          = link_to 'Next <i class="icon-arrow-right"></i>'.html_safe, reject_relationship_path(@relationship), :method => :post, :class => 'btn btn-large'
+            %br/
+            = link_to 'Next <i class="icon-arrow-right"></i>'.html_safe, reject_relationship_path(@relationship), :method => :post, :class => 'btn btn-large'
       %hr/
       .startup
         .row
@@ -105,7 +107,6 @@
                   = render 'users/profile_icons', :user => tm, :source => 'add_teams'
             .clear
             
-          
 
       - if @review_startup.website_url.present? && @startup.website_url_to_uri.present?
         .website.center
