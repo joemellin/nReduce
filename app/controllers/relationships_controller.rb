@@ -2,7 +2,7 @@ class RelationshipsController < ApplicationController
   around_filter :record_user_action
   before_filter :login_required
   before_filter :load_requested_or_users_startup, :only => [:index, :add_teams]
-  load_and_authorize_resource :except => [:index, :add_teams]
+  load_and_authorize_resource :except => [:index, :add_teams, :skip_team]
 
   def index
     no_startups = false
@@ -71,21 +71,24 @@ class RelationshipsController < ApplicationController
       @relationship = @entity.pending_relationships.last
 
       @review_startup = @relationship.entity unless @relationship.blank?
-      
-      # Otherwise load suggested startup
-      @relationship ||= @startup.suggested_relationships('Startup').first
 
-      # If they have none left, generate more
-      @relationship = @startup.generate_suggested_connections(5).first if @relationship.blank?
+      # Otherwise load suggested startup
+      session[:suggested_startup_ids] = @startup.generate_suggested_connections.map{|s| s.id } if @relationship.blank? && session[:suggested_startup_ids].blank?
+
+      next_id = session[:suggested_startup_ids].first if session[:suggested_startup_ids].present?
+
+      logger.info "next: #{next_id} suggested: #{session[:suggested_startup_ids].join(', ')} size: #{session[:suggested_startup_ids].size}"
 
       # If there are none left to suggest
-      if @relationship.blank?
+      if next_id.blank?
         flash[:notice] = "Those are all the teams you can connect to - check back next week for more teams."
         redirect_to '/'
         return
       end
 
-      @review_startup ||= @relationship.connected_with
+      @review_startup = Startup.find(next_id)
+
+      @relationship = Relationship.start_between(@startup, @review_startup, :startup_startup, false, true)
 
       @startups_in_common = Relationship.startups_in_common(@review_startup, @startup)
       @num_checkins = @review_startup.checkins.count
@@ -114,6 +117,12 @@ class RelationshipsController < ApplicationController
       @number_of_consecutive_checkins = @startup.number_of_consecutive_checkins
       session[:checkin_completed] = false
     end
+  end
+
+  def skip_team
+    session[:suggested_startup_ids].delete(params[:startup_id].to_i) if params[:startup_id].present?
+    flash[:notice] = "You have seen all of your suggested teams - you can continue to check out any that you didn't connect with." if session[:suggested_startup_ids].blank?
+    redirect_to :action => :add_teams
   end
 
   def create

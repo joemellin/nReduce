@@ -50,7 +50,7 @@ class Relationship < ActiveRecord::Base
    # Create a suggested connectino for an entity - it is created silently (no notifications)
   def self.suggest_connection(entity, connected_with, context = :startup_startup, message = nil)
     return nil if Relationship.between(entity, connected_with).present?
-    Relationship.create(
+    r = Relationship.create(
       :entity => entity, 
       :connected_with => connected_with, 
       :status => Relationship::SUGGESTED, 
@@ -63,8 +63,8 @@ class Relationship < ActiveRecord::Base
 
   # Start a relationship between two entities - same as calling create
   # @silent when set to true doesn't notify user of connection
-  def self.start_between(entity, connected_with, context = :startup_startup, silent = false)
-    Relationship.create(
+  def self.start_between(entity, connected_with, context = :startup_startup, silent = false, dont_save = false)
+    r = Relationship.new(
       :entity => entity, 
       :connected_with => connected_with, 
       :status => Relationship::PENDING, 
@@ -72,6 +72,8 @@ class Relationship < ActiveRecord::Base
       :context => context, 
       :initiated => true
     )
+    r.save unless dont_save
+    r
   end
 
     # Finds relationship between two entities

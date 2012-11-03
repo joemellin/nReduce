@@ -14,7 +14,7 @@
       = f.hidden_field :connected_with_id
       = f.hidden_field :connected_with_type
       - unless relationship.context.blank?
-        = hidden_field_tag 'relationship[context]', relationship.context.to_s
+        = hidden_field_tag 'relationship[context]', relationship.context.first.to_s
       %p Please write a quick message and say hello, and why you are excited about connecting with them.
       = f.text_area :message, :size => '120x5', :class => 'span4'
       %br/

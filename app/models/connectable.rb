@@ -122,16 +122,16 @@ module Connectable
   # Goes through active startups and suggests possible connections
   # Returns an array of suggested relationships
 
-  def generate_suggested_connections(limit = 5)
+  def generate_suggested_connections(limit = 1000)
     # See if they are over limit of suggested connections
     relationships = self.suggested_relationships('Startup')
     return false if !relationships.blank? and (relationships.size >= limit)
 
     # Find all startups this person is connected to, has been suggested, and has rejected
     if self.is_a?(Startup)
-      ignore_startup_ids = (self.received_relationships.where(:entity_type => 'Startup') + self.initiated_relationships.where(:connected_with_type => 'Startup')).map{|r| r.connected_with_id }
+      ignore_startup_ids = (self.received_relationships.not_suggested.where(:entity_type => 'Startup') + self.initiated_relationships.not_suggested.where(:connected_with_type => 'Startup')).map{|r| r.connected_with_id }
     elsif self.is_a?(User)
-      ignore_startup_ids = (self.relationships.where(:entity_type => 'Startup') + self.connected_with_relationships.where(:connected_with_type => 'Startup')).map{|r| r.connected_with_id }
+      ignore_startup_ids = (self.relationships.not_suggested.where(:entity_type => 'Startup') + self.connected_with_relationships.not_suggested.where(:connected_with_type => 'Startup')).map{|r| r.connected_with_id }
     end
     ignore_startup_ids << self.id if self.is_a?(Startup) # make sure this startup doesn't appear in suggested startups
     ignore_startup_ids << Startup.nreduce_id # hide nreduce from suggested startups
@@ -148,7 +148,7 @@ module Connectable
         ranking = {}
         startups.each do |s|
           if num_pending[s.id].blank?
-            ranking[s.id] = 0 
+            ranking[s.id] = 0
           else
             # ranking is: (num active required - num active connections) / num pending connections
             ranking[s.id] = (Startup::NUM_ACTIVE_REQUIRED - s.num_active_startups) / num_pending[s.id]
@@ -169,10 +169,10 @@ module Connectable
       # Don't add if they're already connected or we're going to suggest them
       next if ignore_startup_ids.include?(s.id) || suggested.include?(s)
       # Suggest connection
-      relationships << Relationship.suggest_connection(self, s, :startup_startup)
+      #relationships << Relationship.suggest_connection(self, s, :startup_startup)
       suggested << s
     end
 
-    relationships
+    suggested
   end
 end
