@@ -77,8 +77,6 @@ class RelationshipsController < ApplicationController
 
       next_id = session[:suggested_startup_ids].first if session[:suggested_startup_ids].present?
 
-      logger.info "next: #{next_id} suggested: #{session[:suggested_startup_ids].join(', ')} size: #{session[:suggested_startup_ids].size}"
-
       # If there are none left to suggest
       if next_id.blank?
         flash[:notice] = "Those are all the teams you can connect to - check back next week for more teams."
