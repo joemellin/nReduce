@@ -407,14 +407,10 @@ class User < ActiveRecord::Base
   end
 
   def setup_complete!(dont_suggest_startups = false, skip_all_steps = false)
+    # No longer suggesting startups because that isn't db-based
     self.setup << :welcome
     self.setup += self.account_setup_steps
-    if self.save
-      self.startup.generate_suggested_connections(10) if !dont_suggest_startups && !self.startup.blank?
-      true
-    else
-      false
-    end
+    self.save
   end
 
   # Returns symbol for current onboarding type if user hasn't set up account yet

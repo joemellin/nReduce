@@ -65,9 +65,6 @@ class CheckinsController < ApplicationController
     if checkin.completed?
       unless was_completed
         session[:checkin_completed] = true
-        # Generate suggested startups if this isn't just an update
-        checkin.startup.delete_suggested_startups
-        checkin.startup.generate_suggested_connections
       end
       redirect_to add_teams_relationships_path
     else
