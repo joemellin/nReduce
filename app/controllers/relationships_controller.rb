@@ -62,8 +62,15 @@ class RelationshipsController < ApplicationController
 
   def add_teams
     authorize! :add_teams, Relationship
-    if current_user.mentor?
+    if current_user.mentor? || current_user.investor?
       @entity = current_user
+      @relationship = @entity.pending_relationships.last
+      if @relationship.blank?
+        flash[:notice] = "Those are all the teams that have requested to connect with you."
+        redirect_to '/'
+        return
+      end
+      @review_startup = @relationship.entity
     elsif @startup
       @entity = @startup
 
