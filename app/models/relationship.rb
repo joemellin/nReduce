@@ -144,6 +144,9 @@ class Relationship < ActiveRecord::Base
   # Returns the startups that these two entities are both connected to
   def self.startups_in_common(entity1, entity2)
     return [] if entity1.blank? || entity2.blank?
+    entity_1_ids = Relationship.all_connection_ids_for(entity1)['Startup']
+    entity_2_ids = Relationship.all_connection_ids_for(entity2)['Startup']
+    return [] if entity_1_ids.blank? || entity_2_ids.blank?
     common = Relationship.all_connection_ids_for(entity1)['Startup'] & Relationship.all_connection_ids_for(entity2)['Startup']
     return Startup.where(:id => common) unless common.blank?
     []
