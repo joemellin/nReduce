@@ -513,7 +513,7 @@ class Stats
       current += 1.day
     end
 
-    action_labels = ['checkins_create', 'weekly_classes_show', 'registrations_create', 'registrations_new']
+    action_labels = ['registrations_new', 'registrations_create', 'weekly_classes_show', 'checkins_create']
     action_ids = action_labels.map{|l| UserAction.id_for(l) }
 
     tmp_data = {}
