@@ -114,4 +114,5 @@
           %hr/
           %iframe.iframe{:width => '100%', :height => 600, :frameborder => 0, :src => @review_startup.website_url}
 
-= render 'relationships/request_modal', :relationship => @relationship, :form_id => 'add_teams_request', :not_remote => true
+- if @relationship.new_record?
+  = render 'relationships/request_modal', :relationship => @relationship, :form_id => 'add_teams_request', :not_remote => true
