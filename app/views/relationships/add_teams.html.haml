@@ -107,7 +107,7 @@
             .clear
             
 
-      - if @review_startup.website_url.present? && @startup.website_url_to_uri.present?
+      - if @review_startup.website_url.present? && @review_startup.website_url_to_uri.present?
         .website.center
           = link_to_external "#{@review_startup.name.possessive} Website", @review_startup.website_url, :source => 'add_teams'
           %hr/
