@@ -351,13 +351,13 @@ class User < ActiveRecord::Base
       return [:users, :spectator]
     end
     # If it's time to start the class, then allow them to see new welcome process
-    if roles?(:entrepreneur)
-      if Week.in_time_window?(:join_class)
-        return [:startups, :current_class]
-      else
-        return [:startups, :wait_for_next_class]
-      end
-    end
+    # if roles?(:entrepreneur)
+    #   if Week.in_time_window?(:join_class)
+    #     return [:startups, :current_class]
+    #   else
+    #     return [:startups, :wait_for_next_class]
+    #   end
+    # end
     if !setup?(:onboarding)
       if self.onboarded.blank?
         return [:onboard, :start]
@@ -398,12 +398,12 @@ class User < ActiveRecord::Base
 
   def onboarding_completed!(onboarding_type)
     self.onboarded << onboarding_type.to_sym
-    save!
+    save(:validate => false)
   end
 
   def invited_startups!
     self.setup << :invite_startups
-    save!
+    save
   end
 
   def setup_complete!(dont_suggest_startups = false, skip_all_steps = false)
