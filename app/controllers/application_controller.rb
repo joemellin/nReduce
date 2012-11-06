@@ -117,32 +117,32 @@ class ApplicationController < ActionController::Base
         return
       end
       # If entrepreneur redirect them to class join page (unless ajax request to complete something)
-      if current_user.entrepreneur?
-        # They are on join page
-        return true if [[:weekly_classes, :show], [:invites, :create], [:questions, :index], [:questions, :create], [:users, :update], [:startups, :update], [:relationships, :create], [:relationships, :approve], [:relationships, :reject], [:startups, :mini_profile], [:startups, :invite_ajax], [:invites, :destroy], [:weekly_classes, :update_state]].include?(controller_action_arr)
-        # Redirect to join page
-        current_user.assign_weekly_class! unless current_user.weekly_class.present?
-        redirect_to current_user.weekly_class
-        return
-      else
-        # if we're in the right place, don't do anything
-        return true if controller_action_arr == @account_setup_action
-        # Allow them to choose account type again / invite team members
-        return true if [[:users, :account_type], [:invites, :create]].include?(controller_action_arr)
-        # Allow create/update actions
-        if controller_action_arr.first == @account_setup_action.first
-          return true if @account_setup_action.last == :edit and action_name.to_sym == :update
-          return true if @account_setup_action.last == :new and [:create, :edit].include?(controller_action_arr.last)
-        end
-        # onboarding has a few actions involved, so if they're in onboarding don't change action
-        return true if [controller_action_arr.first, @account_setup_action.first] == [:onboard, :onboard]
-        # otherwise redirect to correct controller/action
-        prms = {:controller => @account_setup_action.first, :action => @account_setup_action.last}
-        # use obfuscated id
-        prms[:id] = current_user.to_param if prms[:controller] == :users
-        prms[:id] = current_user.startup.to_param if prms[:controller] == :startups
-        redirect_to prms
+      # if current_user.entrepreneur?
+      #   # They are on join page
+      #   return true if [[:weekly_classes, :show], [:invites, :create], [:questions, :index], [:questions, :create], [:users, :update], [:startups, :update], [:relationships, :create], [:relationships, :approve], [:relationships, :reject], [:startups, :mini_profile], [:startups, :invite_ajax], [:invites, :destroy], [:weekly_classes, :update_state]].include?(controller_action_arr)
+      #   # Redirect to join page
+      #   current_user.assign_weekly_class! unless current_user.weekly_class.present?
+      #   redirect_to current_user.weekly_class
+      #   return
+      # else
+      # if we're in the right place, don't do anything
+      return true if controller_action_arr == @account_setup_action
+      # Allow them to choose account type again / invite team members
+      return true if [[:users, :account_type], [:invites, :create]].include?(controller_action_arr)
+      # Allow create/update actions
+      if controller_action_arr.first == @account_setup_action.first
+        return true if @account_setup_action.last == :edit and action_name.to_sym == :update
+        return true if @account_setup_action.last == :new and [:create, :edit].include?(controller_action_arr.last)
       end
+      # onboarding has a few actions involved, so if they're in onboarding don't change action
+      return true if [controller_action_arr.first, @account_setup_action.first] == [:onboard, :onboard]
+      # otherwise redirect to correct controller/action
+      prms = {:controller => @account_setup_action.first, :action => @account_setup_action.last}
+      # use obfuscated id
+      prms[:id] = current_user.to_param if prms[:controller] == :users
+      prms[:id] = current_user.startup.to_param if prms[:controller] == :startups
+      redirect_to prms
+      #end
     end
     false
   end

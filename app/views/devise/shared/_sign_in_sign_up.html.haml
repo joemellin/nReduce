@@ -1,20 +1,15 @@
-- if !flash.blank? or @show_sign_in
-  - show_sign_in = true
-- else
-  - show_sign_in = false
 - if @show_join
   - show_join = true
+  - show_sign_in = false
 - else
   - show_join = false
+  - show_sign_in = true
+
 .row#sign_up{:class => show_join ? '' : 'hide'}
   .span3
     %p &nbsp;
   .span6.well
-    .center
-      %h2 Sign up
-    %br/
-    = semantic_form_for(resource, :as => resource_name, :url => registration_path(resource_name), :html => { :class => 'form-horizontal' }) do |f|
-      = render 'devise/registrations/fields', :f => f
+    = render 'devise/registrations/sign_up'
   .span3
     %p &nbsp;
 
