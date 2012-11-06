@@ -140,7 +140,7 @@ class ApplicationController < ActionController::Base
       prms = {:controller => @account_setup_action.first, :action => @account_setup_action.last}
       # use obfuscated id
       prms[:id] = current_user.to_param if prms[:controller] == :users
-      prms[:id] = current_user.startup.to_param if prms[:controller] == :startups
+      prms[:id] = current_user.startup.id if prms[:controller] == :startups
       redirect_to prms
       #end
     end

@@ -2,6 +2,10 @@ class OnboardController < ApplicationController
   before_filter :login_required
   before_filter :load_requested_or_users_startup
 
+  def show
+    render "step_#{params[:id]}"
+  end
+
     # Begin a new onboarding process for a user
   def start
     # if no type passed, get from user
