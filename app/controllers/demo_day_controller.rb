@@ -27,7 +27,7 @@ class DemoDayController < ApplicationController
       @startup = Startup.find_by_obfuscated_id(params[:startup_id]) if params[:startup_id].present?
     end
     @next_demo_day = DemoDay.ordered.first if @demo_day.in_the_past?
-    @in_time_window = (@demo_day.day == Date.today)
+    @in_time_window = @demo_day.in_time_window?
     @after = true unless @demo_day.day == Date.today
     if @demo_day.includes_startup?(@startup)
       # Load all checkins made before demo day
