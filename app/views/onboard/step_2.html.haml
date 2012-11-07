@@ -1,26 +1,60 @@
 .row.onboard
-  .span6
-    %h1 nReduce Weekly Schedule
-    = image_tag 'week.png'
-    %br/
-    - if current_user.entrepreneur?
-      %h2 1) Every Wednesday teams set a goal and uploads a "before" video by 12pm PST (GMT - 8).
-      %p We believe it is best when teams can come together and decided on a single focus.  We know that this can be difficult, but not doing this can lead to problems in the long term.
-      %p Videos should be no more than 30 seconds. They can be screen captures, shot from mobile phones, anything that really documents what you are starting with. It is great if you can narrate it so that people can better understand your current product.
-    - else
-      %h2 1) Every Wednesday teams set a goal and upload a "before" video by 12pm PST (GMT - 8).
-      %p We believe it is best when teams can come together and decided on a single focus.  We know that this can be difficult, but not doing this can lead to problems in the long term.
-      %p Videos document what the team is starting with that week, and what they want to accomplish.
-
-    %br/
-    - if current_user.entrepreneur?
-      %h2 2) The following Tuesday upload an "after" video by 4pm PST (GMT - 8).
-      %p Videos should be no more than 2 minutes. They can be screen captures, shot from mobile phones, anything that really documents what you built, accomplished, or struggled with. It is great if you can narrate it so that people can better understand your process.
-    - else
-      %h2 2) The following Tuesday the team uploads an "after" video by 4pm PST (GMT - 8).
-      %p Video can be a screen capture, shot from a mobile phone, anything that documents what the team built, accomplished, or struggled with.
-    %br/
-    %br/
-    .center
-      %h2 Make sense?
-      = render :partial => 'buttons'
+  .row.center{:style => 'padding-top:20px; padding-bottom:100px'}
+    %h1{:style => 'font-size:50px'} How Can nReduce Help Your Startup?
+  .row
+    .span2{:style => 'padding-top:20px; padding-bottom:40px'}
+      %p/
+    .span8
+      %b{:style => 'font-size:25px'} 1) You get weekly feedback from fellow startup founders.
+    .span2   
+  .row
+    .span2
+      %p
+    .span8
+      .center= image_tag 'helpfromfounders.png'
+    .span2
+      %p
+  .row{:style => 'padding-top:80px; padding-bottom:40px'}
+    .span2
+      %p/
+    .span8
+      %b{:style => 'font-size:25px'} 2) You get help and advice from nReduce Mentors
+    .span2   
+  .row
+    .span2
+      %p
+    .span8
+      .center= image_tag 'mentors.png'
+    .span2
+      %p
+  .row{:style => 'padding-top:80px; padding-bottom:40px'}
+    .span2
+      %p/
+    .span8
+      %b{:style => 'font-size:25px'} 3) You can compete to be featured in an Online Demo Day. 
+    .span2   
+  .row
+    .span2
+      %p
+    .span8
+      .center= image_tag 'investors.png'
+    .span2
+      %p/
+  .row{:style => 'padding-top:80px; padding-bottom:40px'}
+    .span2
+      %p/
+    .span8
+      %b{:style => 'font-size:25px'} 4) You rely on proven productivity mentods to keep you focused.
+    .span2   
+  .row
+    .span2
+      %p
+    .span8
+      .center= image_tag 'weekbig.png'
+    .span2
+      %p/
+  .row.center{:style => 'padding-top:100px; padding-bottom: 20px'}
+    %h1{:style => 'font-size:50px'} Ready to Join?
+  .row.center{:style => 'padding-top: 40px; padding-bottom:50px'}
+    %h1= link_to "Join Now", '#', :class => "btn btn-success btn-large", :title => 'Join Now', :style => 'font-size: 80px; line-height'
+ 
