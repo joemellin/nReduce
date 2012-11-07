@@ -2,7 +2,7 @@ class CheckinsController < ApplicationController
   around_filter :record_user_action, :only => [:show, :create]
   before_filter :login_required
   before_filter :load_requested_or_users_startup
-  load_and_authorize_resource :startup
+  load_and_authorize_resource :startup, :except => [:first]
   before_filter :load_latest_checkin, :only => :show
   before_filter :load_current_checkin, :only => :new
   before_filter :load_obfuscated_checkin, :only => [:show, :edit, :update]
@@ -56,6 +56,24 @@ class CheckinsController < ApplicationController
       render :action => :edit
     end
     @startup.launched! if params[:startup] && params[:startup][:launched].to_i == 1
+  end
+
+  # For creating a first checkin
+  def first
+    @checkin ||= Checkin.new
+    @weekly_class = true
+    if params[:checkin].present? && params[:checkin][:start_focus].present?
+      @checkin.attributes = params[:checkin]
+      @checkin.user = current_user
+      if @checkin.save(:validate => false)
+        current_user.startup.completed_goal!
+        redirect_to '/'
+      else
+        flash[:alert] = "Sorry we couldn't save your goal"
+      end
+    else
+      @checkin.startup = current_user.startup
+    end
   end
 
   protected

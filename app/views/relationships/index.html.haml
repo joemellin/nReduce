@@ -131,3 +131,17 @@
           in the menu bar!
       .span3
         &nbsp;
+
+- if @show_welcome_modal
+  .modal.hide.welcome_modal
+    .modal-header
+      %button.close{:type => 'button', 'data-dismiss' => 'modal'} x
+      %h3 Welcome to nReduce
+    .modal-body
+      %p Here's all your awesome teams
+      %ul
+        %li And this
+        %li And this
+        %li And this
+      .center= link_to "I'm Done", '#', :onclick => "$('.welcome_modal').modal('hide');", :class => 'btn btn-large btn-success'
+  = javascript_tag "$(function() { $('.welcome_modal').modal(); });"
