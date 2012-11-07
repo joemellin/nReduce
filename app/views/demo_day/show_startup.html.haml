@@ -56,6 +56,12 @@
         / &nbsp;
         / = link_to image_tag('question_mark.png'), '#', :onclick => "$('.how_it_works').modal('show'); return false;"
 
+  - if @startup.website_url.present? && @startup.website_url_to_uri.present?
+    .website.center
+      = link_to_external "#{@startup.name.possessive} Website", @startup.website_url, :source => 'add_teams'
+      %hr/
+      %iframe.iframe{:width => '100%', :height => 600, :frameborder => 0, :src => @startup.website_url}
+
   .tabbable
     %ul.nav.nav-tabs
       - unless @after
@@ -154,12 +160,6 @@
             .clear
             %hr
             %br
-
-        - if @startup.website_url.present? && @startup.website_url_to_uri.present?
-          .website.center
-            = link_to_external "#{@startup.name.possessive} Website", @startup.website_url, :source => 'add_teams'
-            %hr/
-            %iframe.iframe{:width => '100%', :height => 600, :frameborder => 0, :src => @startup.website_url}
 
   - if @demo_day.in_time_window?
     .modal.questions_modal.hide
