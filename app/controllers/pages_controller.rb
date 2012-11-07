@@ -13,7 +13,7 @@ class PagesController < ApplicationController
     @home = true
     if user_signed_in?
       if @demo_day.present?
-        redirect_to demo_day
+        redirect_to @demo_day
       else
         redirect_to current_user.entrepreneur? ? work_room_path : board_room_path
       end
