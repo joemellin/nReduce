@@ -22,7 +22,7 @@
           %h3 #{@next_demo_day.starts_at.strftime('%B %d')} at 11AM PST
         - elsif @demo_day.in_time_window?
           %p
-            %strong #{link_to @demo_day.name, '/d'}
+            %strong #{link_to @demo_day.name, @demo_day}
             ends in
           = render 'layouts/countdown', :time => @demo_day.ends_at
       - elsif @weekly_class.blank? && user_signed_in? && current_user.entrepreneur? && current_user.startup_id.present?
