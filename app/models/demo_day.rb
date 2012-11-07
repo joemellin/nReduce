@@ -59,12 +59,12 @@ class DemoDay < ActiveRecord::Base
   end
 
   def starts_at
-    #return Time.now - 5.minutes if Rails.env.development?
+    return Time.now - 5.minutes if Rails.env.development?
     Time.parse("#{self.day} 11:00:00 -0800")
   end
 
   def ends_at
-    #return Time.now + 10.minutes if Rails.env.development?
+    return Time.now + 10.minutes if Rails.env.development?
     Time.parse("#{self.day} 12:00:00 -0800")
   end
 

@@ -1,15 +1,21 @@
 = semantic_form_for @checkin, :url => first_checkins_path, :html => {:class => "form-vertical"} do |f|  
   = f.hidden_field :startup_id
   
-  .control-group{error_css(@checkin, :start_focus)}
-    %p
-      &nbsp
-    = f.label :start_focus, "This Week's Goal:", :style => 'font-size:38px; margin-bottom:40px; margin-top:40px', :maxlength => 255, :class => 'control-label'
-    .controls
-      = f.text_field :start_focus, :style => 'height: 30px; line-height:24px; font-size:22px', :class => "span4 checkin_start_focus", :placeholder => "Test, Ship or Hustle..."
-      = f.semantic_errors :start_focus
+  .row
+    .span3
+      %p
+    .span6
+      .control-group{error_css(@checkin, :start_focus)}
+        %p
+          &nbsp
+        = f.label :start_focus, "What Is Your Goal This Week?", :style => 'font-size:38px; margin-bottom:40px; margin-top:40px', :maxlength => 255, :class => 'control-label center'
+        .controls.center
+          = f.text_field :start_focus, :style => 'height: 30px; line-height:24px; font-size:22px', :class => "span4 checkin_start_focus", :placeholder => "Test, Ship or Hustle..."
+          = f.semantic_errors :start_focus
 
-  .form-controls.center{:style => 'margin-bottom: 10px; padding-top: 20px; '}
-    %p{:style => 'padding-top: 10px'}
-      &nbsp
-    = f.submit "Submit Goal", :class => "btn btn-success btn-large submit"
+      .form-controls.center{:style => 'margin-bottom: 10px; padding-top: 20px; '}
+        %p{:style => 'padding-top: 10px'}
+          &nbsp
+        = f.submit "Get Started", :class => "btn btn-success btn-large submit"
+    .span3
+      %p
