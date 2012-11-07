@@ -30,7 +30,7 @@ class DemoDayController < ApplicationController
     @after = true
     if @demo_day.includes_startup?(@startup)
       # Load all checkins made before demo day
-      @checkins = @startup.checkins.where(['created_at < ?', "#{@demo_day.day} 00:00:00"]).ordered.includes(:before_video, :after_video)
+      #@checkins = @startup.checkins.where(['created_at < ?', "#{@demo_day.day} 00:00:00"]).ordered.includes(:before_video, :after_video)
     else
       redirect_to :action => :index
       return
