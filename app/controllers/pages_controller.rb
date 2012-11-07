@@ -9,10 +9,14 @@ class PagesController < ApplicationController
 
   def home
     @weekly_class = WeeklyClass.current_class
-    #@demo_day = DemoDay.where(:day => Date.today).first
+    @demo_day = DemoDay.where(:day => Date.today).first
     @home = true
     if user_signed_in?
-      redirect_to current_user.entrepreneur? ? work_room_path : board_room_path
+      if @demo_day.present?
+        redirect_to demo_day
+      else
+        redirect_to current_user.entrepreneur? ? work_room_path : board_room_path
+      end
       return
     end
   end
