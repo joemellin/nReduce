@@ -24,7 +24,7 @@ class DemoDayController < ApplicationController
      @startup = Startup.find(@demo_day.startup_ids[params[:startup_index].to_i])
     else
       #id = params[:startup_id].split('-').first
-      @startup = Startup.find_by_obfuscated_id(params[:startup_id])
+      @startup = Startup.find_by_obfuscated_id(params[:startup_id]) if params[:startup_id].present?
     end
     @next_demo_day = DemoDay.ordered.first if @demo_day.in_the_past?
     @in_time_window = (@demo_day.day == Date.today)
