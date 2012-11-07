@@ -27,6 +27,7 @@ class DemoDayController < ApplicationController
       @startup = Startup.find_by_obfuscated_id(params[:startup_id])
     end
     @next_demo_day = DemoDay.ordered.first if @demo_day.in_the_past?
+    @in_time_window = (@demo_day.day == Date.today)
     @after = true unless @demo_day.day == Date.today
     if @demo_day.includes_startup?(@startup)
       # Load all checkins made before demo day
@@ -37,7 +38,7 @@ class DemoDayController < ApplicationController
     end
     
     # initialize tokbox and force new session key
-    if @demo_day.in_time_window?
+    if @in_time_window
       initialize_tokbox_session(@startup, user_signed_in? && current_user.startup_id == @startup.id)
 
       load_questions_for_startup(@startup)
