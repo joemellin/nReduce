@@ -1,5 +1,5 @@
 .home_page{:class => @demo_day.present? ? 'demo_day' : ''}
-  .row
+  .row{:style => 'padding-bottom: 40px'}
     .span12.background-field{:align => 'center'}
       - if @demo_day.present?
     
@@ -13,93 +13,233 @@
           %br/
           .enter_button= link_to "Meet the Winners".html_safe, '/d', :class => 'btn btn-large btn-success'
       - else
-        %h1.headline.center
-          %b nReduce is a Free Online Startup Incubator
-        %br/
-        .subhead.center Join These Global Entrepreneurs in the Next nReduce Class
-        %br/
-        = render 'weekly_classes/map'
-      %br/
-      %br/
-      .left.share_btns
-        .twitter.left
-          :plain
-            <a href="https://twitter.com/share" class="twitter-share-button" data-url="http://www.nreduce.com" data-text="An alliance of founders working together to build Amazing Companies" data-via="nReduce">Tweet</a>
-            <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
-        .facebook.left
-          :plain
-            <div class="fb-like" data-href="http://www.nreduce.com" data-send="false" data-layout="button_count" data-width="150" data-show-faces="false" data-font="lucida grande"></div>
-        - unless @demo_day.present?
-          .right{:style => 'margin-left: 249px; font-weight: bold; font-size: 1.4em'}=link_to 'Meet the nStars','http://www.nreduce.com/nstars'
-        .clear
-      
-      .right.newslogo{:style => 'margin-bottom: 10px'}= link_to image_tag('venturebeat.png'), 'http://venturebeat.com/2012/09/05/nreduce-demo-day/', :target => '_blank'
-      .right.newslogo= link_to image_tag('pando.png'), 'http://pandodaily.com/2012/07/27/virtual-incubator-to-all-nreduce-adds-mentors-and-demo-days-is-it-the-pre-angellist/', :target => '_blank'
-      .clear
-  %hr
-  
-  .middle_container
-    .row.center{:style => 'margin-bottom: 20px'}
-      %h2 How it Works for Founders
-    .row
-      .span4
-        .benefit
-          %h3 Founders Work Wednesday to Tuesday
-          %p Every nReduce startup is on the same weekly schedule.  Set a goal on Wednesday.   Show your progress on Tuesday. 
-      .span4
-        .benefit
-          %h3 Startups Connect with Each Other
-          %p Each Startup connects with 4-8 other startups to share weekly progress and give / get feedback. 
-    .row
-      .span4
-        .benefit
-          %h3 Founders Earn Mentorship
-          %p Companies who are active and meet requirements earn mentorship from our amazing nReduce mentor network.
-      .span4
-        .benefit
-          %h3 Startups Get Discovered by Investors
-          %p Startups who are interested in fundraising in the future can start to build relationships with potential investors. 
-    .row
-      .span4
-        .benefit
-          %h3 Successful Startups Become nStars
-          %p Startups who are the best in nReduce become an nStar and are featured in our monthly online demo day. 
-      .span4
-        .benefit
-          %h3 All for $0 and No Equity
-          %p We charge investors and service providers so nReduce is free to Founders. Yep, that's right, Free! Pretty Cool, Huh? :) 
+        .row
+          .span5.well{:style => 'padding-left:20px'}
+            :plain
+              <iframe width="440" height="300" src="http://www.youtube.com/embed/zjozpoqlW5A" frameborder="0" allowfullscreen></iframe>
+          .span6{:style => 'text-align:left; padding-left:20px'}
+            %b{:style => 'font-size:50px; color:#25A6E9; line-height:70px'} Founders : Build An Awesome Startup!
+            %br/
+            %h2{:style => 'font-size:20px'} nReduce : the Free Online Startup Incubator 
+            %h2 
+            .row{:style => 'padding-top:20px'}
+              .left{:style => 'padding-left:100px; padding-top: 30px'}
+                = link_to "Learn More", '/onboard/2', :style => 'font-size:24px; color:#999999'
+              .left{:style => 'padding-left:40px'}
+                .enter_button= link_to "Join Now", '/onboard/1', :class => 'btn btn-large btn-success', :style => 'font-size:40px'
+              .clear
+            %br/
+            %br/
+            %br/
+            .row
+              .right.newslogo{:style => 'padding-right:5px'}= link_to image_tag('hackernews.png'), 'http://news.ycombinator.com/item?id=4045177', :target => '_blank'
+              .right.newslogo{:style => 'margin-bottom: 10px'}= link_to image_tag('venturebeat.png'), 'http://venturebeat.com/2012/09/05/nreduce-demo-day/', :target => '_blank'
+              .right.newslogo= link_to image_tag('pando.png'), 'http://pandodaily.com/2012/07/27/virtual-incubator-to-all-nreduce-adds-mentors-and-demo-days-is-it-the-pre-angellist/', :target => '_blank'
+              .clear
 
-  %br/
   %hr
-  %br/
-  .row
+  .row.center{:style => 'padding-top:20px; padding-bottom: 20px'}
+    %h1 nReduce is a Global Community of Founders Building their Startups
+  %hr/
+  .row{:style => 'padding-top: 20px'}
     .span1
       %p
     .span10
-      .scriptfeature
-        "Our goal for nReduce is to improve the way 
-        %b every startup
-        in the world executes on their idea.
-        We see startups as the  
-        %b embodiment of hope 
-        and the ability of an individual to 
-        %b change the world.  
-        We are building nReduce to make these 
-        %b courageous people
-        better at what they do."
-    .span1
-      %ps
+      = render 'weekly_classes/map'
+  %hr
+
+  .row.center{:style => 'padding-top:20px; padding-bottom: 20px'}
+    %h1 nReduce gives Founders the help they need to build amazing Startups
+  %hr/
+  .row{:style => 'padding-top: 20px'}
+    .span3
+      %b I've been in nreduce for a couple months now and I think it's a great program. The startups are very mixed in terms of goals--some are working on side projects, others are building real businesses with real customers, revenue, and all that. The community has been extremely helpful, and it's a good way to connect with people facing similar problems.This is a bit of a glowing review, but as far as my goals of accountability and connections, it's been hugely helpful for me. And honestly, not having to give up equity or take investment is a pretty great deal.
+      %br/
+      %br/
+      %h4 nReduce has been incredibly helpful to our startup and I'm super psyched that Joe and Josh have been able to put dev resources into building what's turned into one of the most useful resources to keep our startup motivated and shipping things every week.
+      I helped kick off the initial idea a few months ago, and it's morphed into something way different and in my opinion way better than what I initially was aiming for.
+      %br/
+      %br/
+      %b Im based in Sydney and our startup community is still a alot smaller than many other parts of the world. Locally there are not that many teams and our weekly nReduce gathering is small. That hasnt mattered though because the real power so far has been the feedback system created by the nReduce team. Every week we post something we would like feedback on, and every week intelligent like minded people from around the world leave their 2c worth of feedback. There is no doubt in my mind that my product,http://authic.com, will be better as a result of that feedback. The fact that teams can be introduced to mentors and investors is just a bonus because the nReduce is already worthwhile without them.
+      %br/
+      %br/
+      %h3{:style => 'color : #25A6E9'} The nReduce program has been really great for my team so far.
+
+
+    .span3
+      %p Two months later, I can say that the decision to join nReduce was a right one. The requirement to ship every week keeps you motivated; this is exactly what I needed. As I said in my intro video, "My name is Alexander and I never finish (personal) projects." I'm sure there are many other developers who have 90%-ready projects but never get to showing them to the public.
+      If you are one of these guys, consider joining nReduce. It's been two months now and Feetlot.com just got its first users (who are loving it; and if you buy shoes online, check it out). I honestly think that if I hadn't joined nReduce, there would have been no alpha by now.
+      There is one month left till the demo day but already now I can say that I've reached my initial goal of launching an alpha and getting first visitors. Thank you, nReduce. Keep it up!
+      %br/
+      %br/
+      %b Another startup guy at nReduce here. Because of the time differences (I'm in India) I'm not able to participate actively in the community. I know I should learn to wake up early. What has really helped me are the weekly builds. I just missed uploading one update and I'm feeling so bad I couldn't do it on time. Needless to say, you get what you put in to the program. So far, it's been a self discipling tool for me.
+      %br/
+      %br/
+      %p We've (www.re51labs.com) have had a similar experience with the NYC nReduce group, in that the in-person meetings have created a great forum for entrepreneurs working across a variety of projects to collaborate and share knowledge and ideas. I've also personally found the video check-ins helpful, as they require me to evaluate the progress made the previous week and lay out clear deliverables for the next week. This is not unlike standard management practice in many large organizations. We are finding the in-person meetings to be much more valuable than the virtual meetings; this may have something to do with NYC's culture vs. the Valley's, and the intangible value of forging in-person connections that can't be replicated virtually. Joe and Josh have clearly tapped into an important need and in the absurdly crowded world of NYC tech meetups, the nReduce concept has created a uniquely valuable environment for facilitating progress.
+
+
+    .span3
+      %b NReduce has been really interesting and done a good job of trying for something different than YCombinator. In many ways it's much more of a complement to traditional startup incubators than a competitor.
+      %b Of the startups that I partnered with since June, about 15% have gone on to geographically located accelerators, a few have been acquired/hired for their product, a few have launched and not really gone anywhere and about half never got as far as launching a product.
+      %br/
+      %br/
+      %h2{:style => 'color : #25A6E9 '} Personally, I've gotten a huge amount of constructive feedback and a good handful of solid beta testers for my project.
+      %br/
+      %br/
+      %b We've received a lot of constructive feedback from other startups over the last couple months in nReduce, and it has generally been a nice experience. For that reason alone, it has been pretty valuable to us.
+      %br/
+      %br/
+      %p nReduce has been invaluable for us at PolarMeter. We especially benefited from the weekly kick-in-the-butt to show what you've accomplished, the honest no-bs feedback from other founders and the chance to meet and build relationships with other teams during nReduce Tuesdays.
+      %br/
+      %br/
+      %p nReduce is helping my startup www.cmchub.com (Christian musician community) substantially!  Posting weekly before and after videos is something so small, but at the same time, so huge and helpful in many ways.  It allows me to stay focused and receive insights and encouragement from other startups.  
+
+    
+    .span3
+      %p Another nReducer here - we're on a distributed team, and bootstrapping. Since making a team-wide move was not a possibility for us, nReduce has been an amazing opportunity.
+      Great work so far from the nReduce team, and the startup team interactions are super-helpful.
+      %br/
+      %br/
+      %h4 nReduce has been great for Spark. The weekly checkins, combined with frank advice from our fellow teams, makes for a serious kick in the pants drive to ship constantly.
+      I would recommend nReduce for any startup.
+      %br/
+      %br/
+      %p  hackerbeers is based in Beijing, which makes it a little more troublesome to get access to advice, mentors and users. Joe Mellin  and his team did us a big favor with founding nReduce . We did some changes on our product (you can call it a pivot) and we used the weekly progress update to get some feedback from our fellow founders from India, US, Italy and our mentor on the platform. Within half a day we had 50 spot on comments that helped a lot to make a decision. 
+      %br/
+      %br/
+      %b I have had an amazing experience with the nReduce program. The weekly updates create that extra push you need sometimes as an independent entrepreneur struggling to launch a startup. The feedback from other nReducers has been priceless. Not only motivational feedback, but really great ideas and connections. I have been able to meet so many entrepreneurs and I have had a blast doing what I can to help everybody else in the program. I highly recommend anyone out there with a startup or a totally new idea to get on board with nReduce and to make things happen. I am in Houston, Texas and have not been able to meet any local nReducers yet, but the online community alone is exceptional. nReduce is something I would pay for but its free!
   %br/
+  %br/
+  %hr/
+  .row.center{:style => 'padding-top:20px; padding-bottom: 20px'}
+    %h1 nReduce Can Help You Regardless of What Industry You are Disrupting
+  %hr/
+  .row{:style => 'padding-top: 20px'}
+    .span1
+      %p
+    .span10
+      :plain
+        <!--
+        begin tag cloud : generated by TagCrowd.com
+        Feel free to modify as long as you keep this notice.
+
+        EMBEDDING INSTRUCTIONS:
+        1. Customize your cloud's style by editing the CSS where it says CUSTOMIZE below.
+        2. Insert this code in its entirety into your webpage or blog post.
+
+        This code and its rendered image are released under the Creative Commons Attribution-Noncommercial 3.0 Unported License. (http://creativecommons.org/licenses/by-nc/3.0/)
+
+        For COMMERCIAL USE LICENSING, visit http://tagcrowd.com/licensing.html
+        -->
+        <style type="text/css"><!-- #htmltagcloud{
+
+        /******************************************
+         * CUSTOMIZE CLOUD CSS BELOW (optional)
+         */
+          font-size: 100%;
+          width: auto;    /* auto or fixed width, e.g. 500px   */
+          font-family:'lucida grande','trebuchet ms',arial,helvetica,sans-serif;
+          background-color:#fff;
+          margin:1em 1em 0 1em;
+          border:0px dotted #ddd;
+          padding:2em; 
+        /******************************************
+         * END CUSTOMIZE
+         */
+
+        }#htmltagcloud{line-height:2.4em;word-spacing:normal;letter-spacing:normal;text-transform:none;text-align:justify;text-indent:0}#htmltagcloud a:link{text-decoration:none}#htmltagcloud a:visited{text-decoration:none}#htmltagcloud a:hover{color:#25A6E9;background-color:#white}#htmltagcloud a:active{color:white;background-color:#03d}.wrd{padding:0;position:relative}.wrd a{text-decoration:none}.tagcloud0{font-size:1.0em;color:#ACC1F3;z-index:10}.tagcloud0 a{color:#ACC1F3}.tagcloud1{font-size:1.4em;color:#ACC1F3;z-index:9}.tagcloud1 a{color:#ACC1F3}.tagcloud2{font-size:1.8em;color:#86A0DC;z-index:8}.tagcloud2 a{color:#86A0DC}.tagcloud3{font-size:2.2em;color:#86A0DC;z-index:7}.tagcloud3 a{color:#86A0DC}.tagcloud4{font-size:2.6em;color:#607EC5;z-index:6}.tagcloud4 a{color:#607EC5}.tagcloud5{font-size:3.0em;color:#607EC5;z-index:5}.tagcloud5 a{color:#607EC5}.tagcloud6{font-size:3.3em;color:#4C6DB9;z-index:4}.tagcloud6 a{color:#4C6DB9}.tagcloud7{font-size:3.6em;color:#395CAE;z-index:3}.tagcloud7 a{color:#395CAE}.tagcloud8{font-size:3.9em;color:#264CA2;z-index:2}.tagcloud8 a{color:#264CA2}.tagcloud9{font-size:4.2em;color:#133B97;z-index:1}.tagcloud9 a{color:#133B97}.tagcloud10{font-size:4.5em;color:#002A8B;z-index:0}.tagcloud10 a{color:#002A8B}.freq{font-size:10pt !important;color:#bbb}#credit{text-align:center;color:#333;margin-bottom:0.6em;font:0.7em 'lucida grande',trebuchet,'trebuchet ms',verdana,arial,helvetica,sans-serif}#credit a:link{color:#777;text-decoration:none}#credit a:visited{color:#777;text-decoration:none}#credit a:hover{color:white;background-color:#05f}#credit a:active{text-decoration:underline}// -->
+        </style>
+
+        <div id="htmltagcloud"> <span id="0" class="wrd tagcloud3"><a href="#tagcloud">advertising</a></span> <span id="1" class="wrd tagcloud2"><a href="#tagcloud">analytics</a></span> <span id="2" class="wrd tagcloud2"><a href="#tagcloud">app</a></span> <span id="3" class="wrd tagcloud5"><a href="#tagcloud">applications</a></span> <span id="4" class="wrd tagcloud2"><a href="#tagcloud">based</a></span> <span id="5" class="wrd tagcloud2"><a href="#tagcloud">business</a></span> <span id="6" class="wrd tagcloud0"><a href="#tagcloud">cloud</a></span> <span id="7" class="wrd tagcloud4"><a href="#tagcloud">commerce</a></span> <span id="8" class="wrd tagcloud8"><a href="#tagcloud">consumer</a></span> <span id="9" class="wrd tagcloud0"><a href="#tagcloud">crowdsourcing</a></span> <span id="10" class="wrd tagcloud3"><a href="#tagcloud">data</a></span> <span id="11" class="wrd tagcloud3"><a href="#tagcloud">development</a></span> <span id="12" class="wrd tagcloud2"><a href="#tagcloud">digital</a></span> <span id="13" class="wrd tagcloud1"><a href="#tagcloud">ecommerce</a></span> <span id="14" class="wrd tagcloud8"><a href="#tagcloud">education</a></span> <span id="15" class="wrd tagcloud4"><a href="#tagcloud">enterprise</a></span> <span id="16" class="wrd tagcloud4"><a href="#tagcloud">entertainment</a></span> <span id="17" class="wrd tagcloud0"><a href="#tagcloud">estate</a></span> <span id="18" class="wrd tagcloud1"><a href="#tagcloud">fashion</a></span> <span id="19" class="wrd tagcloud0"><a href="#tagcloud">food</a></span> <span id="20" class="wrd tagcloud6"><a href="#tagcloud">games</a></span> <span id="21" class="wrd tagcloud2"><a href="#tagcloud">health</a></span> <span id="22" class="wrd tagcloud2"><a href="#tagcloud">internet</a></span> <span id="23" class="wrd tagcloud0"><a href="#tagcloud">knowledge</a></span> <span id="24" class="wrd tagcloud2"><a href="#tagcloud">location</a></span> <span id="25" class="wrd tagcloud2"><a href="#tagcloud">management</a></span> <span id="26" class="wrd tagcloud2"><a href="#tagcloud">marketing</a></span> <span id="27" class="wrd tagcloud1"><a href="#tagcloud">marketplaces</a></span> <span id="28" class="wrd tagcloud7"><a href="#tagcloud">media</a></span> <span id="29" class="wrd tagcloud1"><a href="#tagcloud">medium</a></span> <span id="30" class="wrd tagcloud10"><a href="#tagcloud">mobile</a></span> <span id="31" class="wrd tagcloud0"><a href="#tagcloud">music</a></span> <span id="32" class="wrd tagcloud1"><a href="#tagcloud">network</a></span> <span id="33" class="wrd tagcloud4"><a href="#tagcloud">online</a></span> <span id="34" class="wrd tagcloud0"><a href="#tagcloud">productivity</a></span> <span id="35" class="wrd tagcloud1"><a href="#tagcloud">real</a></span> <span id="36" class="wrd tagcloud2"><a href="#tagcloud">recruiting</a></span> <span id="37" class="wrd tagcloud0"><a href="#tagcloud">retail</a></span> <span id="38" class="wrd tagcloud7"><a href="#tagcloud">saas</a></span> <span id="39" class="wrd tagcloud5"><a href="#tagcloud">services</a></span> <span id="40" class="wrd tagcloud1"><a href="#tagcloud">shopping</a></span> <span id="41" class="wrd tagcloud9"><a href="#tagcloud">social</a></span> <span id="42" class="wrd tagcloud6"><a href="#tagcloud">software</a></span> <span id="43" class="wrd tagcloud0"><a href="#tagcloud">startups</a></span> <span id="44" class="wrd tagcloud3"><a href="#tagcloud">technology</a></span> <span id="45" class="wrd tagcloud1"><a href="#tagcloud">tools</a></span> <span id="46" class="wrd tagcloud3"><a href="#tagcloud">travel</a></span> <span id="47" class="wrd tagcloud0"><a href="#tagcloud">video</a></span> <span id="48" class="wrd tagcloud8"><a href="#tagcloud">web</a></span> <span id="49" class="wrd tagcloud1"><a href="#tagcloud">wellness</a></span> </div>
+
+        <!-- end tag cloud : generated by TagCrowd.com : please keep this notice -->
+
+  %br/
+  %br/
+  %hr/
+  .row.center{:style => 'padding-top:20px; padding-bottom: 20px'}
+    %h1 nReduce Helps Early Teams Build their Startups
+  %hr/
+  .row{:style => 'padding-top: 20px;padding-bottom:40px'}
+    .span2
+      %p
+    .span4
+      =image_tag('teamsize.png')
+    .span4
+      =image_tag('ageofstartups.png')
+  %br/
+  %br/
+  %hr/
+  .row.center{:style => 'padding-top:20px; padding-bottom: 20px'}
+    %h1 There are Monthly nReduce Meetings Around the World
+  %hr/
+  .row{:style => 'padding-top: 20px;padding-bottom:40px'}
+    .span1
+      %p
+    .span2.center
+      =image_tag('shaf.png')
+      %h4{:style => 'padding-top: 10px'}= link_to "Manchester, UK", 'http://www.meetup.com/nReduce-Manchester/', :target => '_blank'
+      %p Leader : Shaf Choudry
+    .span2.center
+      =image_tag('erin.png')
+      %h4{:style => 'padding-top: 10px'}= link_to "San Francisco, US", 'http://www.meetup.com/nReduce/', :target => '_blank'
+      %p Leader : Erin Parker
+    .span2.center
+      =image_tag('david.png')
+      %h4{:style => 'padding-top: 10px'}= link_to "Austin, US", 'http://www.meetup.com/nReduce-Austin/', :target => '_blank'
+      %p Leader : David Johnston
+    .span2.center
+      =image_tag('marcus.png')
+      %h4{:style => 'padding-top: 10px'}= link_to "New York, US", 'http://www.meetup.com/nReduce-New-York-City/', :target => '_blank'
+      %p Leader : Marcus Smith
+    .span2.center
+      =image_tag('louis.png')
+      %h4{:style => 'padding-top: 10px'}= link_to "London, UK", 'http://www.meetup.com/nReduce-London/', :target => '_blank'
+      %p Leader : Louis Sayers
+  %br/
+  %br/
+  %hr/
+  .row.center{:style => 'padding-top:20px; padding-bottom: 20px'}
+    %h1 How much does it cost for my startup to join?
+  %hr/
+  .row.center{:style => 'padding-top: 100px; padding-bottom:50px'}
+    %h1.b{:style => 'font-size: 200px; color: #25A6E9; font-style:bold'}Free!
+  .row.center{:style => 'padding-top: 40px; padding-bottom:50px'}
+    %h1{:style => 'font-size: 80px; color: #cccccc'}$0 & 0% Equity
+  %br/
+  %br/
+  %hr/
+  .row.center{:style => 'padding-top:60px; padding-bottom: 20px'}
+    %h1 Okay, How will nReduce Help My Startup?
+  .row.center{:style => 'padding-top: 100px; padding-bottom:50px'}
+    %h1= link_to "Learn More", 'onboard/2', :class => "btn btn-success btn-large", :title => 'Learn More', :style => 'font-size: 80px; line-height'
+  .row
+    .span3
+      %p
+    .span8
+      .left{:style => 'padding:10px'}
+        :plain
+          <a href="https://twitter.com/share" class="twitter-share-button" data-url="http://www.nreduce.com" data-text="An alliance of founders working together to build Amazing Companies" data-via="nReduce">Tweet</a>
+          <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+      .left{:style => 'padding:10px'}
+        :plain
+          <div class="fb-like" data-href="http://www.nreduce.com" data-send="false" data-width="500" data-show-faces="true"></div>          
+    .clear
+  .row
+    %br/
+    %hr
+    %br/
+  
 
 / FACEBOOK CONNECT
 :plain
   <div id="fb-root"></div>
   <script>(function(d, s, id) {
-  var js, fjs = d.getElementsByTagName(s)[0];
-  if (d.getElementById(id)) return;
-  js = d.createElement(s); js.id = id;
-  js.src = "//connect.facebook.net/en_GB/all.js#xfbml=1&appId=212738105491822";
-  fjs.parentNode.insertBefore(js, fjs);
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_GB/all.js#xfbml=1&appId=212738105491822";
+    fjs.parentNode.insertBefore(js, fjs);
   }(document, 'script', 'facebook-jssdk'));</script>
 
  
