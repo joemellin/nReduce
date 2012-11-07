@@ -38,8 +38,8 @@ class Startup < ActiveRecord::Base
   validates_presence_of :name
   validate :check_video_urls_are_valid
   validates_presence_of :one_liner, :if => :created_but_not_setup_yet?
-  validates_presence_of :elevator_pitch, :if => :created_but_not_setup_yet?
-  validates_presence_of :industry_list, :if => :created_but_not_setup_yet?
+  #validates_presence_of :elevator_pitch, :if => :created_but_not_setup_yet?
+  #validates_presence_of :industry_list, :if => :created_but_not_setup_yet?
 
   before_validation :encode_pitch_video
   before_save :format_url
@@ -58,7 +58,7 @@ class Startup < ActiveRecord::Base
   scope :active, where(:active => true)
   scope :inactive, where(:active => false)
 
-  bitmask :setup, :as => [:profile, :invite_team_members, :intro_video]
+  bitmask :setup, :as => [:profile, :invite_team_members, :intro_video, :goal]
 
   NUM_SCREENSHOTS = 4
   # Number of active startups you need
@@ -66,41 +66,32 @@ class Startup < ActiveRecord::Base
 
   # Uses Sunspot gem with Solr backend. Docs: http://outoftime.github.com/sunspot/docs/index.html
   # https://github.com/outoftime/sunspot
-  searchable do
-    # full-text search fields - can add :stored => true if you don't want to hit db
-    text :name, :boost => 4.0, :stored => true
-    # text :location do
-    #   team_members.map{|tm| tm.location }.delete_if{|l| l.blank? }
-    # end
-    # text :industries_cached, :stored => true do
-    #   self.industries.map{|t| t.name.titleize }.join(', ')
-    # end
-    # text :website_url
-    # text :one_liner
+  # searchable do
+  #   # full-text search fields - can add :stored => true if you don't want to hit db
+  #   text :name, :boost => 4.0, :stored => true
+  #   # text :location do
+  #   #   team_members.map{|tm| tm.location }.delete_if{|l| l.blank? }
+  #   # end
+  #   # text :industries_cached, :stored => true do
+  #   #   self.industries.map{|t| t.name.titleize }.join(', ')
+  #   # end
+  #   # text :website_url
+  #   # text :one_liner
 
-    # filterable fields
-    integer :id
-    #integer :stage
-    #integer :company_goal
-    boolean :onboarded do
-      self.account_setup?
-    end
-    # double  :rating
-    boolean :public
-    boolean :investable
-    # integer :industry_tag_ids, :multiple => true, :stored => true do
-    #   self.industries.map{|t| t.id }
-    # end
-    string :sort_name do
-      name.downcase.gsub(/^(an?|the)/, '')
-    end
-    # integer :num_checkins do
-    #   self.checkins.count
-    # end
-    # integer :num_pending_relationships do
-    #   self.received_relationships.pending.count
-    # end
-  end
+  #   # filterable fields
+  #   integer :id
+  #   #integer :stage
+  #   #integer :company_goal
+  #   boolean :onboarded do
+  #     self.account_setup?
+  #   end
+  #   # double  :rating
+  #   boolean :public
+  #   boolean :investable
+  #   string :sort_name do
+  #     name.downcase.gsub(/^(an?|the)/, '')
+  #   end
+  # end
 
   # def to_param
   #   "#{ObfuscateId.hide(self.id)}-#{self.name.to_url}"
@@ -131,6 +122,10 @@ class Startup < ActiveRecord::Base
       Startup.where(:id => inactive).where(:active => true).each{|s| s.active = false; s.save(:validate => false) }
     end
     "#{active.size} Active Teams, #{inactive.size} Inactive Teams"
+  end
+
+  def self.last_activated_teams(limit = 3)
+    Startup.with_setup(:goal).active.order('created_at DESC').limit(limit)
   end
 
   def self.registration_open?
@@ -411,6 +406,17 @@ class Startup < ActiveRecord::Base
     save
   end
 
+  def completed_goal!
+    self.setup << :goal
+    # Set as active as they just did a checkin
+    self.active = true
+    Startup.last_activated_teams(3).each do |s|
+      r = Relationship.start_between(self, s, :startup_startup, true)
+      r.approve! if r.present? && r.valid?
+    end
+    save
+  end
+
   # Forces all setup complete actions to be set and saved for this startup and team members
   def force_setup_complete!
     self.setup = [:profile, :invite_team_members, :intro_video]
@@ -427,41 +433,19 @@ class Startup < ActiveRecord::Base
 
     # Returns true if the user has set everything up for the account (otherwise forces user to go through flow)
   def account_setup?
-    self.setup?(:profile, :invite_team_members, :intro_video)
+    self.setup?(:goal)
   end
 
   # scope for a completed account
   def self.account_complete
-    with_setup(:profile, :invite_team_members, :intro_video)
+    with_setup(:goal)
   end
 
   # Returns the current controller / action for setup - to see if they need to set anything up
   # first checks setup field so we don't have to perform db queries if they've completed that step
   def account_setup_action
     return [:complete] if account_setup?
-    return [:startups, :new] if new_record?
-    if !setup?(:profile)
-      if !valid? # don't check for completeness yet because that'll force team member stuff
-        return [:startups, :edit]
-      else
-        self.setup << :profile
-        self.save
-      end
-    end
-    if !setup?(:invite_team_members)
-      return [:startups, :invite_team_members]
-    end
-    if !setup?(:intro_video)
-      if !self.intro_video_url.blank? && Youtube.valid_url?(intro_video_url)
-        self.setup << :intro_video
-        self.save
-      else
-        return [:startups, :intro_video] # key is before video, but changing action to team intro video
-      end
-    end
-    # If we just completed everything pass that back
-    return [:complete] if account_setup?
-    nil
+    return [:checkins, :first]
   end
 
    # Takes youtube urls and converts to our new db-backed format (and uploads to vimeo)

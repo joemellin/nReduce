@@ -5,6 +5,8 @@ class RelationshipsController < ApplicationController
   load_and_authorize_resource :except => [:index, :add_teams, :skip_team]
 
   def index
+    current_user.welcome_seen! if @show_welcome_modal == true
+
     no_startups = false
 
     if current_user.mentor?

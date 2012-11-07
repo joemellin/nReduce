@@ -37,6 +37,8 @@ class Ability
           (Checkin.in_after_time_window? or Checkin.in_before_time_window?) and (checkin.startup_id == user.startup_id)
         end
 
+        can :first, Checkin if !user.account_setup?
+
         can :destroy, Checkin, :startup_id => user.startup_id
 
         # Can manage if they created it

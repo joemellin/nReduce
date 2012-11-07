@@ -1,19 +1,17 @@
+.center
+  %h2 Sign up
 - unless @omniauth
   .row
     .span3
       %p &nbsp;
-    .span6.well{:align => 'center', :style => 'padding: 40px 20px 40px 20px'}
-      %h1 nReduce
-      %br/
-      %p
-        %strong An alliance of creators built on accountability and community
-      %br/
+    .span6{:align => 'center', :style => 'padding: 15px 20px 30px 20px'}
+      
       %a.btn.btn-large{:href => '/auth/linkedin'}
         = image_tag('linkedin_32.png')
-        Sign In With LinkedIn
+        Sign Up With LinkedIn
       %a.btn.btn-large{:href => '/auth/twitter'}
         = image_tag('twitter_32.png')
-        Sign In With Twitter
+        Sign Up With Twitter
     .span3
 
 .row

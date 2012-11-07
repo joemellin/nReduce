@@ -1,6 +1,6 @@
 class OnboardController < ApplicationController
-  before_filter :login_required
-  before_filter :load_requested_or_users_startup
+  #before_filter :login_required
+  #before_filter :load_requested_or_users_startup
 
   def show
     render "step_#{params[:id]}"
@@ -9,20 +9,21 @@ class OnboardController < ApplicationController
     # Begin a new onboarding process for a user
   def start
     # if no type passed, get from user
-    params[:type] = current_user.onboarding_type if params[:type].blank?
-    if params[:type].blank? # if still no onboarding type
-      redirect_to current_user
-    else
-      redirect_to_onboarding_start(params[:type])
-    end
+    # params[:type] =  if params[:type].blank?
+    # if params[:type].blank? # if still no onboarding type
+    #   redirect_to current_user
+    # else
+    #   redirect_to_onboarding_start(params[:type])
+    # end
+    redirect_to_onboarding_start(:startup)
   end
 
   def current_step
-    @user = current_user
+    #@user = current_user
     # Check if user has completed
     if current_onboarding_step == Onboarding.num_onboarding_steps
-      @user.onboarding_completed!(current_onboarding_type)
-      redirect_to '/'
+      #@user.onboarding_completed!(current_onboarding_type)
+      redirect_to join_path
     else
       render "step_#{current_onboarding_step}"
     end
@@ -32,31 +33,32 @@ class OnboardController < ApplicationController
     # Collect and update data, and redirect to next step if they have succesfully completed step
   def next
     # Check if we have any form data - Startup form or  Youtube url or
-    @user = current_user
-    if !params[:user_form].blank? and !params[:user].blank?
-      if @user.update_attributes(params[:user])
-        onboarding_step_increment!
-      else
-        flash.now[:alert] = "Hm, we had some problems updating your account."
-        render "step_#{current_onboarding_step}" && return
-      end
-    elsif params[:user]
-      if !params[:user][:intro_video_url].blank? and @user.update_attributes(params[:user])
-        onboarding_step_increment!
-      else
-        flash[:alert] = "Looks like you forgot to paste in your Youtube URL"
-        render "step_#{current_onboarding_step}" && return
-      end
-    elsif params[:startup]
-      if @startup.update_attributes(params[:startup])
-        onboarding_step_increment!
-      else
-        flash.now[:alert] = "Hm, we had some problems updating your account."
-        render "step_#{current_onboarding_step}" && return
-      end
-    else
-      onboarding_step_increment!
-    end
+    # @user = current_user
+    # if !params[:user_form].blank? and !params[:user].blank?
+    #   if @user.update_attributes(params[:user])
+    #     onboarding_step_increment!
+    #   else
+    #     flash.now[:alert] = "Hm, we had some problems updating your account."
+    #     render "step_#{current_onboarding_step}" && return
+    #   end
+    # elsif params[:user]
+    #   if !params[:user][:intro_video_url].blank? and @user.update_attributes(params[:user])
+    #     onboarding_step_increment!
+    #   else
+    #     flash[:alert] = "Looks like you forgot to paste in your Youtube URL"
+    #     render "step_#{current_onboarding_step}" && return
+    #   end
+    # elsif params[:startup]
+    #   if @startup.update_attributes(params[:startup])
+    #     onboarding_step_increment!
+    #   else
+    #     flash.now[:alert] = "Hm, we had some problems updating your account."
+    #     render "step_#{current_onboarding_step}" && return
+    #   end
+    # else
+    #   onboarding_step_increment!
+    # end
+    onboarding_step_increment!
     redirect_to :action => :current_step
   end
 
@@ -70,7 +72,7 @@ class OnboardController < ApplicationController
       redirect_to :action => :current_step
     else
       flash[:alert] = "#{type} is not a valid onboarding flow."
-      redirect_to current_user
+      redirect_to '/'
     end
   end
 

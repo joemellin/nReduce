@@ -82,46 +82,46 @@ class User < ActiveRecord::Base
   # Number of startups an investor can contact per week
   INVESTOR_MENTOR_STARTUPS_PER_WEEK = 5
 
-  searchable do
-    # full-text search fields - can add :stored => true if you don't want to hit db
-    text :name
-    text :location
-    text :skills_cached, :stored => true do
-      self.skills.map{|t| t.name.titleize }.join(', ')
-    end
-    text :industries_cached, :stored => true do
-      self.industries.map{|t| t.name.titleize }.join(', ')
-    end
+  # searchable do
+  #   # full-text search fields - can add :stored => true if you don't want to hit db
+  #   text :name
+  #   text :location
+  #   text :skills_cached, :stored => true do
+  #     self.skills.map{|t| t.name.titleize }.join(', ')
+  #   end
+  #   text :industries_cached, :stored => true do
+  #     self.industries.map{|t| t.name.titleize }.join(', ')
+  #   end
 
-    # filterable fields
-    double  :rating
-    integer :meeting_id
-    boolean :is_mentor do
-      self.mentor?
-    end
-    boolean :has_pic do
-      self.pic?
-    end
-    integer :num_mentoring, :stored => true do
-      if self.mentor?
-        connected_with_relationships.startup_to_user.approved.count
-      else
-        0
-      end
-    end
-    boolean :nreduce_mentor do
-      roles?(:nreduce_mentor) && onboarded?(:mentor)
-    end
-    integer :skill_tag_ids, :multiple => true, :stored => true do
-      self.skills.map{|t| t.id }
-    end
-    integer :industry_tag_ids, :multiple => true, :stored => true do
-      self.industries.map{|t| t.id }
-    end
-    string :sort_name do
-      name.blank? ? '' : name.downcase.gsub(/^(an?|the)/, '')
-    end
-  end
+  #   # filterable fields
+  #   double  :rating
+  #   integer :meeting_id
+  #   boolean :is_mentor do
+  #     self.mentor?
+  #   end
+  #   boolean :has_pic do
+  #     self.pic?
+  #   end
+  #   integer :num_mentoring, :stored => true do
+  #     if self.mentor?
+  #       connected_with_relationships.startup_to_user.approved.count
+  #     else
+  #       0
+  #     end
+  #   end
+  #   boolean :nreduce_mentor do
+  #     roles?(:nreduce_mentor) && onboarded?(:mentor)
+  #   end
+  #   integer :skill_tag_ids, :multiple => true, :stored => true do
+  #     self.skills.map{|t| t.id }
+  #   end
+  #   integer :industry_tag_ids, :multiple => true, :stored => true do
+  #     self.industries.map{|t| t.id }
+  #   end
+  #   string :sort_name do
+  #     name.blank? ? '' : name.downcase.gsub(/^(an?|the)/, '')
+  #   end
+  # end
 
   def self.email_on_options
     {
@@ -210,21 +210,6 @@ class User < ActiveRecord::Base
 
   def entrepreneur?
     roles?(:entrepreneur)
-  end
-
-  # LEGACY METHODS
-  def num_onboarding_steps # needs to be one more than actual steps
-    7
-  end
-
-  def onboarding_complete?
-    self.onboarding_step >= self.num_onboarding_steps
-  end
-  # END LEGACY METHODS
-
-    # Skip step 4 and 5 if user is not an nreduce mentor
-  def skip_onboarding_step?(step)
-    self.mentor? and !self.roles?(:nreduce_mentor) and [4,5].include?(step)
   end
 
   def has_startup_or_is_mentor_or_investor?
@@ -320,73 +305,94 @@ class User < ActiveRecord::Base
     end
   end
 
-  def account_setup_steps
-    return [:onboarding, :profile] if roles?(:entrepreneur)
-    return [:onboarding, :profile, :invite_startups]
+  def account_setup?
+    if roles?(:entrepreneur)
+      self.startup.account_setup? && self.setup?(:welcome)
+    else
+      true
+    end
   end
 
-  # Returns true if the user has set everything up for the account (otherwise forces user to go through flow)
-  def account_setup?
-    if setup?(:account_type, :onboarding, :profile, :welcome)
-      return true if roles?(:entrepreneur) and !self.startup.blank? and self.startup.account_setup?
-      return true if (roles?(:mentor) or roles?(:investor)) and setup?(:invite_startups)
+  def account_setup_action
+    return [:complete] if account_setup?
+    if roles?(:entrepreneur)
+      if self.startup.account_setup?
+        return [:relationships, :index]
+      else
+        return self.startup.account_setup_action
+      end
+    else
+      nil
     end
-    false
   end
+
+  # def account_setup_steps
+  #   return [:onboarding, :profile] if roles?(:entrepreneur)
+  #   return [:onboarding, :profile, :invite_startups]
+  # end
+
+  # # Returns true if the user has set everything up for the account (otherwise forces user to go through flow)
+  # def account_setup?
+  #   if setup?(:account_type, :onboarding, :profile, :welcome)
+  #     return true if roles?(:entrepreneur) and !self.startup.blank? and self.startup.account_setup?
+  #     return true if (roles?(:mentor) or roles?(:investor)) and setup?(:invite_startups)
+  #   end
+  #   false
+  # end
 
   # Returns the current controller / action name as an array of [:controller, :action] - ex: [:onboarding, :user], or [:profile, :startup]
   # Will test various conditions to see if it is complete
   # first checks setup field so we don't have to perform db queries if they've completed that step
-  def account_setup_action
-    return [:complete] if account_setup?
-    if !setup?(:account_type)
-      if self.roles.blank?
-        return [:users, :account_type]
-      else
-        self.setup << :account_type
-        self.save
-      end
-    end
-    if roles?(:spectator)
-      return [:users, :spectator]
-    end
-    # If it's time to start the class, then allow them to see new welcome process
-    # if roles?(:entrepreneur)
-    #   if Week.in_time_window?(:join_class)
-    #     return [:startups, :current_class]
-    #   else
-    #     return [:startups, :wait_for_next_class]
-    #   end
-    # end
-    if !setup?(:onboarding)
-      if self.onboarded.blank?
-        return [:onboard, :start]
-      else
-        self.setup << :onboarding
-        self.save
-      end
-    end
-    if !setup?(:profile)
-      if self.profile_completeness_percent < 1.0
-        return [:users, :edit]
-      else
-        self.setup << :profile
-        self.save
-      end
-    end
-    if roles?(:entrepreneur)
-      self.startup = Startup.new if startup_id.blank?
-      stage = self.startup.account_setup_action
-      return stage unless stage.first == :complete # return startup stage unless complete
-    end
-    return [:startups, :invite] if (roles?(:mentor) or roles?(:investor)) and !setup?(:invite_startups)
-    if !setup?(:welcome)
-      return [:users, :welcome]
-    end
-    # If we just completed everything pass that back
-    return [:complete] if account_setup?
-    nil
-  end
+  # def account_setup_action
+  #   return [:complete] if account_setup?
+  #   if !setup?(:account_type)
+  #     if self.roles.blank?
+  #       return [:users, :account_type]
+  #     else
+  #       self.setup << :account_type
+  #       self.save
+  #     end
+  #   end
+  #   if roles?(:spectator)
+  #     return [:users, :spectator]
+  #   end
+  #   # If it's time to start the class, then allow them to see new welcome process
+  #   # if roles?(:entrepreneur)
+  #   #   if Week.in_time_window?(:join_class)
+  #   #     return [:startups, :current_class]
+  #   #   else
+  #   #     return [:startups, :wait_for_next_class]
+  #   #   end
+  #   # end
+  #   if !setup?(:onboarding)
+  #     if self.onboarded.blank?
+  #       return [:onboard, :start]
+  #     else
+  #       self.setup << :onboarding
+  #       self.save
+  #     end
+  #   end
+  #   if !setup?(:profile)
+  #     if self.profile_completeness_percent < 1.0
+  #       return [:users, :edit]
+  #     else
+  #       self.setup << :profile
+  #       self.save
+  #     end
+  #   end
+  #   if roles?(:entrepreneur)
+  #     self.startup = Startup.new if startup_id.blank?
+  #     stage = self.startup.account_setup_action
+  #     return stage unless stage.first == :complete # return startup stage unless complete
+  #   end
+  #   return [:startups, :invite] if (roles?(:mentor) or roles?(:investor)) and !setup?(:invite_startups)
+  #   if !setup?(:welcome)
+  #     return [:users, :welcome]
+  #   end
+  #   # If we just completed everything pass that back
+  #   return [:complete] if account_setup?
+  #   nil
+  # end
   
   def set_account_type(account_type = nil, reset = false)
     self.roles = nil if reset
@@ -396,13 +402,18 @@ class User < ActiveRecord::Base
     end
   end
 
-  def onboarding_completed!(onboarding_type)
-    self.onboarded << onboarding_type.to_sym
-    save(:validate => false)
-  end
+  # def onboarding_completed!(onboarding_type)
+  #   self.onboarded << onboarding_type.to_sym
+  #   save(:validate => false)
+  # end
 
   def invited_startups!
     self.setup << :invite_startups
+    save
+  end
+
+  def welcome_seen!
+    self.setup << :welcome
     save
   end
 
@@ -625,7 +636,7 @@ class User < ActiveRecord::Base
   def assign_weekly_class!
     self.weekly_class = WeeklyClass.current_class
     save
-    self.weekly_class.save # updates clusters on weekly class
+    #self.weekly_class.save # updates clusters on weekly class
   end
 
   def geocode_location
