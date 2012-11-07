@@ -11,7 +11,7 @@
         - elsif @demo_day.in_time_window?
           %h2 #{@demo_day.day.strftime('%B %Y')} nStar Demo Day
           %br/
-          .enter_button= link_to "Meet the Winners".html_safe, '/d', :class => 'btn btn-large btn-success'
+          .enter_button= link_to "Meet the Winners".html_safe, @demo_day, :class => 'btn btn-large btn-success'
       - else
         .row
           .span5.well{:style => 'padding-left:20px'}
