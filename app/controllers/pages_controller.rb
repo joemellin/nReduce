@@ -1,6 +1,6 @@
 class PagesController < ApplicationController
   before_filter :login_required, :only => [:community_guidelines, :tutorial]
-  
+
   def mentor
   end
 

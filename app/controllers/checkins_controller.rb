@@ -1,5 +1,5 @@
 class CheckinsController < ApplicationController
-  around_filter :record_user_action, :only => [:show, :create]
+  around_filter :record_user_action, :only => [:show, :create, :first]
   before_filter :login_required
   before_filter :load_requested_or_users_startup
   load_and_authorize_resource :startup, :except => [:first]
