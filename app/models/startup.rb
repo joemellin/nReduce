@@ -410,9 +410,12 @@ class Startup < ActiveRecord::Base
     self.setup << :goal
     # Set as active as they just did a checkin
     self.active = true
-    Startup.last_activated_teams(3).each do |s|
-      r = Relationship.start_between(self, s, :startup_startup, true)
-      r.approve! if r.present? && r.valid?
+    connected_to_ids = self.connected_to_ids('Startup')
+    unless connected_to_ids.present? && connected_to_ids.size > 0
+      Startup.last_activated_teams(3).each do |s|
+        r = Relationship.start_between(self, s, :startup_startup, true)
+        r.approve! if r.present? && r.valid?
+      end
     end
     save
   end
