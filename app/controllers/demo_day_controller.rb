@@ -27,7 +27,7 @@ class DemoDayController < ApplicationController
       @startup = Startup.find_by_obfuscated_id(params[:startup_id])
     end
     @next_demo_day = DemoDay.ordered.first if @demo_day.in_the_past?
-    @after = true
+    @after = true unless @demo_day.day == Date.today
     if @demo_day.includes_startup?(@startup)
       # Load all checkins made before demo day
       #@checkins = @startup.checkins.where(['created_at < ?', "#{@demo_day.day} 00:00:00"]).ordered.includes(:before_video, :after_video)
