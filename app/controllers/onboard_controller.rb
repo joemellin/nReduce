@@ -3,6 +3,8 @@ class OnboardController < ApplicationController
   before_filter :load_requested_or_users_startup
 
   def show
+    @setup = true
+    @weekly_class = true
     render "step_#{params[:id]}"
   end
 
