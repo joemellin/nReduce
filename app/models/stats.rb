@@ -513,7 +513,7 @@ class Stats
       current += 1.day
     end
 
-    action_labels = ['registrations_new', 'registrations_create', 'weekly_classes_show', 'checkins_create']
+    action_labels = ['registrations_new', 'checkins_first', 'checkins_create']
     action_ids = action_labels.map{|l| UserAction.id_for(l) }
 
     tmp_data = {}
@@ -541,8 +541,8 @@ class Stats
       uas.each do |a|
         index = action_ids.index(a.action)
         if index < furthest_along
-          if a.action == checkin_action # If a checkin, only count action if this was their first checkin (give it a 5 min grace period)
-            next if Checkin.where(:startup_id => a.user.startup_id).where(['created_at < ?', a.created_at - 5.minutes]).count > 0 
+          if a.action == checkin_action # If a checkin, only count action if this was their 1st completed checkin (give it a 5 min grace period)
+            next if Checkin.where(:startup_id => a.user.startup_id).where(['created_at < ?', a.created_at - 5.minutes]).completed.count > 0
           end
           furthest_along = index
           ua = a

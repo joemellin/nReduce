@@ -32,7 +32,8 @@ class UserAction < ActiveRecord::Base
       'registrations_new' => 11,
       'weekly_classes_show' => 12,
       'checkins_create' => 13,
-      'registrations_create' => 14
+      'registrations_create' => 14,
+      'checkins_first' => 15
     }
   end
 

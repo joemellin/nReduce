@@ -53,9 +53,9 @@ every :wednesday, :at => '2pm' do
 end
 
 # Send email to all people who didn't join this week to join again next week
-every :wednesday, :at => '2:05pm' do
-  runner "WeeklyClass.email_incomplete_startups_from_previous_week"
-end
+# every :wednesday, :at => '2:05pm' do
+#   runner "WeeklyClass.email_incomplete_startups_from_previous_week"
+# end
 
 every 24.hours, :at => '1am' do
 	runner "Stats.calculate_engagement_metrics"
