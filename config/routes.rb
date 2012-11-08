@@ -177,6 +177,7 @@ Nreduce::Application.routes.draw do
   get '/onboard/start(/:type)' => "onboard#start", :as => :onboard_start
   get '/onboard/' => "onboard#current_step", :as => :onboard
   post '/onboard/next' => "onboard#next", :as => :onboard_next
+  get '/onboard/go_to/:step' => "onboard#go_to", :as => :onboard_go_to
   get '/onboard/:id' => "onboard#show"
 
   resources :invites, :only => [:create, :destroy, :show] do

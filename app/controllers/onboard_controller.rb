@@ -1,6 +1,6 @@
 class OnboardController < ApplicationController
-  #before_filter :login_required
-  #before_filter :load_requested_or_users_startup
+  before_filter :login_required
+  before_filter :load_requested_or_users_startup
 
   def show
     @setup = true
@@ -23,10 +23,11 @@ class OnboardController < ApplicationController
   def current_step
     #@user = current_user
     # Check if user has completed
-    if current_onboarding_step == Onboarding.num_onboarding_steps
+    if current_onboarding_step > Onboarding.num_onboarding_steps
       #@user.onboarding_completed!(current_onboarding_type)
       redirect_to join_path
     else
+      @onboarding_step = current_onboarding_step
       render "step_#{current_onboarding_step}"
     end
   end
@@ -64,35 +65,34 @@ class OnboardController < ApplicationController
     redirect_to :action => :current_step
   end
 
+  def go_to
+    self.current_onboarding_step = params[:step].to_i
+    redirect_to :action => :current_step
+  end
+
   protected
 
   # Validate current onboarding process type, save in session, and redirect to start it
   def redirect_to_onboarding_start(type = nil)
-    if !type.blank? and Onboarding.onboarding_types.include?(type.to_sym)
-      session[:onboarding_type] = type.to_sym
-      session[:onboarding_step] = 1
-      redirect_to :action => :current_step
-    else
-      flash[:alert] = "#{type} is not a valid onboarding flow."
-      redirect_to '/'
-    end
+    session[:onboarding_step] = 1
+    redirect_to :action => :current_step
+  end
+
+  def current_onboarding_step=(step)
+    session[:onboarding_step] = step
   end
 
   def current_onboarding_step
     session[:onboarding_step]
   end
 
-  def current_onboarding_type
-    session[:onboarding_type]
-  end
-
   # User has completed a step, increment to next step for this onboarding type
   def onboarding_step_increment!
     session[:onboarding_step] += 1
     # See if we need to skip the next onboarding step
-    while(Onboarding.skip_onboarding_step?(session[:onboarding_type], session[:onboarding_step]))
-      session[:onboarding_step] += 1
-    end
+    # while(Onboarding.skip_onboarding_step?(session[:onboarding_step]))
+    #   session[:onboarding_step] += 1
+    # end
     session[:onboarding_step]
   end
 end

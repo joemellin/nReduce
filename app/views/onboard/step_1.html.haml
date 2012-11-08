@@ -1,17 +1,14 @@
 .onboard{:align => 'center'}
-  %h1 Welcome to nReduce!
-  %br
-  :plain
-    <iframe width="500" height="315" src="http://www.youtube.com/embed/zjozpoqlW5A" frameborder="0" allowfullscreen></iframe>
-  %br
-  %br
-  %h2 Questions?
-  %h4
-    Contact Joe:
-    %a{:href => 'tel:14152598215'} +1 (415) 259-8215
-    or
-    = mail_to 'joe@nReduce.com'
+  = render 'onboard/nav'
+
+  %h1 Your Teams
   %br/
-  %br/
+  .right= button_to 'Next', onboard_next_path, :method => :post, :class => 'btn btn-success btn-large'
+  .left
+    This is what you do
+  .clear
+
+  Content
+
   .buttons
-    = button_to 'Continue', onboard_next_path, :method => :post, :class => 'btn btn-success btn-large'
+    = button_to 'Next', onboard_next_path, :method => :post, :class => 'btn btn-success btn-large'

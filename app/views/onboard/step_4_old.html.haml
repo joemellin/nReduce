@@ -1,0 +1,16 @@
+.row.onboard
+  .span6
+    %h1 You Connect With Other Startups.
+    %br/
+    = image_tag 'connecting.png'
+    - if current_user.entrepreneur?
+      %h2 Connecting with a startup means that you will share your weekly progress with each other.
+    - else
+      %h2 Connecting with a startup means that you will be able to give feedback and advice on their weekly progress.
+    %br/
+    %h2 You can invite startups you know to join and/or connect with startups in the global nReduce community. 
+    %br/
+    %br/
+    %center
+      %h2 Does that make sense?
+      = render :partial => 'buttons'
