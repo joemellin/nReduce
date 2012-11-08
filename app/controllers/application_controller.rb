@@ -232,6 +232,7 @@ class ApplicationController < ActionController::Base
 
   # Pass in a time object to only_if_any_since to load only if there are any new questions since that time
   def load_questions_for_startup(startup, only_if_any_since = nil)
+    @startup = startup
     @question = Question.new(:startup => startup)
     if only_if_any_since.present?
       # limit to questions only since a certain time

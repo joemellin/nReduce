@@ -1,7 +1,7 @@
 :plain
   $('.questions').html("#{escape_javascript(render('questions/list'))}");
   $('.question_count').text(#{@questions.size});
-  $('.current_question').html("#{escape_javascript(render('questions/current_question'))}");
+  $('.current_question').html("#{escape_javascript(render('questions/current_question', :startup => @startup))}");
 -# User just saved new question
 - if @created_question.present?
   :plain

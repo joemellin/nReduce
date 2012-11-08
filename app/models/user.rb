@@ -307,7 +307,7 @@ class User < ActiveRecord::Base
 
   def account_setup?
     if roles?(:entrepreneur)
-      self.startup.account_setup? && self.setup?(:welcome)
+      self.startup.present? && self.startup.account_setup? && self.setup?(:welcome)
     else
       true
     end
@@ -316,6 +316,7 @@ class User < ActiveRecord::Base
   def account_setup_action
     return [:complete] if account_setup?
     if roles?(:entrepreneur)
+      return nil if self.startup.blank?
       if self.startup.account_setup?
         return [:relationships, :index]
       else
