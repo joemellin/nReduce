@@ -2,13 +2,9 @@
   .footer.span12
     %center
       = link_to "Home", home_path
-      = link_to "Investors", public_investors_path
-      = link_to "Mentors", public_mentors_path
-      = link_to "Journalists", public_press_path
       = link_to "nStar", '/d'
       = link_to "Team", team_path
       = link_to "Heart Startups", 'heartstartups'
-      = link_to 'Blog', "http://blog.nreduce.com"
       - if user_signed_in?
         = link_to 'Tutorial', tutorial_path
     
