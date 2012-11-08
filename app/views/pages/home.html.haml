@@ -19,11 +19,11 @@
           .span6{:style => 'text-align:left; padding-left:20px'}
             %b{:style => 'font-size:60px; color:#25A6E9; line-height:65px; padding-top:20px'} The Free Online Startup Incubator 
             %br/
-            %h2{:style => 'font-size:30px; padding-top:40px'} Where Great Startups are Born.
+            %h2{:style => 'font-size:33px; padding-top:40px'} Where Great Startups are Born.
             %h2 
             .row{:style => 'padding-top:40px'}
               .left{:style => 'padding-left:40px'}
-                .enter_button= link_to "#{image_tag('linkedinws.png')} Join Now".html_safe, join_path, :class => 'btn btn-large btn-success', :style => 'font-size:40px'
+                .enter_button= link_to "Join Now".html_safe, sign_up_path, :class => 'btn btn-large btn-success', :style => 'font-size:40px'
               .left{:style => 'padding-left:20px; padding-top: 25px'}
                 = link_to "Learn More", why_join_path, :style => 'font-size:24px; color:#999999'
               .clear
@@ -39,7 +39,16 @@
       %p
     .span10
       = render 'weekly_classes/map'
-  
+  %br/
+  %br/
+  %hr/
+  .row.center{:style => 'padding-top:20px; padding-bottom: 20px'}
+    %h1 How Much Does It Cost For My Startup to Join?
+  %hr/
+  .row.center{:style => 'padding-top: 130px; padding-bottom:50px'}
+    %h1.b{:style => 'font-size: 200px; color: #25A6E9; font-style:bold'}Free!
+  .row.center{:style => 'padding-top: 40px; padding-bottom:90px'}
+    %h1{:style => 'font-size: 80px; color: #cccccc'}$0 & 0% Equity
   %hr/
   .row.center{:style => 'padding-top:20px; padding-bottom: 20px'}
     %h1 nReduce Can Help You Regardless of What Industry You Are Disrupting
@@ -101,7 +110,7 @@
   %br/
   %hr/
   .row.center{:style => 'padding-top:20px; padding-bottom: 20px'}
-    %h1 There Are Monthly nReduce Meetings Around the World
+    %h1 There Are Monthly nReduce Pitch Meetings Around the World
   %hr/
   .row{:style => 'padding-top: 20px;padding-bottom:40px'}
     .span1
@@ -130,16 +139,6 @@
   %br/
   %hr/
   .row.center{:style => 'padding-top:20px; padding-bottom: 20px'}
-    %h1 How Much Does It Cost For My Startup to Join?
-  %hr/
-  .row.center{:style => 'padding-top: 100px; padding-bottom:50px'}
-    %h1.b{:style => 'font-size: 200px; color: #25A6E9; font-style:bold'}Free!
-  .row.center{:style => 'padding-top: 40px; padding-bottom:50px'}
-    %h1{:style => 'font-size: 80px; color: #cccccc'}$0 & 0% Equity
-  %br/
-  %br/
-  %hr/
-  .row.center{:style => 'padding-top:20px; padding-bottom: 20px'}
     %h1 Has any Press Covered nReduce?
   %hr/
   %br/
@@ -147,10 +146,10 @@
   .row
     .span1
       %p
-    .span5
+    .span4
       .row
-        %h4
-          = link_to 'Eight Companies Make Their Debut at NReduce’s First Virtual Demo Day', 'http://pandodaily.com/2012/09/05/eight-companies-make-their-debut-at-nreduces-first-virtual-demo-day/', :target => "_blank"
+        %h3
+          = link_to '8 Companies Make Their Debut at NReduce’s First Virtual Demo Day', 'http://pandodaily.com/2012/09/05/eight-companies-make-their-debut-at-nreduces-first-virtual-demo-day/', :target => "_blank"
       .row{:style => 'padding-top: 10px'}
         .left{:align => 'right'}= link_to image_tag('pandosq.png'), 'http://pandodaily.com', :target => "_blank"
         .left{:style => 'padding-left: 20px'}
@@ -162,10 +161,12 @@
               <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
 
         .clear
-    .span5
+    .span2
+      %p
+    .span4
       .row
-        %h4
-          = link_to 'Meet the first class of startups from the open-source Y Combinator, nReduce', 'http://venturebeat.com/2012/09/05/nreduce-demo-day/#s:nreduce-1' , :target => "_blank"
+        %h3
+          = link_to 'Meet the first class of startups from the open-source Y Combinator', 'http://venturebeat.com/2012/09/05/nreduce-demo-day/#s:nreduce-1' , :target => "_blank"
       .row{:style => 'padding-top: 10px; padding-bottom: 20px'} 
         .left{:align => 'right'}= link_to image_tag('vbsq.png'), 'http://venturebeat.com', :target => "_blank"
         .left{:style => 'padding-left: 20px'}
@@ -181,9 +182,9 @@
   .row
     .span1
       %p
-    .span5
+    .span4
       .row
-        %h4
+        %h3
           = link_to 'N Reduce Opens Up As Alternative to Ultra-Elite Startup Incubators', 'http://www.xconomy.com/san-francisco/2012/05/14/n-reduce-opens-up-as-alternative-to-ultra-elite-startup-incubators/', :target => "_blank"
       .row{:style => 'padding-top: 10px'}
         .left{:align => 'right'}= link_to image_tag('xconsq.png'), 'http://www.xconomy.com/', :target => "_blank"
@@ -196,9 +197,11 @@
               <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
 
         .clear
-    .span5
+    .span2
+      %p
+    .span4
       .row
-        %h4
+        %h3
           = link_to 'Virtual Incubator to All — Is It the Pre-AngelList?', 'http://pandodaily.com/2012/07/27/virtual-incubator-to-all-nreduce-adds-mentors-and-demo-days-is-it-the-pre-angellist/' , :target => "_blank"
       .row{:style => 'padding-top: 10px; padding-bottom: 20px'} 
         .left{:align => 'right'}= link_to image_tag('pandosq.png'), 'http://pandodaily.com', :target => "_blank"
