@@ -656,10 +656,10 @@ class User < ActiveRecord::Base
   # sends notifications of weekly class that this person has joined
   def notify_classmates_of_new_team
     # don't notify if this person is not an entrepreneur
-    return true unless self.entrepreneur?
-    # don't notify if they are not in this week's current class
-    return true unless self.weekly_class.present? && WeeklyClass.current_class == self.weekly_class && self.startup.present?
-    Notification.create_for_new_team_joined(self.startup)
+    # return true unless self.entrepreneur?
+    # # don't notify if they are not in this week's current class
+    # return true unless self.weekly_class.present? && WeeklyClass.current_class == self.weekly_class && self.startup.present?
+    # Notification.create_for_new_team_joined(self.startup)
     true
   end
 
