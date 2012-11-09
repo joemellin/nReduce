@@ -1,5 +1,16 @@
 .onboard{:align => 'center'}
   = render 'onboard/nav'
-  %h1 Find Teams
+  .row{:style => 'padding-top: 50px; padding-bottom:60px'}
+    .span2
+      %p
+    .span8 
+      %h1 You build a group of 6-8 other startups. Each week they give feedback to you and you give feedback to them.
+  .row
+    .span2
+      %p
+    .span8
+      = image_tag 'grouptutorial.png'
   %br/
+  %br/
+  %br/  
   = render 'onboard/buttons'

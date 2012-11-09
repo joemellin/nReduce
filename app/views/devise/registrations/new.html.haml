@@ -1,27 +1,45 @@
-.center
-  %h2 Join nReduce
-- unless @omniauth
-  .row
-    .span3
-      %p &nbsp;
-    .span6{:align => 'center', :style => 'padding: 15px 20px 30px 20px'}
-      
-      %a.btn.btn-large{:href => '/auth/linkedin'}
-        = image_tag('linkedin_32.png')
-        Join With LinkedIn
-      %a.btn.btn-large{:href => '/auth/twitter'}
-        = image_tag('twitter_32.png')
-        Join With Twitter
-    .span3
 
 .row
-  .span3
-    %p &nbsp;
-  .span6
-    = render 'devise/registrations/sign_up'
-    %br/
-    %br/
-    Already have an account?
-    = link_to 'Sign in with your email', new_session_path(:user) + '?s=1'
-  .span3
-    %p &nbsp;
+
+- unless @omniauth
+ 
+  .row
+    .span3
+      %p
+    .span5.well
+      %br
+      .row{:style => 'padding-top:20; padding-bottom:20px'}
+        .center
+          %h1{:style => 'font-size:40px; color:#999999; padding-left:45px'} Join nReduce 
+        %br
+      %hr
+      %br
+      = render 'devise/registrations/sign_up'
+      %br/
+      %br/
+      
+    .span3{:style => 'padding: 15px 20px 30px 20px'}
+      %div{:style => 'padding-top:20px'}
+        %a.btn.btn-large{:href => '/auth/linkedin'}
+          = image_tag('linkedin_32.png')
+          Join With LinkedIn
+      %div{:style => 'padding-top:20px'}
+        %a.btn.btn-large{:href => '/auth/twitter'}
+          = image_tag('twitter_32.png')
+          Join With Twitter
+      %div{:style => 'padding-top:20px'}
+        %p Already have an account?
+        %p{:style => 'padding-left:twitter_320px'}= link_to 'Sign In', new_session_path(:user) + '?s=1'
+        %br
+        %br
+      %div{:style => 'padding-top:120px; padding-top:50px; font-size : 14px; color:#999999  '}
+        %div{:style => 'width:200px'}
+          %p I honestly think that if I hadn't joined nReduce, there would have been no alpha by now.
+          %p{:align => 'right'} - Founder
+          %br
+          %br
+          %br
+          %p I would recommend nReduce for any startup.
+          %p{:align => 'right'} - Founder
+          %br
+

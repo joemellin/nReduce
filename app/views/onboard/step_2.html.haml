@@ -1,5 +1,27 @@
 .onboard{:align => 'center'}
   = render 'onboard/nav'
-  %h1 Checkin
+
+  .row{:style => 'padding-top: 50px; padding-bottom:60px'}
+    .span2
+      %p
+    .span8 
+      %h1 In nReduce you start the week by setting a goal and then on Tuesday you document your progress.
+  .row
+    .span2
+      %p
+    .span3
+      %h3 Example Goal:
+      %br/
+      %h1 Improve the check in video posting experience
+    .span1
+      %p
+    .span4
+      %h3 Example After Video:  
+      %br/
+      :plain
+        <iframe width="420" height="315" src="http://www.youtube.com/embed/M-ccdMJFD7A" frameborder="0" allowfullscreen></iframe>
+
+  %br/
+  %br/
   %br/
   = render 'onboard/buttons'
