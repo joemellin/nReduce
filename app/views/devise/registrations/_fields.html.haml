@@ -44,6 +44,7 @@
     = f.file_field :pic
     = f.hidden_field :pic_cache
     = f.semantic_errors :pic
+    %span.help-inline (optional)
     - if @user.pic?
       .div{:style => 'margin-top: 10px'}
         %br/
@@ -89,4 +90,4 @@
           /= si.semantic_errors :email
 
 .control-group
-  .controls= f.submit "Join", :class => 'btn btn-large btn-primary', :style => 'padding: 10px 25px 10px 25px'
+  .controls= f.submit "Join", :class => 'btn btn-large btn-success', :style => 'padding: 10px 25px 10px 25px; font-size:50px; line-height:60px'
