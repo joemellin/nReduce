@@ -109,14 +109,9 @@ class ApplicationController < ActionController::Base
         return
       end
 
-      if @account_setup_action == [:relationships, :index]
-        # almost set up, just need to show welcome modal
-        @show_welcome_modal = true
-      else
-        # Account is not set up
-        @hide_nav = true
-        @setup = true unless [:account_type, :spectator].include?(@account_setup_action.last)
-      end
+      # Account is not set up
+      @hide_nav = true
+      @setup = true unless [:account_type, :spectator, :start].include?(@account_setup_action.last)
      
       if @account_setup_action.first == :complete
         flash[:notice] = "Thanks for setting up your account!"
@@ -127,6 +122,7 @@ class ApplicationController < ActionController::Base
       return true if controller_action_arr == @account_setup_action
       # Allow create/update actions
       if controller_action_arr.first == @account_setup_action.first
+        return true if @account_setup_action.first == :onboard
         return true if @account_setup_action.last == :edit and action_name.to_sym == :update
         return true if @account_setup_action.last == :new and [:create, :edit].include?(controller_action_arr.last)
       end
