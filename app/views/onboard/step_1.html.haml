@@ -3,12 +3,9 @@
 
   %h1 Your Teams
   %br/
-  .right= button_to 'Next', onboard_next_path, :method => :post, :class => 'btn btn-success btn-large'
-  .left
-    This is what you do
+  %p This is what you do
   .clear
 
   Content
 
-  .buttons
-    = button_to 'Next', onboard_next_path, :method => :post, :class => 'btn btn-success btn-large'
+  = render 'onboard/buttons'

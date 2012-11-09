@@ -1,4 +1,2 @@
 .buttons
-  .inline-block= button_to 'Yes', onboard_next_path, :method => :post, :class => 'btn btn-success btn-large'
-  .inline-block= link_to 'No', contact_joe_path, :class => 'btn btn-large'
-  
+  = button_to @last_step ? 'Finish' : 'Next', onboard_next_path, :method => :post, :class => 'btn btn-success btn-large'
