@@ -4,11 +4,49 @@
     line-height: 36px;
     font-weight: bold;
   }
+  .buttons {
+    margin-top: 20px;
+  }
   .form-actions {
     border: 0px;
     background-color: transparent;
   }
   .inline-block {
     display: inline-block;
+  }
+
+  .navbar {
+    margin-top: 25px;
+    margin-bottom: 25px;
+    .navbar-inner {
+      padding-left: 0px;
+      padding-right: 0px;
+      background-color: #Fff;
+      box-shadow: none;
+      background-image: none;
+      .nav {
+        margin-left: auto;
+        margin-right: auto;
+        left: 9%;
+        li.completed a, li.active a {
+          background-color: green;
+        }
+        li.completed a {
+          color: #00CC00;
+        }
+        li a {
+          font-size: 1.3em;
+          line-height: 20px;
+          background-color: #F8F8F8;
+          font-weight: bold;
+          padding-left: 35px;
+          padding-right: 35px;
+          text-shadow: none;
+        }
+        li a:hover {
+          color: #000;
+        }
+      }
+    }
   }
 }

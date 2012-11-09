@@ -41,7 +41,8 @@
               .clear
           - else
             = yield
-        = render "layouts/footer"
+        - unless @hide_footer
+          = render "layouts/footer"
       = content_for :modals
 
       -# Olark collides with Screen code so can't include it if we're recording video.
