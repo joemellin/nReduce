@@ -1,7 +1,7 @@
 - hide_nav ||= false
 .nav
   .row
-    .span2{:style => 'margin: 31px 0 60px 31px;'}= link_to(image_tag(user_signed_in? && !@setup ? 'nglow.png' : 'nreduce_logo.png'), (@demo_day.present? ? '/d' : "/"))
+    .span2{:style => hide_nav ? '' : 'margin: 31px 0 60px 31px;'}= link_to(image_tag(user_signed_in? && !@setup ? 'nglow.png' : 'nreduce_logo.png'), (@demo_day.present? ? '/d' : "/"))
     - if !hide_nav && user_signed_in? && !@setup && current_user.entrepreneur? && current_user.startup.present? && current_user.startup.account_setup?
       .span2{:style => 'margin: 60px 0 0 0;'}
         .left= link_to '<i class="icon icon-user"></i> Add Teams'.html_safe , add_teams_relationships_path, :class => 'btn add_teams'
@@ -31,7 +31,7 @@
         &nbsp;
     .span3
       .right
-        %ul.nav.nav-pills{:style => 'margin: 50px -170px 60px 0px;'}
+        %ul.nav.nav-pills{:style => hide_nav ? '' : 'margin: 50px -170px 60px 0px;'}
           - if user_signed_in?
             - if hide_nav
               %li= link_to "Log out", logout_path, :method => :delete
