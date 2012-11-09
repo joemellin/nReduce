@@ -319,7 +319,7 @@ class User < ActiveRecord::Base
       return nil if self.startup.blank?
       if !self.setup?(:welcome)
         return [:onboard, :start]
-      elsif self.startup.account_setup?
+      elsif !self.startup.account_setup?
         return self.startup.account_setup_action
       end
     end
