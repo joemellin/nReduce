@@ -427,8 +427,7 @@ class Startup < ActiveRecord::Base
     self.save
     c = 0
     self.team_members.each do |u|
-      # only suggest startups once, for first team member
-      u.setup_complete!(c == 0, true)
+      u.setup_complete!
       c += 1
     end
     true
