@@ -28,8 +28,10 @@ class OnboardController < ApplicationController
     #@user = current_user
     # Check if user has completed
     if current_onboarding_step > Onboarding.num_onboarding_steps
+      # completed onboarding
       #@user.onboarding_completed!(current_onboarding_type)
-      redirect_to join_path
+      current_user.welcome_seen!
+      redirect_to relationships_index
     else
       @onboarding_step = current_onboarding_step
       render "step_#{current_onboarding_step}"
