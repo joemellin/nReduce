@@ -21,7 +21,7 @@ class OnboardController < ApplicationController
   end
 
   def current_step
-    @hide_nav = true
+    @onboard = true
     @last_step = current_onboarding_step == Onboarding.num_onboarding_steps
     @hide_background_image = true
     @hide_footer = true

@@ -30,8 +30,9 @@
       = image_tag background_image_path, :class => 'bg'
     .wrapper{:class => show_background_image? ? 'logged_in' : ''}
       .container
-        .header
-          = render 'layouts/nav', :hide_nav => @hide_nav == true
+        - unless @onboard
+          .header
+            = render 'layouts/nav', :hide_nav => @hide_nav == true
         .body
           = render "layouts/flash_messages"
           - if @setup and !@weekly_class
