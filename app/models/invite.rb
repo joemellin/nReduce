@@ -71,7 +71,7 @@ class Invite < ActiveRecord::Base
       # Assign user same weekly class as the rest of the startup
       user.weekly_class = self.weekly_class if self.weekly_class.present?
       # Bypass forcing user to setup account if they were invited from startup that is setup, also don't suggest startups
-      user.setup_complete!(true, true) if self.startup.account_setup?
+      user.setup_complete! if self.startup.account_setup?
     elsif self.invite_type == Invite::STARTUP
       user.set_account_type(:entrepreneur)
       relationship_role = :startup_startup

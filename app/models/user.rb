@@ -318,7 +318,7 @@ class User < ActiveRecord::Base
     if roles?(:entrepreneur)
       return nil if self.startup.blank?
       if self.startup.account_setup?
-        return [:relationships, :index]
+        return [:onboard, :start]
       else
         return self.startup.account_setup_action
       end
@@ -418,10 +418,10 @@ class User < ActiveRecord::Base
     save
   end
 
-  def setup_complete!(dont_suggest_startups = false, skip_all_steps = false)
+  def setup_complete!
     # No longer suggesting startups because that isn't db-based
-    self.setup << :welcome
-    self.setup += self.account_setup_steps
+    #self.setup << :welcome
+    #self.setup += self.account_setup_steps
     self.save
   end
 
