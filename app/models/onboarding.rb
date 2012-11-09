@@ -1,6 +1,6 @@
 class Onboarding
   def self.steps
-    [:your_teams, :checkins, :give_feedback, :find_teams]
+    [:welcome, :weekly_schedule, :connect, :feedback, :your_group, :watercooler]
   end
 
   # total number of possible onboarding steps
