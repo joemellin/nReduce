@@ -1,9 +1,8 @@
-.nav
+.navbar
   .navbar-inner
-    .container
-      %ul.nav
-        - c = 1
-        - Onboarding.steps.each do |s|
-          %li{:class => @onboarding_step == c ? 'active' : ''}= link_to s.to_s.titleize, onboard_go_to_path(:step => c)
-          %li.divider-vertical
-          - c += 1
+    %ul.nav
+      - c = 1
+      - Onboarding.steps.each do |s|
+        %li{:class => @onboarding_step == c ? 'active' : ''}= link_to s.to_s.titleize, onboard_go_to_path(:step => c)
+        %li.divider-vertical
+        - c += 1

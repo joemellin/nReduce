@@ -21,6 +21,8 @@ class OnboardController < ApplicationController
   end
 
   def current_step
+    @hide_nav = true
+    @last_step = current_onboarding_step == Onboarding.num_onboarding_steps - 1
     #@user = current_user
     # Check if user has completed
     if current_onboarding_step > Onboarding.num_onboarding_steps
