@@ -1,11 +1,8 @@
 .onboard {
   .buttons, .buttons input, .buttons a {
-    font-size: 30px; 
-    line-height: 36px;
+    font-size: 30px;
+    line-height:40px;
     font-weight: bold;
-  }
-  .buttons {
-    margin-top: 20px;
   }
   .form-actions {
     border: 0px;
@@ -13,6 +10,15 @@
   }
   .inline-block {
     display: inline-block;
+  }
+
+  .status_bar {
+    .text {
+      padding-left: 160px;
+    }
+    .button {
+      padding-left: 15px;
+    }
   }
 
   .navbar {
@@ -29,10 +35,10 @@
         margin-right: auto;
         left: 7%;
         li.completed a, li.active a {
-          background-color: green;
+          background-color: #24a7ea;
         }
         li.completed a {
-          color: #00CC00;
+          color: #1a80b3;
         }
         li a {
           font-size: 1.3em;
