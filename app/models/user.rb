@@ -317,14 +317,13 @@ class User < ActiveRecord::Base
     return [:complete] if account_setup?
     if roles?(:entrepreneur)
       return nil if self.startup.blank?
-      if self.startup.account_setup?
+      if !self.setup?(:welcome)
         return [:onboard, :start]
-      else
+      elsif !self.startup.account_setup?
         return self.startup.account_setup_action
       end
-    else
-      nil
     end
+    nil
   end
 
   # def account_setup_steps
