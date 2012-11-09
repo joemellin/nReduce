@@ -31,7 +31,7 @@ class OnboardController < ApplicationController
       # completed onboarding
       #@user.onboarding_completed!(current_onboarding_type)
       current_user.welcome_seen!
-      redirect_to relationships_index
+      redirect_to relationships_path
     else
       @onboarding_step = current_onboarding_step
       render "step_#{current_onboarding_step}"
