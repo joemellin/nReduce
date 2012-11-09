@@ -1,7 +1,5 @@
 .row
-  .span2
-    %p
-  .span8
+  .span12
     .navbar
       .navbar-inner
         %ul.nav
@@ -15,5 +13,3 @@
               - klass = ''
             %li{:class => klass}= link_to s.to_s.titleize, onboard_go_to_path(:step => c)
             - c += 1
-  .span2
-    %p
