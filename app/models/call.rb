@@ -9,13 +9,14 @@ class Call < ActiveRecord::Base
 
   @queue = :calls
 
-  def self.perform(action = :reminder)
+  def self.perform(call_id, action = :reminder)
+    c = Call.find(call_id)
     # Remind both parties that call is about to happen
     if action == :reminder
-      self.send_reminder
+      c.send_reminder
     # Perform call
     elsif action == :call
-      self.perform_call
+      c.perform_call
     end
   end
 
@@ -85,6 +86,20 @@ class Call < ActiveRecord::Base
     return phone
   end
 
+  def self.get_call_for_sid(sid)
+    id = Call.get_call_id_for_sid(sid)
+    Call.find(id) unless id.blank?
+  end
+
+  def self.get_call_id_for_sid(sid)
+    id = Cache.get(['call', sid])
+    id.blank? ? nil : id.to_i
+  end
+
+  def set_call_id_for_sid(sid)
+    Cache.set(['call', sid], self.id, nil, true)
+  end
+
   # Sets the scheduled at time for this week from a string, ex: Th 500pm
   # Need to accomodate for user's time zone
   def set_scheduled_at_from_string(day, time)
@@ -108,10 +123,10 @@ class Call < ActiveRecord::Base
     self.duration = duration
     
     # Set up reminder 10 minutes before call
-    Resque.enqueue_at(self.schedule_at - 10.minutes, Call, :reminder)
-    
+    Resque.enqueue_at(self.schedule_at - 10.minutes, Call, self.id, :reminder)
+
     # Set up call to happen at scheduled time
-    Resque.enqueue_at(self.schedule_at, Call, :call)
+    Resque.enqueue_at(self.schedule_at, Call, self.id, :call)
 
     # Send sms to from_user to notify call has been scheduled
     msg = "A founder has been confirmed to talk with you at #{self.scheduled_at}"
@@ -146,9 +161,15 @@ class Call < ActiveRecord::Base
     @call = @client.account.calls.create(
       :from => Settings.twilio.phone,
       :to => Call.intl(self.from_user.phone),
-      :url => 'http://www.nreduce.com/call/receive'
+      :url => 'http://www.nreduce.com/calls/start_conference'
     )
-    #@call = @client.account.calls.get('CA386025c9bf5d6052a1d1ea42b4d16662')
+    self.set_call_id_for_sid(@call.sid)
+    @call = @client.account.calls.create(
+      :from => Settings.twilio.phone,
+      :to => Call.intl(self.to_user.phone),
+      :url => 'http://www.nreduce.com/calls/start_conference'
+    )
+    self.set_call_id_for_sid(@call.sid)
     # http://www.twilio.com/docs/api/rest/participant
   end
 end
