@@ -55,7 +55,7 @@ Nreduce::Application.routes.draw do
 
   resources :calls do
     collection do
-      post 'callback'
+      post 'receive'
       post 'other_party_unavailable'
       post 'connected'
       post 'completed'

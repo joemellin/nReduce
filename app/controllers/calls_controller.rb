@@ -2,7 +2,7 @@ class CallsController < ApplicationController
   before_filter :load_call
 
   # Generic callback handler
-  def callback
+  def receive
     # Looks like we hit an answering machine
     if params['AnsweredBy'].present? && params['AnsweredBy'] == 'machine'
       # Hang up and call again if first attempt
