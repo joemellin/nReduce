@@ -1,11 +1,12 @@
 .onboard{:align => 'center'}
   = render 'onboard/nav'
-
-  .row{:style => 'padding-top: 20px; padding-bottom:30px'}
-    .span1
-      %p
-    .span10 
-      %b{:style => 'font-size:35px; line-height: 40px; color:#666666'} In nReduce you start the week by setting a goal and then on Tuesday you document your progress.
+  .row.status_bar{:style => 'padding-top: 20px; padding-bottom:30px'}
+    .span9
+      .text
+        %b{:style => 'font-size:35px; line-height: 40px; color:#666666'} In nReduce you start the week by setting a goal and then on Tuesday you document your progress.
+    .span2
+      .button{:align => 'right'}
+        = render 'onboard/buttons'
   .row
     .span2
       %p
@@ -20,8 +21,3 @@
       %br/
       :plain
         <iframe width="420" height="280" src="http://www.youtube.com/embed/M-ccdMJFD7A" frameborder="0" allowfullscreen></iframe>
-
-  %br/
-  %br/
-  %br/
-  = render 'onboard/buttons'

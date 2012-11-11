@@ -62,6 +62,7 @@ class RelationshipsController < ApplicationController
 
   def add_teams
     authorize! :add_teams, Relationship
+    suggested = false
     if current_user.mentor? || current_user.investor?
       @entity = current_user
       @relationship = @entity.pending_relationships.last
@@ -94,12 +95,13 @@ class RelationshipsController < ApplicationController
 
         @review_startup = Startup.find(next_id)
         @relationship = Relationship.start_between(@startup, @review_startup, :startup_startup, false, true)
+        suggested = true
       end
 
       @startups_in_common = Relationship.startups_in_common(@review_startup, @startup)
       @num_checkins = @review_startup.checkins.count
       @num_awesomes = @review_startup.awesomes.count
-      if @relationship.suggested?
+      if suggested == true
         if @startup.num_active_startups >= Startup::NUM_ACTIVE_REQUIRED
           @pct_complete = 100
         else

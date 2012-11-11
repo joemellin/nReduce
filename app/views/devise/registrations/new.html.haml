@@ -1,8 +1,4 @@
-
-.row
-
-- unless @omniauth
- 
+.row 
   .row
     .span3
       %p
@@ -10,7 +6,7 @@
       %br
       .row{:style => 'padding-top:20; padding-bottom:20px'}
         .center
-          %h1{:style => 'font-size:40px; color:#999999; padding-left:45px'} Join nReduce 
+          %h1{:style => 'font-size:40px; color:#999999; padding-left:45px'} Join nReduce
         %br
       %hr
       %br
@@ -19,14 +15,15 @@
       %br/
       
     .span3{:style => 'padding: 15px 20px 30px 20px'}
-      %div{:style => 'padding-top:20px'}
-        %a.btn.btn-large{:href => '/auth/linkedin'}
-          = image_tag('linkedin_32.png')
-          Join With LinkedIn
-      %div{:style => 'padding-top:20px'}
-        %a.btn.btn-large{:href => '/auth/twitter'}
-          = image_tag('twitter_32.png')
-          Join With Twitter
+      - unless @omniauth
+        %div{:style => 'padding-top:20px'}
+          %a.btn.btn-large{:href => '/auth/linkedin'}
+            = image_tag('linkedin_32.png')
+            Join With LinkedIn
+        %div{:style => 'padding-top:20px'}
+          %a.btn.btn-large{:href => '/auth/twitter'}
+            = image_tag('twitter_32.png')
+            Join With Twitter
       %div{:style => 'padding-top:20px'}
         %p Already have an account?
         %p{:style => 'padding-left:twitter_320px'}= link_to 'Sign In', new_session_path(:user) + '?s=1'

@@ -1,14 +1,20 @@
 .onboard{:align => 'center'}
   = render 'onboard/nav'
   
+  .row.status_bar{:style => 'padding-top: 20px; padding-bottom:30px'}
+    .span3
+      %p
+    .span6
+      .center
+        %b{:style => 'font-size:35px; line-height: 40px; color:#666666'} Welcome to nReduce!
+    .span3
+      .button{:align => 'right'}
+        = render 'onboard/buttons'
+
   .row{:style => 'padding-top: 20px; padding-bottom:0px'}
     .span1
       %p
     .span10
-      %br/
-      %br/
-      %b{:style => 'font-size:35px; line-height: 40px; color:#666666'} Welcome to nReduce!
-      %br/
       %br/
       %br/
       %br/
@@ -20,4 +26,3 @@
       %h2 When you are ready, click the Continue button to get started.
     .span2
   .clear
-  = render 'onboard/buttons'

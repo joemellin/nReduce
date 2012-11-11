@@ -1,17 +1,15 @@
 .onboard{:align => 'center'}
   = render 'onboard/nav'
-  .row{:style => 'padding-top: 20px; padding-bottom:30px'}
-    .span1
-      %p
-    .span10
-      %b{:style => 'font-size:35px; line-height: 40px; color:#666666'} To start we connect you with 6 startups who are also joining now.  You can then connect with other teams.
+  .row.status_bar{:style => 'padding-top: 20px; padding-bottom:30px'}
+    .span9
+      .text 
+        %b{:style => 'font-size:35px; line-height: 40px; color:#666666'} To start we connect you with 6 startups who are also joining now.  You can then connect with other teams.
+    .span2
+      .button{:align => 'right'}
+        = render 'onboard/buttons'
   .row
     .span2
       %p
     .span8
       = image_tag 'addtutorial.jpg'
       %h2 To see other teams on nReduce, simply click the Add Teams Button.
-  %br/
-  %br/
-  %br/ 
-  = render 'onboard/buttons'
