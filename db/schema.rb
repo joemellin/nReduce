@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121110225152) do
+ActiveRecord::Schema.define(:version => 20121111152311) do
 
   create_table "authentications", :force => true do |t|
     t.string   "provider"
@@ -37,8 +37,7 @@ ActiveRecord::Schema.define(:version => 20121110225152) do
 
   create_table "calls", :force => true do |t|
     t.string   "data"
-    t.string   "from_sid"
-    t.string   "to_sid"
+    t.string   "sid"
     t.boolean  "confirmed"
     t.integer  "state"
     t.integer  "scheduled_state"

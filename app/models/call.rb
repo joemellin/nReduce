@@ -22,6 +22,9 @@ class Call < ActiveRecord::Base
     # Perform call
     elsif action == :call
       c.perform_call_to_user(:to)
+    elsif action == :disconnect
+      tc = self.twilio_call
+      tc.hangup unless tc.blank?
     end
   end
 
@@ -90,13 +93,7 @@ class Call < ActiveRecord::Base
   end
 
   def self.get_call_for_sid(sid)
-    id = Call.get_call_id_for_sid(sid)
-    Call.find(id) unless id.blank?
-  end
-
-  def self.get_call_id_for_sid(sid)
-    id = Cache.get(['call', sid], nil, true)
-    id.blank? ? nil : id.to_i
+    Call.where(:sid => sid).first
   end
 
   # Returns symbol of caller role (either :from or :to)
@@ -104,10 +101,6 @@ class Call < ActiveRecord::Base
     return :from if self.from.phone.include?(phone)
     return :to if self.to.phone.include?(phone)
     return nil
-  end
-
-  def set_call_id_for_sid(sid)
-    Cache.set(['call', sid], self.id, nil, true)
   end
 
   # Sets the scheduled at time for this week from a string, ex: Th 500pm
@@ -166,6 +159,15 @@ class Call < ActiveRecord::Base
     TwilioClient.account.sms.messages.create(:from => Settings.apis.twilio.phone, :to => self.to.phone, :body => msg)
   end
 
+  # Returns instance of call using SID
+  def twilio_call
+    TwilioClient.account.calls.get(self.sid) unless self.sid.blank?
+  end
+
+  def schedule_disconnect
+    Resque.enqueue_in(self.duration.minutes, Call, self.id, :disconnect)
+  end
+
   def perform_call_to_user(caller_role = :to)
     state = self.send("#{caller_role}_state").first
     if state.blank? || state == :first_attempt
@@ -179,7 +181,7 @@ class Call < ActiveRecord::Base
         :if_machine => 'Continue',
         :timeout => 15 # time out after 15 seconds
       )
-      self.set_call_id_for_sid(call.sid)
+      self.sid = call.sid
       new_state = :first_attempt
     elsif state == :second_attempt
       new_state = :failed
