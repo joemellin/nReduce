@@ -33,8 +33,9 @@ class Call < ActiveRecord::Base
   def self.schedule_with_user(user)
     c = Call.new
     c.from = user
+    c.scheduled_state = :asked
     c.save
-    Resque.enqueue(Call, c.id, :reminder)
+    c.send_message_for_state
   end
 
   # Got a response from a user, need to identify what step they are at and send appropriate message/collect data
