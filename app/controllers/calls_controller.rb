@@ -1,4 +1,5 @@
 class CallsController < ApplicationController
+  skip_before_filter :verify_authenticity_token
   before_filter :load_call
 
   # Generic callback handler

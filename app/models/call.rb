@@ -68,7 +68,7 @@ class Call < ActiveRecord::Base
         resend = true
       else
         # set scheduled at
-        if call.set_scheduled_at_from_string(self.data, self.message.strip) == false
+        if call.set_scheduled_at_from_string(call.data, message.strip) == false
           resend = true
         else
           call.scheduled_state = :completed
