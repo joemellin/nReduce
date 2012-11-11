@@ -29,10 +29,18 @@ class CallsController < ApplicationController
 
   def connected
     if @caller_role == :to
-      # Connect both parties together
-      @phone = @call.from.phone
       @call.update_attribute(:to_state, :connected)
-      render :action => 'dial.xml.builder'
+      
+      if @call.from_state == [:connected]
+        # Schedule call to be disconnected in 20 mins (or whatever duration of call is set at)
+        @call.schedule_disconnect
+        
+        # Connect both parties together
+        @phone = @call.from.phone
+        render :action => 'dial.xml.builder'
+      else
+        # Error - other party was not connected for some reason
+        render :nothing => true
       return
     elsif @caller_role == :from
       @call.update_attribute(:from_state, :connected)
@@ -68,8 +76,8 @@ class CallsController < ApplicationController
       new_state = :failed
       
       # Notify other caller that it has failed
-      @twilio_call = TwilioClient.account.calls.get(@caller_role == :from ? @call.to_sid : @call.from_sid)
-      @twilio_call.redirect_to(url)
+      @twilio_call = @call.twilio_call
+      @twilio_call.redirect_to(other_party_unavailable_calls_path)
 
       render :nothing => true
     end
