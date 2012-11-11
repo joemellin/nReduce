@@ -139,7 +139,7 @@ class Call < ActiveRecord::Base
 
     # Send sms to from to notify call has been scheduled
     msg = "A founder has been confirmed to talk with you at #{self.scheduled_at}"
-    TwilioClient.account.sms.messages.create(:from => Settings.twilio.phone, :to => self.from.phone, :body => msg)
+    TwilioClient.account.sms.messages.create(:from => Settings.apis.twilio.phone, :to => self.from.phone, :body => msg)
     
     self.confirmed = true
     self.save
@@ -156,20 +156,20 @@ class Call < ActiveRecord::Base
       else
     end
     msg = "Sorry didn't catch that. #{msg}" if resend
-    TwilioClient.account.sms.messages.create(:from => Settings.twilio.phone, :to => user.phone, :body => msg)
+    TwilioClient.account.sms.messages.create(:from => Settings.apis.twilio.phone, :to => user.phone, :body => msg)
   end
 
   # Send reminder to people receiving call
   def send_reminder
     msg = "Heads up your mentor call will begin in 10 minutes"
-    TwilioClient.account.sms.messages.create(:from => Settings.twilio.phone, :to => self.from.phone, :body => msg)
-    TwilioClient.account.sms.messages.create(:from => Settings.twilio.phone, :to => self.to.phone, :body => msg)
+    TwilioClient.account.sms.messages.create(:from => Settings.apis.twilio.phone, :to => self.from.phone, :body => msg)
+    TwilioClient.account.sms.messages.create(:from => Settings.apis.twilio.phone, :to => self.to.phone, :body => msg)
   end
 
   def perform_call_to_user(caller_role = :to)
     number = self.send(caller_role).phone
     call = TwilioClient.account.calls.create(
-      :from => Settings.twilio.phone,
+      :from => Settings.apis.twilio.phone,
       :to => number,
       :url => 'http://www.nreduce.com/calls/connected',
       :fallback_url => 'http://www.nreduce.com/calls/failed',
