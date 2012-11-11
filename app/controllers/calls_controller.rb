@@ -18,7 +18,12 @@ class CallsController < ApplicationController
   def other_party_unavailable
     @say = "Sorry but the #{@caller_role == :from ? 'founder' : 'mentor'} could not make the call."
     # Update state of receiver to say they have received message and call is considered completed for them
-    @call.send("#{@opposite_role}_state", :completed)
+    # Unfortunately can't use send method to set a value on the bitmask attributes
+    if @opposite_role == :from
+      @call.from_state = :completed
+    elsif @opposite_role == :to
+      @call.to_state = :completed
+    end
     render :action => 'other_party_unavailable.xml.builder'
   end
 
@@ -54,12 +59,12 @@ class CallsController < ApplicationController
   def handle_failed_call
     state = @call.send("#{@caller_role}_state".to_sym).first
     if state == :first_attempt
-      @call.send("#{@caller_role}_state".to_sym, :second_attempt)
+      new_state = :second_attempt
       @call.perform_call_to_user(:from)
       render :nothing => true
     elsif state == :second_attempt
       # Update state
-      @call.send("#{@caller_role}_state".to_sym, :failed)
+      new_state = :failed
       
       # Notify other caller that it has failed
       @twilio_call = TwilioClient.account.calls.get(@caller_role == :from ? @call.to_sid : @call.from_sid)
@@ -67,6 +72,12 @@ class CallsController < ApplicationController
 
       render :nothing => true
     end
+    if @caller_role == :from
+      @call.from_state = new_state
+    elsif @caller_role == :to
+      @call.to_state = new_state
+    end
+    @call.save
   end
 
   def load_call

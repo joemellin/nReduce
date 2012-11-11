@@ -71,6 +71,7 @@ class Call < ActiveRecord::Base
         if call.set_scheduled_at_from_string(call.data, message.strip) == false
           resend = true
         else
+          call.data = "#{call.data} #{message.strip}"
           call.scheduled_state = :completed
         end
       end
@@ -166,18 +167,28 @@ class Call < ActiveRecord::Base
   end
 
   def perform_call_to_user(caller_role = :to)
-    number = self.send(caller_role).phone
-    call = TwilioClient.account.calls.create(
-      :from => Settings.apis.twilio.phone,
-      :to => number,
-      :url => 'http://www.nreduce.com/calls/connected',
-      :fallback_url => 'http://www.nreduce.com/calls/failed',
-      :status_callback => 'http://www.nreduce.com/calls/completed',
-      :if_machine => 'Continue',
-      :timeout => 15 # time out after 15 seconds
-    )
-    self.set_call_id_for_sid(call.sid)
-    self.send("#{caller_role}_state".to_sym, :first_attempt)
+    state = self.send("#{caller_role}_state").first
+    if state.blank? || state == :first_attempt
+      number = self.send(caller_role).phone
+      call = TwilioClient.account.calls.create(
+        :from => Settings.apis.twilio.phone,
+        :to => number,
+        :url => 'http://www.nreduce.com/calls/connected',
+        :fallback_url => 'http://www.nreduce.com/calls/failed',
+        :status_callback => 'http://www.nreduce.com/calls/completed',
+        :if_machine => 'Continue',
+        :timeout => 15 # time out after 15 seconds
+      )
+      self.set_call_id_for_sid(call.sid)
+      new_state = :first_attempt
+    elsif state == :second_attempt
+      new_state = :failed
+    end
+    if caller_role == :to
+      self.to_state = new_state
+    elsif caller_role == :from
+      self.from_state = new_state
+    end
     self.save
     # http://www.twilio.com/docs/api/rest/participant
   end
