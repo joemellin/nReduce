@@ -95,7 +95,7 @@ class Call < ActiveRecord::Base
   end
 
   def self.get_call_id_for_sid(sid)
-    id = Cache.get(['call', sid])
+    id = Cache.get(['call', sid], nil, true)
     id.blank? ? nil : id.to_i
   end
 
