@@ -83,7 +83,7 @@ Nreduce::Application.routes.draw do
   end
 
   get "/contact_joe" => "pages#contact_joe"
-
+  get "/mentorsphone" => "pages#mentorsphone", :as => "mentorsphone"
   get "/home" => "pages#home", :as => "home"
   get "/nstar" => "pages#nstar", :as => "nstar"
   get "/faq" => "pages#faq", :as => "faq"
