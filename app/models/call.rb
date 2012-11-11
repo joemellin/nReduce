@@ -149,7 +149,7 @@ class Call < ActiveRecord::Base
   # Sends a message to the user for this current state
   def send_message_for_state(resend = false)
     msg = case self.scheduled_state.first
-      when :asked then 'What time would you like your call?'
+      when :asked then 'Would you like to mentor a startup this week? Please respond with: yes or no'
       when :day then 'What day works for you? Enter one: Mo Tu We Th Fr Sa Su'
       when :time then 'What time works for you? ex: 800am or 330pm'
       when :completed then "Thanks! You have set yourself to be available at #{self.scheduled_at}"

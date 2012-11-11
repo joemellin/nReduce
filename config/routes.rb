@@ -63,6 +63,8 @@ Nreduce::Application.routes.draw do
     end
   end
 
+  match '/sms/receive' => 'sms#receive'
+
   resources :meetings, :only => [:index, :show, :edit, :update] do
     post 'message_attendees', :on => :member
     resources :meeting_messages, :only => [:index, :new, :create, :edit]
