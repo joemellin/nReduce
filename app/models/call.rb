@@ -85,7 +85,7 @@ class Call < ActiveRecord::Base
 
   # Gets the call if they are the 'from' user
   def self.current_call_for_user(user)
-    Call.where(:user_id => user.id).order('created_at DESC').first
+    Call.where(:from_id => user.id).order('created_at DESC').first
   end
 
   def self.get_call_for_sid(sid)
