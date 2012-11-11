@@ -31,7 +31,7 @@ class CallsController < ApplicationController
     if @caller_role == :to
       @call.update_attribute(:to_state, :connected)
       
-      if @call.from_state == [:connected]
+      if @call.from_state != [:connected]
         # Schedule call to be disconnected in 20 mins (or whatever duration of call is set at)
         @call.schedule_disconnect
         
@@ -67,11 +67,10 @@ class CallsController < ApplicationController
   protected
 
   def handle_failed_call
-    state = @call.send("#{@caller_role}_state".to_sym).first
+    state = @call.send("#{@caller_role}_state").first
     if state == :first_attempt
       new_state = :second_attempt
       @call.perform_call_to_user(:from)
-      render :nothing => true
     elsif state == :second_attempt
       # Update state
       new_state = :failed
@@ -80,7 +79,6 @@ class CallsController < ApplicationController
       @twilio_call = @call.twilio_call
       @twilio_call.redirect_to(other_party_unavailable_calls_path)
 
-      render :nothing => true
     end
     if @caller_role == :from
       @call.from_state = new_state
@@ -88,6 +86,7 @@ class CallsController < ApplicationController
       @call.to_state = new_state
     end
     @call.save
+    render :nothing => true
   end
 
   def load_call
