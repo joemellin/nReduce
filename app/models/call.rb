@@ -1,7 +1,6 @@
 class Call < ActiveRecord::Base
-  belongs_to :from, :class => 'User'
-  belongs_to :to, :class => 'User'
-
+  belongs_to :from, :class_name => 'User'
+  belongs_to :to, :class_name => 'User'
   #
   # idea: send calendar invite to mentor after scheduling
   #
@@ -173,7 +172,7 @@ class Call < ActiveRecord::Base
       :to => number,
       :url => 'http://www.nreduce.com/calls/connected',
       :fallback_url => 'http://www.nreduce.com/calls/failed',
-      :status_callback => 'http://www.nreduce.com/calls/completed'
+      :status_callback => 'http://www.nreduce.com/calls/completed',
       :if_machine => 'Continue',
       :timeout => 15 # time out after 15 seconds
     )

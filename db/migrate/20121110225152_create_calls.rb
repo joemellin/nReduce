@@ -3,7 +3,7 @@ class CreateCalls < ActiveRecord::Migration
     create_table :calls do |t|
       t.string :data, :from_sid, :to_sid
       t.boolean :confirmed
-      t.integer :status, :scheduled_state, :duration, :from_status, :to_status, :from_rating, :to_rating
+      t.integer :state, :scheduled_state, :duration, :from_state, :to_state, :from_rating, :to_rating
       t.datetime :scheduled_at
       t.references :from, :to
       t.timestamps
