@@ -33,10 +33,11 @@ class CallsController < ApplicationController
       @phone = @call.from.phone
       @call.update_attribute(:to_state, :connected)
       render :action => 'dial.xml.builder'
+      return
     elsif @caller_role == :from
       @call.update_attribute(:from_state, :connected)
-      render :nothing => true
     end
+    render :nothing => true
   end
 
   # Call has finished for one of the callers
@@ -81,14 +82,14 @@ class CallsController < ApplicationController
   end
 
   def load_call
-    @from_number = params["From"]
+    @number = params["To"] # since we're always calling from our number to their number
     @call_sid = params["CallSid"]
     @call = Call.get_call_for_sid(@call_sid) unless @call_sid.blank?
     if @call.blank?
       render :nothing => true
       return false
     end
-    @caller_role = @call.caller_role_from_number(@from_number)
+    @caller_role = @call.caller_role_from_number(@number)
     @opposite_role = @caller_role == :from ? :to : :from
     true
   end
