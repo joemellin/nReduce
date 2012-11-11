@@ -60,6 +60,7 @@ Nreduce::Application.routes.draw do
       post 'connected'
       post 'completed'
       post 'failed'
+      get 'dial'
     end
   end
 
