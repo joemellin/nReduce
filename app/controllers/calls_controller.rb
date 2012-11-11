@@ -9,6 +9,8 @@ class CallsController < ApplicationController
       # Hang up and call again if first attempt
       # Otherwise notify other caller that there was no answer
       handle_failed_call
+    else
+      render :nothing => true
     end
   end
 
@@ -17,6 +19,7 @@ class CallsController < ApplicationController
     @say = "Sorry but the #{@caller_role == :from ? 'founder' : 'mentor'} could not make the call."
     # Update state of receiver to say they have received message and call is considered completed for them
     @call.send("#{@opposite_role}_state", :completed)
+    render :action => 'other_party_unavailable.xml.builder'
   end
 
   def connected
@@ -24,7 +27,7 @@ class CallsController < ApplicationController
       # Connect both parties together
       @phone = @call.from.phone
       @call.update_attribute(:to_state, :connected)
-      render :action => :dial
+      render :action => 'dial.xml.builder'
     elsif @caller_role == :from
       @call.update_attribute(:from_state, :connected)
       render :nothing => true
