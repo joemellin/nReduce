@@ -46,12 +46,12 @@ class Call < ActiveRecord::Base
 
     resend = false
     # Save data if necessary
-    case self.scheduled_state.first
+    case call.scheduled_state.first
     when :asked
       if message.downcase.include?('y')
-        self.scheduled_state = :day
+        call.scheduled_state = :day
       elsif message.downcase.include?('n')
-        self.scheduled_state = :declined
+        call.scheduled_state = :declined
       else
         # didn't recognize the response, send message again
         resend = true
@@ -60,18 +60,18 @@ class Call < ActiveRecord::Base
       if message.blank?
         resend = true
       else
-        self.data = message.strip
-        self.scheduled_state = :time
+        call.data = message.strip
+        call.scheduled_state = :time
       end
     when :time
       if message.blank?
         resend = true
       else
         # set scheduled at
-        if self.set_scheduled_at_from_string(self.data, self.message.strip) == false
+        if call.set_scheduled_at_from_string(self.data, self.message.strip) == false
           resend = true
         else
-          self.scheduled_state = :completed
+          call.scheduled_state = :completed
         end
       end
     when :completed
@@ -79,8 +79,8 @@ class Call < ActiveRecord::Base
     else
       # unrecognized state
     end
-    self.save
-    self.send_message_for_state(resend)
+    call.save
+    call.send_message_for_state(resend)
   end
 
   # Gets the call if they are the 'from' user
