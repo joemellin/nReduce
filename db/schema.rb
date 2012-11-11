@@ -37,6 +37,7 @@ ActiveRecord::Schema.define(:version => 20121110225152) do
 
   create_table "calls", :force => true do |t|
     t.string   "data"
+    t.boolean  "confirmed"
     t.integer  "status"
     t.integer  "scheduled_state"
     t.integer  "duration"
