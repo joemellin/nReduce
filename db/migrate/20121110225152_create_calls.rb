@@ -1,14 +1,14 @@
 class CreateCalls < ActiveRecord::Migration
   def change
     create_table :calls do |t|
-      t.string :data
+      t.string :data, :from_sid, :to_sid
       t.boolean :confirmed
-      t.integer :status, :scheduled_state, :duration, :from_rating, :to_rating
+      t.integer :status, :scheduled_state, :duration, :from_status, :to_status, :from_rating, :to_rating
       t.datetime :scheduled_at
-      t.references :from_user, :to_user
+      t.references :from, :to
       t.timestamps
     end
 
-    add_index :calls, [:from_user_id, :created_at]
+    add_index :calls, [:from_id, :created_at]
   end
 end

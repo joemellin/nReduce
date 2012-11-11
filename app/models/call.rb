@@ -1,10 +1,16 @@
 class Call < ActiveRecord::Base
+  belongs_to :from, :class => 'User'
+  belongs_to :to, :class => 'User'
+
   #
   # idea: send calendar invite to mentor after scheduling
   #
 
-  # attr_accessible :title, :body
-  bitmask :status, :as => [:scheduled, :completed, :canceled, :from_ignored, :to_ignored]
+  attr_accessible :to_state, :from_state
+
+  bitmask :state, :as => [:scheduled, :completed, :canceled]
+  bitmask :from_state, :as => [:scheduled, :first_attempt, :second_attempt, :connected, :completed, :failed]
+  bitmask :to_state, :as => [:scheduled, :first_attempt, :second_attempt, :connected, :completed, :failed]
   bitmask :scheduled_state, :as => [:asked, :day, :time, :completed, :declined]
 
   @queue = :calls
@@ -16,7 +22,7 @@ class Call < ActiveRecord::Base
       c.send_reminder
     # Perform call
     elsif action == :call
-      c.perform_call
+      c.perform_call_to_user(:to)
     end
   end
 
@@ -27,7 +33,8 @@ class Call < ActiveRecord::Base
   # Send sms message chain to user to get time
   def self.schedule_with_user(user)
     c = Call.new
-    c.from_user = from_user
+    c.from = user
+    c.save
   end
 
   # Got a response from a user, need to identify what step they are at and send appropriate message/collect data
@@ -80,12 +87,6 @@ class Call < ActiveRecord::Base
     Call.where(:user_id => user.id).order('created_at DESC').limit(1)
   end
 
-  # Translates number to US int'l number if not already
-  def self.intl(phone)
-    return "+1#{phone}" if phone.size == 10
-    return phone
-  end
-
   def self.get_call_for_sid(sid)
     id = Call.get_call_id_for_sid(sid)
     Call.find(id) unless id.blank?
@@ -94,6 +95,13 @@ class Call < ActiveRecord::Base
   def self.get_call_id_for_sid(sid)
     id = Cache.get(['call', sid])
     id.blank? ? nil : id.to_i
+  end
+
+  # Returns symbol of caller role (either :from or :to)
+  def caller_role_from_number(phone)
+    return :from if self.from.phone.include?(phone)
+    return :to if self.to.phone.include?(phone)
+    return nil
   end
 
   def set_call_id_for_sid(sid)
@@ -118,8 +126,8 @@ class Call < ActiveRecord::Base
   end
 
   # Schedule this call in the future
-  def schedule_with(to_user, duration = 20)
-    self.to_user = to_user
+  def schedule_with(to, duration = 20)
+    self.to = to
     self.duration = duration
     
     # Set up reminder 10 minutes before call
@@ -128,9 +136,9 @@ class Call < ActiveRecord::Base
     # Set up call to happen at scheduled time
     Resque.enqueue_at(self.schedule_at, Call, self.id, :call)
 
-    # Send sms to from_user to notify call has been scheduled
+    # Send sms to from to notify call has been scheduled
     msg = "A founder has been confirmed to talk with you at #{self.scheduled_at}"
-    TwilioClient.account.sms.messages.create(:from => Settings.twilio.phone, :to => self.from_user.intl_phone, :body => msg)
+    TwilioClient.account.sms.messages.create(:from => Settings.twilio.phone, :to => self.from.phone, :body => msg)
     
     self.confirmed = true
     self.save
@@ -147,29 +155,30 @@ class Call < ActiveRecord::Base
       else
     end
     msg = "Sorry didn't catch that. #{msg}" if resend
-    TwilioClient.account.sms.messages.create(:from => Settings.twilio.intl_phone, :to => Call.intl(user.phone), :body => msg)
+    TwilioClient.account.sms.messages.create(:from => Settings.twilio.phone, :to => user.phone, :body => msg)
   end
 
   # Send reminder to people receiving call
   def send_reminder
     msg = "Heads up your mentor call will begin in 10 minutes"
-    TwilioClient.account.sms.messages.create(:from => Settings.twilio.phone, :to => self.from_user.intl_phone, :body => msg)
-    TwilioClient.account.sms.messages.create(:from => Settings.twilio.phone, :to => self.to_user.intl_phone, :body => msg)
+    TwilioClient.account.sms.messages.create(:from => Settings.twilio.phone, :to => self.from.phone, :body => msg)
+    TwilioClient.account.sms.messages.create(:from => Settings.twilio.phone, :to => self.to.phone, :body => msg)
   end
 
-  def perform_call
-    @call = @client.account.calls.create(
+  def perform_call_to_user(caller_role = :to)
+    number = self.send(caller_role).phone
+    call = TwilioClient.account.calls.create(
       :from => Settings.twilio.phone,
-      :to => Call.intl(self.from_user.phone),
-      :url => 'http://www.nreduce.com/calls/start_conference'
+      :to => number,
+      :url => 'http://www.nreduce.com/calls/connected',
+      :fallback_url => 'http://www.nreduce.com/calls/failed',
+      :status_callback => 'http://www.nreduce.com/calls/completed'
+      :if_machine => 'Continue',
+      :timeout => 15 # time out after 15 seconds
     )
-    self.set_call_id_for_sid(@call.sid)
-    @call = @client.account.calls.create(
-      :from => Settings.twilio.phone,
-      :to => Call.intl(self.to_user.phone),
-      :url => 'http://www.nreduce.com/calls/start_conference'
-    )
-    self.set_call_id_for_sid(@call.sid)
+    self.set_call_id_for_sid(call.sid)
+    self.send("#{caller_role}_state".to_sym, :first_attempt)
+    self.save
     # http://www.twilio.com/docs/api/rest/participant
   end
 end

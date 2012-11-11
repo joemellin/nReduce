@@ -53,6 +53,16 @@ Nreduce::Application.routes.draw do
     end
   end
 
+  resources :calls do
+    collection do
+      post 'callback'
+      post 'other_party_unavailable'
+      post 'connected'
+      post 'completed'
+      post 'failed'
+    end
+  end
+
   resources :meetings, :only => [:index, :show, :edit, :update] do
     post 'message_attendees', :on => :member
     resources :meeting_messages, :only => [:index, :new, :create, :edit]

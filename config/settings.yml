@@ -179,7 +179,7 @@ apis:
   twilio:
     sid: 'ACee0fdd33a290b5b1ffd0ee1eb76aa5dd'
     token: '2071f468d935680caba5a4e0fb025310'
-    intl_phone: '+14157293668'
+    phone: '+14157293668'
 
 aws:
   s3:

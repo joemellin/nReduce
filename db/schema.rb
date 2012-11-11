@@ -37,20 +37,24 @@ ActiveRecord::Schema.define(:version => 20121110225152) do
 
   create_table "calls", :force => true do |t|
     t.string   "data"
+    t.string   "from_sid"
+    t.string   "to_sid"
     t.boolean  "confirmed"
     t.integer  "status"
     t.integer  "scheduled_state"
     t.integer  "duration"
+    t.integer  "from_status"
+    t.integer  "to_status"
     t.integer  "from_rating"
     t.integer  "to_rating"
     t.datetime "scheduled_at"
-    t.integer  "from_user_id"
-    t.integer  "to_user_id"
+    t.integer  "from_id"
+    t.integer  "to_id"
     t.datetime "created_at",      :null => false
     t.datetime "updated_at",      :null => false
   end
 
-  add_index "calls", ["from_user_id", "created_at"], :name => "index_calls_on_from_user_id_and_created_at"
+  add_index "calls", ["from_id", "created_at"], :name => "index_calls_on_from_id_and_created_at"
 
   create_table "checkins", :force => true do |t|
     t.string   "start_focus"
