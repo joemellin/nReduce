@@ -43,7 +43,7 @@
     .header
       .row
         .span10
-          - if @relationship.pending?
+          - if !@relationship.new_record?
             %h4.bold Connection Request from #{@review_startup.team_members.map{|u| u.name }.join(', ')} of Team #{@review_startup.name}
             - if @relationship.message.present?
               .message= simple_format(h("\"#{@relationship.message}\""))
