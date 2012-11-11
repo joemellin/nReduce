@@ -156,7 +156,7 @@ class Call < ActiveRecord::Base
       else
     end
     msg = "Sorry didn't catch that. #{msg}" if resend
-    TwilioClient.account.sms.messages.create(:from => Settings.apis.twilio.phone, :to => user.phone, :body => msg)
+    TwilioClient.account.sms.messages.create(:from => Settings.apis.twilio.phone, :to => self.from.phone, :body => msg)
   end
 
   # Send reminder to people receiving call
