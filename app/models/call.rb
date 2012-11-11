@@ -9,6 +9,16 @@ class Call < ActiveRecord::Base
 
   @queue = :calls
 
+  def self.perform(action = :reminder)
+    # Remind both parties that call is about to happen
+    if action == :reminder
+      self.send_reminder
+    # Perform call
+    elsif action == :call
+      self.perform_call
+    end
+  end
+
   def self.scheduled_call_states
     Call.values_for_scheduled_state
   end
@@ -96,6 +106,18 @@ class Call < ActiveRecord::Base
   def schedule_with(to_user, duration = 20)
     self.to_user = to_user
     self.duration = duration
+    
+    # Set up reminder 10 minutes before call
+    Resque.enqueue_at(self.schedule_at - 10.minutes, Call, :reminder)
+    
+    # Set up call to happen at scheduled time
+    Resque.enqueue_at(self.schedule_at, Call, :call)
+
+    # Send sms to from_user to notify call has been scheduled
+    msg = "A founder has been confirmed to talk with you at #{self.scheduled_at}"
+    TwilioClient.account.sms.messages.create(:from => Settings.twilio.phone, :to => self.from_user.intl_phone, :body => msg)
+    
+    self.confirmed = true
     self.save
     self
   end
@@ -106,7 +128,7 @@ class Call < ActiveRecord::Base
       when :asked then 'What time would you like your call?'
       when :day then 'What day works for you? Enter one: Mo Tu We Th Fr Sa Su'
       when :time then 'What time works for you? ex: 800am or 330pm'
-      when :completed then "Thanks! Your call has been scheduled at #{self.scheduled_at}"
+      when :completed then "Thanks! You have set yourself to be available at #{self.scheduled_at}"
       else
     end
     msg = "Sorry didn't catch that. #{msg}" if resend
@@ -118,5 +140,15 @@ class Call < ActiveRecord::Base
     msg = "Heads up your mentor call will begin in 10 minutes"
     TwilioClient.account.sms.messages.create(:from => Settings.twilio.phone, :to => self.from_user.intl_phone, :body => msg)
     TwilioClient.account.sms.messages.create(:from => Settings.twilio.phone, :to => self.to_user.intl_phone, :body => msg)
+  end
+
+  def perform_call
+    @call = @client.account.calls.create(
+      :from => Settings.twilio.phone,
+      :to => Call.intl(self.from_user.phone),
+      :url => 'http://www.nreduce.com/call/receive'
+    )
+    #@call = @client.account.calls.get('CA386025c9bf5d6052a1d1ea42b4d16662')
+    # http://www.twilio.com/docs/api/rest/participant
   end
 end
