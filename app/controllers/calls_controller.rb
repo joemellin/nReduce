@@ -41,6 +41,7 @@ class CallsController < ApplicationController
       else
         # Error - other party was not connected for some reason
         render :nothing => true
+      end
       return
     elsif @caller_role == :from
       @call.update_attribute(:from_state, :connected)
