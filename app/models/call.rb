@@ -30,11 +30,12 @@ class Call < ActiveRecord::Base
     Call.values_for_scheduled_state
   end
 
-  # Send sms message chain to user to get time
+  # Send sms message chain to user to get them to choose the time
   def self.schedule_with_user(user)
     c = Call.new
     c.from = user
     c.save
+    Resque.enqueue(Call, c.id, :reminder)
   end
 
   # Got a response from a user, need to identify what step they are at and send appropriate message/collect data
