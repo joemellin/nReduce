@@ -115,7 +115,6 @@ class Call < ActiveRecord::Base
     begin
       day_of_week = ['mo', 'tu', 'we', 'th', 'fr', 'sa', 'su'].index(day.downcase)
       tmp_time = "#{time[0..(time.size - 3)]} #{time.last(2)}"
-      puts tmp_time
       beginning = Time.now.beginning_of_week
       tmp_time = Time.parse("#{beginning.year}-#{beginning.month}-#{beginning.day} #{tmp_time}")
       time = tmp_time + day_of_week.days
@@ -132,10 +131,10 @@ class Call < ActiveRecord::Base
     self.duration = duration
     
     # Set up reminder 10 minutes before call
-    Resque.enqueue_at(self.schedule_at - 10.minutes, Call, self.id, :reminder)
+    Resque.enqueue_at(self.scheduled_at - 10.minutes, Call, self.id, :reminder)
 
     # Set up call to happen at scheduled time
-    Resque.enqueue_at(self.schedule_at, Call, self.id, :call)
+    Resque.enqueue_at(self.scheduled_at, Call, self.id, :call)
 
     # Send sms to from to notify call has been scheduled
     msg = "A founder has been confirmed to talk with you at #{self.scheduled_at}"
