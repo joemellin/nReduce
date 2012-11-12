@@ -15,19 +15,16 @@
           .enter_button= link_to "Meet the Winners".html_safe, @demo_day, :class => 'btn btn-large btn-success'
       - else
         .row
-          .span4
-            %p
-          .span4
+          .span5.well{:style => 'padding-left:20px'}
             = image_tag 'jjhome.jpg'
-        .span12.center{:style => 'padding-top:20px'}
-          %b{:style => 'font-size:60px; color:#25A6E9; line-height:65px; padding-top:20px'} The Free Online Startup Incubator 
-          %h3{:style => 'padding-top:20px'}  $0 & 0% Equity
-          %h1{:style => 'font-size:33px; padding-top:20px'} Where Great Startups are Born.
-          %h2 
-          %h2 Scroll Down to Learn More
-          %br/
-          %br/
-          %br/
+          .span6{:style => 'text-align:left; padding-left:20px'}
+            %b{:style => 'font-size:60px; color:#25A6E9; line-height:65px; padding-top:20px'} The Online Startup Incubator 
+            %h3 $0 & 0% Equity
+            %br/
+
+            %h2{:style => 'font-size:33px; padding-top:40px'} Where Great Startups are Born.
+            %h2 
+            
 
 
   %hr
@@ -338,7 +335,8 @@
   %br/
   %hr/
   .row.center{:style => 'padding-top:60px; padding-bottom: 20px'}
-    %h1 Okay, Ready to Join?
+    %h1 How about now? :)
+    %p pssst... it is awesome!
   .row.center{:style => 'padding-top: 100px; padding-bottom:50px'}
     %h1= link_to "Join Now".html_safe, sign_up_path, :class => "btn btn-success btn-large", :title => 'Join Now', :style => 'font-size: 80px; line-height'
 
