@@ -3,14 +3,9 @@
 .row
   = render 'ratings/bar_chart', :title => '# of Comments per Checkin', :data => @comments_per_checkin_data, :type => 'area', :chart_id => 'comments_per_checkin', :tooltip_enabled => true, :y_tick_interval => 10, :y_axis_label => '# of Checkins'
 
-
 .row
-  .span6
-    %h3 
+  .span12
     = render 'ratings/bar_chart', :title => '# of Active Connections per Startup', :data => @active_teams_data, :type => 'area', :chart_id => 'active_teams_data', :tooltip_enabled => true, :y_tick_interval => 5, :y_axis_label => '# of Connections'
-
-  .span6
-    = render 'investors/chart', :title => 'Startups Activated per Week', :measurements => @activation_data, :chart_id => 'activations_by_week'
 
 .row
   .span12
@@ -23,8 +18,11 @@
 
 .row
   .span12
-    %h3 
     = render 'ratings/bar_chart', :title => 'Activation Funnel, by Day', :data => @activation_funnel_data, :type => 'area', :chart_id => 'activation_funnel_data', :tooltip_enabled => true, :y_tick_interval => 5, :y_axis_label => '% of Users'
+
+.row
+  .span12
+    = render 'investors/chart', :title => 'Startups Activated per Day (goal)', :measurements => @activation_data, :chart_id => 'activations_by_day'
 
 .row
   .span6
