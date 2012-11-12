@@ -31,7 +31,7 @@
       -# Helper defined in application_helper.rb
       = image_tag background_image_path, :class => 'bg'
     .wrapper{:class => show_background_image? ? 'logged_in' : ''}
-      .container{:style => @home ? 'width: 1100px;' : ''}
+      .container{:style => @home ? 'width: 1200px;' : ''}
         - unless @onboard
           .header
             = render 'layouts/nav', :hide_nav => @hide_nav == true
