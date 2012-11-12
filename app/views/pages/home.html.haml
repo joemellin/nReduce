@@ -1,6 +1,6 @@
 .home_page{:class => @demo_day.present? ? 'demo_day' : ''}
   .arrow
-  .row{:style => 'padding-bottom: 40px'}
+  .row{:style => 'padding-bottom: 10px'}
     .span12.background-field{:align => 'center'}
       - if @demo_day.present?
         = image_tag 'nstar_halo.png', :style => 'width: 184px; height: 165px;'
@@ -13,22 +13,20 @@
           %br/
           .enter_button= link_to "Meet the Winners".html_safe, @demo_day, :class => 'btn btn-large btn-success'
       - else
-        .center
-          = image_tag 'jjhome.jpg'
-        .center{:style => 'padding-top:20px'}
-          %b{:style => 'font-size:60px; color:#25A6E9; line-height:65px; padding-top:20px'} The Free Online Startup Incubator 
-          %h3{:style => 'padding-top:20px'}  $0 & 0% Equity
-          %h1{:style => 'font-size:33px; padding-top:20px'} Where Great Startups are Born.
-          %h2 
-          %h2 Scroll Down to Learn More
-          %br/
-          %br/
-          %br/
+        .row{:style => 'padding-bottom: 150px'}
+          .span1
+            %p
+          .span4.well{:style => 'padding-left:20px'}
+            = image_tag 'jjhome.jpg'
+          .span6{:style => 'text-align:left; padding-left:20px; padding-top:0px'}
+            %b{:style => 'font-size:80px; color:#25A6E9; line-height:65px'} The Free Online Startup Incubator 
+            %h2{:style => 'font-size:40px; padding-top:20px'} Where Great Startups are Born.
+            %h2 
 
 
   %hr
   .row.center{:style => 'padding-top:20px; padding-bottom: 20px'}
-    %h1 How Can nReduce Help Your Startup?
+    %h1 How Can nReduce Help My Startup?
   %hr/
   .row{:style => 'padding-top:40px; padding-bottom:40px'}
     .span8.offset2
@@ -49,21 +47,17 @@
     .span8.offset2
       .center= image_tag 'investors.jpg'
   .row{:style => 'padding-top:80px; padding-bottom:40px'}
-    .span8.offset2
-      %b{:style => 'font-size:25px'} 4) You rely on proven productivity methods to keep you focused.
+    .span2
+      %p/
+    .span8
+      %b{:style => 'font-size:25px'} 4) You get proven productivity methods to keep you focused.
+    .span2   
   .row
     .span8.offset2
       .center= image_tag 'weekbig2.jpg'
-  .row{:style => 'padding-top:40px'}
-    %hr
-  .row.center{:style => 'padding-top:20px; padding-bottom: 20px'}
-    %h1 Where are the teams who are actively using nReduce?
-  %hr/
-  .row{:style => 'padding-top: 20px'}
-    .span1
-      %p
-    .span10
-      = render 'weekly_classes/map'
+    .span2
+      %p/
+
   %br/
   %br/
   %hr/
@@ -74,6 +68,18 @@
     %h1.b{:style => 'font-size: 200px; color: #25A6E9; font-style:bold'}Free!
   .row.center{:style => 'padding-top: 40px; padding-bottom:90px'}
     %h1{:style => 'font-size: 80px; color: #cccccc'}$0 & 0% Equity
+
+  .row{:style => 'padding-top:40px'}
+    %hr
+  .row.center{:style => 'padding-top:20px; padding-bottom: 20px'}
+    %h1 Where are the teams who are actively using nReduce?
+  %hr/
+  .row{:style => 'padding-top: 20px'}
+    .span1
+      %p
+    .span10
+      = render 'weekly_classes/map'
+
   %hr/
   .row.center{:style => 'padding-top:20px; padding-bottom: 20px'}
     %h1 What industries are nReduce companies focusing on?
@@ -282,7 +288,8 @@
   %br/
   %hr/
   .row.center{:style => 'padding-top:60px; padding-bottom: 20px'}
-    %h1 Okay, Ready to Join?
+    %h1 Okay... How about now? :)
+    %p pssst... it is awesome!
   .row.center{:style => 'padding-top: 100px; padding-bottom:50px'}
     %h1= link_to "Join Now".html_safe, sign_up_path, :class => "btn btn-success btn-large", :title => 'Join Now', :style => 'font-size: 80px; line-height'
 
