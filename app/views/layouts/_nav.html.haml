@@ -78,7 +78,7 @@
                   %li= link_to "Log out", logout_path, :method => :delete
           - else
             - unless @demo_day && user_signed_in?
-              %li= link_to "Join", sign_up_path
+              %li= link_to "Join", sign_up_path, :class => 'btn btn-success'
             %li= link_to "Login", login_path
       / - if @demo_day && !user_signed_in?
       /   .right{:style => 'margin-right: 20px'}= link_to 'Founders Join', sign_up_path, :class => 'btn btn-large btn-success'
