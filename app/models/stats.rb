@@ -143,6 +143,36 @@ class Stats
     a_by_w.sort.map{|arr| OpenStruct.new(:key => arr.first, :value => arr.last) }
   end
 
+  def self.startups_activated_per_week_for_chart(since = 10.weeks)
+    date_start = Time.now - since
+    a_by_w = {}
+    current = Week.integer_for_time(Time.now)
+    last = Week.integer_for_time(date_start)
+    while current > last
+      a_by_w[current] = 0
+      current = Week.previous(current)
+    end
+    c_by_s = Hash.by_key(Checkin.order('created_at ASC').all, :startup_id, nil, true)
+    c_by_s.each do |startup_id, checkins|
+      # Skip unless their first checkin was after the date limit
+      next unless checkins.first.time_window.first > date_start
+      a_by_w[checkins.first.week] += 1
+    end
+    a_by_w.sort.map{|arr| OpenStruct.new(:key => arr.first, :value => arr.last) }
+  end
+
+  def self.startups_activated_per_day_for_chart(since = 2.weeks)
+    uas = UserAction.where(:action => UserAction.id_for('registrations_new')).where(['created_at > ?', Time.now - since]).order('created_at ASC')
+    days = {}
+    start = Date.today - since
+    while start <= Date.today
+      days[start.to_s] = 0
+      start += 1.day
+    end
+    uas.each{|ua| days[ua.created_at.to_date.to_s] += 1 }
+    days.map{|day, num| OpenStruct.new(:key => day, :value => num) }
+  end
+
    # Creates data for chart that displays how many active connections there are per startup, per week
    # Active connection is someone who has checked in that week
    # Returns {:categories => [201223, 201224, 201225], :series => [{'0 Connections' => [35, 45, 56]}, {'1 Connection' => [23, 26, 15]}]}
@@ -513,7 +543,7 @@ class Stats
       current += 1.day
     end
 
-    action_labels = ['registrations_new', 'checkins_first', 'checkins_create']
+    action_labels = ['registrations_new', 'registrations_create', 'checkins_first']
     action_ids = action_labels.map{|l| UserAction.id_for(l) }
 
     tmp_data = {}
@@ -537,13 +567,13 @@ class Stats
       # look for furthest along action (lowest index)
       furthest_along = 99
       ua = nil
-      checkin_action = action_ids[action_labels.index('checkins_create')]
+      #checkin_action = action_ids[action_labels.index('checkins_create')]
       uas.each do |a|
         index = action_ids.index(a.action)
         if index < furthest_along
-          if a.action == checkin_action # If a checkin, only count action if this was their 1st completed checkin (give it a 5 min grace period)
-            next if Checkin.where(:startup_id => a.user.startup_id).where(['created_at < ?', a.created_at - 5.minutes]).completed.count > 0
-          end
+          # if a.action == checkin_action # If a checkin, only count action if this was their 1st completed checkin (give it a 5 min grace period)
+          #   next if Checkin.where(:startup_id => a.user.startup_id).where(['created_at < ?', a.created_at - 5.minutes]).completed.count > 0
+          # end
           furthest_along = index
           ua = a
         end
