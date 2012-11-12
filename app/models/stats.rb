@@ -162,7 +162,7 @@ class Stats
   end
 
   def self.startups_activated_per_day_for_chart(since = 2.weeks)
-    uas = UserAction.where(:action => UserAction.id_for('registrations_new')).where(['created_at > ?', Time.now - since]).order('created_at ASC')
+    uas = UserAction.where(:action => UserAction.id_for('checkins_first')).where(['created_at > ?', Time.now - since]).group(:user_id).order('created_at ASC')
     days = {}
     start = Date.today - since
     while start <= Date.today
