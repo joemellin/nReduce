@@ -1,4 +1,7 @@
 .row
+  .right{:style => 'margin-top: 27px'}
+    %ul.nav.nav-pills
+      %li= link_to "Log out", logout_path, :method => :delete
   .left{:style => 'margin-left: 25px'}= link_to image_tag('nglow.png'), '#'
   .left
     .navbar
@@ -14,3 +17,4 @@
               - klass = ''
             %li{:class => klass}= link_to s.to_s.titleize, onboard_go_to_path(:step => c)
             - c += 1
+  .clear

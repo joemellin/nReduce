@@ -3,7 +3,6 @@
   .row{:style => 'padding-bottom: 10px'}
     .span12.background-field{:align => 'center'}
       - if @demo_day.present?
-    
         = image_tag 'nstar_halo.png', :style => 'width: 184px; height: 165px;'
         - if @demo_day.in_the_future?
           = render 'layouts/countdown', :time => @demo_day.starts_at
@@ -14,6 +13,7 @@
           %br/
           .enter_button= link_to "Meet the Winners".html_safe, @demo_day, :class => 'btn btn-large btn-success'
       - else
+<<<<<<< HEAD
         .row{:style => 'padding-bottom: 150px'}
           .span1
             %p
@@ -23,63 +23,72 @@
             %b{:style => 'font-size:80px; color:#25A6E9; line-height:65px'} The Free Online Startup Incubator 
             %h2{:style => 'font-size:40px; padding-top:20px'} Where Great Startups are Born.
             %h2 
+=======
+        .center
+          = image_tag 'jjhome.jpg'
+        .center{:style => 'padding-top:20px'}
+          %b{:style => 'font-size:60px; color:#25A6E9; line-height:65px; padding-top:20px'} The Free Online Startup Incubator 
+          %h3{:style => 'padding-top:20px'}  $0 & 0% Equity
+          %h1{:style => 'font-size:33px; padding-top:20px'} Where Great Startups are Born.
+          %h2 
+          %h2 Scroll Down to Learn More
+          %br/
+          %br/
+          %br/
+
+>>>>>>> 033cc41f98694df5e24fa2426c8aefec869b6ffe
 
   %hr
   .row.center{:style => 'padding-top:20px; padding-bottom: 20px'}
     %h1 How Can nReduce Help My Startup?
   %hr/
   .row{:style => 'padding-top:40px; padding-bottom:40px'}
-    .span2
-      %p/
-    .span8
-      %b{:style => 'font-size:25px'} 1) You get weekly feedback from fellow startup founders.
-    .span2   
+    .span8.offset2
+      %b{:style => 'font-size:25px'} 1) You get weekly feedback from fellow startup founders.  
   .row
-    .span2
-      %p
-    .span8
+    .span8.offset2
       .center= image_tag 'helpfromfounders.png'
-    .span2
-      %p
   .row{:style => 'padding-top:80px; padding-bottom:40px'}
-    .span2
-      %p/
-    .span8
-      %b{:style => 'font-size:25px'} 2) You get help and advice from nReduce Mentors
-    .span2   
+    .span8.offset2
+      %b{:style => 'font-size:25px'} 2) You get help and advice from nReduce Mentors 
   .row
-    .span2
-      %p
-    .span8
+    .span8.offset2
       .center= image_tag 'mentors.jpg'
-    .span2
-      %p
   .row{:style => 'padding-top:80px; padding-bottom:40px'}
-    .span2
-      %p/
-    .span8
+    .span8.offset2
       %b{:style => 'font-size:25px'} 3) Get the chance to be seen by investors and early adopters. 
-    .span2   
   .row
-    .span2
-      %p
-    .span8
+    .span8.offset2
       .center= image_tag 'investors.jpg'
-    .span2
-      %p/
   .row{:style => 'padding-top:80px; padding-bottom:40px'}
+<<<<<<< HEAD
     .span2
       %p/
     .span8
       %b{:style => 'font-size:25px'} 4) You get proven productivity methods to keep you focused.
     .span2   
+=======
+    .span8.offset2
+      %b{:style => 'font-size:25px'} 4) You rely on proven productivity methods to keep you focused.
+>>>>>>> 033cc41f98694df5e24fa2426c8aefec869b6ffe
   .row
-    .span2
-      %p
-    .span8
+    .span8.offset2
       .center= image_tag 'weekbig2.jpg'
+<<<<<<< HEAD
     .span2
       %p/
+=======
+  .row{:style => 'padding-top:40px'}
+    %hr
+  .row.center{:style => 'padding-top:20px; padding-bottom: 20px'}
+    %h1 Where are the teams who are actively using nReduce?
+  %hr/
+  .row{:style => 'padding-top: 20px'}
+    .span1
+      %p
+    .span10
+      = render 'weekly_classes/map'
+>>>>>>> 033cc41f98694df5e24fa2426c8aefec869b6ffe
   %br/
   %br/
   %hr/
@@ -118,9 +127,7 @@
     %h1 How far along are most nReduce companies?
   %hr/
   .row{:style => 'padding-top: 20px;padding-bottom:40px'}
-    .span2
-      %p
-    .span4
+    .span4.offset2
       =image_tag('teamsize.png')
     .span4
       =image_tag('ageofstartups.png')
@@ -131,9 +138,7 @@
     %h1 Are there in in person meetings as well? Yes!
   %hr/
   .row{:style => 'padding-top: 20px;padding-bottom:40px'}
-    .span1
-      %p
-    .span2.center
+    .span2.center.offset1
       =image_tag('locations_manchester.png')
       %h4{:style => 'padding-top: 10px'}= link_to "Manchester, UK", 'http://www.meetup.com/nReduce-Manchester/', :target => '_blank'
       %p Leader : Shaf Choudry
@@ -162,13 +167,9 @@
   %br/
   %br/
   .row
-    .span1
-      %p
-    .span4
-      .row
-        %h3
-          = link_to '8 Companies Make Their Debut at NReduce’s First Virtual Demo Day', 'http://pandodaily.com/2012/09/05/eight-companies-make-their-debut-at-nreduces-first-virtual-demo-day/', :target => "_blank"
-      .row{:style => 'padding-top: 10px'}
+    .span4.offset1
+      %h3= link_to '8 Companies Make Their Debut at NReduce’s First Virtual Demo Day', 'http://pandodaily.com/2012/09/05/eight-companies-make-their-debut-at-nreduces-first-virtual-demo-day/', :target => "_blank"
+      %div{:style => 'padding-top: 10px'}
         .left{:align => 'right'}= link_to image_tag('pandosq.png'), 'http://pandodaily.com', :target => "_blank"
         .left{:style => 'padding-left: 20px'}
           %b Nathaniel Mott
@@ -179,13 +180,9 @@
               <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
 
         .clear
-    .span2
-      %p
-    .span4
-      .row
-        %h3
-          = link_to 'Meet the first class of startups from the open-source Y Combinator', 'http://venturebeat.com/2012/09/05/nreduce-demo-day/#s:nreduce-1' , :target => "_blank"
-      .row{:style => 'padding-top: 10px; padding-bottom: 20px'} 
+    .span4.offset1
+      %h3= link_to 'Meet the first class of startups from the open-source Y Combinator', 'http://venturebeat.com/2012/09/05/nreduce-demo-day/#s:nreduce-1' , :target => "_blank"
+      %div{:style => 'padding-top: 10px; padding-bottom: 20px'} 
         .left{:align => 'right'}= link_to image_tag('vbsq.png'), 'http://venturebeat.com', :target => "_blank"
         .left{:style => 'padding-left: 20px'}
           %b Jolie O'Dell
@@ -198,13 +195,9 @@
   %br/
   %br/
   .row
-    .span1
-      %p
-    .span4
-      .row
-        %h3
-          = link_to 'N Reduce Opens Up As Alternative to Ultra-Elite Startup Incubators', 'http://www.xconomy.com/san-francisco/2012/05/14/n-reduce-opens-up-as-alternative-to-ultra-elite-startup-incubators/', :target => "_blank"
-      .row{:style => 'padding-top: 10px'}
+    .span4.offset1
+      %h3= link_to 'N Reduce Opens Up As Alternative to Ultra-Elite Startup Incubators', 'http://www.xconomy.com/san-francisco/2012/05/14/n-reduce-opens-up-as-alternative-to-ultra-elite-startup-incubators/', :target => "_blank"
+      %div{:style => 'padding-top: 10px'}
         .left{:align => 'right'}= link_to image_tag('xconsq.png'), 'http://www.xconomy.com/', :target => "_blank"
         .left{:style => 'padding-left: 20px'}
           %b Nathaniel Mott
@@ -215,13 +208,9 @@
               <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
 
         .clear
-    .span2
-      %p
-    .span4
-      .row
-        %h3
-          = link_to 'Virtual Incubator to All — Is It the Pre-AngelList?', 'http://pandodaily.com/2012/07/27/virtual-incubator-to-all-nreduce-adds-mentors-and-demo-days-is-it-the-pre-angellist/' , :target => "_blank"
-      .row{:style => 'padding-top: 10px; padding-bottom: 20px'} 
+    .span4.offset1
+      %h3= link_to 'Virtual Incubator to All — Is It the Pre-AngelList?', 'http://pandodaily.com/2012/07/27/virtual-incubator-to-all-nreduce-adds-mentors-and-demo-days-is-it-the-pre-angellist/' , :target => "_blank"
+      %div{:style => 'padding-top: 10px; padding-bottom: 20px'} 
         .left{:align => 'right'}= link_to image_tag('pandosq.png'), 'http://pandodaily.com', :target => "_blank"
         .left{:style => 'padding-left: 20px'}
           %b Sarah Lacy
@@ -247,9 +236,7 @@
   
 
   .row
-    .span3
-      %p
-    .span8
+    .span8.offset3
       .left{:style => 'padding:5px'}
         :plain
           <a href="https://twitter.com/share" class="twitter-share-button" data-url="http://www.nreduce.com" data-text="An alliance of founders working together to build Amazing Companies" data-via="nReduce">Tweet</a>
@@ -266,9 +253,7 @@
     %h1 What do Founders who Have Been in nReduce Say?
   %hr/
   .row{:style => 'padding-top: 20px'}
-    .span1
-      %p
-    .span5
+    .span5.offset1
       %h3 I've been in nreduce for a couple months now and I think it's a great program. The startups are very mixed in terms of goals--some are working on side projects, others are building real businesses with real customers, revenue, and all that. The community has been extremely helpful, and it's a good way to connect with people facing similar problems.This is a bit of a glowing review, but as far as my goals of accountability and connections, it's been hugely helpful for me. And honestly, not having to give up equity or take investment is a pretty great deal.
       %br/
       %br/
