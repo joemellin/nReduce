@@ -40,6 +40,16 @@ $ ->
   $('.startup_add_teammate_btn').click (e) ->
     e.preventDefault()
     addTeammateButton('startup')
+
+  $(window).bind 'scroll', ->
+    scroll_at = $(this).scrollTop()
+    if scroll_at < 20
+      $('.arrow').css({'opacity': 1})
+    else if scroll_at < 200
+      opacity = 1 / ((scroll_at - 20) / 100.0)
+      $('.arrow').css({'opacity': opacity})
+    else
+      $('.arrow').css({'opacity': 0})
     
   # Type can be user or startup
   addTeammateButton = (type) ->
