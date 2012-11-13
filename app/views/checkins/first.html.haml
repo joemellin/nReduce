@@ -1,8 +1,12 @@
+.row
+  .right{:style => 'margin-top: 27px'}
+    %ul.nav.nav-pills
+      %li= link_to "Log out", logout_path, :method => :delete
+  .left{:style => 'margin-left: 25px'}= link_to image_tag('nglow.png'), '#'
+  .clear
+
 = semantic_form_for @checkin, :url => first_checkins_path, :html => {:class => "form-vertical"} do |f|  
   = f.hidden_field :startup_id
-  .row
-    .left{:style => 'margin-left: 25px'}= link_to image_tag('nglow.png'), '#'
-    .clear
   .row{:style => 'padding-top: 20px'}
     .span1
       %p
@@ -34,7 +38,7 @@
         %p
         = label_tag :message, "Say hello to your group mates :)", :style => 'font-size:30px; line-height:45px; padding-top:40px; padding-bottom:25px', :maxlength => 255, :class => 'control-label center'
         .controls.center
-          = text_field_tag :message, :style => 'height: 30px; line-height:24px; font-size:22px', :class => "span5 checkin_start_focus", :placeholder => "Enter a fun hello message here..."
+          = text_field_tag :message, '', :style => 'height: 30px; line-height:24px; font-size:22px', :class => "span5 checkin_start_focus", :placeholder => "Enter a fun hello message here..."
   
     .span2{:style => 'padding-top:80px'}
       %b Example Hello:

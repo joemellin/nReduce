@@ -74,7 +74,6 @@ class CheckinsController < ApplicationController
         flash[:alert] = "Sorry we couldn't save your goal"
       end
     else
-      flash.now[:notice] = "Please enter a message to your new startup connections." if params[:message].blank? && request.post?
       @checkin.startup = current_user.startup
     end
   end
