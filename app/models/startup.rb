@@ -45,7 +45,7 @@ class Startup < ActiveRecord::Base
   before_save :format_url
   before_save :reset_cached_elements
   after_create :initiate_relationships_from_invites
-  #after_create :notify_joe_of_new_startup
+  after_create :notify_joe_of_new_startup
 
   acts_as_taggable_on :industries, :technologies, :ideologies
 
@@ -125,7 +125,7 @@ class Startup < ActiveRecord::Base
   end
 
   def self.last_activated_teams(limit = 3)
-    Startup.with_setup(:goal).active.order('created_at DESC').limit(limit)
+    Startup.with_setup(:goal).active.order('activated_at DESC').limit(limit)
   end
 
   def self.registration_open?
@@ -406,21 +406,32 @@ class Startup < ActiveRecord::Base
     save
   end
 
-  def completed_goal!
+  def completed_goal!(message = nil, message_from_user = nil)
     self.setup << :goal
     # Set as active as they just did a checkin
     self.active = true
+    self.activated_at = Time.now
     connected_to_ids = self.connected_to_ids('Startup')
     unless connected_to_ids.present? && connected_to_ids.size > 0
-      Startup.last_activated_teams(3).each do |s|
+      Startup.last_activated_teams(3).where(['id != ?', self.id]).each do |s|
         r = Relationship.start_between(self, s, :startup_startup, true)
         r.silent = true
-        r.approve! if r.present? && r.valid?
-        # Now mark them as setup with connections if they've hit six
-        s.reload
-        if s.connected_to_ids('Startup').size == Startup::NUM_ACTIVE_REQUIRED
-          s.setup << :connections
-          s.save
+        if r.present? && r.valid?
+          r.approve!
+
+          # Add message from new founder to these startup's checkins
+          if s.current_checkin.present? && message_from_user.present?
+            c = Comment.new(:content => message, :checkin_id => s.current_checkin.id)
+            c.user = message_from_user
+            c.save
+          end
+
+          # Now mark them as setup with connections if they've hit six
+          s.reload
+          if s.connected_to_ids('Startup').size == Startup::NUM_ACTIVE_REQUIRED
+            s.setup << :connections
+            s.save
+          end
         end
       end
     end
@@ -497,8 +508,8 @@ class Startup < ActiveRecord::Base
   
   protected
 
-  def notify_classmates_of_new_startup
-    Notification.create_for_new_team_joined(self, WeeklyClass.current_class)
+  def notify_joe_of_new_startup
+    Notification.create_for_new_team_joined(self)
   end
 
   def reset_cached_elements
