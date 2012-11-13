@@ -235,6 +235,7 @@ class Relationship < ActiveRecord::Base
     r.connected_with_id = self.entity_id
     r.connected_with_type = self.entity_type
     r.initiated = false
+    r.silent = self.silent
     r
   end
 

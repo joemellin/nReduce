@@ -6,7 +6,8 @@
 .relationships
   .row.teams{:style => 'padding-top: 20px;'}
     - c = 0
-    - num = @startups.inject(0){|res, element| res += 1 if element.active?; res }
+    - # Add 1 for watercooler
+    - num = @startups.inject(0){|res, element| res += 1 if element.active?; res } + 1
     - @startups.each do |s|
       - next unless s.active?
       - owner = (@startup && (s.id == @startup.id))
@@ -41,7 +42,9 @@
                 - if current_checkin.comment_count > 0
                   = pluralize(current_checkin.comment_count, 'comment')
                 &nbsp;
-          - if !owner and (current_checkin.blank? or (current_checkin and !current_checkin.completed?))
+          - elsif current_checkin.present? && !@after_checkin_window
+            = link_to 'View Goal', latest_startup_checkins_path(s), :class => 'btn btn-success'
+          - if @after_checkin_window && !owner and (current_checkin.blank? or (current_checkin and !current_checkin.completed?))
             = form_for Nudge.new(:startup_id => s.id), :html => {:id => "new_nudge_startup_#{s.id}"} do |f|
               = f.hidden_field :startup_id
               = link_to '<i class="icon-hand-left icon"></i> Nudge'.html_safe, '#', :title => "Nudge #{s.name} to complete their check-in with an email!", :onclick => "$('#new_nudge_startup_#{s.id}').submit();", :class => 'btn'
@@ -60,7 +63,18 @@
         - c += 1
       - elsif c != 0 and c % 4 == 0
         .clear
-
+      -# We're still filling them with active teams
+      - if !@startup.setup?(:connected) && (num < Startup::NUM_ACTIVE_REQUIRED) && c == num
+        -# Add one because user's startup is listed
+        - c.upto(Startup::NUM_ACTIVE_REQUIRED + 1) do
+          .team.span3{:align => 'center'}
+            .top{:align => 'center'}
+              .background
+                .startup_spinner
+            .bottom{:align => 'center'}
+              %h3 Joining Soon
+          - c += 1
+      
   .center
     - nreduce_id = Startup.nreduce_obfuscated_id
     - if current_user.entrepreneur? and !nreduce_id.blank?

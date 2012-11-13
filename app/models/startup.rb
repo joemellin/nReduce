@@ -37,7 +37,7 @@ class Startup < ActiveRecord::Base
 
   validates_presence_of :name
   validate :check_video_urls_are_valid
-  validates_presence_of :one_liner, :if => :created_but_not_setup_yet?
+  #validates_presence_of :one_liner, :if => :created_but_not_setup_yet?
   #validates_presence_of :elevator_pitch, :if => :created_but_not_setup_yet?
   #validates_presence_of :industry_list, :if => :created_but_not_setup_yet?
 
@@ -45,7 +45,7 @@ class Startup < ActiveRecord::Base
   before_save :format_url
   before_save :reset_cached_elements
   after_create :initiate_relationships_from_invites
-  after_create :notify_classmates_of_new_startup
+  #after_create :notify_joe_of_new_startup
 
   acts_as_taggable_on :industries, :technologies, :ideologies
 
@@ -58,7 +58,7 @@ class Startup < ActiveRecord::Base
   scope :active, where(:active => true)
   scope :inactive, where(:active => false)
 
-  bitmask :setup, :as => [:profile, :invite_team_members, :intro_video, :goal]
+  bitmask :setup, :as => [:profile, :invite_team_members, :intro_video, :goal, :connections]
 
   NUM_SCREENSHOTS = 4
   # Number of active startups you need
@@ -414,7 +414,14 @@ class Startup < ActiveRecord::Base
     unless connected_to_ids.present? && connected_to_ids.size > 0
       Startup.last_activated_teams(3).each do |s|
         r = Relationship.start_between(self, s, :startup_startup, true)
+        r.silent = true
         r.approve! if r.present? && r.valid?
+        # Now mark them as setup with connections if they've hit six
+        s.reload
+        if s.connected_to_ids('Startup').size == Startup::NUM_ACTIVE_REQUIRED
+          s.setup << :connections
+          s.save
+        end
       end
     end
     save
