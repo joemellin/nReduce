@@ -64,16 +64,17 @@ class CheckinsController < ApplicationController
 
     @checkin ||= Checkin.new
     @weekly_class = true
-    if params[:checkin].present? && params[:checkin][:start_focus].present?
+    if params[:checkin].present? && params[:checkin][:start_focus].present? && params[:message].present?
       @checkin.attributes = params[:checkin]
       @checkin.user = current_user
       if @checkin.save(:validate => false)
-        current_user.startup.completed_goal!
+        current_user.startup.completed_goal!(params[:message], current_user)
         redirect_to '/'
       else
         flash[:alert] = "Sorry we couldn't save your goal"
       end
     else
+      flash.now[:notice] = "Please enter a message to your new startup connections." if params[:message].blank? && request.post?
       @checkin.startup = current_user.startup
     end
   end

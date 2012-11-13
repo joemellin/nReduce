@@ -332,6 +332,7 @@ ActiveRecord::Schema.define(:version => 20121113121815) do
     t.string   "tokbox_session_id"
     t.string   "cached_industry_list"
     t.boolean  "mentorable",           :default => false
+    t.datetime "activated_at"
   end
 
   add_index "startups", ["public"], :name => "index_startups_on_public"
