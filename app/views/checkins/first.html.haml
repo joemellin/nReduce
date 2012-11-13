@@ -7,27 +7,44 @@
     .span1
       %p
     .span10.center
-      %b{:style => 'font-size:35px; line-height: 40px; color:#666666'}Awesome!  Lets get you started with your first goal!
+      %b{:style => 'font-size:35px; line-height: 40px; color:#25A6E9'}Awesome!  Lets get you started!
   .row
-    .span3
-      %p
+    .span1.offset2{:style => 'padding-top:60px'}
+      %h1 1)
     .span6
       
-      .control-group{error_css(@checkin, :start_focus)}
+      .control-group.left{error_css(@checkin, :start_focus)}
         %p
           &nbsp
-        = f.label :start_focus, "What Is Your Goal This Week?", :style => 'font-size:38px; margin-bottom:40px; margin-top:40px', :maxlength => 255, :class => 'control-label center'
+        = f.label :start_focus, "What is your goal for this week?", :style => 'font-size:30px; line-height:45px; padding-top:20px; padding-bottom:25px', :maxlength => 255, :class => 'control-label center'
         .controls.center
-          = f.text_field :start_focus, :style => 'height: 30px; line-height:24px; font-size:22px', :class => "span4 checkin_start_focus", :placeholder => "Enter your goal here..."
+          = f.text_field :start_focus, :style => 'height: 30px; line-height:24px; font-size:22px', :class => "span5 checkin_start_focus", :placeholder => "Enter your goal here..."
           = f.semantic_errors :start_focus
-      .center
-        %b Example Goals:
-        %p Talk to 5 users
-        %p Build Sign Up Process
-        %p Close Seed Round
-      .form-controls.center{:style => 'margin-bottom: 10px; padding-top: 20px; '}
-        %p{:style => 'padding-top: 10px'}
-          &nbsp
-        = f.submit "Set Goal & Enter", :style => 'font-size:50px; line-height:60px', :class => "btn btn-success btn-large submit"
-    .span3
-      %p
+    .span3{:style => 'padding-top:80px'}
+      %b Example Goals:
+      %p Talk to 5 users
+      %p Build Sign Up Process
+      %p Close Seed Round
+      
+  .row
+    .span1.offset2{:style => 'padding-top:60px'}
+      %h1 2)
+    .span6
+      .control-group.left{error_css(@checkin, :start_focus)}
+        %p
+
+        = f.label :start_focus, "Say hello to your group mates :)", :style => 'font-size:30px; line-height:45px; padding-top:40px; padding-bottom:25px', :maxlength => 255, :class => 'control-label center'
+        .controls.center
+          = f.text_field :start_focus, :style => 'height: 30px; line-height:24px; font-size:22px', :class => "span5 checkin_start_focus", :placeholder => "Enter a fun hello message here..."
+          = f.semantic_errors :start_focus
+    .span2{:style => 'padding-top:80px'}
+      %b Example Hello:
+      %p Hi, I am Joe, I am building an online incubator and am really excited to meet you all
+
+      
+
+  .row
+    .form-controls.center{:style => 'margin-bottom: 10px; padding-top: 20px; '}
+      %p{:style => 'padding-top: 10px'}
+        &nbsp
+      = f.submit "Set Goal & Say Hi", :style => 'font-size:50px; line-height:60px', :class => "btn btn-success btn-large submit"
