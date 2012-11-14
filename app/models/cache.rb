@@ -105,6 +105,12 @@ class Cache
     res == 1
   end
 
+  def self.set_delete_by_index(key, index_from, index_to)
+    key = Cache.key_for(key)
+    res = $redis.zremrangebyrank(key, index_from, index_to)
+    res
+  end
+
   #
   # Counters / increment
   #

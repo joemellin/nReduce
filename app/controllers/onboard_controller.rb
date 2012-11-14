@@ -1,4 +1,6 @@
 class OnboardController < ApplicationController
+  around_filter :record_user_action, :only => [:current_step]
+  before_filter :run_ab_test, :only => [:current_step]
   before_filter :login_required
   before_filter :load_requested_or_users_startup
 

@@ -33,6 +33,7 @@ class ApplicationController < ActionController::Base
   def run_ab_test
     @ab_test_id = 1
     @ab_test_version = AbTest.version_for_session_id(@ab_test_id, request.session_options[:id])
+    logger.info "session: #{request.session_options[:id]}"
   end
 
   def hc_url_fix
