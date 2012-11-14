@@ -22,12 +22,12 @@ class AbTest < ActiveRecord::Base
   end
 
   # Will go out and clear all but the last 100 session ids
-  def self.clean_old_session_ids(ab_test_id = 1)
+  def self.clean_old_session_ids(ab_test_id = 1, num_to_leave = 200)
     key = AbTest.key_for_id(ab_test_id)
     count = Cache.set_count(key)
-    return "Not cleaning: only #{count} session ids are stored." if count <= 100
-    Cache.set_delete_by_index(AbTest.key_for_id(ab_test_id), 0, count - 100)
-    return "Cleaned #{count - 100} session ids."
+    return "Not cleaning: only #{count} session ids are stored." if count <= num_to_leave
+    Cache.set_delete_by_index(AbTest.key_for_id(ab_test_id), 0, count - num_to_leave)
+    return "Cleaned #{count - num_to_leave} session ids."
   end
 
   def self.key_for_id(ab_test_id)
