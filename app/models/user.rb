@@ -48,12 +48,12 @@ class User < ActiveRecord::Base
   serialize :settings, Hash
   validates_presence_of :name
   validate :check_video_urls_are_valid
-  validates_length_of :bio, :minimum => 100, :too_short => "needs to be at least 100 characters", :if => :profile_fields_required?
+  #validates_length_of :bio, :minimum => 100, :too_short => "needs to be at least 100 characters", :if => :profile_fields_required?
   validate :email_is_not_nreduce, :if => :profile_fields_required?
-  validates_presence_of :pic, :if => :profile_fields_required?
+  #validates_presence_of :pic, :if => :profile_fields_required?
   validates_presence_of :location, :if => :profile_fields_required?
-  validates_presence_of :skill_list, :if => :profile_fields_required?
-  validates_presence_of :linkedin_url, :if => :profile_fields_required?
+  #validates_presence_of :skill_list, :if => :profile_fields_required?
+  #validates_presence_of :linkedin_url, :if => :profile_fields_required?
   validates_presence_of :startup, :if => :new_entrepreneur?
 
   before_validation :encode_intro_video
