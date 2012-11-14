@@ -102,7 +102,7 @@ class Checkin < ActiveRecord::Base
       checkins = Checkin.where(:startup_id => startups.map{|s| s.id }).where(['created_at > ?', Checkin.prev_after_checkin])
     else # if in before checkin or in the week after, get prev week's checkin start time
       start_time = Checkin.prev_after_checkin - 24.hours
-      checkins = Checkin.where(:startup_id => startups.map{|s| s.id }).where(['created_at > ? OR completed_at > ?', start_time])
+      checkins = Checkin.where(:startup_id => startups.map{|s| s.id }).where(['created_at > ? OR completed_at > ?', start_time, start_time])
     end
     checkins.inject({}) do |res, checkin|
       # completed checkins override checkins with just a before
