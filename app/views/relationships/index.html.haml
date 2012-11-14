@@ -7,9 +7,8 @@
   .row.teams{:style => 'padding-top: 20px;'}
     - c = 0
     - # Add 1 for watercooler
-    - num = @startups.inject(0){|res, element| res += 1 if element.active?; res } + 1
-    - @startups.each do |s|
-      - next unless s.active?
+    - num = @active_startups.size
+    - @active_startups.each do |s|
       - owner = (@startup && (s.id == @startup.id))
       - current_checkin = @checkins_by_startup[s.id]
       - this_startup_url = (current_checkin and current_checkin.completed?) ? latest_startup_checkins_url(s) : startup_url(s)
@@ -51,7 +50,14 @@
       - c += 1
       -# Show water cooler on far right
       - if (num < 3 && c == num) || c == 3
-        .right.span3.team{:align => 'center'}
+        -# Add empty elements if needed
+        - if num < 3
+          - [num..3].each do
+            .span3.team{:align => 'center'}
+              .top
+              .bottom
+              - c += 1
+        .span3.team{:align => 'center'}
           .top{:align => 'center', :onclick => "window.location = '#{posts_path}';"}
             .background{:style => "background-image: url('#{image_path('napp_bg.png')}'); cursor: pointer; border: 2px solid #fff; opacity: 1.0;"}
             %div{:style => "background: url('#{image_path('watercooler.png')}') no-repeat; height: 200px; width: 200px;"}
@@ -93,8 +99,7 @@
         = link_to 'Nudge All', nudge_all_inactive_nudges_path, :class => 'btn btn-success btn-large', :method => :post
     - c = 0
     .row.teams{:style => 'padding-top: 20px;'}
-      - @startups.each do |s|
-        - next if s.active?
+      - @inactive_startups.each do |s|
         - this_startup_url = startup_url(s)
         - logo_path = s.logo_url(:square)
         .team.span3{:align => 'center'}

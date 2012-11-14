@@ -55,6 +55,11 @@ class RelationshipsController < ApplicationController
     else
       @startups = [@startup] + @startups.reverse
     end
+
+    @active_startups = @startups.select{|s| s.active? }
+    
+    @inactive_startups = @startups.select{|s| !s.active? }
+
     @commented_on_checkin_ids = current_user.commented_on_checkin_ids
 
     @show_mentor_message = true if current_user.roles?(:nreduce_mentor) && no_startups == true
