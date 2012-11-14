@@ -97,8 +97,9 @@ class ApplicationController < ActionController::Base
       @ua[:created_at] = Time.now
       @ua[:url_path] = request.env['REQUEST_PATH']
       if @ab_test_id.present?
-        @ua[:ab_test_id] = @ab_test_id
-        @ua[:ab_test_version] = @ab_test_version
+        @ua[:ab_test_id] =  @ab_test_id
+        # Allow override from params so I can test when coming in from registration form
+        @ua[:ab_test_version] = params[:ab_test_version] || @ab_test_version
       end
       user_action = UserAction.new(@ua)
       user_action.save!
