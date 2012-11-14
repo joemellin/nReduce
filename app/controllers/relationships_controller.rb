@@ -57,7 +57,10 @@ class RelationshipsController < ApplicationController
     end
 
     @active_startups = @startups.select{|s| s.active? }
-    
+
+    # Pad active startups with :joining_soon symbols for easy iteration
+    @active_startups.size.upto(Startup::NUM_ACTIVE_REQUIRED){ @active_startups << :joining_soon } unless @startup.setup?(:connected)
+
     @inactive_startups = @startups.select{|s| !s.active? }
 
     @commented_on_checkin_ids = current_user.commented_on_checkin_ids
