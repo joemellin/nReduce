@@ -65,8 +65,6 @@
               .top
               .bottom
               - c += 1
-        - else
-          - c += 1
         .span3.team{:align => 'center'}
           .top{:align => 'center', :onclick => "window.location = '#{posts_path}';"}
             .background{:style => "background-image: url('#{image_path('napp_bg.png')}'); cursor: pointer; border: 2px solid #fff; opacity: 1.0;"}
@@ -76,7 +74,7 @@
             = link_to 'Meet Cool People', posts_path, :class => 'btn'
         - if c == 3
           .clear
-        
+        - c += 1
       - elsif c != 0 and c % 4 == 0
         .clear
       
