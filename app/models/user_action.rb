@@ -4,7 +4,7 @@ class UserAction < ActiveRecord::Base
   belongs_to :ab_test
   
   attr_accessible :attachable, :ip, :action, :url_path, :browser, :data, 
-    :time_taken, :user, :user_id, :created_at, :session_id, :ab_test_id
+    :time_taken, :user, :user_id, :created_at, :session_id, :ab_test_id, :ab_test_version
 
   serialize :data, Hash
 

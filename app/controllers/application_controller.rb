@@ -77,6 +77,8 @@ class ApplicationController < ActionController::Base
 
   # use an around_filter
   def record_user_action
+    # initialize session now so we have a session id to use for a/b test
+    session[:foo] = nil
     return true if @ua
     started = Time.now
     yield
@@ -95,7 +97,7 @@ class ApplicationController < ActionController::Base
       @ua[:url_path] = request.env['REQUEST_PATH']
       if @ab_test_id.present?
         @ua[:ab_test_id] = @ab_test_id
-        @ua[:data] = @ab_test_version
+        @ua[:ab_test_version] = @ab_test_version
       end
       user_action = UserAction.new(@ua)
       user_action.save!
