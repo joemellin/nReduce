@@ -70,8 +70,6 @@ module Nreduce
     # Version of your assets, change this if you want to expire all your assets
     config.assets.version = '1.0'
 
-    config.assets.precompile += %w( *.css *.js )
-
     config.action_view.field_error_proc = Proc.new { |html_tag, instance| %Q(<div class="error">#{html_tag}</div>).html_safe }
   end
 end

@@ -13,7 +13,8 @@
     -# end fonts
     = stylesheet_link_tag(:application, :media => "all")
     - unless @home
-      = stylesheet_link_tag('bootstrap/bootstrap-responsive.min.css')
+      :plain
+        <link href="/css/bootstrap-responsive.min.css" media="all" rel="stylesheet" type="text/css" />
     = javascript_include_tag(:application)
     = stylesheet_link_tag '/css/start/jquery-ui-1.8.21.custom.css'
 
