@@ -50,7 +50,7 @@ class Cache
   end
 
   #
-  # Array manipulation methods
+  # Array (lists in redis) manipulation methods
   #
 
     # Add an item to an array
@@ -71,6 +71,38 @@ class Cache
   def self.arr_count(key)
     key = Cache.key_for(key)
     $redis.llen(key)
+  end
+
+  # 
+  # Sorted set manipulation methods
+  #
+
+  # Appends a value to a set
+  def self.set_push(key, value)
+    key = Cache.key_for(key)
+    res = $redis.zadd(key, '1', value)
+    res == 1
+  end
+
+  # Returns index of value
+  def self.set_index_of(key, value)
+    key = Cache.key_for(key)
+    res = $redis.zrank(key, value)
+    res
+  end
+
+  # Returns number of values in this set
+  def self.set_count(key)
+    key = Cache.key_for(key)
+    res = $redis.zcard(key)
+    res
+  end
+
+  # Deletes value from a set
+  def self.set_delete(key, value)
+    key = Cache.key_for(key)
+    res = $redis.zrem(key, value)
+    res == 1
   end
 
   #
