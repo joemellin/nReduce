@@ -51,6 +51,9 @@
                   &nbsp;
             - elsif current_checkin.present? && !@after_checkin_window
               = link_to 'View Goal', startup_checkin_path(s, current_checkin), :class => 'btn btn-success'
+              - if current_checkin.comment_count > 0
+                %p
+                  %small= pluralize(current_checkin.comment_count, 'comment')
             - if @after_checkin_window && !owner and (current_checkin.blank? or (current_checkin and !current_checkin.completed?))
               = form_for Nudge.new(:startup_id => s.id), :html => {:id => "new_nudge_startup_#{s.id}"} do |f|
                 = f.hidden_field :startup_id

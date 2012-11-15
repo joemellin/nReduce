@@ -55,6 +55,14 @@ class UserMailer < ActionMailer::Base
     mail(:to => @user.email, :subject => "#{@connected_with.name} approved your connection request")
   end
 
+   # We introduced the two teams when one joined
+  def relationship_introduced(notification)
+    @relationship = notification.attachable
+    @connected_with = @relationship.connected_with
+    @user = notification.user
+    mail(:to => @user.email, :subject => "We've introduced you to #{@connected_with.name}")
+  end
+
   def mentorship_approved(notification)
     @relationship = notification.attachable
     @connected_with = @relationship.connected_with
