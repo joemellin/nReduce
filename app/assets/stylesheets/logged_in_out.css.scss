@@ -1,0 +1,98 @@
+img.bg {
+  /* Set rules to fill background */
+  min-height: 100%;
+  min-width: 1024px;
+  
+  /* Set up proportionate scaling */
+  width: 100%;
+  height: auto;
+  
+  /* Set up positioning */
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+
+@media screen and (max-width: 1024px) { /* Specific to this particular image */
+  img.bg {
+    left: 50%;
+    margin-left: -512px;   /* 50% */
+  }
+}
+
+.wrapper.logged_out {
+  .nav {
+    margin-top: 10px;
+  }
+  .body {
+    margin-top: 30px;
+  }
+}
+
+.wrapper.logged_in {
+  // Style the container here
+  background: none;
+  position: relative;
+  .container {
+    width: 1170px;
+    background: #fff;
+    padding: 0;
+    border-right: 3px solid #3697D5;
+    border-left: 3px solid #3697D5;
+    .greylink {
+      a {
+        color: #999999;
+      }
+    }
+    .header {
+      .navbar {
+        a.logo {
+          padding: 0;
+          margin: 0 0 0 -20px;
+          img {
+            width: 45px;
+            height: 45px;
+          }
+        }
+        .navbar-inner {
+          border-radius: 0px;
+          border-top: none;
+          border-left: none;
+          border-right: none;
+          border-bottom: 1px solid #D4D4D4
+        }
+      }
+    }
+
+    .body {
+      .postcontent {
+        border-top: none;
+        font-size: 1.8em;
+        padding-top: 5px;
+        line-height:150%;
+        p { width: 600px; }
+          textarea { width: 575px; }
+        }
+      .commentlinks {
+        color: #666666;
+        a {
+          color: #888888;
+        }
+      }
+    }
+    .footer {
+      padding: 20px 0 30px 0;
+      a {
+       padding: 0px 20px 0px 20px;
+      }
+
+    }
+  }
+}
+
+// Could add additional background images like:
+// .hub_amsterdam {
+//    .wrapper {
+//      background-image...
+//    }
+// }

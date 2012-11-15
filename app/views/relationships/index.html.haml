@@ -3,6 +3,11 @@
 .row.center
   %h1
     %small Work Room
+
+.countdown_and_checkin{:align => 'center'}
+  - if current_user.entrepreneur? && current_user.startup_id.present?
+    = render 'startups/countdown_and_checkin', :startup => current_user.startup
+
 .relationships
   .row.teams{:style => 'padding-top: 20px;'}
     - c = 0

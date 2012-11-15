@@ -2,16 +2,8 @@
   .footer.span12
     %center
       = link_to "Home", home_path
-      = link_to "nStar", '/d'
-      = link_to "Team", team_path
+      = link_to "nStar", '/nstars'
+      = link_to "About Us", team_path
       = link_to "Heart Startups", 'heartstartups'
       - if user_signed_in?
         = link_to 'Tutorial', tutorial_path
-    
-- if show_background_image?
-  .row.center
-    %center
-      .coworking_location_tab
-        = link_to "Working At #{Settings.coworking_locations.uptown_espresso.name}, #{Settings.coworking_locations.uptown_espresso.location}", coworking_location_path, :remote => :true
-
-      #coworking_location_modal

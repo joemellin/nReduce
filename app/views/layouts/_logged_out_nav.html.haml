@@ -1,0 +1,27 @@
+- hide_nav ||= false
+.nav
+  .row
+    .span2= link_to image_tag('nreduce_logo.png'), (@demo_day.present? ? '/d' : "/")
+    - if @demo_day && !@home
+      .span4.countdown_and_checkin{:align => 'center'}
+        - if @demo_day && !@home
+          - if @demo_day.in_the_future?
+            %p Demo Day Starts In
+            = render 'layouts/countdown', :time => @demo_day.starts_at
+          - elsif @demo_day.in_the_past? && @next_demo_day
+            %p Next #{link_to(@next_demo_day.name, '/d')} starts on
+            %h3 #{@next_demo_day.starts_at.strftime('%B %d')} at 11AM PST
+          - elsif @demo_day.in_time_window?
+            %p
+              %strong #{link_to @demo_day.name, @demo_day}
+              ends in
+            = render 'layouts/countdown', :time => @demo_day.ends_at
+    - else
+      .span4
+        %p
+    .span6
+      .right{:style => 'margin-top: 15px;'}
+        %ul.nav.nav-pills
+          %li= link_to "Join", sign_up_path, :class => (@ab_test_version == :b) ? 'btn btn-success' : ''
+          %li= link_to "Login", login_path
+      .clear
