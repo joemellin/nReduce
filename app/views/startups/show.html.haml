@@ -1,28 +1,28 @@
 - content_for :subtitle do
   = @startup.name
 
-.row
-  .span12{:align => 'right'}
-    - if @owner
-      = link_to "Edit Startup", "/startup/edit", :class => "btn"
-    - elsif !@entity.blank?
-      = render 'relationships/buttons', :entity => @entity, :connected_with => @startup, :relationship => @relationship.present? ? @relationship : @pending_relationship
+.startup
+  .row
+    .span2.offset10
+      .center.edit_btn
+        - if @owner
+          = link_to "Edit Startup", "/startup/edit", :class => "btn"
+        - elsif !@entity.blank?
+          = render 'relationships/buttons', :entity => @entity, :connected_with => @startup, :relationship => @relationship.present? ? @relationship : @pending_relationship
+  %br/
 
+  = render 'startups/profile'
 
-%br/
-
-= render 'startups/profile'
-
-- if !@can_view_checkin_details and !@entity.blank?
-  .row{:id => "startup_#{@startup.id}"}
-    .span12
-      %br/
-      %div{:align => 'center'}
-        %h3 #{h(@startup.name.possessive)} check-ins are private. To get permission to see them:
+  - if !@can_view_checkin_details and !@entity.blank?
+    .row{:id => "startup_#{@startup.id}"}
+      .span12
         %br/
-        = render 'relationships/buttons', :entity => @entity, :connected_with => @startup, :relationship => @relationship.present? ? @relationship : @pending_relationship
-- else
-  = render 'checkins_list'
+        %div{:align => 'center'}
+          %h3 #{h(@startup.name.possessive)} check-ins are private. To get permission to see them:
+          %br/
+          = render 'relationships/buttons', :entity => @entity, :connected_with => @startup, :relationship => @relationship.present? ? @relationship : @pending_relationship
+  - else
+    = render 'checkins_list'
 
 
 

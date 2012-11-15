@@ -1,66 +1,63 @@
 - @num_checkins ||= @startup.checkins.count
 - @num_awesomes ||= @startup.awesomes.count
 .row
-  .span12{:style => 'padding: 0'}
-    .row{:style => 'padding: 0px'}
-      .span5{:style => 'padding-left: 45px'}
-        = image_tag @startup.logo_url(:lg_square), :width => 400, :height => 400
-      .span5{:style => 'margin-left: -35px'}
-        %p
-          %small Startup:
-        %h1{:style => 'font-size: 50px'}= h(@startup.name)
-        - unless @startup.one_liner.blank?
-          %p{:style => 'padding-top: 20px'}
-            %small Oneliner:
-          %h3= h(@startup.one_liner)
+  .span5{:style => 'padding-left: 45px'}
+    = image_tag @startup.logo_url(:lg_square), :width => 400, :height => 400
+  .span5{:style => 'margin-left: -35px'}
+    %p
+      %small Startup:
+    %h1{:style => 'font-size: 50px'}= h(@startup.name)
+    - unless @startup.one_liner.blank?
+      %p{:style => 'padding-top: 20px'}
+        %small Oneliner:
+      %h3= h(@startup.one_liner)
 
-        - if @startup.website_url.present? && @startup.website_url_to_uri.present?
-          %p{:style => 'padding-top: 20px'}
-            %small Website:
-          %h3= link_to_external @startup.website_url_to_uri.hostname, @startup.website_url, :source => 'profile'
+    - if @startup.website_url.present? && @startup.website_url_to_uri.present?
+      %p{:style => 'padding-top: 20px'}
+        %small Website:
+      %h3= link_to_external @startup.website_url_to_uri.hostname, @startup.website_url, :source => 'profile'
+    %p{:style => 'padding-top: 20px'}
+      %small Industry:
+    %h3 #{h(@startup.industry_list)}
+  .span2
+    .greylink
+      .center
         %p{:style => 'padding-top: 20px'}
-          %small Industry:
-        %h3 #{h(@startup.industry_list)}
-      .span2.greylink
-        .row.center
-          %p{:style => 'padding-top: 20px'}
-            != rating_link(@startup)
-          %p{:style => 'padding-top: 20px'}
-            %span
-              %h1 #{@num_checkins}
-              = link_to 'Weeks Worked', community_guidelines_path
-          %p{:style => 'padding-top: 20px'}
-            %span 
-              %h1 #{@num_awesomes}
-              = link_to 'Awesomes', community_guidelines_path
+          != rating_link(@startup)
+        %p{:style => 'padding-top: 20px'}
+          %span
+            %h1 #{@num_checkins}
+            = link_to 'Weeks Worked', community_guidelines_path
+        %p{:style => 'padding-top: 20px'}
+          %span 
+            %h1 #{@num_awesomes}
+            = link_to 'Awesomes', community_guidelines_path
 %br/
 %br/
 .row
   .span12
-    - unless @startup.elevator_pitch.blank?
-      %p{:style => 'padding-top: 20px'}
-        %small Elevator Pitch:
-      %h4= simple_format(h(@startup.elevator_pitch))
+    .elevator_pitch
+      - unless @startup.elevator_pitch.blank?
+        %p
+          %small Elevator Pitch:
+        %h4= simple_format(h(@startup.elevator_pitch))
 
 .row
   .span12
     %h4
       %small Team #{h(@startup.name)}
     %br
-.row
-  .span12
     = render 'startups/team_members', :team_members => @startup.team_members, :add_team_member => user_signed_in? && (@startup.id == current_user.startup_id ? true : false)
 
 - mentors = @startup.connected_to('User')
 - if mentors.size > 0
   .row
     .span12
-      %br
-      %h4{:style => 'padding-top: 20px'}
+      %h4
         %small #{h(@startup.name).possessive} Mentors
       %br/
       %br/
   .row
-    .span12{:style => 'padding-top: 20px'}
+    .span12
       = render 'startups/team_members', :team_members => mentors
       %br
