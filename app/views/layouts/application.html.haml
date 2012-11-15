@@ -1,4 +1,4 @@
-!!! 5
+!!!
 %html(lang="en")
   %head{:profile => "http://www.w3.org/2005/10/profile"}
     %meta(charset="utf-8")
@@ -12,11 +12,7 @@
       <script type="text/javascript">try{Typekit.load();}catch(e){}</script>
     -# end fonts
     = stylesheet_link_tag(:application, :media => "all")
-    - unless @home
-      :plain
-        <link href="/css/bootstrap-responsive.min.css" media="all" rel="stylesheet" type="text/css" />
     = javascript_include_tag(:application)
-    = stylesheet_link_tag '/css/start/jquery-ui-1.8.21.custom.css'
 
     - if @tokbox
       = javascript_include_tag "http://static.opentok.com/v0.91/js/TB.min.js"
@@ -28,26 +24,20 @@
     = js_settings
     = csrf_meta_tags
   %body
-    - if show_background_image?
-      -# Helper defined in application_helper.rb
-      = image_tag background_image_path, :class => 'bg'
-    .wrapper{:class => show_background_image? ? 'logged_in' : ''}
-      .container{:style => @home ? 'width: 1170px;' : ''}
+    .wrapper{:class => user_signed_in? ? 'logged_in' : 'logged_out'}
+      .container
         - unless @onboard
           .header
-            = render 'layouts/nav', :hide_nav => @hide_nav == true
+            - if user_signed_in?
+              - unless @hide_nav == true
+                = render 'layouts/logged_in_nav'
+            - else
+              = render 'layouts/logged_out_nav'
         .body
           = render "layouts/flash_messages"
-          - if @setup and !@weekly_class
-            .row
-              .left= render 'layouts/left_nav'
-              .left.content_right{:style => "border-left: 1px solid #cccccc; #{@setup ? 'padding-top: 0' : ''}" }= yield
-              .clear
-          - else
-            = yield
+          = yield
         - unless @hide_footer
           = render "layouts/footer"
-      = content_for :modals
 
       -# Olark collides with Screen code so can't include it if we're recording video.
       - unless @recording_video
