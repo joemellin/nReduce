@@ -33,10 +33,10 @@ img.bg {
   // Style the container here
   background: none;
   position: relative;
-  .container {
-    width: 1170px;
+  > .container {
+    padding: 0 30px 0 30px;
+    width: 1200px;
     background: #fff;
-    padding: 0;
     border-right: 3px solid #3697D5;
     border-left: 3px solid #3697D5;
     .greylink {
@@ -44,14 +44,15 @@ img.bg {
         color: #999999;
       }
     }
-    .header {
+    > .header {
+      margin: 0 -30px 0 -30px;
       .navbar {
         a.logo {
           padding: 0;
           margin: 0 0 0 -20px;
           img {
-            width: 45px;
-            height: 45px;
+            width: 40px;
+            height: 40px;
           }
         }
         .navbar-inner {

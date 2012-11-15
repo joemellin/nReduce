@@ -2,15 +2,17 @@
 .nav
   .navbar
     .navbar-inner
-      = link_to image_tag('nreduce_logo_45.jpg'), (@demo_day.present? ? '/d' : "/"), :class => 'logo'
-      %ul.nav.pull-right
-        - if current_user.entrepreneur? && current_user.startup.present? && current_user.startup.account_setup?
+      %ul.nav.pull-left
+        %li= link_to image_tag('nreduce_logo_45.png'), (@demo_day.present? ? '/d' : "/"), :class => 'logo'
+        - if current_user.entrepreneur? && current_user.startup.present?
           %li
             = link_to '<i class="icon icon-user"></i> Add Teams'.html_safe , add_teams_relationships_path
             - unless current_user.unread_nc == 0
               .left.unread_nc
                 %span.badge.badge-success= current_user.unread_nc
               .clear
+      %ul.nav.pull-right
+        - if current_user.entrepreneur? && current_user.startup.present?
           %li{:class => is_controller_action?('relationships', 'index') ? 'active' : ''}= link_to "Work Room", work_room_path    
           %li.dropdown
             %a.dropdown-toggle{:href => '#', 'data-toggle' => 'dropdown'}
