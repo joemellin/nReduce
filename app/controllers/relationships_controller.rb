@@ -59,7 +59,7 @@ class RelationshipsController < ApplicationController
     @active_startups = @startups.select{|s| s.active? }
 
     # Pad active startups with :joining_soon symbols for easy iteration
-    @active_startups.size.upto(Startup::NUM_ACTIVE_REQUIRED){ @active_startups << :joining_soon } unless @startup.setup?(:connected)
+    @active_startups.size.upto(Startup::NUM_ACTIVE_REQUIRED){ @active_startups << :joining_soon } if @startup.present? && !@startup.setup?(:connected)
 
     @inactive_startups = @startups.select{|s| !s.active? }
 
