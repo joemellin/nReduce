@@ -627,7 +627,7 @@ class User < ActiveRecord::Base
         self.lat, self.lng, self.country = res.lat, res.lng, res.country_code
         return true
       end
-    rescue
+    rescue Exception
       # do nothing
     end
     false
