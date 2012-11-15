@@ -19,7 +19,7 @@ class Notification < ActiveRecord::Base
     [
       :new_checkin, :relationship_request, :relationship_approved, 
       :mentorship_approved, :investor_approved, :new_comment_for_checkin, 
-      :new_comment_for_post, :new_nudge, :new_team_joined, :new_like, :join_next_week
+      :new_comment_for_post, :new_nudge, :new_team_joined, :new_like, :join_next_week, :relationship_introduced
     ]
   end
 
@@ -87,8 +87,9 @@ class Notification < ActiveRecord::Base
   def self.create_for_relationship_approved(relationship)
     entity = relationship.entity
     if entity.is_a?(Startup)
+      type = relationship.introduced == true ? :relationship_introduced : :relationship_approved
       entity.team_members.each do |u|
-        Notification.create_and_send(u, relationship, :relationship_approved)
+        Notification.create_and_send(u, relationship, type)
       end
     elsif entity.is_a?(User) and entity.mentor?
       Notification.create_and_send(entity, relationship, :mentorship_approved)

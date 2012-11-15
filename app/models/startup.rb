@@ -416,6 +416,7 @@ class Startup < ActiveRecord::Base
       Startup.last_activated_teams(3).where(['id != ?', self.id]).each do |s|
         r = Relationship.start_between(self, s, :startup_startup, true)
         r.silent = true
+        r.introduced = true
         if r.present? && r.valid?
           r.approve!
 
