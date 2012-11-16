@@ -8,9 +8,10 @@
           %li.add_teams= link_to '<i class="icon icon-user"></i> Find Teams'.html_safe , add_teams_relationships_path
         %li.dropdown.notifications
           %a.dropdown-toggle{:href => '#', 'data-toggle' => 'dropdown'}
-            Notifications
-            - if @notifications.present? && @notifications.size > 0
-              %span.badge.badge-info= @notifications.size
+            .left.icon{:class => @unread_notifications_count > 0 ? 'new' : 'up'}
+            - if @unread_notifications_count > 0
+              .left.badge.badge-info= @unread_notifications_count
+            .clear
           - if @notifications.present?
             %ul.dropdown-menu
               %li.title Notifications
@@ -30,9 +31,10 @@
                       .clear
         %li.dropdown.relationship_requests
           %a.dropdown-toggle{:href => '#', 'data-toggle' => 'dropdown'}
-            Connections
-            - if @relationship_requests.present? && @relationship_requests.size > 0
-              %span.badge.badge-info= @relationship_requests.size
+            .left.icon{:class => @new_relationship_requests ? 'new' : 'up'}
+            - if @new_relationship_requests
+              .left.badge.badge-info= @relationship_requests.size
+            .clear
           - if @relationship_requests.present?
             %ul.dropdown-menu
               %li.title Connection Requests

@@ -41,6 +41,7 @@ $ ->
     e.preventDefault()
     addTeammateButton('startup')
 
+  # Show arrow when scrolling down page
   $(window).bind 'scroll', ->
     scroll_at = $(this).scrollTop()
     if scroll_at < 20
@@ -50,6 +51,30 @@ $ ->
       $('.arrow').css({'opacity': opacity})
     else
       $('.arrow').css({'opacity': 0})
+
+  # Mark notifications as read after clicking on menu item
+  $('.notifications .dropdown-toggle').click ->
+    $.post('/notifications/mark_all_as_read')
+
+  $('.notifications .dropdown-toggle .icon, .relationship_requests .dropdown-toggle .icon').mouseover ->
+    if $(this).hasClass('new') || $(this).attr('rel') == 'new'
+      rel = 'new'
+      $(this).addClass('down').removeClass('up')
+    else
+      rel = 'up'
+    $(this).attr('rel', rel)
+    $(this).addClass('down').removeClass(rel)
+
+
+  $('.notifications .dropdown-toggle .icon, .relationship_requests .dropdown-toggle .icon').mouseout ->
+    if $(this).hasClass('new') || $(this).attr('rel') == 'new'
+      rel = 'new'
+      $(this).addClass('down').removeClass('up')
+    else
+      rel = 'up'
+    $(this).attr('rel', rel)
+    $(this).addClass(rel).removeClass('down')
+
     
   # Type can be user or startup
   addTeammateButton = (type) ->

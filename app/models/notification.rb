@@ -187,4 +187,8 @@ class Notification < ActiveRecord::Base
     self.save
     self.user.update_unread_notifications_count unless dont_update_user
   end
+
+  def unread?
+    self.read_at.blank?
+  end
 end
