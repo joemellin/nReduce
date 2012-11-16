@@ -69,9 +69,12 @@ class RelationshipsController < ApplicationController
 
     @after_checkin_window = Checkin.in_after_time_window? ? true : false
 
-    @notifications = current_user.notifications.ordered.limit(20).all
+    @notifications = current_user.notifications.ordered.limit(20).where(['created_at > ?', Time.now - 2.weeks]).all
+    @unread_notifications_count = @notifications.present? ? @notifications.inject(0){|r,n| r += 1 if n.unread?; r } : 0
+    logger.info "UNREAD NC: #{@unread_notifications_count}"
 
     @relationship_requests = @entity.pending_relationships.order('created_at DESC').all
+    @new_relationship_requests = @relationship_requests.present? && @relationship_requests.size > 0 ? true : false
   end
 
   def add_teams

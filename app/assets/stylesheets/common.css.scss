@@ -166,17 +166,33 @@ hr {
     .nav {
       .notifications {
         .message { width: 200px; }
+        .icon.new { background: image-url('notifications_new2.png') no-repeat; }
+        .icon.up { background: image-url('notifications_up.png') no-repeat; }
+        .icon.down { background: image-url('notifications_down.png') no-repeat; }
       }
       .relationship_requests {
         .message { width: 140px; margin-right: 10px; }
         .btn { max-width: 50px; }
+        .icon.new { background: image-url('relationship_requests_new2.png') no-repeat; }
+        .icon.up { background: image-url('relationship_requests_up.png') no-repeat; }
+        .icon.down { background: image-url('relationship_requests_down.png') no-repeat; }
+      }
+      .notifications, .relationship_requests {
+        .dropdown-toggle {
+          .icon {
+            width: 32px;
+            height: 32px;
+          }
+          padding: 4px 15px 4px;
+          > img { width: 32px; height: 32px; }
+        }
       }
       .dropdown {
         .dropdown-menu {
           background-color: #efefef;
           padding-bottom: 8px;
           .scrollable {
-            max-height: 600px;
+            max-height: 500px;
             overflow-y: scroll;
           }
           .title {

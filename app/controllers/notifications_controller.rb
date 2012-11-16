@@ -11,4 +11,9 @@ class NotificationsController < ApplicationController
     end
     current_user.mark_all_notifications_read
   end
+
+  def mark_all_as_read
+    current_user.mark_all_notifications_read
+    render :nothing => true
+  end
 end

@@ -26,7 +26,13 @@ Nreduce::Application.routes.draw do
 
   devise_for :users, :controllers => {:registrations => 'registrations', :sessions => 'sessions'}
 
-  resources :authentications, :notifications, :rsvps
+  resources :authentications, :rsvps
+
+  resources :notifications, :only => [:index] do
+    collection do
+      post 'mark_all_as_read'
+    end
+  end
 
   resources :checkins do
     collection do
