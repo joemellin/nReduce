@@ -164,12 +164,50 @@ hr {
 
 
     .nav {
-      .unread_nc {
-        margin-top: -8px;
-        margin-left: -9px;
-        .badge {
-           background-color: green;
-           font-size: 12px;
+      .notifications {
+        .message { width: 200px; }
+      }
+      .relationship_requests {
+        .message { width: 140px; margin-right: 10px; }
+        .btn { max-width: 50px; }
+      }
+      .dropdown {
+        .dropdown-menu {
+          background-color: #efefef;
+          padding-bottom: 8px;
+          .scrollable {
+            max-height: 600px;
+            overflow-y: scroll;
+          }
+          .title {
+            text-align: center;
+            padding: 0 0 5px 0;
+            color: #666;
+            font-weight: bold;
+            font-size: 1em;
+            border-bottom: 1px solid #ccc;
+          }
+          min-width: 250px;
+          .item {
+            background-color: #fff;
+            width: 280px;
+            .img {
+              width: 50px;
+              margin-right: 10px;
+            }
+            a {
+              color: #666;
+            }
+            .entity {
+              font-weight: bold;
+            }
+            padding: 10px;
+            border-bottom: 1px solid #ccc;
+            .time_ago { font-size: .8em; color: #ccc; margin-top: -8px; margin-bottom: -5px;}
+          }
+          .item.new {
+            background-color: #B7F0FF;
+          }
         }
       }
       .padding {
