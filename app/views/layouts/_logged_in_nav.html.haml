@@ -5,7 +5,7 @@
       %ul.nav.pull-left
         %li= link_to image_tag('nreduce_logo_45.png'), (@demo_day.present? ? '/d' : "/"), :class => 'logo'
         - if current_user.entrepreneur? && current_user.startup.present?
-          %li
+          %li.add_teams
             = link_to '<i class="icon icon-user"></i> Add Teams'.html_safe , add_teams_relationships_path
             - unless current_user.unread_nc == 0
               .left.unread_nc

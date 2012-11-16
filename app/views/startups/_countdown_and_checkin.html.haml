@@ -1,45 +1,35 @@
 - startup ||= nil
-.topdash
-  - nc = Checkin.next_checkin_type_and_time
+- next_after_checkin_starts = Week.next_window_for(:after_checkin).first
+.countdown
   - unless startup.blank?
     - current_checkin = startup.current_checkin
-    %h4.solid{:style => 'font-size:10px; color: #666666; padding-left: 27px;'} Goal for the Week:
     - if current_checkin.present?
-      %p.solid{:style => 'font-size:16px; font-weight: bold; color: #3697D5; max-width: 250px;'}= truncate(current_checkin.start_focus, :length => 70)
-    - else
-      %p.solid{:style => 'font-size:16px; font-weight: bold; color: #3697D5; max-width: 250px;'} (none)
-    %div{:align => 'center', :style => 'overflow: hidden;'}
-      %div{:style => 'padding: 0 0 0 20px;'}= render 'layouts/countdown', :time => nc[:time]
-      - in_before_window = Checkin.in_before_time_window?
-      - in_after_window = Checkin.in_after_time_window?
-      .checkin_button
-        - showed_before = false
-        - showed_button = false
-        - if !current_checkin.blank?
-          - if in_after_window && current_checkin.completed?
-            = link_to 'This Week\'s Check-in', edit_checkin_path(current_checkin), :class => 'btn btn-primary'
-            - showed_button = true
-          - else
-            - if in_after_window
-              = link_to "Submit 'After' Video", edit_checkin_path(current_checkin), :class => 'btn btn-success'
-              - showed_button = true
-            - else
-              - if in_before_window
-                - showed_before = showed_button =  true
-                = link_to("'Before' video", edit_checkin_path(current_checkin), :class => 'btn btn-success')
-        - if in_after_window and current_checkin.blank?
-          = link_to "Submit 'After' Video", new_checkin_path, :class => 'btn btn-success'
-          - showed_button = true
-        - elsif in_before_window and !showed_before
-          = link_to "Submit 'Before' Video", new_checkin_path, :class => 'btn btn-success'
-          - showed_button = true
-      - unless showed_button
-        - measurement = startup.latest_measurement_name_and_value
-        %h4.solid{:style => 'font-size:10px; line-height: 12px; color: #666666; padding-left:40px;'}
-          Time Left.
-          - if measurement.present?
-            #{measurement.first} to Beat:
-        - if measurement.present?
-          %h1.solid{:style => 'font-size:24px; color: #3697D5; font-weight:bold; line-height: 24px;'}= measurement.last
+      %h5.week Team #{startup.name} Goal For Week Of #{current_checkin.time_label}:
+      %h2.goal #{current_checkin.start_focus}
+      .timeline
+        .nav
+          .navbar
+            .navbar-inner
+              %ul.nav
+                - 6.downto(1) do |i|
+                  - past = Time.now > (next_after_checkin_starts - (i + 1).days)
+                  %li.day{:class => past ? 'past' : 'future'}= link_to pluralize(i, 'Day'), '#'
+                  %li.divider-vertical{:class => past ? 'past' : 'future'}
+                %li.day
+              .progress
+                .bar{:style => "width: #{Checkin.pct_complete_week}%;"}
+              .checkin_btn
+                - if Checkin.in_after_time_window?
+                  .active= link_to 'Check In', edit_checkin_path(current_checkin), :class => "btn btn-large btn-warning"
+                - else
+                  = link_to 'Keep Working', '#', :class => "btn btn-large disabled", :onclick => "return false"
+
+/ - measurement = startup.latest_measurement_name_and_value
+/ %h4.solid{:style => 'font-size:10px; line-height: 12px; color: #666666; padding-left:40px;'}
+/   Time Left.
+/   - if measurement.present?
+/     #{measurement.first} to Beat:
+/ - if measurement.present?
+/   %h1.solid{:style => 'font-size:24px; color: #3697D5; font-weight:bold; line-height: 24px;'}= measurement.last
 
 

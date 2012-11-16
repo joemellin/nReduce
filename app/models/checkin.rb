@@ -126,6 +126,14 @@ class Checkin < ActiveRecord::Base
     c_by_week
   end
 
+  def self.pct_complete_week
+    # Subtract 24 hours to get start of window
+    nc = Checkin.next_after_checkin - 24.hours
+    pc = Checkin.prev_after_checkin - 24.hours
+    return 100 if nc < Time.now
+    (((nc - Time.now) / (nc - pc)) * 100).round
+  end
+
   def self.in_a_checkin_window?
     self.in_before_time_window? or self.in_after_time_window?
   end
@@ -182,13 +190,13 @@ class Checkin < ActiveRecord::Base
 
   # Returns an array with the next checkin type and time, ex: [:before, Time obj]
   def self.next_checkin_type_and_time
-    before = Checkin.next_before_checkin
+    #before = Checkin.next_before_checkin
     after = Checkin.next_after_checkin
-    if before < after
-      {:type => :before, :time => before}
-    else
-      {:type => :after, :time => after}
-    end
+    #if before < after
+    #  {:type => :before, :time => before}
+    #else
+    {:type => :after, :time => after}
+    #end
   end
 
   # Pass in a timestamp and this will return the start (4pm on Tue) of that checkin's week

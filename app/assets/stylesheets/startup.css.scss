@@ -41,42 +41,93 @@
   }
 }
 
-.countdown_and_checkin {
-  position: relative;
-  height: 90px;
-  h4 {
-    font-size: 1em;
-    margin-right: 30px;
+.countdown {
+  .week {
+    margin-bottom: 0;
   }
-  #countdown {
-    max-width: 300px;
-    .number_block{
-      padding: 0 8px;
-      margin: 0 0 0 4px;
-      height: 50px;
-      text-align: center;
-      .numbers {
-        position: relative;
-        overflow: hidden;
-        font-size: 18px;
-        line-height: 22px;
-        padding: 12px 0 0;
-        span {
-          position: relative;
+  .goal {
+    margin-top: 3px;
+    margin-bottom: 0;
+  }
+  .timeline {
+    width: 1150px;
+    .navbar-inner {
+      background: none;
+      position: relative;
+      -webkit-box-shadow: none;
+      -moz-box-shadow: none;
+      box-shadow: none;
+      .nav {
+        width: 100%;
+        z-index: 2;
+        position: absolute;
+        top: 0;
+        left: 0;
+        li.day {
+          width: 12%;
+          a { text-align: center; }
         }
-        height: 26px;
+        li.past {
+          a {
+            color: #1298CE; 
+            text-shadow: none;
+          }
+        }
+        li.future {
+          a { color: #ccc; }
+        }
+        li.divider-vertical.past {
+          border-left: 1px solid #1298CE;
+          border-right: none;
+        }
+        li.divider-vertical.future {
+          border-left: 1px solid #ccc;
+          border-right: 1px solid white;
+        }
       }
-      p {
-        margin-top: -10px;
-        padding: 0;
-        font-weight: normal;
-        font-size: .9em;
-        color: #999;
+      .progress {
+        margin-left: -20px;
+        z-index: 0;
+        min-height: 40px;
+        width: 100%;
+        position: absolute;
+        top: 0;
+        .bar {
+          min-height: 40px;
+          background-color: #55CDF0;
+          background-image: -moz-linear-gradient(top, #55CDF0, #25A6EA);
+          background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#55CDF0), to(#25A6EA));
+          background-image: -webkit-linear-gradient(top, #55CDF0, #25A6EA);
+          background-image: -o-linear-gradient(top, #55CDF0, #25A6EA);
+          background-image: linear-gradient(to bottom, #55CDF0, #25A6EA);
+          background-repeat: repeat-x;
+          filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#55CDF0', endColorstr='#25A6EA', GradientType=0);
+        }
+      }
+      .checkin_btn {
+        z-index: 3;
+        margin: -15px 10px 0 0;
+        position: absolute;
+        right: 10px;
+        .btn {
+          font-size: 1.6em;
+          line-height: 1.6em;
+          width: 138px;
+          white-space: nowrap;
+        }
+        .disabled {
+          opacity: 1;
+          color: #999;
+          background-color: #efefef;
+          font-weight: normal;
+          -moz-box-shadow: 0px 1px 1px 1px #efefef;
+          -webkit-box-shadow: 0px 1px 1px 1px #efefef;
+          box-shadow: 0px 1px 1px 1px #efefef;
+        }
       }
     }
   }
 }
-
 
 .checkin {
   .stage {
