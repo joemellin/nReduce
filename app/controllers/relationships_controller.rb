@@ -68,6 +68,10 @@ class RelationshipsController < ApplicationController
     @show_mentor_message = true if current_user.roles?(:nreduce_mentor) && no_startups == true
 
     @after_checkin_window = Checkin.in_after_time_window? ? true : false
+
+    @notifications = current_user.notifications.ordered.limit(20).all
+
+    @relationship_requests = @entity.pending_relationships.order('created_at DESC').all
   end
 
   def add_teams

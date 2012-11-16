@@ -136,6 +136,7 @@ Nreduce::Application.routes.draw do
     collection do
       get 'add_teams'
       post 'skip_team'
+      get 'requests'
     end
     member do
       post 'approve'

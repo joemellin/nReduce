@@ -5,12 +5,48 @@
       %ul.nav.pull-left
         %li= link_to image_tag('nreduce_logo_45.png'), (@demo_day.present? ? '/d' : "/"), :class => 'logo'
         - if current_user.entrepreneur? && current_user.startup.present?
-          %li.add_teams
-            = link_to '<i class="icon icon-user"></i> Add Teams'.html_safe , add_teams_relationships_path
-            - unless current_user.unread_nc == 0
-              .left.unread_nc
-                %span.badge.badge-success= current_user.unread_nc
-              .clear
+          %li.add_teams= link_to '<i class="icon icon-user"></i> Find Teams'.html_safe , add_teams_relationships_path
+        %li.dropdown.notifications
+          %a.dropdown-toggle{:href => '#', 'data-toggle' => 'dropdown'}
+            Notifications
+            - if @notifications.present? && @notifications.size > 0
+              %span.badge.badge-info= @notifications.size
+          - if @notifications.present?
+            %ul.dropdown-menu
+              %li.title Notifications
+              - if @notifications.size == 0
+                %li= link_to 'You have no recent activity', '#'
+              - else
+                .scrollable
+                  - @notifications.each do |n|
+                    - elements = elements_for_notification(n)
+                    - the_link = elements[2].blank? ? '#' : elements[2]
+                    %li.notification.item{:class => n.read_at.blank? ? 'new' : '' } 
+                      - unless elements[0].blank?
+                        .img.left= link_to image_tag(elements[0]), the_link
+                      .message.left= link_to elements[1].html_safe, the_link
+                      .clear
+                      .time_ago.right #{distance_of_time_in_words_to_now(n.created_at)} ago
+                      .clear
+        %li.dropdown.relationship_requests
+          %a.dropdown-toggle{:href => '#', 'data-toggle' => 'dropdown'}
+            Connections
+            - if @relationship_requests.present? && @relationship_requests.size > 0
+              %span.badge.badge-info= @relationship_requests.size
+          - if @relationship_requests.present?
+            %ul.dropdown-menu
+              %li.title Connection Requests
+              - if @relationship_requests.size == 0
+                %li.item= link_to 'You have no pending requests', '#'
+              - else
+                .scrollable
+                  - @relationship_requests.each do |r|
+                    %li.item
+                      .right= link_to 'Accept', approve_relationship_path(r), :method => :post, :class => 'btn btn-small'
+                      .img.left= link_to image_tag(r.entity.logo_url(:small)), r.entity
+                      .message.left= link_to r.entity.name, r.entity
+                      .clear
+
       %ul.nav.pull-right
         - if current_user.entrepreneur? && current_user.startup.present?
           %li{:class => is_controller_action?('relationships', 'index') ? 'active' : ''}= link_to "Work Room", work_room_path    
