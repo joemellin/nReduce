@@ -9,8 +9,8 @@ class User < ActiveRecord::Base
   belongs_to :weekly_class
   has_many :authentications, :dependent => :destroy
   has_many :organized_meetings, :class_name => 'Meeting', :foreign_key => 'organizer_id'
-  has_many :sent_messages, :foreign_key => 'sender_id', :class_name => 'Message'
-  has_many :received_messages, :foreign_key => 'recipient_id', :class_name => 'Message'
+  has_many :sent_messages, :foreign_key => 'from_id', :class_name => 'Message'
+  has_many :conversation_statuses
   has_many :comments
   has_many :notifications, :dependent => :destroy
   has_many :meeting_messages
