@@ -95,13 +95,14 @@
         .bar {
           min-height: 40px;
           background-color: #55CDF0;
-          background-image: -moz-linear-gradient(top, #55CDF0, #25A6EA);
-          background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#55CDF0), to(#25A6EA));
-          background-image: -webkit-linear-gradient(top, #55CDF0, #25A6EA);
-          background-image: -o-linear-gradient(top, #55CDF0, #25A6EA);
-          background-image: linear-gradient(to bottom, #55CDF0, #25A6EA);
-          background-repeat: repeat-x;
-          filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#55CDF0', endColorstr='#25A6EA', GradientType=0);
+          background: image-url('animation4.gif') repeat-x;
+          // background-image: -moz-linear-gradient(top, #55CDF0, #25A6EA);
+          // background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#55CDF0), to(#25A6EA));
+          // background-image: -webkit-linear-gradient(top, #55CDF0, #25A6EA);
+          // background-image: -o-linear-gradient(top, #55CDF0, #25A6EA);
+          // background-image: linear-gradient(to bottom, #55CDF0, #25A6EA);
+          // background-repeat: repeat-x;
+          // filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#55CDF0', endColorstr='#25A6EA', GradientType=0);
         }
       }
       .checkin_btn {

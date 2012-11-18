@@ -127,11 +127,10 @@ class Checkin < ActiveRecord::Base
   end
 
   def self.pct_complete_week
-    # Subtract 24 hours to get start of window
-    nc = Checkin.next_after_checkin - 24.hours
-    pc = Checkin.prev_after_checkin - 24.hours
+    nc = Checkin.next_after_checkin
+    pc = Checkin.prev_after_checkin
     return 100 if nc < Time.now
-    (((nc - Time.now) / (nc - pc)) * 100).round
+    100 - (((nc - Time.now) / (nc - pc)) * 100).round
   end
 
   def self.in_a_checkin_window?
