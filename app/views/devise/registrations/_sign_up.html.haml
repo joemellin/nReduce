@@ -1,3 +1,5 @@
 %div{:align => 'center'}
 = semantic_form_for(resource, :as => resource_name, :url => registration_path(resource_name), :html => { :class => 'form-horizontal', :multipart => true }) do |f|
+  - if @ab_test_version.present?
+    = hidden_field_tag :ab_test_version, @ab_test_version.to_s
   = render 'devise/registrations/fields', :f => f

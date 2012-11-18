@@ -38,21 +38,21 @@
     = f.email_field :location
     = f.semantic_errors :location
 
-.control-group{error_css(@user, :pic)}
-  = f.label :pic, 'Profile Picture', :class => 'control-label'
-  .controls
-    = f.file_field :pic
-    = f.hidden_field :pic_cache
-    = f.semantic_errors :pic
-    %span.help-inline (optional)
-    - if @user.pic?
-      .div{:style => 'margin-top: 10px'}
-        %br/
-        Current Image:
-        = image_tag(@user.pic_url(:small))
-        &nbsp;
-        = f.check_box :remove_pic
-        Remove pic
+/ .control-group{error_css(@user, :pic)}
+/   = f.label :pic, 'Profile Picture', :class => 'control-label'
+/   .controls
+/     = f.file_field :pic
+/     = f.hidden_field :pic_cache
+/     = f.semantic_errors :pic
+/     %span.help-inline (optional)
+/     - if @user.pic?
+/       .div{:style => 'margin-top: 10px'}
+/         %br/
+/         Current Image:
+/         = image_tag(@user.pic_url(:small))
+/         &nbsp;
+/         = f.check_box :remove_pic
+/         Remove pic
 
 - if @startup_join_flow
   %hr/
@@ -64,11 +64,11 @@
       .controls
         = s.text_field :name
         = s.semantic_errors :name
-    .control-group{error_css(s.object, :one_liner)}
-      = s.label :one_liner, "One Liner", :class => 'control-label'
-      .controls
-        = text_field_tag 'user[startup_attributes][one_liner]', s.object.one_liner, :placeholder => 'ex: Facebook for pets'
-        = s.semantic_errors :one_liner
+    / .control-group{error_css(s.object, :one_liner)}
+    /   = s.label :one_liner, "One Liner", :class => 'control-label'
+    /   .controls
+    /     = text_field_tag 'user[startup_attributes][one_liner]', s.object.one_liner, :placeholder => 'ex: Facebook for pets'
+    /     = s.semantic_errors :one_liner
     .control-group{error_css(s.object, :website_url)}
       = s.label :website_url, "Website", :class => 'control-label'
       .controls
@@ -77,17 +77,17 @@
         = s.semantic_errors :website_url
 
 
-  .control-group
-    .controls
-      Add your teammates:
-      .teammates
-        = f.semantic_errors :sent_invites
-        - f.object.sent_invites.build if f.object.sent_invites.blank?
-        - f.object.sent_invites.each do |si|
-          = text_field_tag 'user[teammate_emails][]', si.email, :placeholder => 'founder@email.com'
-          = link_to '<i class="icon-plus"></i>'.html_safe, '#', :class => 'btn user_add_teammate_btn'
-          %span.help-inline (optional)
-          /= si.semantic_errors :email
+  / .control-group
+  /   .controls
+  /     Add your teammates:
+  /     .teammates
+  /       = f.semantic_errors :sent_invites
+  /       - f.object.sent_invites.build if f.object.sent_invites.blank?
+  /       - f.object.sent_invites.each do |si|
+  /         = text_field_tag 'user[teammate_emails][]', si.email, :placeholder => 'founder@email.com'
+  /         = link_to '<i class="icon-plus"></i>'.html_safe, '#', :class => 'btn user_add_teammate_btn'
+  /         %span.help-inline (optional)
+  /         /= si.semantic_errors :email
 
 .control-group
   .controls= f.submit "Join", :class => 'btn btn-large btn-success', :style => 'padding: 10px 25px 10px 25px; font-size:50px; line-height:60px'

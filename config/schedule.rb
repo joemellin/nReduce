@@ -52,6 +52,11 @@ every :wednesday, :at => '2pm' do
   runner "WeeklyClass.current_class.previous_class.activate_all_completed_startups"
 end
 
+# Clean out old session ids from ab tests
+every :sunday, :at => '9pm' do
+  runner "AbTest.clean_old_session_ids"
+end
+
 # Send email to all people who didn't join this week to join again next week
 # every :wednesday, :at => '2:05pm' do
 #   runner "WeeklyClass.email_incomplete_startups_from_previous_week"

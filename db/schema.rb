@@ -11,7 +11,17 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121111152311) do
+ActiveRecord::Schema.define(:version => 20121114103257) do
+
+  create_table "ab_tests", :force => true do |t|
+    t.string   "name"
+    t.string   "option_a"
+    t.string   "option_b"
+    t.datetime "starts_at"
+    t.datetime "ends_at"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
 
   create_table "authentications", :force => true do |t|
     t.string   "provider"
@@ -332,6 +342,7 @@ ActiveRecord::Schema.define(:version => 20121111152311) do
     t.string   "tokbox_session_id"
     t.string   "cached_industry_list"
     t.boolean  "mentorable",           :default => false
+    t.datetime "activated_at"
   end
 
   add_index "startups", ["public"], :name => "index_startups_on_public"
@@ -378,6 +389,8 @@ ActiveRecord::Schema.define(:version => 20121111152311) do
     t.datetime "created_at",      :null => false
     t.datetime "updated_at",      :null => false
     t.string   "session_id"
+    t.integer  "ab_test_id"
+    t.string   "ab_test_version"
   end
 
   create_table "users", :force => true do |t|

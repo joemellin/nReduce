@@ -19,14 +19,13 @@
       -moz-border-radius: 15px;
       border-radius: 15px;
       .status {
-        position: absolute;
         top: 10px;
         width: 98%;
         margin-left:auto;
         margin-right:auto;
         .btn {
           float: none;
-          margin: -2px;
+          margin: 0px;
         }
       }
       .members {
@@ -53,10 +52,17 @@
         -moz-border-radius: 15px;
         border-radius: 15px;
         border: 2px solid #ccc;
+        .startup_spinner {
+          margin-top: 100px;
+        }
       }
     }
     .bottom {
       margin-top: 10px;
+      h3 { 
+        margin-bottom: 2px;
+        line-height: 1.4em;
+      }
     }
     margin-bottom: 25px;
   }

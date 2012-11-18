@@ -48,12 +48,12 @@ class User < ActiveRecord::Base
   serialize :settings, Hash
   validates_presence_of :name
   validate :check_video_urls_are_valid
-  validates_length_of :bio, :minimum => 100, :too_short => "needs to be at least 100 characters", :if => :profile_fields_required?
+  #validates_length_of :bio, :minimum => 100, :too_short => "needs to be at least 100 characters", :if => :profile_fields_required?
   validate :email_is_not_nreduce, :if => :profile_fields_required?
-  validates_presence_of :pic, :if => :profile_fields_required?
+  #validates_presence_of :pic, :if => :profile_fields_required?
   validates_presence_of :location, :if => :profile_fields_required?
-  validates_presence_of :skill_list, :if => :profile_fields_required?
-  validates_presence_of :linkedin_url, :if => :profile_fields_required?
+  #validates_presence_of :skill_list, :if => :profile_fields_required?
+  #validates_presence_of :linkedin_url, :if => :profile_fields_required?
   validates_presence_of :startup, :if => :new_entrepreneur?
 
   before_validation :encode_intro_video
@@ -139,7 +139,7 @@ class User < ActiveRecord::Base
   end
 
   def self.force_email_on
-    [:nudge, :user, :new_team_joined, :weekly_class, :join_next_week, :checkin_now] # user is new mentor
+    [:nudge, :user, :new_team_joined, :weekly_class, :join_next_week, :checkin_now, :relationship_introduced] # user is new mentor
   end
 
   def self.user_countries
@@ -627,7 +627,7 @@ class User < ActiveRecord::Base
         self.lat, self.lng, self.country = res.lat, res.lng, res.country_code
         return true
       end
-    rescue
+    rescue Exception
       # do nothing
     end
     false

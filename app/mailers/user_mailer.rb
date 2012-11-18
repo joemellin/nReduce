@@ -9,9 +9,7 @@ class UserMailer < ActionMailer::Base
   def new_team_joined(notification)
     @startup = notification.attachable
     @to = notification.user
-    puts @startup.team_members.first
-    @weekly_class = @startup.team_members.first.weekly_class
-    mail(:to => @to.email, :subject => "Team #{@startup.name} just joined your class!")
+    mail(:to => @to.email, :subject => "Team #{@startup.name} joined nReduce!")
   end
 
   def join_next_week(notification)
@@ -55,6 +53,14 @@ class UserMailer < ActionMailer::Base
     @connected_with = @relationship.connected_with
     @user = notification.user
     mail(:to => @user.email, :subject => "#{@connected_with.name} approved your connection request")
+  end
+
+   # We introduced the two teams when one joined
+  def relationship_introduced(notification)
+    @relationship = notification.attachable
+    @connected_with = @relationship.connected_with
+    @user = notification.user
+    mail(:to => @user.email, :subject => "We've introduced you to #{@connected_with.name}")
   end
 
   def mentorship_approved(notification)
