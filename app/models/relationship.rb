@@ -6,9 +6,10 @@ class Relationship < ActiveRecord::Base
   has_many :user_actions, :as => :attachable
 
   attr_accessible :context, :entity, :entity_id, :entity_type, :connected_with, :connected_with_id, 
-    :connected_with_type, :status, :approved_at, :rejected_at, :silent, :message, :pending_at, :initiated
+    :connected_with_type, :status, :approved_at, :rejected_at, :silent, :message, :pending_at, :initiated, :introduced
 
   attr_accessor :silent
+  attr_accessor :introduced
 
   before_create :set_pending_status
   after_create :notify_users, :unless => lambda{|r| r.silent == true }
@@ -174,7 +175,12 @@ class Relationship < ActiveRecord::Base
           else
             inv = self.new_inverse_relationship
             inv.save
-            Notification.create_for_relationship_approved(self)
+            # If this was an introduction, notify the other team
+            if self.introduced == true
+              Notification.create_for_relationship_approved(inv)
+            else
+              Notification.create_for_relationship_approved(self)
+            end
           end
           # Clear out notifications for this relationship
           self.notifications.each{|n| n.mark_as_read }
@@ -235,6 +241,7 @@ class Relationship < ActiveRecord::Base
     r.connected_with_id = self.entity_id
     r.connected_with_type = self.entity_type
     r.initiated = false
+    r.silent = self.silent
     r
   end
 

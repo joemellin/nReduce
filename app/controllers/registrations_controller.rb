@@ -1,5 +1,6 @@
 class RegistrationsController < Devise::RegistrationsController
   around_filter :record_user_action, :only => [:new, :create]
+  before_filter :run_ab_test, :only => [:new, :create]
 
   def new
     super

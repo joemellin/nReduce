@@ -1,4 +1,6 @@
 class PagesController < ApplicationController
+  around_filter :record_user_action, :only => [:home]
+  before_filter :run_ab_test, :only => [:home]
   before_filter :login_required, :only => [:community_guidelines, :tutorial]
 
   def mentor
@@ -14,6 +16,11 @@ class PagesController < ApplicationController
     if user_signed_in?
       redirect_to current_user.entrepreneur? ? work_room_path : board_room_path
       return
+    end
+    if @ab_test_version.present?
+      render :action => "home_#{@ab_test_version}"
+    else
+      render :action => "home_b"
     end
   end
 

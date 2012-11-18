@@ -27,6 +27,15 @@ class ApplicationController < ActionController::Base
 
   protected
 
+  # For A/B testing - retains session data to make sure it sends the person to the same segment every time
+  # Add this as a before filter to run a test on that action - right now it only supports one test at a time
+  # Returns symbol: :a or :b
+  def run_ab_test
+    @ab_test_id = 1
+    @ab_test_version = AbTest.version_for_session_id(@ab_test_id, request.session_options[:id])
+    logger.info "session: #{request.session_options[:id]}"
+  end
+
   def hc_url_fix
     request.format = :html if request.format.to_s.include? 'hc/url'
   end
@@ -69,6 +78,8 @@ class ApplicationController < ActionController::Base
 
   # use an around_filter
   def record_user_action
+    # initialize session now so we have a session id to use for a/b test
+    session[:foo] = nil
     return true if @ua
     started = Time.now
     yield
@@ -85,6 +96,11 @@ class ApplicationController < ActionController::Base
       @ua[:user_id] ||= current_user.id if user_signed_in?
       @ua[:created_at] = Time.now
       @ua[:url_path] = request.env['REQUEST_PATH']
+      if @ab_test_id.present?
+        @ua[:ab_test_id] =  @ab_test_id
+        # Allow override from params so I can test when coming in from registration form
+        @ua[:ab_test_version] = params[:ab_test_version] || @ab_test_version
+      end
       user_action = UserAction.new(@ua)
       user_action.save!
     rescue => error

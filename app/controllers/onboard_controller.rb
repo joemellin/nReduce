@@ -89,7 +89,8 @@ class OnboardController < ApplicationController
   end
 
   def current_onboarding_step
-    session[:onboarding_step]
+    return session[:onboarding_step] if session[:onboarding_step].present?
+    self.current_onboarding_step = 1
   end
 
   # User has completed a step, increment to next step for this onboarding type

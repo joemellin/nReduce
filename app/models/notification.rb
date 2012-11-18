@@ -19,7 +19,7 @@ class Notification < ActiveRecord::Base
     [
       :new_checkin, :relationship_request, :relationship_approved, 
       :mentorship_approved, :investor_approved, :new_comment_for_checkin, 
-      :new_comment_for_post, :new_nudge, :new_team_joined, :new_like, :join_next_week
+      :new_comment_for_post, :new_nudge, :new_team_joined, :new_like, :join_next_week, :relationship_introduced
     ]
   end
 
@@ -48,16 +48,10 @@ class Notification < ActiveRecord::Base
   end
 
     # Notifies all startups that are joining the same
-  def self.create_for_new_team_joined(startup, weekly_class)
+  def self.create_for_new_team_joined(startup)
     # need to reload startup as team members are cached (and are nil) when created
     startup.reload
-    weekly_class ||= startup.team_members.first.weekly_class
-    return if weekly_class.blank?
-    users_to_notify = User.where(['startup_id != ?', startup.id]).where(:weekly_class_id => weekly_class.id).all
-    users_to_notify << User.joe if User.joe.present?
-    users_to_notify.each do |u|
-      Notification.create_and_send(u, startup, :new_team_joined)
-    end
+    Notification.create_and_send(User.joe, startup, :new_team_joined) if User.joe.present?
   end
 
   def self.create_for_join_next_week(startup, next_weeks_class)
@@ -93,8 +87,9 @@ class Notification < ActiveRecord::Base
   def self.create_for_relationship_approved(relationship)
     entity = relationship.entity
     if entity.is_a?(Startup)
+      type = relationship.introduced == true ? :relationship_introduced : :relationship_approved
       entity.team_members.each do |u|
-        Notification.create_and_send(u, relationship, :relationship_approved)
+        Notification.create_and_send(u, relationship, type)
       end
     elsif entity.is_a?(User) and entity.mentor?
       Notification.create_and_send(entity, relationship, :mentorship_approved)

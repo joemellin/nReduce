@@ -1,8 +1,10 @@
 class UserAction < ActiveRecord::Base  
   belongs_to :user
   belongs_to :attachable, :polymorphic => true
+  belongs_to :ab_test
   
-  attr_accessible :attachable, :ip, :action, :url_path, :browser, :data, :time_taken, :user, :user_id, :created_at, :session_id
+  attr_accessible :attachable, :ip, :action, :url_path, :browser, :data, 
+    :time_taken, :user, :user_id, :created_at, :session_id, :ab_test_id, :ab_test_version
 
   serialize :data, Hash
 
@@ -86,7 +88,8 @@ class UserAction < ActiveRecord::Base
       Instrument.class, 
       Startup.class, 
       Relationship.class,
-      Nudge.class
+      Nudge.class,
+      AbTest.class
     ]
     t = Time.now
     uas = Cache.arr_get('user_actions')

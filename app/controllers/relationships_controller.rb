@@ -55,9 +55,19 @@ class RelationshipsController < ApplicationController
     else
       @startups = [@startup] + @startups.reverse
     end
+
+    @active_startups = @startups.select{|s| s.active? }
+
+    # Pad active startups with :joining_soon symbols for easy iteration
+    @active_startups.size.upto(Startup::NUM_ACTIVE_REQUIRED){ @active_startups << :joining_soon } if @startup.present? && !@startup.setup?(:connected)
+
+    @inactive_startups = @startups.select{|s| !s.active? }
+
     @commented_on_checkin_ids = current_user.commented_on_checkin_ids
 
     @show_mentor_message = true if current_user.roles?(:nreduce_mentor) && no_startups == true
+
+    @after_checkin_window = Checkin.in_after_time_window? ? true : false
   end
 
   def add_teams
