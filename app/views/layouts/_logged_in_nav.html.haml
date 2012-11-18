@@ -12,7 +12,7 @@
             - if @unread_notifications_count > 0
               .left.badge.badge-info= @unread_notifications_count
             .clear
-          - if @notifications.present?
+          - unless @notifications.nil?
             %ul.dropdown-menu
               %li.title Notifications
               - if @notifications.size == 0
@@ -35,7 +35,7 @@
             - if @new_relationship_requests
               .left.badge.badge-info= @relationship_requests.size
             .clear
-          - if @relationship_requests.present?
+          - unless @relationship_requests.nil?
             %ul.dropdown-menu
               %li.title Connection Requests
               - if @relationship_requests.size == 0
