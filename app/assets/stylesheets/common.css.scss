@@ -179,11 +179,16 @@ hr {
       }
       .notifications, .relationship_requests {
         .dropdown-toggle {
+          .badge {
+            margin: -3px 0 0 -7px;
+            border-radius: 2px;
+            padding: 1px 4px 1px 4px;
+          }
           .icon {
             width: 32px;
             height: 32px;
           }
-          padding: 4px 15px 4px;
+          padding: 4px 6px 4px;
           > img { width: 32px; height: 32px; }
         }
       }
