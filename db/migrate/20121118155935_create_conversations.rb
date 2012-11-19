@@ -11,7 +11,7 @@ class CreateConversations < ActiveRecord::Migration
     add_index :messages, [:conversation_id, :created_at], :name => 'messages_conversation_created'
 
     create_table :conversations do |t|
-      t.string :user_ids, :startup_ids
+      t.string :participant_ids
       t.datetime :updated_at
     end
   end

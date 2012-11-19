@@ -1,0 +1,16 @@
+.conversation
+  %h1 Conversation between: #{@conversation.participants.map{|u| u.name }.join(', ')}
+
+  .messages
+  - @conversation.messages.ordered.each do |m|
+    = div_for(m, :class => 'message') do
+      %p #{m.user.name} said:
+      %p= simple_format(h(m.content))
+      %p #{time_ago_in_words(m.created_at)} ago
+      %hr/
+
+  .reply
+    %h3 Reply:
+    = form_for Message.new(:from => current_user), :url => add_message_conversation_path(@conversation), :remote => true do |f|
+      = f.text_area :content
+      = f.submit

@@ -221,6 +221,14 @@ class Ability
     # All Users
     #
 
+    # Only conversation participants can modify
+    can :manage, Conversation do |c|
+      c.participant_ids.include?(user.id)
+    end
+
+    # Anyone can start a new conversation
+    can [:new, :create], Conversation
+
     can [:new, :create], Invite
 
     cannot :all, WeeklyClass

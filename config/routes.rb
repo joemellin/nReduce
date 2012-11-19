@@ -26,7 +26,13 @@ Nreduce::Application.routes.draw do
 
   devise_for :users, :controllers => {:registrations => 'registrations', :sessions => 'sessions'}
 
-  resources :authentications, :rsvps, :conversations
+  resources :authentications, :rsvps
+
+  resources :conversations do
+    member do
+      post 'add_message'
+    end
+  end
 
   resources :notifications, :only => [:index] do
     collection do
