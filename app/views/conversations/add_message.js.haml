@@ -1,0 +1,16 @@
+// Re-enable form
+$("#conversation_#{@conversation.id} form :submit").removeClass('disabled');
+
+- if @message.new_record?
+  /* Error - show message */
+  $("#conversation_#{@conversation.id} .new_comment").prepend('#{escape_javascript(render('layouts/flash_messages'))}');
+
+- else
+  /* Add the new message to the bottom of the messages list */
+  $("#conversation_#{@conversation.id} .messages").append("#{escape_javascript(render('conversations/message', :message => @message))}");
+  
+  /* Reset the comment form */
+  $("#conversation_#{@conversation.id} #new_message")[0].reset();
+
+  /* Highlight the new message */
+  $("#message_#{@message.id}").effect("highlight", {}, 3000);

@@ -29,7 +29,7 @@ class ConversationsController < ApplicationController
 
   def add_message
     @conversation = Conversation.find(params[:id])
-    @conversation.messages << Message.new(params[:message].merge(:from => current_user))
+    @message = Message.create(params[:message].merge(:from => current_user))
     respond_to do |format|
       format.js
       format.html { render :nothing => true }
