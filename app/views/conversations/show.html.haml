@@ -1,16 +1,19 @@
-.conversation
-  %h1 Conversation between: #{@conversation.participants.map{|u| u.name }.join(', ')}
+.conversations
+  .row
+    .span2
+      .list
+        - @conversations.each do |c|
+          %h5= link_to "#{c.participants(current_user.id).map{|u| u.name }.join(', ')}", c
+    .span6
+      = div_for(@conversation) do
+        %h1 #{@conversation.participants(current_user.id).map{|u| u.name }.join(', ')}
 
-  .messages
-  - @conversation.messages.ordered.each do |m|
-    = div_for(m, :class => 'message') do
-      %p #{m.user.name} said:
-      %p= simple_format(h(m.content))
-      %p #{time_ago_in_words(m.created_at)} ago
-      %hr/
+        .messages
+          - @conversation.messages.ordered.each do |m|
+            = render 'conversations/message', :message => m
 
-  .reply
-    %h3 Reply:
-    = form_for Message.new(:from => current_user), :url => add_message_conversation_path(@conversation), :remote => true do |f|
-      = f.text_area :content
-      = f.submit
+        .reply
+          = form_for Message.new(:conversation_id => @conversation.id), :url => add_message_conversation_path(@conversation), :remote => true do |f|
+            = f.hidden_field :conversation_id
+            = f.text_area :content, :size => '100x3', :class => 'span3'
+            = f.submit 'Reply', :class => 'btn', :onclick => "$(this).addClass('disabled'); return true;"

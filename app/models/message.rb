@@ -2,14 +2,14 @@ class Message < ActiveRecord::Base
   belongs_to :from, :class_name => 'User'
   belongs_to :conversation
 
-  attr_accessible :from, :from_id, :content
+  attr_accessible :from, :from_id, :content, :conversation_id
 
   before_create :notify_recipients_of_message
 
   validates_presence_of :from_id
   validates_presence_of :content
 
-  scope :ordered, order('created_at DESC')
+  scope :ordered, order('created_at ASC')
 
   def recipients
     self.conversation.participants(self.from_id)
