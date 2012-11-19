@@ -1,0 +1,6 @@
+%h1 Messages
+
+- @conversations.each do |c|
+  %h3= link_to "Conversation between: #{c.participants.map{|u| u.name }.join(', ')}", c
+
+= link_to 'Start new convo', new_conversation_path(:participant_ids => [1, 7, 810])

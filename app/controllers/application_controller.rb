@@ -1,7 +1,7 @@
 class ApplicationController < ActionController::Base
   around_filter :record_user_action, :only => [:ciao]
   before_filter :hc_url_fix
-  before_filter :show_nstar_banner
+  before_filter :load_notifications_and_requests
   before_filter :authenticate_if_staging
   protect_from_forgery
 
@@ -26,6 +26,18 @@ class ApplicationController < ActionController::Base
   end
 
   protected
+
+  def load_notifications_and_requests
+    if user_signed_in?
+      @entity = current_user.entrepreneur? ? current_user.startup : current_user
+
+      @notifications = current_user.notifications.ordered.limit(20).where(['created_at > ?', Time.now - 2.weeks]).all
+      @unread_notifications_count = @notifications.present? ? @notifications.inject(0){|r,n| r += 1 if n.unread?; r } : 0
+
+      @relationship_requests = @entity.pending_relationships.order('created_at DESC').all
+      @new_relationship_requests = @relationship_requests.present? && @relationship_requests.size > 0 ? true : false
+    end
+  end
 
   # For A/B testing - retains session data to make sure it sends the person to the same segment every time
   # Add this as a before filter to run a test on that action - right now it only supports one test at a time
