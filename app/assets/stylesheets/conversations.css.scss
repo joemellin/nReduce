@@ -1,0 +1,25 @@
+// Place all the styles related to the Conversations controller here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: http://sass-lang.com/
+
+.conversations {
+  .list {
+    border-right: 1px solid #ccc;
+    padding-right: 10px;
+    min-height: 400px;
+    .details {
+      border-bottom: 1px solid #efefef;
+      .time {
+        font-size: .8em;
+      }
+    }
+  }
+  .conversation {
+    .message {
+      .pic { margin: 0 10px 10px; }
+      .from_user { font-size: .9em; }
+      .time_ago { font-size: .8em; }
+    }
+  }
+
+}

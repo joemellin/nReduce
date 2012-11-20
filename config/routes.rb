@@ -28,6 +28,12 @@ Nreduce::Application.routes.draw do
 
   resources :authentications, :rsvps
 
+  resources :conversations do
+    member do
+      post 'add_message'
+    end
+  end
+
   resources :notifications, :only => [:index] do
     collection do
       post 'mark_all_as_read'
