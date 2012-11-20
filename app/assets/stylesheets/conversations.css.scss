@@ -6,6 +6,13 @@
   .list {
     border-right: 1px solid #ccc;
     padding-right: 10px;
+    min-height: 400px;
+    .details {
+      border-bottom: 1px solid #efefef;
+      .time {
+        font-size: .8em;
+      }
+    }
   }
   .conversation {
     .message {

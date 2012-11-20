@@ -1,0 +1,8 @@
+- if @conversation.new_record?
+  /* Error - show message */
+  $(".new_conversation").prepend('#{escape_javascript(render('layouts/flash_messages'))}');
+
+- else
+  /* Add the new message to the bottom of the messages list */
+  $(".conversation").replaceWith("#{escape_javascript(render('conversations/conversation', :conversation => @conversation))}");
+  

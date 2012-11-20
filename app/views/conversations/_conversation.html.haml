@@ -1,0 +1,12 @@
+= div_for(conversation) do
+  %h3 #{conversation.participants(current_user.id).map{|u| u.name }.join(', ')}
+
+  .messages
+    - conversation.messages.ordered.each do |m|
+      = render 'conversations/message', :message => m
+
+  .reply
+    = form_for Message.new(:conversation_id => conversation.id, :from_id => current_user.id), :url => add_message_conversation_path(conversation), :remote => true do |f|
+      = f.hidden_field :conversation_id
+      = f.text_area :content, :size => '100x3', :class => 'span3'
+      = f.submit 'Reply', :class => 'btn', :onclick => "$(this).addClass('disabled'); return true;"
