@@ -1,18 +1,26 @@
 - startup ||= nil
-- next_after_checkin_starts = Week.next_window_for(:after_checkin).first
+- next_after_checkin = Week.next_window_for(:after_checkin)
 .countdown
   - unless startup.blank?
     - current_checkin = startup.current_checkin
     - if current_checkin.present?
-      %h5.week Team #{startup.name} Goal For Week Of #{current_checkin.time_label}:
-      %h2.goal #{current_checkin.start_focus}
+      - if 1 == 1 #Checkin.in_after_time_window?
+        .right.time_left= hours_minutes_until(next_after_checkin.last)
+      .left.team_details
+        %h5.week Team #{startup.name}
+        - startup.team_members.each do |tm|
+          .team_member.left= image_tag tm.pic_url(:small)
+      .left.goal_details
+        %h5.week Goal For Week Of #{current_checkin.time_label}:
+        %h2.goal #{current_checkin.start_focus}
+      .clear
       .timeline
         .nav
           .navbar
             .navbar-inner
               %ul.nav
                 - 6.downto(1) do |i|
-                  - past = Time.now > (next_after_checkin_starts - (i + 1).days)
+                  - past = Time.now > (next_after_checkin.first - (i + 1).days)
                   %li.day{:class => past ? 'past' : 'future'}= link_to pluralize(i, 'Day'), '#'
                   %li.divider-vertical{:class => past ? 'past' : 'future'}
                 %li.day
@@ -23,13 +31,5 @@
                   .active= link_to 'Check In', edit_checkin_path(current_checkin), :class => "btn btn-large btn-warning"
                 - else
                   = link_to 'Keep Working', '#', :class => "btn btn-large disabled", :onclick => "return false"
-
-/ - measurement = startup.latest_measurement_name_and_value
-/ %h4.solid{:style => 'font-size:10px; line-height: 12px; color: #666666; padding-left:40px;'}
-/   Time Left.
-/   - if measurement.present?
-/     #{measurement.first} to Beat:
-/ - if measurement.present?
-/   %h1.solid{:style => 'font-size:24px; color: #3697D5; font-weight:bold; line-height: 24px;'}= measurement.last
-
+.countdown_separator
 

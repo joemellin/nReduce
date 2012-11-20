@@ -40,4 +40,14 @@ module CheckinsHelper
     return '' if embed_url.blank?
     Youtube.embed_code_html(embed_url, width, height)
   end
+
+  def hours_minutes_until(time)
+    diff = (time - Time.now).round
+    hours = diff / 3600
+    minutes = (diff - (hours * 3600)) / 60
+    text = ''
+    text += "#{hours}h " if hours > 0
+    text += "#{minutes}m Remaining"
+    text
+  end
 end

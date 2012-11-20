@@ -85,28 +85,21 @@ class RelationshipsController < ApplicationController
     elsif @startup
       @entity = @startup
 
-      # Load next startup - if they need to approve startups then next to approve
-      @relationship = @entity.pending_relationships.last
+      # Otherwise load suggested startup
+      session[:suggested_startup_ids] = @startup.generate_suggested_connections.map{|s| s.id } if session[:suggested_startup_ids].blank?
 
-      if @relationship.present?
-        @review_startup = @relationship.entity
-      else
-        # Otherwise load suggested startup
-        session[:suggested_startup_ids] = @startup.generate_suggested_connections.map{|s| s.id } if session[:suggested_startup_ids].blank?
+      next_id = session[:suggested_startup_ids].first if session[:suggested_startup_ids].present?
 
-        next_id = session[:suggested_startup_ids].first if session[:suggested_startup_ids].present?
-
-        # If there are none left to suggest
-        if next_id.blank?
-          flash[:notice] = "Those are all the teams you can connect to - check back next week for more teams."
-          redirect_to '/'
-          return
-        end
-
-        @review_startup = Startup.find(next_id)
-        @relationship = Relationship.start_between(@startup, @review_startup, :startup_startup, false, true)
-        suggested = true
+      # If there are none left to suggest
+      if next_id.blank?
+        flash[:notice] = "Those are all the teams you can connect to - check back next week for more teams."
+        redirect_to '/'
+        return
       end
+
+      @review_startup = Startup.find(next_id)
+      @relationship = Relationship.start_between(@startup, @review_startup, :startup_startup, false, true)
+      suggested = true
 
       @startups_in_common = Relationship.startups_in_common(@review_startup, @startup)
       @num_checkins = @review_startup.checkins.count
