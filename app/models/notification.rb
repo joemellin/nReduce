@@ -19,7 +19,7 @@ class Notification < ActiveRecord::Base
     [
       :new_checkin, :relationship_request, :relationship_approved, 
       :mentorship_approved, :investor_approved, :new_comment_for_checkin, 
-      :new_comment_for_post, :new_nudge, :new_team_joined, :new_like, :join_next_week, :relationship_introduced
+      :new_comment_for_post, :new_nudge, :new_team_joined, :new_like, :join_next_week, :relationship_introduced, :new_message
     ]
   end
 
@@ -45,6 +45,10 @@ class Notification < ActiveRecord::Base
       end
     end
     n
+  end
+
+  def self.create_for_new_message(message, recipient)
+    Notification.create_and_send(recipient, message, :new_message)
   end
 
     # Notifies all startups that are joining the same

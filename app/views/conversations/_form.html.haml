@@ -1,0 +1,9 @@
+= form_for conversation, :remote => true do |f|
+  %h3 Start with #{conversation.participants(current_user.id).map{|u| u.name }.join(', ')}
+  - if f.object.participant_ids.present?
+    - f.object.participant_ids.each do |id|
+      = hidden_field_tag 'conversation[participant_ids][]', id
+  = f.fields_for :messages do |m|
+    = m.hidden_field :from_id
+    = m.text_area :content, :size => '100x3', :class => 'span3'
+  = f.submit 'Send Message', :class => 'btn'
