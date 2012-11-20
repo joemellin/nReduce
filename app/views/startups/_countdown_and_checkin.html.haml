@@ -4,7 +4,7 @@
   - unless startup.blank?
     - current_checkin = startup.current_checkin
     - if current_checkin.present?
-      - if 1 == 1 #Checkin.in_after_time_window?
+      - if Checkin.in_after_time_window?
         .right.time_left= hours_minutes_until(next_after_checkin.last)
       .left.team_details
         %h5.week Team #{startup.name}
