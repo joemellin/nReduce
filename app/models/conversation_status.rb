@@ -9,7 +9,12 @@ class ConversationStatus < ActiveRecord::Base
 
   scope :unread, lambda{ where(:read_at => nil, :folder => :inbox) }
 
-  attr_accessible :user, :user_id
+  attr_accessible :user, :user_id, :read_at
+
+  def mark_as_read!
+    self.read_at = Time.now
+    self.save
+  end
 
   def archive!
     self.folder = :archive
@@ -19,6 +24,10 @@ class ConversationStatus < ActiveRecord::Base
   def trash!
     self.folder = :trash
     self.save
+  end
+
+  def unread?
+    self.read_at.blank?
   end
 
   protected

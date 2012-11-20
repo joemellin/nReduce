@@ -36,7 +36,16 @@ class ApplicationController < ActionController::Base
 
       @relationship_requests = @entity.pending_relationships.order('created_at DESC').all
       @new_relationship_requests = @relationship_requests.present? && @relationship_requests.size > 0 ? true : false
+
+      load_recent_conversations
     end
+  end
+
+  def load_recent_conversations
+    @conversation_statuses = ConversationStatus.where(:user_id => current_user.id).with_folder(:inbox).includes(:conversation).order('conversations.updated_at DESC').limit(20)
+    @unread_conversations_count = 0
+    @conversations = []
+    @conversation_statuses.each{|cs| @conversations << cs.conversation; @unread_conversations_count += 1 if cs.unread? }
   end
 
   # For A/B testing - retains session data to make sure it sends the person to the same segment every time

@@ -5,4 +5,8 @@
 - else
   /* Add the new message to the bottom of the messages list */
   $(".conversation").replaceWith("#{escape_javascript(render('conversations/conversation', :conversation => @conversation))}");
+
+  $(".conversations .list").html("#{escape_javascript(render('conversations/list'))}");
+
+- flash.discard
   

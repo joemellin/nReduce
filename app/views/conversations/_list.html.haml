@@ -1,0 +1,5 @@
+- @conversation_statuses.each do |cs|
+  - conversation = cs.conversation
+  .details{:class => cs.unread? ? 'new' : ''}
+    %h5= link_to "#{conversation.participants(current_user.id).map{|u| u.name }.join(', ')}", conversation, :remote => true
+    .time= conversation.updated_at.to_s(:short)
