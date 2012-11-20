@@ -10,7 +10,7 @@ class Conversation < ActiveRecord::Base
 
   before_create :generate_conversation_statuses
   
-  attr_accessible :participant_ids, :messages
+  attr_accessible :participant_ids, :messages_attributes
 
   # Start a new conversation between users or startups. If given a startup the message is effectively started between all the users on a startup
   def self.create(attrs = {})

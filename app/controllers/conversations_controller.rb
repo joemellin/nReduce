@@ -8,6 +8,10 @@ class ConversationsController < ApplicationController
 
   def show
     load_all_recent_conversations
+    respond_to do |format|
+      format.js
+      format.html { render :nothing => true }
+    end
   end
 
   def new
@@ -16,20 +20,28 @@ class ConversationsController < ApplicationController
     @conversation.messages << Message.new(:from_id => current_user.id)
     # Right now no validation on ids
     @conversation.participant_ids = params[:participant_ids] if params[:participant_ids].present?
+    respond_to do |format|
+      format.js
+      format.html { render :nothing => true }
+    end
   end
 
   def create
     if @conversation.save
-      redirect_to @conversation
+      respond_to do |format|
+        format.js
+      end
     else
       flash[:alert] = @conversation.errors.full_messages.join(', ')
-      render :action => :new
+      respond_to do |format|
+        format.js { render :action => :new }
+      end
     end
   end
 
   def add_message
     @conversation = Conversation.find(params[:id])
-    @message = Message.create(params[:message].merge(:from => current_user))
+    @message = Message.create(params[:message])
     respond_to do |format|
       format.js
       format.html { render :nothing => true }
