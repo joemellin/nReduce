@@ -3,15 +3,21 @@ class ConversationsController < ApplicationController
   load_and_authorize_resource :except => [:index]
 
   def index
-    load_all_recent_conversations
+    load_users_and_startups_for_conversations
+    if @conversations.present?
+      @conversation = @conversations.first
+      mark_conversation_as_read_for_current_user(@conversation)
+    end
   end
 
   def show
-    load_all_recent_conversations
+    load_users_and_startups_for_conversations
     respond_to do |format|
       format.js
-      format.html { render :nothing => true }
+      format.html { render :action => :index }
     end
+    # Mark conversation as read for this user
+    mark_conversation_as_read_for_current_user(@conversation) if @conversation.present?
   end
 
   def new
@@ -27,7 +33,9 @@ class ConversationsController < ApplicationController
   end
 
   def create
-    if @conversation.save
+    @conversation = Conversation.create(params[:conversation])
+    if !@conversation.new_record?
+      load_recent_conversations # from application controller
       respond_to do |format|
         format.js
       end
@@ -41,7 +49,8 @@ class ConversationsController < ApplicationController
 
   def add_message
     @conversation = Conversation.find(params[:id])
-    @message = Message.create(params[:message])
+    @message = Message.new(params[:message])
+    flash[:alert] = @message.errors.full_messages.join(', ') unless @message.save
     respond_to do |format|
       format.js
       format.html { render :nothing => true }
@@ -60,9 +69,15 @@ class ConversationsController < ApplicationController
 
   protected
 
-  def load_all_recent_conversations
-    cvs = ConversationStatus.where(:user_id => current_user.id).with_folder(:inbox).includes(:conversation).order('conversations.updated_at DESC').limit(20)
-    @conversations = cvs.map{|cs| cs.conversation }
+  def mark_conversation_as_read_for_current_user(conversation)
+    @conversation_statuses.each{|cs| cs.mark_as_read! if cs.conversation_id == conversation.id }
+  end
+
+  def load_users_and_startups_for_conversations
+    # This is now loaded in application_controller on all actions
+    #cvs = ConversationStatus.where(:user_id => current_user.id).with_folder(:inbox).includes(:conversation).order('conversations.updated_at DESC').limit(20)
+    #@conversations = cvs.map{|cs| cs.conversation }
+
     @users_by_id = Hash.by_key(User.where(:id => @conversations.map{|c| c.participant_ids }.flatten), :id)
     #@startups_by_id = Hash.by_key(Startup.where(:id => @conversations.map{|c| c.startup_ids }.flatten), :id)
   end

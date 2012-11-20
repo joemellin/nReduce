@@ -3,22 +3,44 @@
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
 .conversations {
-  .list {
-    border-right: 1px solid #ccc;
-    padding-right: 10px;
-    min-height: 400px;
-    .details {
-      border-bottom: 1px solid #efefef;
-      .time {
-        font-size: .8em;
+  .list_wrapper {
+    height: 500px;
+    position: relative;
+    .list {
+      overflow-y: auto;
+      height: 100%;
+      width: 100%;
+      border-right: 1px solid #ccc;
+      padding-right: 10px;
+      .details {
+        border-bottom: 1px solid #efefef;
+        .time {
+          font-size: .8em;
+        }
+      }
+      .details.new {
+        background-color: #B7F0FF;
       }
     }
   }
   .conversation {
-    .message {
-      .pic { margin: 0 10px 10px; }
-      .from_user { font-size: .9em; }
-      .time_ago { font-size: .8em; }
+    .messages_wrapper {
+      position: relative;
+      height: 400px;
+      border-top: 2px solid #efefef;
+      border-bottom: 2px solid #efefef;
+      .messages {
+        overflow-y: auto;
+        height: 100%;
+        width: 100%;
+        // position: absolute;
+        // bottom: 0px;
+        .message {
+          .pic { margin: 0 10px 10px; }
+          .from_user { font-size: .9em; }
+          .time_ago { font-size: .8em; }
+        }
+      }
     }
   }
 

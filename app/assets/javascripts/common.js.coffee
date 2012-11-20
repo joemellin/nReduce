@@ -56,7 +56,7 @@ $ ->
   $('.notifications .dropdown-toggle').click ->
     $.post('/notifications/mark_all_as_read')
 
-  $('.notifications .dropdown-toggle .icon, .relationship_requests .dropdown-toggle .icon').mouseover ->
+  $('.notifications .dropdown-toggle .icon, .relationship_requests .dropdown-toggle .icon, .messages .dropdown-toggle .icon').mouseover ->
     if $(this).hasClass('new') || $(this).attr('rel') == 'new'
       rel = 'new'
       $(this).addClass('down').removeClass('up')
@@ -66,7 +66,7 @@ $ ->
     $(this).addClass('down').removeClass(rel)
 
 
-  $('.notifications .dropdown-toggle .icon, .relationship_requests .dropdown-toggle .icon').mouseout ->
+  $('.notifications .dropdown-toggle .icon, .relationship_requests .dropdown-toggle .icon, .messages .dropdown-toggle .icon').mouseout ->
     if $(this).hasClass('new') || $(this).attr('rel') == 'new'
       rel = 'new'
       $(this).addClass('down').removeClass('up')
@@ -74,7 +74,6 @@ $ ->
       rel = 'up'
     $(this).attr('rel', rel)
     $(this).addClass(rel).removeClass('down')
-
     
   # Type can be user or startup
   addTeammateButton = (type) ->

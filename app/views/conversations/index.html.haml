@@ -1,15 +1,12 @@
 .conversations
   .row
     .span2
-      .list
-        - @conversations.each do |c|
-          .details
-            %h5= link_to "#{c.participants(current_user.id).map{|u| u.name }.join(', ')}", c, :remote => true
-            .time= c.updated_at.to_s(:short)
+      .list_wrapper
+        .list= render 'conversations/list'
     .span6
       - if @conversations.blank?
         .conversation You haven't started any conversations yet.
       - else
-        = render @conversations.first
+        = render @conversation.present? ? @conversation : @conversations.first
 
   = link_to 'Start new convo', new_conversation_path(:participant_ids => User.limit(3).order('RAND()').map{|u| u.id } + [current_user.id]), :remote => true
