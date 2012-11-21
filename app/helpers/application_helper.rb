@@ -92,7 +92,7 @@ module ApplicationHelper
     return [nil, notification.message, nil] if obj.blank? or notification.action.blank?
     case notification.action.to_sym
       when :new_checkin then [obj.entity.logo_url(:small), "<span class='entity'>#{obj.entity.name}</span> completed their 'after' checkin", url_for(obj)]
-      when :relationship_request then [obj.entity.is_a?(Startup) ? obj.entity.logo_url(:small) : obj.entity.pic_url(:small), "<span class='entity'>#{obj.entity.name}</span> would like to connect with you", requests_relationships_path]
+      when :relationship_request then [obj.entity.is_a?(Startup) ? obj.entity.logo_url(:small) : obj.entity.pic_url(:small), "<span class='entity'>#{obj.entity.name}</span> would like to connect with you", url_for(obj.entity)]
       when :relationship_approved then [obj.connected_with.is_a?(Startup) ? obj.connected_with.logo_url(:small) : obj.connected_with.pic_url(:small), "<span class='entity'>#{obj.connected_with.name}</span> is now connected to you", url_for(obj.connected_with)]
       when :new_comment_for_checkin then [obj.user.pic_url(:small), "<span class='entity'>#{obj.user.name}</span> commented on your #{obj.checkin.time_label} checkin", checkin_path(obj.checkin)]
       when :new_nudge then [obj.from.pic_url(:small), "<span class='entity'>#{obj.from.name}</span> nudged you to complete your check-in", url_for(obj.from)]

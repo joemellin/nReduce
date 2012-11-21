@@ -1,5 +1,6 @@
 = div_for(conversation) do
-  %h3 #{conversation.participants(current_user.id).map{|u| u.name }.join(', ')}
+  .head
+    %h5 #{conversation.participants(current_user.id).map{|u| u.name }.join(', ')}
 
   .messages_wrapper
     .messages
@@ -10,5 +11,8 @@
     = form_for Message.new(:conversation_id => conversation.id, :from_id => current_user.id), :url => add_message_conversation_path(conversation), :remote => true do |f|
       = f.hidden_field :conversation_id
       = f.hidden_field :from_id
-      = f.text_area :content, :size => '100x3', :class => 'span3'
-      = f.submit 'Reply', :class => 'btn', :onclick => "$(this).addClass('disabled'); return true;"
+      .new_message_area
+        .content= f.text_area :content, :size => '100x3', :class => 'span5', :placeholder => 'Type message here...'
+        .span5.button
+          .right= f.submit 'Send', :class => 'btn', :onclick => "$(this).addClass('disabled'); return true;"
+        .clear

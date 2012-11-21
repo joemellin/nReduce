@@ -4,18 +4,31 @@
 
 .conversations {
   .list_wrapper {
+    .head {
+      padding-right: 10px;
+      h3 { margin-top: 0; margin-bottom: 0; }
+      height: 40px;
+    }
     height: 500px;
     position: relative;
+    border-right: 1px solid #efefef;
     .list {
       overflow-y: auto;
       height: 100%;
       width: 100%;
-      border-right: 1px solid #ccc;
-      padding-right: 10px;
+      border-top: 2px solid #efefef;
       .details {
         border-bottom: 1px solid #efefef;
+        padding-right: 10px;
+        padding-top: 5px;
+        .names {
+          font-size: .9em;
+        }
         .time {
           font-size: .8em;
+        }
+        .pic {
+          margin: 0 5px 5px 0;
         }
       }
       .details.new {
@@ -24,11 +37,40 @@
     }
   }
   .conversation {
+    margin-left: -10px;
+    .head {
+      height: 30px;
+      padding-top: 10px;
+      h5 { margin-top: 0; margin-bottom: 0; }
+    }
+    .to {
+      h5 { margin-top: 0; margin-bottom: 0; }
+      height: 40px;
+      input { 
+        margin: 0 0 0 15px;
+      }
+    }
+    .new_message_area {
+      background-color: #efefef;
+      padding: 15px;
+      border-top: 1px solid #ccc;
+      border-bottom: 1px solid #ccc;
+      margin-left: -20px;
+      .content {
+        margin-left: 5px;
+      }
+      .button { 
+        margin-left: 5px;
+      }
+    }
     .messages_wrapper {
+      margin-left: -20px;
+      padding-left: 20px;
       position: relative;
       height: 400px;
       border-top: 2px solid #efefef;
-      border-bottom: 2px solid #efefef;
+      padding-top: 10px;
+      //border-bottom: 2px solid #efefef;
       .messages {
         overflow-y: auto;
         height: 100%;
@@ -36,7 +78,7 @@
         // position: absolute;
         // bottom: 0px;
         .message {
-          .pic { margin: 0 10px 10px; }
+          .pic { margin: 0 10px 10px 0; }
           .from_user { font-size: .9em; }
           .time_ago { font-size: .8em; }
         }
