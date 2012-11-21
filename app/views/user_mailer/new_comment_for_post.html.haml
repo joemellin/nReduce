@@ -17,8 +17,6 @@
   They wrote:
 %hr/
 %h4.h4 #{simple_format(h(@comment.content))}
-%hr/
-%br/
 %br/
 %h3= link_to "Respond to #{@comment.user.name}", post_url(@original_post)
 = render :partial => 'footer'

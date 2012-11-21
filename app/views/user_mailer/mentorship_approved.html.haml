@@ -6,7 +6,5 @@
 %h1.h1= @connected_with.name
 %p To learn more about them, please view the team's profile. 
 %br/
-%br/
-%br/
 %h3= link_to "View #{@connected_with.name.possessive} profile", polymorphic_url(@connected_with)
 = render :partial => 'footer'
