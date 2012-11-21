@@ -1,1 +1,5 @@
 $(".conversation").replaceWith("#{escape_javascript(render('conversations/conversation', :conversation => @conversation))}");
+
+$('.conversation #message_content').focus();
+
+scrollConversationToBottom();

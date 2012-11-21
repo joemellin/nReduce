@@ -1,5 +1,7 @@
 $(".conversation").html("#{escape_javascript(render('conversations/form', :conversation => @conversation))}");
 
+$('#conversation_to').focus();
+
 $('.conversation textarea').autosize();
 
 initializeConversationAutocomplete();
