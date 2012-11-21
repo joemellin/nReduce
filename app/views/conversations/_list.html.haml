@@ -1,5 +1,9 @@
 - @conversation_statuses.each do |cs|
   - conversation = cs.conversation
   .details{:class => cs.unread? ? 'new' : ''}
-    %h5= link_to "#{conversation.participants(current_user.id).map{|u| u.name }.join(', ')}", conversation, :remote => true
-    .time= conversation.updated_at.to_s(:short)
+    .right
+      .time= time_for_conversation(conversation.updated_at)
+    .pic.left= image_tag conversation.participants(current_user.id).first.pic_url(:small)
+    .left.names= link_to truncate("#{conversation.participants(current_user.id).map{|u| u.name }.join(', ')}", :length => 26), conversation, :remote => true
+    .clear
+    

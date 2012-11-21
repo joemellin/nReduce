@@ -3,12 +3,15 @@
 
 .startup
   .row
-    .span2.offset10
-      .center.edit_btn
+    .span5.offset7
+      - if !@owner
+        .right= link_to '<i class="icon-envelope"></i> Message'.html_safe, new_conversation_path(:participant_ids => @startup.team_member_ids + [current_user.id]), :class => 'btn'
+      .right.edit_btn
         - if @owner
           = link_to "Edit Startup", "/startup/edit", :class => "btn"
         - elsif !@entity.blank?
           = render 'relationships/buttons', :entity => @entity, :connected_with => @startup, :relationship => @relationship.present? ? @relationship : @pending_relationship
+      .clear
   %br/
 
   = render 'startups/profile'

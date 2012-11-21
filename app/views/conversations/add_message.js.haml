@@ -8,6 +8,7 @@ $("#conversation_#{@conversation.id} form :submit").removeClass('disabled');
 - else
   /* Add the new message to the bottom of the messages list */
   $("#conversation_#{@conversation.id} .messages").append("#{escape_javascript(render('conversations/message', :message => @message))}");
+  $('.conversation textarea').autosize();
 
   /* Scroll message div to show new message */
   scrollConversationToBottom()
