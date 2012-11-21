@@ -1,10 +1,10 @@
-= render :partial => 'header'
+= render 'user_mailer/header'
 %h1.h1 24 Hours to Go
 %br/
 %h4.h4 You have 24 hours to submit your "After" video (Tue at 4pm PST).
 
 %p The goal of the "After" video is to document the progress your team has made in the past week. You can do so how ever you wish. Generally, showing the progress is better than talking about it.
 %br/
-%h3= link_to('Submit "After" Video', @current_checkin.blank? ? new_checkin_url : edit_checkin_url(@startup.current_checkin))
+%h3= link_to('Submit "After" Video', '#')
 
-= render :partial => 'footer'
+= render 'user_mailer/footer'

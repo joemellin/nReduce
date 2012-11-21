@@ -8,7 +8,5 @@
   %h4.h4 You are now connected to #{@connected_with.name}.
   %p You will be able to give them feedback and support them while they build! 
 %br/
-%br/
-%br/
 %h3= link_to "View #{@connected_with.name.possessive} profile", polymorphic_url(@connected_with)
 = render :partial => 'footer'

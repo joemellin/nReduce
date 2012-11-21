@@ -9,6 +9,10 @@ class PagesController < ApplicationController
   def investor
   end
 
+  def testemail
+    render :layout => false
+  end
+
   def home
     @weekly_class = WeeklyClass.current_class
     #@demo_day = DemoDay.where(:day => Date.today).first
