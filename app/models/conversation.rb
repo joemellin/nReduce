@@ -12,18 +12,21 @@ class Conversation < ActiveRecord::Base
 
   before_create :generate_conversation_statuses
   
-  attr_accessible :participant_ids, :messages_attributes, :to, :updated_at, :messages, :latest_message_id
+  attr_accessible :participant_ids, :messages_attributes, :to_entity, :to, :updated_at, :messages, :latest_message_id
 
-  attr_accessor :to
+  attr_accessor :to_entity, :to # accepts user_{id} or startup_{id}
 
   # Start a new conversation between users or startups. If given a startup the message is effectively started between all the users on a startup
   def self.create(attrs = {})
     attrs[:participant_ids] ||= []
 
-    # Hack to assign from dropdown - need a better way of submitting participant ids
-    user_id = attrs[:to].split('-').last.strip if attrs[:to].present?
-    attrs[:participant_ids] << user_id.to_i if user_id.present?
-
+    # Assign participants from a dropdown
+    if attrs[:to_entity].present?
+      tmp = attrs[:to_entity].strip.split('_')
+      attrs[:participant_ids] << tmp[1] if tmp[0] == 'user'
+      attrs[:participant_ids] += Startup.find(tmp[1]).team_member_ids if tmp[0] == 'startup'
+    end
+        
     # Check to see if a conversation already exists between these people, if so append message to that one
     c = Conversation.between(attrs[:participant_ids]) unless attrs[:participant_ids].blank?
     c.messages << Message.new(attrs[:messages_attributes]['0']) if c.present? && attrs[:messages_attributes].present?
@@ -38,10 +41,9 @@ class Conversation < ActiveRecord::Base
   # problem if the participant is just me it matches any convo i've had
   def self.between(participant_ids = [])
     return nil if participant_ids.size < 2
-    num_participants = participant_ids.size
-    cvs = ConversationStatus.where(:user_id => participant_ids).group(:conversation_id).count
-    conv_id = nil
-    cvs.each{|conv_id, count| return Conversation.find(conv_id) if count == num_participants }
+    # Hack - but it works. Grab all conversations from first participant and iterate to see if any contain all
+    cvs = ConversationStatus.where(:user_id => participant_ids.first).includes(:conversation)
+    cvs.each{|cs| return cs.conversation if cs.conversation.participant_ids == participant_ids }
     return nil
   end
 
@@ -67,7 +69,7 @@ class Conversation < ActiveRecord::Base
   protected
 
   def participants_are_present
-    if self.participant_ids.blank?
+    if self.participant_ids.blank? || self.participant_ids.present? && self.participant_ids.size == 1
       self.errors.add(:participant_ids, "can't be blank")
       false
     elsif self.participant_ids.present? && self.participant_ids.size > 20

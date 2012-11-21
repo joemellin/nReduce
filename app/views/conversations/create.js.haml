@@ -7,6 +7,8 @@
   $(".conversation").replaceWith("#{escape_javascript(render('conversations/conversation', :conversation => @conversation))}");
 
   $(".conversations .list").html("#{escape_javascript(render('conversations/list'))}");
+  
+  makeConversationListClickable();
 
 - flash.discard
   

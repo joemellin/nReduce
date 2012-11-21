@@ -1,8 +1,8 @@
 = div_for(message) do
-  .left.pic= image_tag message.from.pic_url(:small)
+  .left.pic= link_to image_tag(message.from.pic_url(:small)), message.from
   .left.content_wrapper
-    .right.time_ago #{time_for_conversation(message.created_at)}
-    .left.from_user #{message.from.name}
+    .right.time_ago= time_for_conversation(message.created_at)
+    .left.from_user= link_to message.from.name, message.from
     .clear
     .content= simple_format(h(message.content))
   .clear

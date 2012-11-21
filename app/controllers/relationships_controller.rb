@@ -210,4 +210,10 @@ class RelationshipsController < ApplicationController
       redirect_to '/'
     end
   end
+
+  def mark_all_as_seen
+    entity = current_user.entrepreneur? ? current_user.startup : current_user
+    entity.pending_relationships.each{|r| r.mark_as_seen!(current_user.id) unless r.seen_by?(current_user.id) }
+    render :nothing => true
+  end
 end

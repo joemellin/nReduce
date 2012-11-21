@@ -165,6 +165,8 @@ hr {
 
     .nav {
       .notifications {
+        li.item:hover { background-color: #efefef; }
+        li.item { cursor: pointer;}
         .message { width: 200px; }
         .icon.new { background: image-url('notifications_new2.png') no-repeat; }
         .icon.up { background: image-url('notifications_up.png') no-repeat; }
@@ -178,6 +180,8 @@ hr {
         .icon.down { background: image-url('relationship_requests_down.png') no-repeat; }
       }
       .conversations {
+        li.item:hover { background-color: #efefef; }
+        li.item { cursor: pointer;}
         .message { width: 140px; margin-right: 10px; }
         .btn { max-width: 50px; }
         .icon.new { background: image-url('message_new2.png') no-repeat; }
