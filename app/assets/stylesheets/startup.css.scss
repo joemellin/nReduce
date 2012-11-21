@@ -52,7 +52,10 @@
   margin-left: 35px;
   position: relative;
   .week {
-    margin-bottom: 2px;
+    margin-bottom: 5px;
+    font-weight: normal;
+    font-size: .7em;
+    color: #999999;
   }
   .team_details {
     height: 96px;
@@ -63,8 +66,11 @@
   }
   .goal_details {
     .goal {
-      margin-top: 3px;
+      margin-top: 20px;
       margin-bottom: 0;
+      font-weight: normal;
+      font-size: 2em;
+      color: #888888;
     }
   }
   

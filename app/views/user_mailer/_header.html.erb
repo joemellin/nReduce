@@ -14,57 +14,43 @@
       #backgroundTable{height:100% !important; margin:0; padding:0; width:100% !important;}
 
       body, #backgroundTable{
-        background-color:#FAFAFA;
+        background-color:#ffffff;
       }
 
       #templateContainer{
-        border: 1px solid #DDDDDD;
+        border: 3px solid #29ADF0;
       }
 
       h1, .h1{
         color:#333333;
         display:block;
         font-family:Arial;
-        font-size:34px;
+        font-size:24px;
         font-weight:bold;
         line-height:100%;
         margin-top:0;
         margin-right:0;
         margin-bottom:10px;
         margin-left:0;
-        text-align:center;
+        text-align:left;
       }
 
       h2, .h2{
         color:#999999;
         display:block;
         font-family:Arial;
-        font-size:30px;
+        font-size:20px;
         font-weight:bold;
         line-height:100%;
         margin-top:0;
         margin-right:0;
         margin-bottom:10px;
         margin-left:0;
-        text-align:center;
+        text-align:left;
       }
 
       h3, .h3{
-        color:#1A78A6;
-        display:block;
-        font-family:Arial;
-        font-size:30px;
-        font-weight:bold;
-        line-height:100%;
-        margin-top:0;
-        margin-right:0;
-        margin-bottom:10px;
-        margin-left:0;
-        text-align:center;
-      }
-
-      h4, .h4{
-        color:#666666;
+        color:#29ADF0;
         display:block;
         font-family:Arial;
         font-size:22px;
@@ -74,11 +60,25 @@
         margin-right:0;
         margin-bottom:10px;
         margin-left:0;
-        text-align:center;
+        text-align:left;
+      }
+
+      h4, .h4{
+        color:#666666;
+        display:block;
+        font-family:Arial;
+        font-size:16px;
+        font-weight:bold;
+        line-height:100%;
+        margin-top:0;
+        margin-right:0;
+        margin-bottom:10px;
+        margin-left:0;
+        text-align:left;
       }
 
       #templatePreheader{
-        background-color:#FAFAFA;
+        background-color:#ffffff;
       }
 
       .preheaderContent div{
@@ -101,14 +101,9 @@
       }
 
       .headerContent{
-        color:#202020;
         font-family:Arial;
-        font-size:34px;
-        font-weight:bold;
-        line-height:100%;
-        padding:0;
-        text-align:center;
-        vertical-align:middle;
+        padding-top:0px;
+        text-align:left;
       }
 
       .headerContent a:link, .headerContent a:visited, /* Yahoo! Mail Override */ .headerContent a .yshortcuts /* Yahoo! Mail Override */{
@@ -130,7 +125,11 @@
         font-family:Arial;
         font-size:14px;
         line-height:150%;
-        text-align:center;
+        text-align:left;
+        padding-left: 25px;
+        padding-right: 25px;
+        padding-bottom: 10px;
+
       }
 
       .bodyContent div a:link, .bodyContent div a:visited, /* Yahoo! Mail Override */ .bodyContent div a .yshortcuts /* Yahoo! Mail Override */{
@@ -168,22 +167,6 @@
       }
 
 
-      #social{
-        background-color:#FAFAFA;
-        border:0;
-      }
-
-      #social div{
-        text-align:center;
-      }
-
-      #utility{
-        background-color:#FFFFFF;
-        border:0;
-      }
-      #utility div{
-        text-align:center;
-      }
     </style>
   </head>
   <body leftmargin="0" marginwidth="0" topmargin="0" marginheight="0" offset="0">
@@ -203,14 +186,13 @@
                 <!-- // End Template Preheader \\ -->
                 <table border="0" cellpadding="0" cellspacing="0" width="600" id="templateContainer">
                   <tr>
-                    <td align="center" valign="top">
+                    <td align="left" valign="top">
                       <!-- // Begin Template Header \\ -->
                       <table border="0" cellpadding="0" cellspacing="0" width="600" id="templateHeader">
                         <tr>
                           <td class="headerContent">
                           <!-- // Begin Module: Standard Header Image \\ -->
-                          <br />
-                          <%= image_tag 'http://assets.nreduce.com/images/emailheader.jpg', :alt => 'nReduce', :width => 600, :height => 150 %>
+                          <%= image_tag 'http://assets.nreduce.com/images/nreduce_logo_45.png', :alt => 'nReduce' %>
                           <!-- // End Module: Standard Header Image \\ -->
                           </td>
                         </tr>
@@ -219,13 +201,13 @@
                     </td>
                   </tr>
                   <tr>
-                    <td align="center" valign="top">
+                    <td align="left" valign="top">
                       <!-- // Begin Template Body \\ -->
-                      <table border="0" cellpadding="0" cellspacing="0" width="600" id="templateBody">
+                      <table border="0" cellpadding="00" cellspacing="0" width="600" id="templateBody">
                         <tr>
                           <td valign="top" class="bodyContent">
                             <!-- // Begin Module: Standard Content \\ -->
-                            <table border="0" cellpadding="20" cellspacing="0" width="100%">
+                            <table border="0" cellpadding="0" cellspacing="0" width="100%">
                               <tr>
                                 <td valign="top">
                                   <div>
