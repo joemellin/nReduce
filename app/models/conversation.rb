@@ -12,7 +12,7 @@ class Conversation < ActiveRecord::Base
 
   before_create :generate_conversation_statuses
   
-  attr_accessible :participant_ids, :messages_attributes, :to, :updated_at, :messages
+  attr_accessible :participant_ids, :messages_attributes, :to, :updated_at, :messages, :latest_message_id
 
   attr_accessor :to
 

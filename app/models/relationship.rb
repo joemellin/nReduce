@@ -392,7 +392,7 @@ class Relationship < ActiveRecord::Base
     if self.message.present? && self.from_user_id.present?
       user_ids = self.entity.is_a?(Startup) ? self.entity.team_member_ids : [self.entity.id]
       user_ids += self.connected_with.is_a?(Startup) ? self.connected_with.team_member_ids : [self.connected_with.id]
-      c = Conversation.new(:participant_ids => user_ids, :messages => [Message.new(:from_id => from_user_id, :content => r.message)])
+      c = Conversation.new(:participant_ids => user_ids, :messages => [Message.new(:from_id => from_user_id, :content => self.message)])
       c.save
     end
     true
