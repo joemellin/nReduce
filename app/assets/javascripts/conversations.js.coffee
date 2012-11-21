@@ -10,7 +10,7 @@ $ ->
   
 window.scrollConversationToBottom = ->
   msg_div = $('.conversation .messages')
-  msg_div[0].scrollTop = msg_div[0].scrollHeight if msg_div.length > 0
+  msg_div[0].scrollTop = msg_div[0].scrollHeight + 10 if msg_div.length > 0
 
 
 window.initializeConversationAutocomplete = ->

@@ -1,6 +1,7 @@
 class Conversation < ActiveRecord::Base
   has_many :messages, :dependent => :destroy
   has_many :conversation_statuses, :dependent => :destroy
+  belongs_to :latest_message, :class_name => 'Message'
 
   serialize :participant_ids, Array
 
@@ -11,12 +12,18 @@ class Conversation < ActiveRecord::Base
 
   before_create :generate_conversation_statuses
   
-  attr_accessible :participant_ids, :messages_attributes, :to
+  attr_accessible :participant_ids, :messages_attributes, :to, :updated_at, :messages, :latest_message_id
 
   attr_accessor :to
 
   # Start a new conversation between users or startups. If given a startup the message is effectively started between all the users on a startup
   def self.create(attrs = {})
+    attrs[:participant_ids] ||= []
+
+    # Hack to assign from dropdown - need a better way of submitting participant ids
+    user_id = attrs[:to].split('-').last.strip if attrs[:to].present?
+    attrs[:participant_ids] << user_id.to_i if user_id.present?
+
     # Check to see if a conversation already exists between these people, if so append message to that one
     c = Conversation.between(attrs[:participant_ids]) unless attrs[:participant_ids].blank?
     c.messages << Message.new(attrs[:messages_attributes]['0']) if c.present? && attrs[:messages_attributes].present?
@@ -28,7 +35,9 @@ class Conversation < ActiveRecord::Base
   end
 
   # What happens if the users on a startup change? Should message be just be between startups?
+  # problem if the participant is just me it matches any convo i've had
   def self.between(participant_ids = [])
+    return nil if participant_ids.size < 2
     num_participants = participant_ids.size
     cvs = ConversationStatus.where(:user_id => participant_ids).group(:conversation_id).count
     conv_id = nil
@@ -36,8 +45,8 @@ class Conversation < ActiveRecord::Base
     return nil
   end
 
-  def latest_message
-    self.messages.order('created_at DESC').first
+  def assign_latest_message
+    self.latest_message = self.messages.order('created_at DESC').first
   end
 
   # Will first load participants from participant_ids array, then users who are on startup_ids array
@@ -50,8 +59,8 @@ class Conversation < ActiveRecord::Base
   end
 
   def startups(without_startup_id = nil)
-    startups = Startup.joins('users ON users.startup_id = startups.id').where("users.id IN (#{self.participant_ids.join(',')})").group('startups.id')
-    startups = startups.where(['id != ?', without_startup_id]) if without_startup_id.present?
+    startups = Startup.joins('INNER JOIN users ON users.startup_id = startups.id').where("users.id IN (#{self.participant_ids.join(',')})").group('startups.id')
+    startups = startups.where(['startups.id != ?', without_startup_id]) if without_startup_id.present?
     startups
   end
 
@@ -65,6 +74,8 @@ class Conversation < ActiveRecord::Base
       self.errors.add(:participant_ids, "can't be more than 20 people per message")
       false
     else
+      # ensure they are unique
+      self.participant_ids.uniq!
       true
     end
   end

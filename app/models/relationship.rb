@@ -6,12 +6,13 @@ class Relationship < ActiveRecord::Base
   has_many :user_actions, :as => :attachable
 
   attr_accessible :context, :entity, :entity_id, :entity_type, :connected_with, :connected_with_id, 
-    :connected_with_type, :status, :approved_at, :rejected_at, :silent, :message, :pending_at, :initiated, :introduced
+    :connected_with_type, :status, :approved_at, :rejected_at, :silent, :message, :pending_at, :initiated, :introduced, :from_user_id
 
   attr_accessor :silent
   attr_accessor :introduced
+  attr_accessor :from_user_id
 
-  before_create :set_pending_status
+  before_create :set_pending_status_and_message_recipients
   after_create :notify_users, :unless => lambda{|r| r.silent == true }
   after_destroy :destroy_inverse_relationship_and_reset_cache
 
@@ -64,14 +65,15 @@ class Relationship < ActiveRecord::Base
 
   # Start a relationship between two entities - same as calling create
   # @silent when set to true doesn't notify user of connection
-  def self.start_between(entity, connected_with, context = :startup_startup, silent = false, dont_save = false)
+  def self.start_between(entity, connected_with, context = :startup_startup, silent = false, dont_save = false, from_user_id = nil)
     r = Relationship.new(
       :entity => entity, 
       :connected_with => connected_with, 
       :status => Relationship::PENDING, 
       :silent => silent, 
       :context => context, 
-      :initiated => true
+      :initiated => true,
+      :from_user_id => from_user_id
     )
     r.save unless dont_save
     r
@@ -382,11 +384,18 @@ class Relationship < ActiveRecord::Base
     self.reset_cache_for_entities_involved
   end
 
-  def set_pending_status
+  def set_pending_status_and_message_recipients
     if self.status.blank?
       self.status = Relationship::PENDING
       self.pending_at = Time.now
     end
+    if self.message.present? && self.from_user_id.present?
+      user_ids = self.entity.is_a?(Startup) ? self.entity.team_member_ids : [self.entity.id]
+      user_ids += self.connected_with.is_a?(Startup) ? self.connected_with.team_member_ids : [self.connected_with.id]
+      c = Conversation.new(:participant_ids => user_ids, :messages => [Message.new(:from_id => from_user_id, :content => self.message)])
+      c.save
+    end
+    true
   end
 
   def notify_users
