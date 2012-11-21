@@ -1,16 +1,21 @@
 - @conversation_statuses.each do |cs|
   - conversation = cs.conversation
+  - latest_message = @latest_message_by_conversation[conversation.id]
   .details{:class => cs.unread? ? 'new' : ''}
     .right
       .time= time_for_conversation(conversation.updated_at)
-    .pic.left
-      -# If more than two participants show startup logo
-      - if conversation.participant_ids.size > 2
-        = link_to image_tag(conversation.startups(current_user.startup_id).first.logo_url(:small)), conversation
-      - else
-        = link_to image_tag(conversation.participants(current_user.id).first.pic_url(:small)), conversation
+    -# If more than two participants show startup logo
+    - if conversation.participant_ids.size > 2
+      - startup = conversation.startups(current_user.startup_id).first
+      - pic = startup.logo_url(:small)
+      - name = startup.name
+    - else
+      - user = latest_message.from
+      - pic = user.pic_url(:small)
+      - name = conversation.participants(current_user.id).map{|u| u.name }.join(', ')
+    .pic.left= link_to image_tag(pic), conversation
     .left
-      .names= link_to truncate("#{conversation.participants(current_user.id).map{|u| u.name }.join(', ')}", :length => 26), conversation, :remote => true
-      .last_message= truncate(conversation.latest_message.content, :length => 32)
+      .names= link_to truncate(name, :length => 26), conversation, :remote => true
+      .last_message= truncate(latest_message.content, :length => 32)
     .clear
     

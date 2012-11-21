@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121118160003) do
+ActiveRecord::Schema.define(:version => 20121121161914) do
 
   create_table "ab_tests", :force => true do |t|
     t.string   "name"
@@ -117,9 +117,9 @@ ActiveRecord::Schema.define(:version => 20121118160003) do
   add_index "conversation_statuses", ["user_id", "read_at", "folder"], :name => "conv_status_user_read_folder"
 
   create_table "conversations", :force => true do |t|
-    t.string   "user_ids"
-    t.string   "startup_ids"
+    t.string   "participant_ids"
     t.datetime "updated_at"
+    t.integer  "latest_message_id"
   end
 
   create_table "demo_days", :force => true do |t|

@@ -27,6 +27,28 @@ img.bg {
   .body {
     margin-top: 30px;
   }
+  .sign_in, .join {
+    margin-top: -30px;
+  }
+  .sign_in {
+    h2 { margin-bottom: 20px;}
+    .password_group { margin-bottom: 10px; }
+    .rememberable {
+      margin-top: 15px;
+      margin-left: 50px;
+      font-size: .9em;
+      .label_tag {
+        margin-left: 4px;
+        margin-top: 3px;
+      }
+    }
+    .social_login {
+      margin-top: 30px;
+    }
+    .forgot_password {
+      margin-top: 15px;
+    }
+  }
 }
 
 .wrapper.logged_in {
