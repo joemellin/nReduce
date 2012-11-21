@@ -1,9 +1,9 @@
 = div_for(message) do
   .left.pic= image_tag message.from.pic_url(:small)
-  .left
+  .left.content_wrapper
     .right.time_ago #{time_for_conversation(message.created_at)}
     .left.from_user #{message.from.name}
     .clear
-    %p.content= simple_format(h(message.content))
+    .content= simple_format(h(message.content))
   .clear
   %hr/

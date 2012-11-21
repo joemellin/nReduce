@@ -10,7 +10,7 @@
           %a.dropdown-toggle{:href => '#', 'data-toggle' => 'dropdown'}
             .left.icon{:class => @unread_notifications_count > 0 ? 'new' : 'up'}
             - if @unread_notifications_count > 0
-              .left.badge.badge-info= @unread_notifications_count
+              .left.badge= @unread_notifications_count
             .clear
           - unless @notifications.nil?
             %ul.dropdown-menu
@@ -23,17 +23,16 @@
                     - elements = elements_for_notification(n)
                     - the_link = elements[2].blank? ? '#' : elements[2]
                     %li.notification.item{:class => n.read_at.blank? ? 'new' : '' } 
+                      .time_ago.right #{time_for_conversation(n.created_at)}
                       - unless elements[0].blank?
                         .img.left= link_to image_tag(elements[0]), the_link
                       .message.left= link_to elements[1].html_safe, the_link
-                      .clear
-                      .time_ago.right #{distance_of_time_in_words_to_now(n.created_at)} ago
                       .clear
         %li.dropdown.relationship_requests
           %a.dropdown-toggle{:href => '#', 'data-toggle' => 'dropdown'}
             .left.icon{:class => @new_relationship_requests ? 'new' : 'up'}
             - if @new_relationship_requests
-              .left.badge.badge-info= @relationship_requests.size
+              .left.badge= @relationship_requests.size
             .clear
           - unless @relationship_requests.nil?
             %ul.dropdown-menu
@@ -44,15 +43,16 @@
                 .scrollable
                   - @relationship_requests.each do |r|
                     %li.item
-                      .right= link_to 'Accept', approve_relationship_path(r), :method => :post, :class => 'btn btn-small'
+                      .right= link_to 'Not Now', reject_relationship_path(r), :method => :post, :class => 'btn btn-small'
+                      .right= link_to 'Accept', approve_relationship_path(r), :method => :post, :class => 'btn btn-small btn-info'
                       .img.left= link_to image_tag(r.entity.logo_url(:small)), r.entity
-                      .message.left= link_to r.entity.name, r.entity
+                      .team.left= link_to r.entity.name, r.entity
                       .clear
         %li.dropdown.conversations
           %a.dropdown-toggle{:href => '#', 'data-toggle' => 'dropdown'}
             .left.icon{:class => @unread_conversations_count > 0 ? 'new' : 'up'}
             - if @unread_conversations_count > 0
-              .left.badge.badge-info= @unread_conversations_count
+              .left.badge.badge-warning= @unread_conversations_count
             .clear
           - unless @conversation_statuses.nil?
             %ul.dropdown-menu
@@ -62,10 +62,13 @@
               - else
                 .scrollable
                   - @conversation_statuses.each do |cs|
-                    - latest_message = cs.conversation.latest_message
+                    - latest_message = @latest_message_by_conversation[cs.conversation_id]
                     %li.item{:class => cs.unread? ? 'new' : ''}
+                      .right.time_ago= time_for_conversation(latest_message.created_at)
                       .img.left= link_to image_tag(latest_message.from.pic_url(:small)), cs.conversation
-                      .message.left= link_to "\"#{truncate(latest_message.content, :length => 25)}\"", cs.conversation
+                      .left
+                        .name= latest_message.from.name
+                        .message= link_to "\"#{truncate(latest_message.content, :length => 25)}\"", cs.conversation
                       .clear
               %li.title.link.center= link_to 'See All', conversations_path
 

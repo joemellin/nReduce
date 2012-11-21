@@ -2,6 +2,12 @@ class UserMailer < ActionMailer::Base
   default from: Settings.default_from_email
   default reply_to: Settings.default_reply_to_email
 
+  def new_message(message, user)
+    @message = message
+    @user = user
+    mail(:to => @user.email, :subject => "New message from #{@user.name}")
+  end
+
   def checkin_now(user)
     mail(:to => user.email, :subject => "Stop. Drop. Checkin!")
   end

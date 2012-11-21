@@ -10,11 +10,11 @@
     - elsif !relationship.blank? and relationship.pending?
       / This is the person being requested
       - if relationship.connected_with == entity
-        = link_to '<i class="icon-remove"></i> Ignore'.html_safe, reject_relationship_path(relationship), :class => 'btn', :method => :post, :remote => true
+        = link_to 'Not Now'.html_safe, reject_relationship_path(relationship), :class => 'btn', :method => :post, :remote => true
         &nbsp;&nbsp;
-        = link_to '<i class="icon-ok icon-white"></i> Approve Request'.html_safe, approve_relationship_path(relationship), :class => 'btn btn-success', :method => :post, :remote => true
+        = link_to '<i class="icon-ok icon-white"></i> Accept Connection'.html_safe, approve_relationship_path(relationship), :class => 'btn btn-success', :method => :post, :remote => true
       - else # This is the person who initiated
-        = link_to '<i class="icon-remove"></i> Cancel Request'.html_safe, reject_relationship_path(relationship), :class => 'btn', :method => :post, :remote => true
+        = link_to '<i class="icon-remove"></i> Cancel Connection Request'.html_safe, reject_relationship_path(relationship), :class => 'btn', :method => :post, :remote => true
     - elsif !relationship.blank? and relationship.suggested?
       /= link_to '<i class="icon-refresh"></i> Pass'.html_safe, reject_relationship_path(relationship), :class => 'btn btn-large', :method => :post
       /&nbsp;&nbsp;

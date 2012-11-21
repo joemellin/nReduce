@@ -189,7 +189,8 @@ hr {
           .badge {
             margin: -3px 0 0 -7px;
             border-radius: 2px;
-            padding: 1px 4px 1px 4px;
+            padding: 1px 3px 1px 3px;
+            background-color: #ff3333;
           }
           .icon {
             width: 32px;
@@ -216,10 +217,16 @@ hr {
             border-bottom: 1px solid #ccc;
           }
           .title.link {
+            padding-top: 4px;
+            a:hover, a:focus {
+              background-color: transparent;
+              background-image: none;
+            }
             a {
               color: #08C;
               font-weight: bold;
               padding-top: 3px;
+              background-color: transparent;
             }
             border-bottom: none;
             padding-bottom: 0;
@@ -240,7 +247,27 @@ hr {
             }
             padding: 10px;
             border-bottom: 1px solid #ccc;
-            .time_ago { font-size: .8em; color: #ccc; margin-top: -8px; margin-bottom: -5px;}
+            .time_ago { font-size: .8em; color: #666; margin-top: -3px; }
+            .name {
+              font-size: .9em;
+              font-weight: bold;
+            }
+            .message {
+              font-size: .9em;
+              max-width: 170px;
+            }
+            .team {
+              font-size: .9em;
+              max-width: 100px;
+            }
+            .btn-small {
+              margin-left: 6px;
+              padding: 2px 4px 2px 3px;
+              color: #000;
+            }
+            .btn-small.btn-info {
+              color: #fff;
+            }
           }
           .item.new {
             background-color: #B7F0FF;
@@ -263,9 +290,6 @@ hr {
           width: 50px;
           height: 50px;
         }
-      }
-      a.btn:hover {
-        background-color: none;
       }
     }
 

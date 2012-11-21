@@ -1,21 +1,33 @@
-.row
-  .span3
-    %p &nbsp;
-  .span6.well{:align => 'center', :style => 'padding: 40px 20px 40px 20px'}
-    %h1 nReduce
-    %br/
-    %p
-      %strong An alliance of creators built on accountability and community
-    %br/
-    %a.btn.btn-large{:href => '/auth/linkedin'}
-      = image_tag('linkedin_32.png')
-      Sign In With LinkedIn
-    %a.btn.btn-large{:href => '/auth/twitter'}
-      = image_tag('twitter_32.png')
-      Sign In With Twitter
-  .span3
+.sign_in
+  .row
+    .span3
+      %p &nbsp;
+    .span6.well
+      .center
+        %h2 Sign in
+      = form_for(resource, :as => resource_name, :url => session_path(resource_name), :html => { :class => 'form-horizontal' }) do |f|
+        .control-group
+          = f.label :email, :class => 'control-label'
+          .controls= f.email_field :email, :class => 'span3'
+        .control-group.password_group
+          = f.label :password, :class => 'control-label'
+          .controls
+            = f.password_field :password, :class => 'span3'
+            - if devise_mapping.rememberable?
+              .rememberable
+                .left= f.check_box :remember_me
+                .left.label_tag= f.label :remember_me
+                .clear
+        .center= f.submit "Sign in", :class => 'btn btn-large btn-info'
+      .center.social_login
+        %a.btn{:href => '/auth/linkedin'}
+          = image_tag('linkedin_32.png')
+          Sign In With LinkedIn
+        %a.btn{:href => '/auth/twitter'}
+          = image_tag('twitter_32.png')
+          Sign In With Twitter
+      %br/
 
-= render 'devise/shared/sign_in_sign_up'
+      %p.center.forgot_password= link_to "Forgot your password?", new_password_path(resource_name)
 
-
-      
+  %p.center= link_to 'Join with your email', sign_up_path

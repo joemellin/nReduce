@@ -24,10 +24,11 @@
         .names {
           font-size: .9em;
         }
-        .time {
+        .time, .last_message {
           font-size: .8em;
         }
         .pic {
+          img { width: 50px; height: 50px; }
           margin: 0 5px 5px 0;
         }
       }
@@ -78,9 +79,24 @@
         // position: absolute;
         // bottom: 0px;
         .message {
-          .pic { margin: 0 10px 10px 0; }
-          .from_user { font-size: .9em; }
-          .time_ago { font-size: .8em; }
+          .pic { 
+            margin: 0 10px 10px 0;
+            width: 50px;
+          }
+          .content_wrapper {
+            width:  500px; 
+            .content {
+              margin-top: 5px;
+              p {
+                font-size: 1em;
+              }
+            }
+            .from_user { 
+              font-size: .9em;
+              font-weight: bold;
+            }
+            .time_ago { font-size: .8em; }
+          }
         }
       }
     }
