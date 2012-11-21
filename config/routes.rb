@@ -28,7 +28,10 @@ Nreduce::Application.routes.draw do
 
   resources :authentications, :rsvps
 
-  resources :conversations do
+  resources :conversations, :path => "messages" do
+    collection do
+      post 'search_people_and_startups'
+    end
     member do
       post 'add_message'
     end

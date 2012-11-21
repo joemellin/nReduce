@@ -21,14 +21,15 @@ class ConversationsController < ApplicationController
   end
 
   def new
-    # When you start a message to someone on a startup - does it automatically include your co-founders? That doesn't make sense, kind of defeats the purpose of private
-    # I think you should have to choose your recipients, and can always add more people to the message.
+    @new_message = true
+    load_users_and_startups_for_conversations unless request.xhr?
+    # When you start a message to someone on a startup - need it to automatically include your co-founders?
     @conversation.messages << Message.new(:from_id => current_user.id)
     # Right now no validation on ids
     @conversation.participant_ids = params[:participant_ids] if params[:participant_ids].present?
     respond_to do |format|
       format.js
-      format.html { render :nothing => true }
+      format.html { render :action => :index }
     end
   end
 
@@ -65,6 +66,16 @@ class ConversationsController < ApplicationController
       flash[:alert] = "Sorry but that conversation couldn't be moved to the trash at this time."
     end
     redirect_to :action => :index
+  end
+
+  def search_people_and_startups
+    if !current_user.entrepreneur? || params[:query].blank? || params[:query].present? && params[:query].size < 2
+      render :json => [] 
+      return
+    end
+    connected_to_ids = current_user.startup.connected_to_ids('Startup')
+    users = User.select('users.id, users.name, startups.name AS startup_name').joins('LEFT JOIN startups ON startups.id = users.startup_id').where(['users.name LIKE ? OR startups.name LIKE ?', "#{params[:query]}%", "#{params[:query]}%"]).where("startups.id IN (#{connected_to_ids.join(',')})").limit(15)
+    render :json =>  users.map{|u| "#{u.name} - #{u['startup_name']}" }
   end
 
   protected

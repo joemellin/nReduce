@@ -6,12 +6,14 @@ class Conversation < ActiveRecord::Base
 
   accepts_nested_attributes_for :messages, :reject_if => proc {|attributes| attributes.all? {|k,v| v.blank?} }, :allow_destroy => true
 
-  validates_presence_of :participant_ids
+  validate :participants_are_present # and limits to 20 per conversation
   validate :message_is_present
 
   before_create :generate_conversation_statuses
   
-  attr_accessible :participant_ids, :messages_attributes
+  attr_accessible :participant_ids, :messages_attributes, :to
+
+  attr_accessor :to
 
   # Start a new conversation between users or startups. If given a startup the message is effectively started between all the users on a startup
   def self.create(attrs = {})
@@ -47,11 +49,25 @@ class Conversation < ActiveRecord::Base
     users
   end
 
-  def startups
-    Startup.joins('users ON users.startup_id = startups.id').where("users.id IN (#{self.participant_ids.join(',')})").group('startups.id')
+  def startups(without_startup_id = nil)
+    startups = Startup.joins('users ON users.startup_id = startups.id').where("users.id IN (#{self.participant_ids.join(',')})").group('startups.id')
+    startups = startups.where(['id != ?', without_startup_id]) if without_startup_id.present?
+    startups
   end
 
   protected
+
+  def participants_are_present
+    if self.participant_ids.blank?
+      self.errors.add(:participant_ids, "can't be blank")
+      false
+    elsif self.participant_ids.present? && self.participant_ids.size > 20
+      self.errors.add(:participant_ids, "can't be more than 20 people per message")
+      false
+    else
+      true
+    end
+  end
 
   def message_is_present
     if self.new_record? && self.messages.blank?
