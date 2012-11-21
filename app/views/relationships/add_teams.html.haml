@@ -74,7 +74,7 @@
             .square.logo_and_details
               .rounded= image_tag @review_startup.logo_url(:square)
               %center
-                .name= @review_startup.name
+                .name= link_to @review_startup.name, @review_startup
                 .one_liner= @review_startup.one_liner
 
               - if @startups_in_common.present?
