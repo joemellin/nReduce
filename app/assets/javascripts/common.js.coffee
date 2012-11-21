@@ -52,9 +52,20 @@ $ ->
     else
       $('.arrow').css({'opacity': 0})
 
+  $('.notifications li.item, .conversations li.item').click ->
+    window.location = $(this).attr('rel') if $(this).attr('rel')?
+
   # Mark notifications as read after clicking on menu item
   $('.notifications .dropdown-toggle').click ->
     $.post('/notifications/mark_all_as_read')
+
+  # mark messages as seen
+  $('.conversations .dropdown-toggle').click ->
+    $.post('/messages/mark_all_as_seen')
+
+  $('.relationship_requests .dropdown-toggle').click ->
+    $.post('/relationships/mark_all_as_seen')
+
 
   $('.notifications .dropdown-toggle .icon, .relationship_requests .dropdown-toggle .icon, .conversations .dropdown-toggle .icon').mouseover ->
     if $(this).hasClass('new') || $(this).attr('rel') == 'new'

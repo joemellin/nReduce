@@ -32,10 +32,10 @@ class ApplicationController < ActionController::Base
       @entity = current_user.entrepreneur? ? current_user.startup : current_user
 
       @notifications = current_user.notifications.ordered.limit(20).where(['created_at > ?', Time.now - 2.weeks]).all
-      @unread_notifications_count = @notifications.present? ? @notifications.inject(0){|r,n| r += 1 if n.unread?; r } : 0
+      @unread_notifications_count = @notifications.present? ? @notifications.inject(0){|r,e| r += 1 if e.unread?; r } : 0
 
       @relationship_requests = @entity.pending_relationships.order('created_at DESC').all
-      @new_relationship_requests = @relationship_requests.present? && @relationship_requests.size > 0 ? true : false
+      @new_relationships_count = @relationship_requests.present? ? @relationship_requests.inject(0){|r,e| r += 1 if !e.seen_by?(current_user.id); r } : 0
 
       load_recent_conversations
     end
@@ -45,10 +45,13 @@ class ApplicationController < ActionController::Base
     @conversation_statuses = ConversationStatus.where(:user_id => current_user.id).with_folder(:inbox).includes(:conversation).order('conversations.updated_at DESC').limit(20)
     @unread_conversations_count = 0
     @conversations = []
-    @conversation_statuses.each{|cs| @conversations << cs.conversation }
-    @latest_message_by_conversation = Hash.by_key(Message.where(:id => @conversations.map{|c| c.latest_message_id }), :conversation_id)
-    # don't count message as new if from this user
-    @conversation_statuses.each{|cs| @unread_conversations_count += 1 if cs.unread? && @latest_message_by_conversation[cs.conversation_id].from_id != current_user.id }
+    @latest_message_by_conversation = {}
+    if @conversation_statuses.size > 0
+      @conversation_statuses.each{|cs| @conversations << cs.conversation }
+      @latest_message_by_conversation = Hash.by_key(Message.where(:id => @conversations.map{|c| c.latest_message_id }), :conversation_id)
+      # don't count message as new if from this user
+      @conversation_statuses.each{|cs| @unread_conversations_count += 1 if cs.unseen? && @latest_message_by_conversation[cs.conversation_id].from_id != current_user.id }
+    end
   end
 
   # For A/B testing - retains session data to make sure it sends the person to the same segment every time

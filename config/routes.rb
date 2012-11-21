@@ -31,6 +31,7 @@ Nreduce::Application.routes.draw do
   resources :conversations, :path => "messages" do
     collection do
       post 'search_people_and_startups'
+      post 'mark_all_as_seen'
     end
     member do
       post 'add_message'
@@ -155,6 +156,7 @@ Nreduce::Application.routes.draw do
       get 'add_teams'
       post 'skip_team'
       get 'requests'
+      post 'mark_all_as_seen'
     end
     member do
       post 'approve'

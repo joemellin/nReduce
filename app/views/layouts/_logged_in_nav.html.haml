@@ -16,23 +16,23 @@
             %ul.dropdown-menu
               %li.title Notifications
               - if @notifications.size == 0
-                %li= link_to 'You have no recent activity', '#'
+                %li.item= link_to 'You have no recent activity', '#'
               - else
                 .scrollable
                   - @notifications.each do |n|
                     - elements = elements_for_notification(n)
                     - the_link = elements[2].blank? ? '#' : elements[2]
-                    %li.notification.item{:class => n.read_at.blank? ? 'new' : '' } 
+                    %li.notification.item{:class => n.read_at.blank? ? 'new' : '', :rel => the_link} 
                       .time_ago.right #{time_for_conversation(n.created_at)}
                       - unless elements[0].blank?
-                        .img.left= link_to image_tag(elements[0]), the_link
-                      .message.left= link_to elements[1].html_safe, the_link
+                        .img.left= image_tag(elements[0])
+                      .message.left= elements[1].html_safe
                       .clear
         %li.dropdown.relationship_requests
           %a.dropdown-toggle{:href => '#', 'data-toggle' => 'dropdown'}
-            .left.icon{:class => @new_relationship_requests ? 'new' : 'up'}
-            - if @new_relationship_requests
-              .left.badge= @relationship_requests.size
+            .left.icon{:class => @new_relationships_count > 0 ? 'new' : 'up'}
+            - if @new_relationships_count > 0
+              .left.badge= @new_relationships_count
             .clear
           - unless @relationship_requests.nil?
             %ul.dropdown-menu
@@ -63,41 +63,41 @@
                 .scrollable
                   - @conversation_statuses.each do |cs|
                     - latest_message = @latest_message_by_conversation[cs.conversation_id]
-                    %li.item{:class => cs.unread? ? 'new' : ''}
+                    %li.item{:class => cs.unread? ? 'new' : '', :rel => conversation_path(cs.conversation)}
                       .right.time_ago= time_for_conversation(latest_message.created_at)
-                      .img.left= link_to image_tag(latest_message.from.pic_url(:small)), cs.conversation
+                      .img.left= image_tag(latest_message.from.pic_url(:small))
                       .left
                         .name= latest_message.from.name
-                        .message= link_to "\"#{truncate(latest_message.content, :length => 25)}\"", cs.conversation
+                        .message "#{truncate(latest_message.content, :length => 25)}"
                       .clear
               %li.title.link.center= link_to 'See All', conversations_path
 
       %ul.nav.pull-right
         - if current_user.entrepreneur? && current_user.startup.present?
           %li{:class => is_controller_action?('relationships', 'index') ? 'active' : ''}= link_to "Work Room", work_room_path    
+        %li.dropdown
+          %a.dropdown-toggle{:href => '#', 'data-toggle' => 'dropdown'}
+            My Profile
+            %b.caret
+          %ul.dropdown-menu
+            %li= link_to 'View Profile', user_path(current_user)
+            %li= link_to 'Edit Profile', edit_user_path(current_user)
+            - if current_user.admin?
+              %li.divider
+              %li= link_to "Metrics", admin_metrics_path
+              %li= link_to "Admin Tools", "/admin/db"
+              %li= link_to "Approve Users", "/admin/users"
+              %li= link_to "Mentors", admin_mentors_path
+              %li= link_to "Job Queue", "/admin/resque"
+        - if current_user.entrepreneur? && current_user.startup.present?
           %li.dropdown
             %a.dropdown-toggle{:href => '#', 'data-toggle' => 'dropdown'}
-              My Profile
+              My Startup
               %b.caret
             %ul.dropdown-menu
-              %li= link_to 'View Profile', user_path(current_user)
-              %li= link_to 'Edit Profile', edit_user_path(current_user)
-              - if current_user.admin?
-                %li.divider
-                %li= link_to "Metrics", admin_metrics_path
-                %li= link_to "Admin Tools", "/admin/db"
-                %li= link_to "Approve Users", "/admin/users"
-                %li= link_to "Mentors", admin_mentors_path
-                %li= link_to "Job Queue", "/admin/resque"
-          - unless current_user.startup_id.blank?
-            %li.dropdown
-              %a.dropdown-toggle{:href => '#', 'data-toggle' => 'dropdown'}
-                My Startup
-                %b.caret
-              %ul.dropdown-menu
-                %li= link_to 'View Startup', startup_path(current_user.startup)
-                %li= link_to 'Edit Startup', edit_startup_path
-          %li= link_to "Log out", logout_path, :method => :delete
+              %li= link_to 'View Startup', startup_path(current_user.startup)
+              %li= link_to 'Edit Startup', edit_startup_path
+        %li= link_to "Log out", logout_path, :method => :delete
 
 - if @demo_day && !@home
   .span4.countdown_and_checkin{:align => 'center'}

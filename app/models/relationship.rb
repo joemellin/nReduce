@@ -8,6 +8,7 @@ class Relationship < ActiveRecord::Base
   attr_accessible :context, :entity, :entity_id, :entity_type, :connected_with, :connected_with_id, 
     :connected_with_type, :status, :approved_at, :rejected_at, :silent, :message, :pending_at, :initiated, :introduced, :from_user_id
 
+  serialize :seen_by, Array
   attr_accessor :silent
   attr_accessor :introduced
   attr_accessor :from_user_id
@@ -227,6 +228,16 @@ class Relationship < ActiveRecord::Base
       self.reset_cache_for_entities_involved
     end
     true
+  end
+
+  def seen_by?(user_id)
+    self.seen_by.include?(user_id)
+  end
+
+  def mark_as_seen!(user_id)
+    self.seen_by << user_id
+    self.seen_by.uniq!
+    self.save
   end
 
   def inverse_relationship

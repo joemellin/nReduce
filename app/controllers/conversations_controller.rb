@@ -78,8 +78,14 @@ class ConversationsController < ApplicationController
       return
     end
     connected_to_ids = current_user.startup.connected_to_ids('Startup')
-    users = User.select('users.id, users.name, startups.name AS startup_name').joins('LEFT JOIN startups ON startups.id = users.startup_id').where(['users.name LIKE ? OR startups.name LIKE ?', "#{params[:query]}%", "#{params[:query]}%"]).where("startups.id IN (#{connected_to_ids.join(',')})").limit(15)
-    render :json =>  users.map{|u| "#{u.name} - #{u['startup_name']} - #{u.id}" }
+    users = User.select('id, name').where(['name LIKE ?', "#{params[:query]}%"]).where("startup_id IN (#{connected_to_ids.join(',')})").limit(10)
+    startups = Startup.select('id, name').where(['name LIKE ?', "#{params[:query]}%"]).where("id IN (#{connected_to_ids.join(',')})").limit(10)
+    render :json => (users + startups).sort{|a,b| a.name <=> b.name }.map{|e| {:name => e.name, :id => e.is_a?(User) ? "user_#{e.id}" : "startup_#{e.id}" } }
+  end
+
+  def mark_all_as_seen
+    current_user.conversation_statuses.unseen.each{|cs| cs.mark_as_seen! }
+    render :nothing => true
   end
 
   protected

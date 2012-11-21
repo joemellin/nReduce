@@ -1,7 +1,7 @@
 - @conversation_statuses.each do |cs|
   - conversation = cs.conversation
   - latest_message = @latest_message_by_conversation[conversation.id]
-  .details{:class => cs.unread? ? 'new' : ''}
+  .details{:class => cs.unread? ? 'new' : '', :rel => url_for(conversation)}
     .right
       .time= time_for_conversation(conversation.updated_at)
     -# If more than two participants show startup logo
@@ -13,9 +13,9 @@
       - user = latest_message.from
       - pic = user.pic_url(:small)
       - name = conversation.participants(current_user.id).map{|u| u.name }.join(', ')
-    .pic.left= link_to image_tag(pic), conversation
+    .pic.left= image_tag(pic)
     .left
-      .names= link_to truncate(name, :length => 26), conversation, :remote => true
+      .names= truncate(name, :length => 26)
       .last_message= truncate(latest_message.content, :length => 32)
     .clear
     
