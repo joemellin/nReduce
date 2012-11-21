@@ -7,12 +7,12 @@
       - if Checkin.in_after_time_window?
         .right.time_left= hours_minutes_until(next_after_checkin.last)
       .left.team_details
-        %h5.week Team #{startup.name}
+        .week Team #{startup.name}
         - startup.team_members.each do |tm|
           .team_member.left= image_tag tm.pic_url(:small)
       .left.goal_details
-        %h5.week Goal For Week Of #{current_checkin.time_label}:
-        %h2.goal #{current_checkin.start_focus}
+        .week Goal For Week Of #{current_checkin.time_label}:
+        .goal #{current_checkin.start_focus}
       .clear
       .timeline
         .nav
