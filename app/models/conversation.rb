@@ -1,6 +1,7 @@
 class Conversation < ActiveRecord::Base
   has_many :messages, :dependent => :destroy
   has_many :conversation_statuses, :dependent => :destroy
+  belongs_to :latest_message, :class_name => 'Message'
 
   serialize :participant_ids, Array
 
@@ -11,7 +12,7 @@ class Conversation < ActiveRecord::Base
 
   before_create :generate_conversation_statuses
   
-  attr_accessible :participant_ids, :messages_attributes, :to, :updated_at
+  attr_accessible :participant_ids, :messages_attributes, :to, :updated_at, :messages
 
   attr_accessor :to
 
@@ -44,8 +45,8 @@ class Conversation < ActiveRecord::Base
     return nil
   end
 
-  def latest_message
-    self.messages.order('created_at DESC').first
+  def assign_latest_message
+    self.latest_message = self.messages.order('created_at DESC').first
   end
 
   # Will first load participants from participant_ids array, then users who are on startup_ids array

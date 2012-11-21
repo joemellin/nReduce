@@ -27,7 +27,7 @@ class Message < ActiveRecord::Base
   protected
 
   def update_conversation_updated_time
-    self.conversation.update_attribute('updated_at', Time.now) if self.conversation.present? && !self.conversation.new_record?
+    self.conversation.update_attributes(:updated_at => Time.now, :latest_message_id => self.id) if self.conversation.present? && !self.conversation.new_record?
   end
 
   def notify_recipients_of_message

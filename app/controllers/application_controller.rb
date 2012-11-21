@@ -45,7 +45,10 @@ class ApplicationController < ActionController::Base
     @conversation_statuses = ConversationStatus.where(:user_id => current_user.id).with_folder(:inbox).includes(:conversation).order('conversations.updated_at DESC').limit(20)
     @unread_conversations_count = 0
     @conversations = []
-    @conversation_statuses.each{|cs| @conversations << cs.conversation; @unread_conversations_count += 1 if cs.unread? }
+    @conversation_statuses.each{|cs| @conversations << cs.conversation }
+    @latest_message_by_conversation = Hash.by_key(Message.where(:id => @conversations.map{|c| c.latest_message_id }), :conversation_id)
+    # don't count message as new if from this user
+    @conversation_statuses.each{|cs| @unread_conversations_count += 1 if cs.unread? && @latest_message_by_conversation[cs.conversation_id].from_id != current_user.id }
   end
 
   # For A/B testing - retains session data to make sure it sends the person to the same segment every time

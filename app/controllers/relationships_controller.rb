@@ -137,6 +137,7 @@ class RelationshipsController < ApplicationController
   end
 
   def create
+    @relationship.from_user_id = current_user.id
     if !@relationship.save
       flash[:alert] = @relationship.errors.full_messages.join(', ') + '.'
     elsif @relationship.pending?
@@ -146,7 +147,6 @@ class RelationshipsController < ApplicationController
     elsif @relationship.rejected?
       flash[:alert] = "Sorry, but #{@relationship.connected_with.name} has ignored your connection request."
     end
-    logger.info flash.inspect
     respond_to do |format|
       format.html { redirect_to add_teams_relationships_path }
       format.js { render :action => 'update_modal' }
@@ -175,7 +175,7 @@ class RelationshipsController < ApplicationController
         format.js { render :action => 'update_modal' }
       end
     else
-      redirect_to add_teams_relationships_path
+      redirect_to '/'
     end
   end
 
@@ -207,7 +207,7 @@ class RelationshipsController < ApplicationController
         format.js { render :action => 'update_modal' }
       end
     else
-      redirect_to add_teams_relationships_path
+      redirect_to '/'
     end
   end
 end
