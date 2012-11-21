@@ -1,12 +1,17 @@
 .conversations
   .row
-    .span2
+    .span3
       .list_wrapper
+        .head
+          .right= link_to 'New Message', new_conversation_path, :remote => true, :class => 'btn'
+          .left
+            %h3 Inbox
+          .clear
         .list= render 'conversations/list'
     .span6
-      - if @conversations.blank?
+      - if @new_message.present?
+        .conversation= render 'conversations/form', :conversation => @conversation
+      - elsif @conversations.blank?
         .conversation You haven't started any conversations yet.
       - else
         = render @conversation.present? ? @conversation : @conversations.first
-
-  = link_to 'Start new convo', new_conversation_path(:participant_ids => User.limit(3).order('RAND()').map{|u| u.id } + [current_user.id]), :remote => true
