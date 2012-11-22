@@ -1,7 +1,7 @@
 = render :partial => 'header'
 %h1.h1 New Message From #{@user.name}
 %br
-%h4.h4 "#{simple_format(h(@message.content))}"
+%h4.h4 #{simple_format(h("\"#{@message.content}\""))}
 %br
 %h3.h3= link_to 'Reply', conversation_url(@message.conversation)
 = render :partial => 'footer'

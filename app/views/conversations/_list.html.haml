@@ -14,7 +14,7 @@
           - pic = startup.logo_url(:small)
           - name = startup.name
     - else
-      - user = @users_by_id[latest_message.from_id]
+      - user = @users_by_id[conversation.participant_ids_without(current_user.id).first]
       - pic = user.pic_url(:small)
       - name = conversation.participant_ids_without(current_user.id).map{|id| @users_by_id[id].present? ? @users_by_id[id].name : "blank - #{id}" }.join(', ')
     .pic.left= image_tag(pic)
