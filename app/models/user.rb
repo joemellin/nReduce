@@ -10,7 +10,7 @@ class User < ActiveRecord::Base
   has_many :authentications, :dependent => :destroy
   has_many :organized_meetings, :class_name => 'Meeting', :foreign_key => 'organizer_id'
   has_many :sent_messages, :foreign_key => 'from_id', :class_name => 'Message'
-  has_many :conversation_statuses
+  has_many :conversation_statuses, :dependent => :destroy
   has_many :comments
   has_many :notifications, :dependent => :destroy
   has_many :meeting_messages
