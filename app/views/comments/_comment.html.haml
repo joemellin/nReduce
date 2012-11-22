@@ -95,7 +95,7 @@
         
         - unless comment.awesome_count == 0
           %strong= pluralize(comment.awesome_count, 'like')
-        .content{:style=> 'color: #585858; font-size: 1.9em'}= auto_link(simple_format(h(comment.content)), :all, :target => '_blank' )
+        .content= auto_link(simple_format(h(comment.content)), :all, :target => '_blank' )
         = link_to 'Reply', reply_to_comment_path(comment), :remote => true
         - if is_owner
           &nbsp;•&nbsp;

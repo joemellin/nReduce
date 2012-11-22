@@ -35,7 +35,7 @@
             %br/
             %i Limit one per week
     - if current_user.id != @user.id
-      = link_to '<i class="icon-envelope"></i> Message'.html_safe, new_conversation_path(:participant_ids => [@user.id, current_user.id]), :class => 'btn'
+      = link_to '<i class="icon-envelope"></i> Message'.html_safe, new_conversation_path(:participant_ids => [@user.id, current_user.id].join('|')), :class => 'btn'
 .row
   .span12{:style => 'padding: 0'}
     .row{:style => 'padding: 0px'}
