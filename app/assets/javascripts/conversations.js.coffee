@@ -9,6 +9,8 @@ $ ->
   $('.conversation textarea').autosize()
 
   makeConversationListClickable()
+
+  initializeConversationAutocomplete()
   
   
 window.scrollConversationToBottom = ->

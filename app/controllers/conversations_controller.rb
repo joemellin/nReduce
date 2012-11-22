@@ -75,7 +75,7 @@ class ConversationsController < ApplicationController
   end
 
   def search_people_and_startups
-    if !current_user.entrepreneur? || params[:query].blank? || params[:query].present? && params[:query].size < 2
+    if !current_user.entrepreneur? || params[:query].blank? || params[:query].present? && params[:query].size < 1
       render :json => [] 
       return
     end
