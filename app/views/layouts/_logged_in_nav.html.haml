@@ -64,11 +64,12 @@
                   .scrollable
                     - @conversation_statuses.each do |cs|
                       - latest_message = @latest_message_by_conversation[cs.conversation_id]
+                      - from = @users_by_id[latest_message.from_id]
                       %li.item{:class => cs.unread? ? 'new' : '', :rel => conversation_path(cs.conversation)}
                         .right.time_ago= time_for_conversation(latest_message.created_at)
-                        .img.left= image_tag(latest_message.from.pic_url(:small))
+                        .img.left= image_tag(from.pic_url(:small))
                         .left
-                          .name= latest_message.from.name
+                          .name= from.name
                           .message "#{truncate(latest_message.content, :length => 25)}"
                         .clear
                 %li.title.link.center= link_to 'See All', conversations_path

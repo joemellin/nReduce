@@ -31,7 +31,7 @@
               %button.btn{:href => '#', :class => ((current_checkin and current_checkin.submitted?) ? 'btn-success' : 'disabled active')} Before
               %button.btn{:href => '#', :class => ((current_checkin and current_checkin.completed?) ? 'btn-success' : 'disabled active')} After
             .members{:align => 'center'}
-              - s.team_members.shuffle.first(3).each do |tm|
+              - @users_by_startup_id[s.id].shuffle.first(3).each do |tm|
                 .inline-block{:style => 'margin-left: 4px'}= image_tag(user_avatar_url(tm), :title => tm.name, :style => 'width: 50px; height: 50px;')
           .bottom{:align => 'center'}
             %h3= link_to owner ? 'You' : truncate(s.name, :length => 20), startup_path(s)
@@ -110,7 +110,7 @@
           .top{:align => 'center', :onclick => "window.location = '#{this_startup_url}';"}
             .background{:style => "background-image: url('#{logo_path}'); cursor: pointer;"} &nbsp;
             .members{:align => 'center'}
-              - s.team_members.shuffle.first(3).each do |tm|
+              - @users_by_startup_id[s.id].shuffle.first(3).each do |tm|
                 .inline-block{:style => 'margin-left: 4px'}= image_tag(user_avatar_url(tm), :title => tm.name, :style => 'width: 50px; height: 50px;')
           .bottom{:align => 'center'}
             %h3= link_to truncate(s.name, :length => 20), startup_path(s)
