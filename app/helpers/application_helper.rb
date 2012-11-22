@@ -98,6 +98,7 @@ module ApplicationHelper
       when :new_nudge then [obj.from.pic_url(:small), "<span class='entity'>#{obj.from.name}</span> nudged you to complete your check-in", url_for(obj.from)]
       when :new_comment_for_post then [obj.user.pic_url(:small), "<span class='entity'>#{obj.user.name}</span> commented on your post", post_path(obj)]
       when :new_like then [obj.user.pic_url(:small), "<span class='entity'>#{obj.user.name}</span> liked your post", post_path(obj)]
+      when :new_team_joined then [obj.logo_url(:small), "<span class='entity'>#{obj.name}</span> joined nReduce", url_for(obj)]
       else [nil, notification.message, nil]
     end
   end 
