@@ -27,6 +27,17 @@ class ApplicationController < ActionController::Base
 
   protected
 
+  # Loads users and adds them to @users_by_id hash. Can be called multiple times to add users to hash
+  def store_users_by_ids(users = [])
+    @users_by_id ||= {}
+    @users_by_id.merge!(Hash.by_key(users, :id))
+  end
+
+  def store_users_by_startup_id(users = [])
+    @users_by_startup_id ||= {}
+    users.each{|u| @users_by_startup_id[u.startup_id] ||= []; @users_by_startup_id[u.startup_id] << u }
+  end
+
   def load_notifications_and_requests
     if user_signed_in?
       @entity = current_user.entrepreneur? ? current_user.startup : current_user
@@ -34,7 +45,7 @@ class ApplicationController < ActionController::Base
       @notifications = current_user.notifications.where("action != 'relationship_request'").ordered.limit(20).where(['created_at > ?', Time.now - 2.weeks]).all
       @unread_notifications_count = @notifications.present? ? @notifications.inject(0){|r,e| r += 1 if e.unread?; r } : 0
 
-      @relationship_requests = @entity.pending_relationships.order('created_at DESC').all
+      @relationship_requests = @entity.pending_relationships.order('created_at DESC').includes(:entity).all
       @new_relationships_count = @relationship_requests.present? ? @relationship_requests.inject(0){|r,e| r += 1 if !e.seen_by?(current_user.id); r } : 0
 
       load_recent_conversations(100)
@@ -52,8 +63,8 @@ class ApplicationController < ActionController::Base
       @latest_message_by_conversation = Hash.by_key(Message.where(:id => @conversations.map{|c| c.latest_message_id }), :conversation_id)
       # don't count message as new if from this user
       @conversation_statuses.each{|cs| @unread_conversations_count += 1 if cs.unseen? && @latest_message_by_conversation[cs.conversation_id].from_id != current_user.id }
-    
-      @users_by_id = Hash.by_key(User.where(:id => user_ids.uniq).includes(:startup), :id)
+      
+      store_users_by_ids(User.where(:id => user_ids.uniq).includes(:startup))
     end
   end
 

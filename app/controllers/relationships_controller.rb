@@ -68,6 +68,9 @@ class RelationshipsController < ApplicationController
     @show_mentor_message = true if current_user.roles?(:nreduce_mentor) && no_startups == true
 
     @after_checkin_window = Checkin.in_after_time_window? ? true : false
+
+    store_users_by_ids(User.where(:startup_id => @startups.map{|s| s.id }))
+    store_users_by_startup_id(@users_by_id.map{|id, user| user })
   end
 
   def add_teams
