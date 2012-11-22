@@ -4,6 +4,7 @@ class ConversationsController < ApplicationController
 
   def index
     load_users_and_startups_for_conversations
+    mark_all_conversations_for_current_user_as_seen
     if @conversations.present?
       @conversation = @conversations.first
       mark_conversation_as_read_for_current_user(@conversation)
@@ -12,6 +13,7 @@ class ConversationsController < ApplicationController
 
   def show
     load_users_and_startups_for_conversations
+    mark_all_conversations_for_current_user_as_seen
     respond_to do |format|
       format.js
       format.html { render :action => :index }
@@ -84,11 +86,15 @@ class ConversationsController < ApplicationController
   end
 
   def mark_all_as_seen
-    current_user.conversation_statuses.unseen.each{|cs| cs.mark_as_seen! }
+    mark_all_conversations_for_current_user_as_seen
     render :nothing => true
   end
 
   protected
+
+  def mark_all_conversations_for_current_user_as_seen
+    current_user.conversation_statuses.unseen.each{|cs| cs.mark_as_seen! }
+  end
 
   def mark_conversation_as_read_for_current_user(conversation)
     @conversation_statuses.each{|cs| cs.mark_as_read! if cs.conversation_id == conversation.id }
