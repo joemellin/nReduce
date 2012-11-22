@@ -57,7 +57,10 @@
               .clear
             - unless @conversation_statuses.nil?
               %ul.dropdown-menu
-                %li.title Messages
+                %li.title
+                  Messages
+                  .right= link_to 'New Message', new_conversation_path
+                  .clear
                 - if @conversation_statuses.size == 0
                   %li.item= link_to 'You don\'t have any messages', '#'
                 - else

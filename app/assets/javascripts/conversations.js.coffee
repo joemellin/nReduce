@@ -26,7 +26,7 @@ window.initializeConversationAutocomplete = ->
 
   # http://tatiyants.com/how-to-use-json-objects-with-twitter-bootstrap-typeahead/
   $('.conversation-to-autocomplete').typeahead(
-    minLength: 2
+    minLength: 1
     source: (query, process) ->
       now = new Date()
       # Make sure we only search every two seconds
