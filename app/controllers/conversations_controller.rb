@@ -27,7 +27,7 @@ class ConversationsController < ApplicationController
     @conversation.messages << Message.new(:from_id => current_user.id)
     # Right now no validation on ids
     if params[:participant_ids].present?
-      @conversation.participant_ids = params[:participant_ids] 
+      @conversation.participant_ids = params[:participant_ids].split('|') 
     else
       @conversation.participant_ids = [current_user.id]
     end

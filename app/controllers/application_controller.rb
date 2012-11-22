@@ -31,7 +31,7 @@ class ApplicationController < ActionController::Base
     if user_signed_in?
       @entity = current_user.entrepreneur? ? current_user.startup : current_user
 
-      @notifications = current_user.notifications.ordered.limit(20).where(['created_at > ?', Time.now - 2.weeks]).all
+      @notifications = current_user.notifications.where("action != 'relationship_request'").ordered.limit(20).where(['created_at > ?', Time.now - 2.weeks]).all
       @unread_notifications_count = @notifications.present? ? @notifications.inject(0){|r,e| r += 1 if e.unread?; r } : 0
 
       @relationship_requests = @entity.pending_relationships.order('created_at DESC').all
