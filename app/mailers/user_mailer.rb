@@ -5,7 +5,7 @@ class UserMailer < ActionMailer::Base
   def new_message(message, user)
     @message = message
     @user = user
-    mail(:to => @user.email, :subject => "New message from #{@user.name}")
+    mail(:to => @user.email, :subject => "New message from #{@message.from.name}")
   end
 
   def checkin_now(user)
