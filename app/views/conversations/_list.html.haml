@@ -5,14 +5,18 @@
     .right
       .time= time_for_conversation(conversation.updated_at)
     -# If more than two participants show startup logo
+    - name = pic = nil
     - if conversation.participant_ids.size > 2
-      - startup = conversation.startups(current_user.startup_id).first
-      - pic = startup.logo_url(:small)
-      - name = startup.name
+      - startup = nil
+      - conversation.participant_ids_without(current_user.id).each do |id|
+        - if @users_by_id[id].startup_id.present? && @users_by_id[id].startup_id != current_user.startup_id
+          - startup = @users_by_id[id].startup
+          - pic = startup.logo_url(:small)
+          - name = startup.name
     - else
-      - user = latest_message.from
+      - user = @users_by_id[latest_message.from_id]
       - pic = user.pic_url(:small)
-      - name = conversation.participants(current_user.id).map{|u| u.name }.join(', ')
+      - name = conversation.participant_ids_without(current_user.id).map{|id| @users_by_id[id].present? ? @users_by_id[id].name : "blank - #{id}" }.join(', ')
     .pic.left= image_tag(pic)
     .left
       .names= truncate(name, :length => 26)

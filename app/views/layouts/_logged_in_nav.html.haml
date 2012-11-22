@@ -48,29 +48,30 @@
                       .img.left= link_to image_tag(r.entity.logo_url(:small)), r.entity
                       .team.left= link_to r.entity.name, r.entity
                       .clear
-        %li.dropdown.conversations
-          %a.dropdown-toggle{:href => '#', 'data-toggle' => 'dropdown'}
-            .left.icon{:class => @unread_conversations_count > 0 ? 'new' : 'up'}
-            - if @unread_conversations_count > 0
-              .left.badge.badge-warning= @unread_conversations_count
-            .clear
-          - unless @conversation_statuses.nil?
-            %ul.dropdown-menu
-              %li.title Messages
-              - if @conversation_statuses.size == 0
-                %li.item= link_to 'You don\'t have any messages', '#'
-              - else
-                .scrollable
-                  - @conversation_statuses.each do |cs|
-                    - latest_message = @latest_message_by_conversation[cs.conversation_id]
-                    %li.item{:class => cs.unread? ? 'new' : '', :rel => conversation_path(cs.conversation)}
-                      .right.time_ago= time_for_conversation(latest_message.created_at)
-                      .img.left= image_tag(latest_message.from.pic_url(:small))
-                      .left
-                        .name= latest_message.from.name
-                        .message "#{truncate(latest_message.content, :length => 25)}"
-                      .clear
-              %li.title.link.center= link_to 'See All', conversations_path
+        - if current_user.entrepreneur?
+          %li.dropdown.conversations
+            %a.dropdown-toggle{:href => '#', 'data-toggle' => 'dropdown'}
+              .left.icon{:class => @unread_conversations_count > 0 ? 'new' : 'up'}
+              - if @unread_conversations_count > 0
+                .left.badge.badge-warning= @unread_conversations_count
+              .clear
+            - unless @conversation_statuses.nil?
+              %ul.dropdown-menu
+                %li.title Messages
+                - if @conversation_statuses.size == 0
+                  %li.item= link_to 'You don\'t have any messages', '#'
+                - else
+                  .scrollable
+                    - @conversation_statuses.each do |cs|
+                      - latest_message = @latest_message_by_conversation[cs.conversation_id]
+                      %li.item{:class => cs.unread? ? 'new' : '', :rel => conversation_path(cs.conversation)}
+                        .right.time_ago= time_for_conversation(latest_message.created_at)
+                        .img.left= image_tag(latest_message.from.pic_url(:small))
+                        .left
+                          .name= latest_message.from.name
+                          .message "#{truncate(latest_message.content, :length => 25)}"
+                        .clear
+                %li.title.link.center= link_to 'See All', conversations_path
 
       %ul.nav.pull-right
         - if current_user.entrepreneur? && current_user.startup.present?

@@ -80,7 +80,7 @@ class ConversationsController < ApplicationController
     connected_to_ids = current_user.startup.connected_to_ids('Startup')
     users = User.select('id, name').where(['name LIKE ?', "#{params[:query]}%"]).where("startup_id IN (#{connected_to_ids.join(',')})").limit(10)
     startups = Startup.select('id, name').where(['name LIKE ?', "#{params[:query]}%"]).where("id IN (#{connected_to_ids.join(',')})").limit(10)
-    render :json => (users + startups).sort{|a,b| a.name <=> b.name }.map{|e| {:name => e.name, :id => e.is_a?(User) ? "user_#{e.id}" : "startup_#{e.id}" } }
+    render :json => (users + startups).sort{|a,b| a.name <=> b.name }.map{ |e| e.is_a?(User) ? {:name => e.name, :id => "user_#{e.id}"} : {:name => "#{e.name} (Team to Team Message)", :id => "startup_#{e.id}" } }
   end
 
   def mark_all_as_seen

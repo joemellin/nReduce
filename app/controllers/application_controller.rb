@@ -37,20 +37,23 @@ class ApplicationController < ActionController::Base
       @relationship_requests = @entity.pending_relationships.order('created_at DESC').all
       @new_relationships_count = @relationship_requests.present? ? @relationship_requests.inject(0){|r,e| r += 1 if !e.seen_by?(current_user.id); r } : 0
 
-      load_recent_conversations
+      load_recent_conversations(100)
     end
   end
 
-  def load_recent_conversations
-    @conversation_statuses = ConversationStatus.where(:user_id => current_user.id).with_folder(:inbox).includes(:conversation).order('conversations.updated_at DESC').limit(20)
+  def load_recent_conversations(limit = 20)
+    @conversation_statuses = ConversationStatus.where(:user_id => current_user.id).with_folder(:inbox).includes(:conversation).order('conversations.updated_at DESC').limit(limit)
     @unread_conversations_count = 0
     @conversations = []
     @latest_message_by_conversation = {}
     if @conversation_statuses.size > 0
-      @conversation_statuses.each{|cs| @conversations << cs.conversation }
+      user_ids = []
+      @conversation_statuses.each{|cs| @conversations << cs.conversation; user_ids += cs.conversation.participant_ids }
       @latest_message_by_conversation = Hash.by_key(Message.where(:id => @conversations.map{|c| c.latest_message_id }), :conversation_id)
       # don't count message as new if from this user
       @conversation_statuses.each{|cs| @unread_conversations_count += 1 if cs.unseen? && @latest_message_by_conversation[cs.conversation_id].from_id != current_user.id }
+    
+      @users_by_id = Hash.by_key(User.where(:id => user_ids.uniq).includes(:startup), :id)
     end
   end
 
