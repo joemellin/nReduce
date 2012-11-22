@@ -32,6 +32,11 @@
           %span 
             %h1 #{@num_awesomes}
             = link_to 'Awesomes', community_guidelines_path
+
+      - if !@owner && !@entity.blank?
+        %br/
+        .center= render 'relationships/buttons', :entity => @entity, :connected_with => @startup, :relationship => @relationship.present? ? @relationship : @pending_relationship
+
 %br/
 %br/
 .row

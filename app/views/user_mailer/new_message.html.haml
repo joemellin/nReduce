@@ -1,5 +1,5 @@
 = render :partial => 'header'
-%h1.h1 New Message From #{@message.from.name}
+%h1.h1 Message From #{@message.from.name}
 %br
 %h4.h4 #{simple_format(h("\"#{@message.content}\""))}
 %br
