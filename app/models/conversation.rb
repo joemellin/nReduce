@@ -23,10 +23,19 @@ class Conversation < ActiveRecord::Base
     # Assign participants from a dropdown
     if attrs[:to_entity].present?
       tmp = attrs[:to_entity].strip.split('_')
-      attrs[:participant_ids] << tmp[1] if tmp[0] == 'user'
-      attrs[:participant_ids] += Startup.find(tmp[1]).team_member_ids if tmp[0] == 'startup'
+      if tmp[0] == 'user' # Person to person message
+        attrs[:participant_ids] << tmp[1] 
+      elsif tmp[0] == 'startup'
+        # Find all your co-founders
+        your_team_ids = User.find(attrs[:participant_ids].first).startup.team_member_ids
+        # Add everyone from to: startup
+        attrs[:participant_ids] += Startup.find(tmp[1]).team_member_ids
+        # Add co-founders at end
+        attrs[:participant_ids] += your_team_ids
+      end
+      attrs[:participant_ids] = Conversation.clean_ids(attrs[:participant_ids])
     end
-        
+    
     # Check to see if a conversation already exists between these people, if so append message to that one
     c = Conversation.between(attrs[:participant_ids]) unless attrs[:participant_ids].blank?
     c.messages << Message.new(attrs[:messages_attributes]['0']) if c.present? && attrs[:messages_attributes].present?
@@ -47,6 +56,10 @@ class Conversation < ActiveRecord::Base
     return nil
   end
 
+  def self.clean_ids(arr = [])
+    arr.map{|id| id.to_i }.delete_if{|id| id.blank? || id == 0 }.uniq
+  end
+
   def assign_latest_message
     self.latest_message = self.messages.order('created_at DESC').first
   end
@@ -55,9 +68,12 @@ class Conversation < ActiveRecord::Base
   # Can exclude a user by providing an integer id to the first param, without_user_id
   # Not sure this is the best way to do this - really shouldn't be caching participants across both conversation and conversation_status
   def participants(without_user_id = nil)
-    users = User.where(:id => self.participant_ids)
-    users = users.where(['id != ?', without_user_id]) if without_user_id.present?
+    users = User.where(:id => without_user_id.present? ? self.participant_ids_without(without_user_id) : self.participant_ids)
     users
+  end
+
+  def participant_ids_without(user_id)
+    self.participant_ids - [user_id]
   end
 
   def startups(without_startup_id = nil)
@@ -72,13 +88,17 @@ class Conversation < ActiveRecord::Base
     if self.participant_ids.blank? || self.participant_ids.present? && self.participant_ids.size == 1
       self.errors.add(:participant_ids, "can't be blank")
       false
-    elsif self.participant_ids.present? && self.participant_ids.size > 20
-      self.errors.add(:participant_ids, "can't be more than 20 people per message")
-      false
-    else
-      # ensure they are unique
-      self.participant_ids.uniq!
-      true
+    elsif self.participant_ids.present?
+      # Clean up - remove dupes, turn to integer
+      self.participant_ids = Conversation.clean_ids(self.participant_ids)
+      if self.participant_ids.size < 2
+        self.errors.add(:participant_ids, "can't be blank")
+      elsif self.participant_ids.size > 20
+        self.errors.add(:participant_ids, "can't be more than 20 people per message")
+        false
+      else
+        true
+      end
     end
   end
 
