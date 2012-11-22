@@ -57,14 +57,14 @@ $ ->
 
   # Mark notifications as read after clicking on menu item
   $('.notifications .dropdown-toggle').click ->
-    $.post('/notifications/mark_all_as_read')
+    $.post('/notifications/mark_all_as_read') if parseInt($(this).attr('rel')) != 0
 
   # mark messages as seen
   $('.conversations .dropdown-toggle').click ->
-    $.post('/messages/mark_all_as_seen')
+    $.post('/messages/mark_all_as_seen') if parseInt($(this).attr('rel')) != 0
 
   $('.relationship_requests .dropdown-toggle').click ->
-    $.post('/relationships/mark_all_as_seen')
+    $.post('/relationships/mark_all_as_seen') if parseInt($(this).attr('rel')) != 0
 
 
   $('.notifications .dropdown-toggle .icon, .relationship_requests .dropdown-toggle .icon, .conversations .dropdown-toggle .icon').mouseover ->

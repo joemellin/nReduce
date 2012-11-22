@@ -7,7 +7,7 @@
         - if current_user.entrepreneur? && current_user.startup.present?
           %li.add_teams= link_to '<i class="icon icon-user"></i> Find Teams'.html_safe , add_teams_relationships_path
         %li.dropdown.notifications
-          %a.dropdown-toggle{:href => '#', 'data-toggle' => 'dropdown'}
+          %a.dropdown-toggle{:href => '#', 'data-toggle' => 'dropdown', :rel => @unread_notifications_count}
             .left.icon{:class => @unread_notifications_count > 0 ? 'new' : 'up'}
             - if @unread_notifications_count > 0
               .left.badge= @unread_notifications_count
@@ -29,7 +29,7 @@
                       .message.left= elements[1].html_safe
                       .clear
         %li.dropdown.relationship_requests
-          %a.dropdown-toggle{:href => '#', 'data-toggle' => 'dropdown'}
+          %a.dropdown-toggle{:href => '#', 'data-toggle' => 'dropdown', :rel => @new_relationships_count}
             .left.icon{:class => @new_relationships_count > 0 ? 'new' : 'up'}
             - if @new_relationships_count > 0
               .left.badge= @new_relationships_count
@@ -50,7 +50,7 @@
                       .clear
         - if current_user.entrepreneur?
           %li.dropdown.conversations
-            %a.dropdown-toggle{:href => '#', 'data-toggle' => 'dropdown'}
+            %a.dropdown-toggle{:href => '#', 'data-toggle' => 'dropdown', :rel => @unread_conversations_count}
               .left.icon{:class => @unread_conversations_count > 0 ? 'new' : 'up'}
               - if @unread_conversations_count > 0
                 .left.badge.badge-warning= @unread_conversations_count
