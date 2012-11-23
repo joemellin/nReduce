@@ -21,7 +21,7 @@ class CheckinsController < ApplicationController
 
   def new
     @checkin.startup = current_user.startup
-    set_disabled_states_and_add_measurement(@checkin)
+    initialize_and_add_instruments(@checkin)
     render :action => :edit
   end
 
@@ -33,8 +33,7 @@ class CheckinsController < ApplicationController
       save_completed_state_and_redirect_checkin(@checkin, was_completed)
     else
       @ua = false # don't record user action until they are successful
-      logger.info "ERRORS: #{@checkin.errors.full_messages}"
-      set_disabled_states_and_add_measurement(@checkin)
+      initialize_and_add_instruments(@checkin)
       render :action => :edit
     end
     @startup.launched! if params[:startup] && params[:startup][:launched].to_i == 1
@@ -42,7 +41,7 @@ class CheckinsController < ApplicationController
 
   def edit
     @startup ||= @checkin.startup
-    set_disabled_states_and_add_measurement(@checkin)
+    initialize_and_add_instruments(@checkin)
   end
 
   def update
@@ -51,8 +50,7 @@ class CheckinsController < ApplicationController
     if @checkin.update_attributes(params[:checkin])
       save_completed_state_and_redirect_checkin(@checkin, was_completed)
     else
-      logger.info "ERRORS: #{@checkin.errors.full_messages}"
-      set_disabled_states_and_add_measurement(@checkin)
+      initialize_and_add_instruments(@checkin)
       render :action => :edit
     end
     @startup.launched! if params[:startup] && params[:startup][:launched].to_i == 1
@@ -106,42 +104,25 @@ class CheckinsController < ApplicationController
 
   def load_current_checkin
     @checkin = @startup.current_checkin unless @startup.blank?
-    if Checkin.in_before_time_window? or Checkin.in_after_time_window?
+    if Checkin.in_time_window?
       # if no checkin, give them a new one
       if @checkin.blank?
         @checkin = Checkin.new
-      elsif @checkin.completed? and Checkin.in_before_time_window?
-        @checkin = Checkin.new
       # last week's checkin
-      elsif !@checkin.new_record? and (Checkin.prev_after_checkin > @checkin.created_at) and (Checkin.in_before_time_window? or Checkin.in_after_time_window?)
+      elsif !@checkin.new_record? and (Checkin.prev_checkin(offset) > @checkin.created_at) and Checkin.in_time_window?
         @checkin = Checkin.new
       end
     end
   end
 
-  def set_disabled_states_and_add_measurement(checkin)
-    @before_disabled = Checkin.in_before_time_window? ? false : true
-    @after_disabled = Checkin.in_after_time_window? ? false : true
-    if !checkin.new_record?
-      @before_disabled = true if checkin.created_at < Checkin.prev_before_checkin
-      @after_disabled = true if checkin.created_at < Checkin.prev_after_checkin
-    end
+  def initialize_and_add_instruments(checkin)
     @instrument = @startup.instruments.first || Instrument.new(:startup => @startup)
     @checkin.measurement = Measurement.new(:instrument => @instrument) if @checkin.measurement.blank?
     # Set startup as launched if they have established an instrument
     @checkin.startup.launched_at = Time.now unless @instrument.new_record?
-    @checkin.before_video = Video.new if @checkin.before_video.blank?
     @checkin.after_video = Video.new if @checkin.after_video.blank?
     # disable olark
     @recording_video = true
-
-    if Rails.env.development?
-      @before_disabled = true
-      @after_disabled = false
-      @show_before_experiment = true
-    else
-      @show_before_experiment = Checkin.show_checkin_experiment_for?(@startup.id) if @startup.present?
-    end
   end
 
   def load_obfuscated_checkin

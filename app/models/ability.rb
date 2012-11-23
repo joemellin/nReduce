@@ -30,11 +30,11 @@ class Ability
         end
         
         # Can start a checkin if in before or after time window and their startup owns checkin
-        can [:new, :create], Checkin if Checkin.in_after_time_window? or Checkin.in_before_time_window?
+        can [:new, :create], Checkin if Checkin.in_time_window?(user.startup.checkin_offset)
 
         # Can edit a checkin if in the before/after time window and they own it
         can [:edit, :update], Checkin do |checkin|
-          (Checkin.in_after_time_window? or Checkin.in_before_time_window?) and (checkin.startup_id == user.startup_id)
+          Checkin.in_time_window?(user.startup.checkin_offset) && (checkin.startup_id == user.startup_id)
         end
 
         can :first, Checkin if !user.account_setup?

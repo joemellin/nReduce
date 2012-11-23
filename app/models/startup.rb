@@ -150,6 +150,20 @@ class Startup < ActiveRecord::Base
     ObfuscateId.hide(Startup.nreduce_id)
   end
 
+  # Returns array for calculating checkin window offset [offset from day of week, duration]
+  def checkin_offset
+    if self.checkin_day.present? && self.time_zone.present?
+      # Calc offset from beginning of week + duration
+      [self.checkin_day.days + self.time_zone_offset, 24.hours]
+    else
+      Week.default_checkin_offset
+    end
+  end
+
+  def time_zone_offset
+    ActiveSupport::TimeZone[self.time_zone || Settings.default_time_zone].utc_offset
+  end
+
   def launched?
     !self.launched_at.blank?
   end
