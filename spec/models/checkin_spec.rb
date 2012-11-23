@@ -8,7 +8,7 @@ describe Checkin do
     @checkin = Checkin.new
     @checkin.user_id = @user.id
     @checkin.startup = @startup
-    @checkin.start_focus = 'Make awesome happen'
+    @checkin.goal = 'Make awesome happen'
     @checkin.before_video = Youtube.new(:youtube_url => 'http://www.youtube.com/watch?v=4vkqBfv8OMM')
     @valid_youtube_url = 'http://www.youtube.com/watch?v=4vkq0w0s1MM'
   end
@@ -28,20 +28,20 @@ describe Checkin do
   end
 
   it "should never change the timestamp on completed at date" do
-    @checkin.after_video = Youtube.new(:youtube_url => @valid_youtube_url)
-    @checkin.end_comments = 'Made it happen!'
+    @checkin.video = Youtube.new(:youtube_url => @valid_youtube_url)
+    @checkin.notes = 'Made it happen!'
     @checkin.save.should be_true
 
     completed_at = @checkin.completed_at
-    @checkin.after_video = Youtube.new(:youtube_url => 'http://www.youtube.com/watch?v=R72kxEmB3EE&feature=g-logo-xit')
+    @checkin.video = Youtube.new(:youtube_url => 'http://www.youtube.com/watch?v=R72kxEmB3EE&feature=g-logo-xit')
     @checkin.save.should be_true
 
     @checkin.completed_at.should == completed_at
   end
 
   it "should reset current checkin cache when new checkin is created" do
-    @checkin.after_video = Youtube.new(:youtube_url => @valid_youtube_url)
-    @checkin.end_comments = 'Made it happen!'
+    @checkin.video = Youtube.new(:youtube_url => @valid_youtube_url)
+    @checkin.notes = 'Made it happen!'
     @checkin.created_at = Checkin.prev_after_checkin + 2.days
     puts @checkin.save
     puts @checkin.inspect
@@ -55,7 +55,7 @@ describe Checkin do
       checkin2 = FactoryGirl.create(:completed_checkin, 
         :startup => @checkin.startup, 
         :before_video => Youtube.new(:youtube_url => 'http://www.youtube.com/watch?v=1230fdsanE'),
-        :after_video => Youtube.new(:youtube_url => 'http://www.youtube.com/watch?v=R723840sdfxE')
+        :video => Youtube.new(:youtube_url => 'http://www.youtube.com/watch?v=R723840sdfxE')
       )
       checkin2.valid?
       checkin2.save.should == true

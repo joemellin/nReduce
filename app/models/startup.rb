@@ -152,12 +152,14 @@ class Startup < ActiveRecord::Base
 
   # Returns array for calculating checkin window offset [offset from day of week, duration]
   def checkin_offset
+    return @checkin_offset if @checkin_offset.present?
     if self.checkin_day.present? && self.time_zone.present?
       # Calc offset from beginning of week + duration
-      [self.checkin_day.days + self.time_zone_offset, 24.hours]
+      @checkin_offset = [self.checkin_day.days + self.time_zone_offset, 24.hours]
     else
-      Week.default_checkin_offset
+      @checkin_offset = Week.default_checkin_offset
     end
+    @checkin_offset
   end
 
   def time_zone_offset

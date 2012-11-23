@@ -62,7 +62,7 @@ class CheckinsController < ApplicationController
 
     @checkin ||= Checkin.new
     @weekly_class = true
-    if params[:checkin].present? && params[:checkin][:start_focus].present? && params[:message].present?
+    if params[:checkin].present? && params[:checkin][:goal].present? && params[:message].present?
       @checkin.attributes = params[:checkin]
       @checkin.user = current_user
       if @checkin.save(:validate => false)
@@ -120,7 +120,7 @@ class CheckinsController < ApplicationController
     @checkin.measurement = Measurement.new(:instrument => @instrument) if @checkin.measurement.blank?
     # Set startup as launched if they have established an instrument
     @checkin.startup.launched_at = Time.now unless @instrument.new_record?
-    @checkin.after_video = Video.new if @checkin.after_video.blank?
+    @checkin.video = Video.new if @checkin.video.blank?
     # disable olark
     @recording_video = true
   end

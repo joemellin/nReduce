@@ -32,7 +32,7 @@
     %p{:style => 'margin-bottom: 0px'}
       After Video
     .span{:style => 'margin-left:-10px'}
-      = display_checkin_video(@checkin, :after_video, false, 600, 387).html_safe
+      = display_checkin_video(@checkin, :video, false, 600, 387).html_safe
 .row
   .span1
     %p &nbsp
@@ -40,7 +40,7 @@
     %p{:style => 'margin-top: 10px'}
       %small Goal for Week:
       / Can't seem to get auto-link to set target='_blank'
-    %h4= simple_format(auto_link(h(@checkin.start_focus), :all, :target => '_blank' ))
+    %h4= simple_format(auto_link(h(@checkin.goal), :all, :target => '_blank' ))
   .span2{:align => 'center', :style => 'padding-top: 8px'}
     - if current_user.startup_id == @checkin.startup_id
       / - if @checkin.awesome_count > 0
@@ -53,7 +53,7 @@
   .span4
     %p{:style => 'margin-top: 10px', :align => 'center'}
       %small Help Needed:
-    %h4= simple_format(auto_link(h(@checkin.end_comments), :all, :target => '_blank' ))
+    %h4= simple_format(auto_link(h(@checkin.notes), :all, :target => '_blank' ))
   .span1
     %p &nbsp
 .row{:style => 'margin-top: 15px'}
