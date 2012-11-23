@@ -129,8 +129,9 @@ class User < ActiveRecord::Base
       :comment => 'New comment',
       :meeting => 'Meeting reminder',
       :checkin => 'New checkin',
-      :relationship => 'Connection Requests',
-      :new_comment_for_post => 'New comment on your post'
+      :relationship => 'Connection requests',
+      :new_comment_for_post => 'New comment on your post',
+      :message => 'New private message'
     }
   end
 
