@@ -32,20 +32,9 @@ end
 #   runner "Checkin.email_startups_not_completed_checkin_yet"
 # end
 
-# Identify active/inactive teams after the 'after' checkin
-every :tuesday, :at => '4:30pm' do 
+# Identify active/inactive teams after the default checkin
+every :wednesday, :at => '12:30am' do 
   runner "Startup.identify_active_teams"
-end
-
-# Identify active/inactive teams after the 'before' checkin
-every :wednesday, :at => '4:30pm' do 
-  runner "Startup.identify_active_teams"
-end 
-
-  
-# Activate all teams who have completed join requirements (it's now for the prev week's class because a new class is started at 1pm)
-every :wednesday, :at => '2pm' do
-  runner "WeeklyClass.current_class.previous_class.activate_all_completed_startups"
 end
 
 # Clean out old session ids from ab tests

@@ -101,9 +101,9 @@ class Startup < ActiveRecord::Base
   def self.identify_active_teams
     weeks = []
     # Current week (so count if they've done before and we're in this week)
-    weeks << Week.integer_for_time(Checkin.prev_after_checkin, :after_checkin)
+    weeks << Week.integer_for_time(Checkin.prev_checkin_at, Week.default_checkin_offset)
     # Check previous full week
-    weeks << Week.integer_for_time(Checkin.prev_after_checkin - 1.week, :after_checkin)
+    weeks << Week.integer_for_time(Checkin.prev_checkin_at - 1.week, Week.default_checkin_offset)
     # And another week before that
     weeks << Week.previous(weeks.first)
     all_ids = Startup.all.map{|s| s.id }
