@@ -231,7 +231,7 @@ class Checkin < ActiveRecord::Base
     checkins = startup.checkins.order('created_at DESC')
     return arr if checkins.blank?
     # add blank elements at the beginning until they've done a checkin - start at end of prev after checkin
-    current_week = Checkin.week_integer_for_time(Checkin.prev_after_checkin)
+    current_week = Checkin.week_integer_for_time(Checkin.prev_checkin_at)
     checkins.each do |c|
       while current_week != c.week
         arr << [false, false]
