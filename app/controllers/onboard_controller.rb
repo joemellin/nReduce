@@ -3,8 +3,8 @@ class OnboardController < ApplicationController
   before_filter :load_requested_or_users_startup
 
   def show
-    @setup = true
-    @weekly_class = true
+    @onboard = true
+    @onboarding_step = params[:id].to_i
     render "step_#{params[:id]}"
   end
 
@@ -23,7 +23,6 @@ class OnboardController < ApplicationController
   def current_step
     @onboard = true
     @last_step = current_onboarding_step == Onboarding.num_onboarding_steps
-    @hide_background_image = true
     @hide_footer = true
     #@user = current_user
     # Check if user has completed
