@@ -30,10 +30,9 @@ class Checkin < ActiveRecord::Base
   after_destroy :reset_startup_checkin_cache
 
   validates_presence_of :startup_id
-  validates_presence_of :start_focus, :message => "can't be blank", :if => lambda { Checkin.in_before_time_window? }
-  validates_presence_of :before_video, :message => "can't be blank", :if => lambda { Checkin.in_before_time_window? }
-  validates_presence_of :after_video, :message => "can't be blank", :if =>  lambda { Checkin.in_after_time_window? }
-  validates_inclusion_of :accomplished, :in => [true, false], :message => "must be selected", :if => lambda { Checkin.in_after_time_window? }
+  validates_presence_of :start_focus, :message => "can't be blank"
+  validates_presence_of :after_video, :message => "can't be blank", :if =>  lambda { Checkin.in_time_window? }
+  validates_inclusion_of :accomplished, :in => [true, false], :message => "must be selected", :if => lambda { Checkin.in_time_window? }
   validate :next_week_checkin_is_valid
   #validate :check_video_urls_are_valid
   validate :measurement_is_present_if_launched
@@ -97,7 +96,6 @@ class Checkin < ActiveRecord::Base
     # Returns hash of {:startup_id => current_checkin}
   def self.current_checkin_for_startups(startups = [])
     return {} if startups.blank?
-    # next_checkin = Checkin.next_checkin_type_and_time
     if Checkin.in_after_time_window?
       checkins = Checkin.where(:startup_id => startups.map{|s| s.id }).where(['created_at > ?', Checkin.prev_after_checkin])
     else # if in before checkin or in the week after, get prev week's checkin start time
@@ -126,105 +124,66 @@ class Checkin < ActiveRecord::Base
     c_by_week
   end
 
-  def self.pct_complete_week
-    nc = Checkin.next_after_checkin
-    pc = Checkin.prev_after_checkin
+  def self.pct_complete_week(offset)
+    nc = Checkin.next_checkin_at(offset)
     return 100 if nc < Time.now
-    100 - (((nc - Time.now) / (nc - pc)) * 100).round
+    100 - (((nc - Time.now) / (nc - 1.week)) * 100).round
   end
 
-  def self.in_a_checkin_window?
-    self.in_before_time_window? or self.in_after_time_window?
-  end
-
-    # Returns true if in the time window where startups can do 'before' check-in
-  def self.in_before_time_window?
+    # Returns true if in the time window where startups can do their check-in
+  def self.in_time_window?(offset)
     # tues from 4pm - wed 4pm
     now = Time.now
-    next_before = Checkin.next_before_checkin
-    return true if now < next_before and now > (next_before - 24.hours)
+    next_checkin = Checkin.next_checkin_at(offset)
+    return true if now < next_checkin and now > (next_checkin - 24.hours)
     false
   end
 
-    # Returns true if in the time window where startups can do 'after' check-in
-  def self.in_after_time_window?
-    # monday from 4pm - tue 4pm
-    now = Time.now
-    next_after = Checkin.next_after_checkin
-    return true if now < next_after and now > (next_after - 24.hours)
-    false
-  end
-
-    # Returns Time of next before checkin: Tue 4pm - Wed 4pm
-  def self.next_after_checkin
+    # Returns Time of next before checkin given offset
+  def self.next_checkin_at(offset)
     t = Time.now
-    # Are we in Mon or tue? - if so next before checkin is this week
-    if t.monday? or (t.tuesday? and t.hour < 16)
-      return t.beginning_of_week + 1.day + 16.hours
-    else
-      # Otherwise it's next week
-      return t.beginning_of_week + 1.week + 1.day + 16.hours
-    end
+    return Checkin.week_start_for_time(t, offset) + (1.week - offset.last)
+    # # Are we in Mon or tue? - if so next before checkin is this week
+    # if t.monday? or (t.tuesday? and t.hour < 16)
+    #   return t.beginning_of_week + 1.day + 16.hours
+    # else
+    #   # Otherwise it's next week
+    #   return t.beginning_of_week + 1.week + 1.day + 16.hours
+    # end
   end
 
-   # Returns Time of next after checkin: Mon 4pm - Tue 4pm
-  def self.next_before_checkin
-    t = Time.now
-    # Are we in Mon or tue? - if so next before checkin is this week
-    if t.monday? or t.tuesday? or (t.wednesday? and t.hour < 16)
-      t.beginning_of_week + 2.days + 16.hours
-    else
-      # Otherwise it's next week
-      t.beginning_of_week + 1.week + 2.days + 16.hours
-    end
+  def self.prev_checkin_at(offset)
+    self.next_checkin_at(offset) - 1.week
   end
 
-  def self.prev_after_checkin
-    self.next_after_checkin - 1.week
-  end
-
-  def self.prev_before_checkin
-    self.next_before_checkin - 1.week
-  end
-
-  # Returns an array with the next checkin type and time, ex: [:before, Time obj]
-  def self.next_checkin_type_and_time
-    #before = Checkin.next_before_checkin
-    after = Checkin.next_after_checkin
-    #if before < after
-    #  {:type => :before, :time => before}
-    #else
-    {:type => :after, :time => after}
-    #end
-  end
-
-  # Pass in a timestamp and this will return the start (4pm on Tue) of that checkin's week
-  def self.week_start_for_time(time)
+  # Pass in a timestamp and this will return the start (default midnight on Tue) of that checkin's week
+  def self.week_start_for_time(time, offset)
     # reset to tuesday
-    if time.sunday? or time.monday? or (time.tuesday? and time.hour < 16)
-      time = time.beginning_of_week - 5.days
+    week_start = time.beginning_of_week + offset.first + offset.last
+    if time < week_start
+      # We're in the offset time, so use last week
+      puts 'before'
+      return week_start - 7.days
     else
-      time = time.beginning_of_day - time.days_to_week_start.days + 2.days
+      return week_start
     end
-    time += 16.hours # set it at 4pm
-    time
   end
 
   # Pass in a timestamp and this will return the current week description for that timestamp
   # ex: Jul 5 to Jul 12
-  def self.week_for_time(time)
+  def self.week_for_time(time, offset)
     # reset to tuesday
-    beginning_of_week = Checkin.week_start_for_time(time)
+    beginning_of_week = Checkin.week_start_for_time(time, offset)
     Week.for_time(beginning_of_week)
   end
 
-  def self.week_integer_for_time(time)
-    Week.integer_for_time(Checkin.week_start_for_time(time))
+  def self.week_integer_for_time(time, offset)
+    Week.integer_for_time(Checkin.week_start_for_time(time, offset))
   end
 
   # Current week for the after checkin
-  def self.current_week
-    Week.integer_for_time(Time.now, :after_checkin)
+  def self.current_week(offset)
+    Week.integer_for_time(Time.now, offset)
   end
 
   # Pass in a week integer (ex: 20126) and this will pass back the week before, 20125
@@ -404,7 +363,7 @@ class Checkin < ActiveRecord::Base
     c = Checkin.new
     c.startup_id = self.startup_id
     c.user_id = self.user_id
-    c.week = Checkin.week_integer_for_time(Checkin.next_before_checkin)
+    c.week = Checkin.week_integer_for_time(Checkin.next_checkin_at(c.startup.checkin_offset))
     c.start_focus = self.next_week_focus
     c.before_video = Youtube.new(:youtube_url => self.next_week_youtube_url) if self.next_week_youtube_url.present?
     c.save(:validate => false) # ignore errors for now
