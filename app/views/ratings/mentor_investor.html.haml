@@ -57,10 +57,10 @@
                 .span4{:style => 'margin-left: 6px'}
                   .name.left= link_to startup.name, startup
                   .goal.left
-                    - if checkin.start_focus.blank?
+                    - if checkin.goal.blank?
                       %p
                     - else
-                      = truncate(checkin.start_focus, :length => 30)
+                      = truncate(checkin.goal, :length => 30)
                   .clear
                 .span1
                   - if checkin.accomplished.nil?
@@ -87,7 +87,7 @@
                 .span4
                   .help
                     .right= link_to '<i class="icon-film"></i> View'.html_safe, checkin, :class => 'btn'
-                    .left= truncate(checkin.end_comments, :length => 38)
+                    .left= truncate(checkin.notes, :length => 38)
                     .clear
   - else
     %br/

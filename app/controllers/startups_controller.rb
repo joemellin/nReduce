@@ -98,7 +98,7 @@ class StartupsController < ApplicationController
     @can_view_checkin_details = can? :read, Checkin.new(:startup => @startup)
     @num_checkins = @startup.checkins.count
     @num_awesomes = @startup.awesomes.count
-    @checkins = @startup.checkins.ordered.includes(:before_video, :after_video)
+    @checkins = @startup.checkins.ordered.includes(:before_video, :video)
     if current_user.entrepreneur?
       @entity = current_user.startup unless current_user.startup.blank?
     else

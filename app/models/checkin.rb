@@ -4,7 +4,7 @@ class Checkin < ActiveRecord::Base
   belongs_to :user # the user logged in who created check-in
   belongs_to :measurement
   belongs_to :before_video, :class_name => 'Video', :dependent => :destroy
-  belongs_to :after_video, :class_name => 'Video', :dependent => :destroy
+  belongs_to :video, :class_name => 'Video', :dependent => :destroy
   has_many :comments, :dependent => :destroy
   has_many :awesomes, :as => :awsm, :dependent => :destroy
   has_many :notifications, :as => :attachable
@@ -13,14 +13,14 @@ class Checkin < ActiveRecord::Base
   attr_accessor :next_week_focus
   attr_accessor :next_week_youtube_url
 
-  attr_accessible :start_focus, :start_why, :start_video_url, :end_video_url, :end_comments, 
+  attr_accessible :goal, :start_why, :start_video_url, :end_video_url, :notes, 
     :startup_id, :start_comments, :startup, :measurement_attributes, 
-    :before_video_attributes, :after_video_attributes, :accomplished,
+    :before_video_attributes, :video_attributes, :accomplished,
     :next_week_focus, :next_week_youtube_url
     
   accepts_nested_attributes_for :measurement, :reject_if => proc {|attributes| attributes.all? {|k,v| v.blank?} }, :allow_destroy => true
   accepts_nested_attributes_for :before_video, :reject_if => proc {|attributes| attributes.all? {|k,v| v.blank?} }, :allow_destroy => true
-  accepts_nested_attributes_for :after_video, :reject_if => proc {|attributes| attributes.all? {|k,v| v.blank?} }, :allow_destroy => true
+  accepts_nested_attributes_for :video, :reject_if => proc {|attributes| attributes.all? {|k,v| v.blank?} }, :allow_destroy => true
 
   after_validation :check_submitted_completed_times
   before_save :notify_user
@@ -30,8 +30,8 @@ class Checkin < ActiveRecord::Base
   after_destroy :reset_startup_checkin_cache
 
   validates_presence_of :startup_id
-  validates_presence_of :start_focus, :message => "can't be blank"
-  validates_presence_of :after_video, :message => "can't be blank", :if =>  lambda { Checkin.in_time_window? }
+  validates_presence_of :goal, :message => "can't be blank"
+  validates_presence_of :video, :message => "can't be blank", :if =>  lambda { Checkin.in_time_window? }
   validates_inclusion_of :accomplished, :in => [true, false], :message => "must be selected", :if => lambda { Checkin.in_time_window? }
   validate :next_week_checkin_is_valid
   #validate :check_video_urls_are_valid
@@ -65,7 +65,9 @@ class Checkin < ActiveRecord::Base
   end
 
     # Will queue up emails to be sent to all startups who haven't checked in yet
+    # TODO - need to adapt to new system
   def self.email_startups_not_completed_checkin_yet
+    return true
     ids = Checkin.where(:week => Week.previous(Checkin.current_week)).map{|c| c.startup_id }
     completed_this_week = Checkin.where(:week => Checkin.current_week).completed.map{|c| c.startup_id }
     not_completed = (ids - completed_this_week).shuffle
@@ -96,7 +98,8 @@ class Checkin < ActiveRecord::Base
     # Returns hash of {:startup_id => current_checkin}
   def self.current_checkin_for_startups(startups = [])
     return {} if startups.blank?
-    if Checkin.in_after_time_window?
+    return {}
+    if Checkin.in_time_window?
       checkins = Checkin.where(:startup_id => startups.map{|s| s.id }).where(['created_at > ?', Checkin.prev_after_checkin])
     else # if in before checkin or in the week after, get prev week's checkin start time
       start_time = Checkin.prev_after_checkin - 24.hours
@@ -142,7 +145,7 @@ class Checkin < ActiveRecord::Base
     # Returns Time of next before checkin given offset
   def self.next_checkin_at(offset)
     t = Time.now
-    return Checkin.week_start_for_time(t, offset) + (1.week - offset.last)
+    week_start = Checkin.week_start_for_time(t, offset) + (1.week - offset.last)
     # # Are we in Mon or tue? - if so next before checkin is this week
     # if t.monday? or (t.tuesday? and t.hour < 16)
     #   return t.beginning_of_week + 1.day + 16.hours
@@ -162,7 +165,6 @@ class Checkin < ActiveRecord::Base
     week_start = time.beginning_of_week + offset.first + offset.last
     if time < week_start
       # We're in the offset time, so use last week
-      puts 'before'
       return week_start - 7.days
     else
       return week_start
@@ -192,31 +194,31 @@ class Checkin < ActiveRecord::Base
   end
 
   # Queues up 'before' email to be sent to all active users
-  def self.send_before_checkin_email
-    users_with_startups = User.where('email IS NOT NULL').where(:startup_id => Startup.select('id').account_complete.map{|s| s.id })
+  # def self.send_before_checkin_email
+  #   users_with_startups = User.where('email IS NOT NULL').where(:startup_id => Startup.select('id').account_complete.map{|s| s.id })
 
-    users_with_startups.each do |u|
-      Resque.enqueue(Checkin, :before, u.id) if u.account_setup? && u.email_for?('docheckin')
-    end
-  end
+  #   users_with_startups.each do |u|
+  #     Resque.enqueue(Checkin, :before, u.id) if u.account_setup? && u.email_for?('docheckin')
+  #   end
+  # end
 
   # Queues up 'after' email to be sent to all active users
-  def self.send_after_checkin_email
-    users_with_startups = User.where('email IS NOT NULL').where(:startup_id => Startup.select('id').account_complete.map{|s| s.id })
+  # checkin type either :checkin or :checkin_now
+  def self.send_checkin_email(checkin_type = :checkin)
+    day_of_week = Time.now.wday
+    users_with_startups = User.where('email IS NOT NULL').where(:startup_id => Startup.select('id').where(:checkin_day => day_of_week).account_complete.map{|s| s.id })
 
     users_with_startups.each do |u|
-      Resque.enqueue(Checkin, :after, u.id) if u.account_setup? && u.email_for?('docheckin')
+      Resque.enqueue(Checkin, checkin_type, u.id) if u.account_setup? && u.email_for?('docheckin')
     end
   end
 
   # Mails checkin message
-  # Checkin type can be either :before, :after
+  # Checkin type can be either :checkin or :checkin_now
   def self.perform(checkin_type, user_id)
-    if checkin_type.to_sym == :before
-      UserMailer.before_checkin_reminder(User.find(user_id)).deliver
-    elsif checkin_type.to_sym == :after
+    if checkin_type.to_sym == :checkin
       UserMailer.after_checkin_reminder(User.find(user_id)).deliver
-    elsif checkin_type.to_sym == :after_checkin_now
+    elsif checkin_type.to_sym == :checkin_now
       UserMailer.checkin_now(User.find(user_id)).deliver
     end
   end
@@ -268,7 +270,7 @@ class Checkin < ActiveRecord::Base
 
   # Takes youtube urls and converts to our new db-backed format (and uploads to vimeo)
   def convert_to_new_video_format
-    return true if self.before_video.present? && self.after_video.present?
+    return true if self.before_video.present? && self.video.present?
     if self.start_video_url.present? && self.before_video.blank?
       ext_id = Youtube.id_from_url(self.start_video_url)
       y = Youtube.where(:external_id => ext_id).first
@@ -282,17 +284,17 @@ class Checkin < ActiveRecord::Base
         puts "Couldn't save before video: #{y.errors.full_messages}"
       end
     end
-    if self.end_video_url.present? && self.after_video.blank?
+    if self.end_video_url.present? && self.video.blank?
       ext_id = Youtube.id_from_url(self.end_video_url)
       y = Youtube.where(:external_id => ext_id).first
       y ||= Youtube.new
       y.external_id = ext_id
       y.user = self.user
       if y.save
-        self.after_video = y
+        self.video = y
         self.save(:validate => false)
       else
-        puts "Couldn't save after video: #{y.errors.full_messages}"
+        puts "Couldn't save video: #{y.errors.full_messages}"
       end
     end
     true
@@ -305,7 +307,7 @@ class Checkin < ActiveRecord::Base
   end
 
   def time_label
-    Checkin.week_for_time(self.created_at || Time.now)
+    Checkin.week_for_time(self.created_at || Time.now, self.startup.checkin_offset)
   end
 
   def time_window
@@ -322,12 +324,12 @@ class Checkin < ActiveRecord::Base
 
   # Returns true if the 'before' section of the checkin was completed
   def before_completed?
-    !self.start_focus.blank? and (!self.start_video_url.blank? || !self.before_video.blank?)
+    !self.goal.blank?
   end
 
   # Returns true if the 'after' section of the checkin was completed
   def after_completed?
-    !self.end_video_url.blank? || !self.after_video.blank?
+    !self.end_video_url.blank? || !self.video.blank?
   end
 
   def self.video_url_is_unique?(url)
@@ -364,7 +366,7 @@ class Checkin < ActiveRecord::Base
     c.startup_id = self.startup_id
     c.user_id = self.user_id
     c.week = Checkin.week_integer_for_time(Checkin.next_checkin_at(c.startup.checkin_offset))
-    c.start_focus = self.next_week_focus
+    c.goal = self.next_week_focus
     c.before_video = Youtube.new(:youtube_url => self.next_week_youtube_url) if self.next_week_youtube_url.present?
     c.save(:validate => false) # ignore errors for now
     true
