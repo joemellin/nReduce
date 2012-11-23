@@ -1,7 +1,7 @@
 - @conversation_statuses.each do |cs|
   - conversation = cs.conversation
   - latest_message = @latest_message_by_conversation[conversation.id]
-  .details{:class => cs.unread? ? 'new' : '', :rel => url_for(conversation)}
+  .details{:class => cs.unread? ? 'new' : '', :rel => url_for(conversation), :id => "conversation_#{conversation.id}_details"}
     .right
       .time= time_for_conversation(conversation.updated_at)
     -# If more than two participants show startup logo

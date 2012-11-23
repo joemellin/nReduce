@@ -2,4 +2,6 @@ $(".conversation").replaceWith("#{escape_javascript(render('conversations/conver
 
 $('.conversation #message_content').focus();
 
+$(".conversations .list #conversation_#{@conversation.id}_details").removeClass('new');
+
 scrollConversationToBottom();

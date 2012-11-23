@@ -57,14 +57,30 @@ $ ->
 
   # Mark notifications as read after clicking on menu item
   $('.notifications .dropdown-toggle').click ->
-    $.post('/notifications/mark_all_as_read') if parseInt($(this).attr('rel')) != 0
+    if parseInt($(this).attr('rel')) != 0
+      $.post('/notifications/mark_all_as_read', ->
+        $('.notifications .dropdown-toggle .icon').addClass('down')
+        $('.notifications .dropdown-toggle .icon').attr('rel', 'up')
+        $('.notifications .dropdown-toggle .badge').hide()
+      )
+
 
   # mark messages as seen
   $('.conversations .dropdown-toggle').click ->
-    $.post('/messages/mark_all_as_seen') if parseInt($(this).attr('rel')) != 0
+    if parseInt($(this).attr('rel')) != 0
+      $.post('/messages/mark_all_as_seen', ->
+        $('.conversation .dropdown-toggle .icon').addClass('down')
+        $('.conversations .dropdown-toggle .icon').attr('rel', 'up')
+        $('.conversations .dropdown-toggle .badge').hide()
+      )
 
   $('.relationship_requests .dropdown-toggle').click ->
-    $.post('/relationships/mark_all_as_seen') if parseInt($(this).attr('rel')) != 0
+    if parseInt($(this).attr('rel')) != 0
+      $.post('/relationships/mark_all_as_seen', ->
+        $('.relationship_requests .dropdown-toggle .icon').addClass('down')
+        $('.relationship_requests .dropdown-toggle .icon').attr('rel', 'up')
+        $('.relationship_requests .dropdown-toggle .badge').hide()
+      )
 
 
   $('.notifications .dropdown-toggle .icon, .relationship_requests .dropdown-toggle .icon, .conversations .dropdown-toggle .icon').mouseover ->
