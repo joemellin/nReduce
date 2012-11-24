@@ -67,7 +67,7 @@ class RelationshipsController < ApplicationController
 
     @show_mentor_message = true if current_user.roles?(:nreduce_mentor) && no_startups == true
 
-    @checkin_window = Checkin.in_time_window?(@startup ? @startup.checkin_offset : Week.default_checkin_offset) ? true : false
+    @checkin_window = Checkin.in_time_window?(@startup ? @startup.checkin_offset : Checkin.default_offset) ? true : false
 
     store_users_by_ids(User.where(:startup_id => @startups.map{|s| s.id }))
     store_users_by_startup_id(@users_by_id.map{|id, user| user })

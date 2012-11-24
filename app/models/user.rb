@@ -634,12 +634,6 @@ class User < ActiveRecord::Base
     false
   end
 
-  def assign_weekly_class!
-    self.weekly_class = WeeklyClass.current_class
-    save
-    #self.weekly_class.save # updates clusters on weekly class
-  end
-
   def geocode_location
     return true if Rails.env.test? || (self.location.blank? && self.current_sign_in_ip.blank?) || (!self.location_changed? and !self.lat.blank?)
     begin
@@ -651,17 +645,12 @@ class User < ActiveRecord::Base
     end
   end
 
-  protected
-
-  # sends notifications of weekly class that this person has joined
-  def notify_classmates_of_new_team
-    # don't notify if this person is not an entrepreneur
-    # return true unless self.entrepreneur?
-    # # don't notify if they are not in this week's current class
-    # return true unless self.weekly_class.present? && WeeklyClass.current_class == self.weekly_class && self.startup.present?
-    # Notification.create_for_new_team_joined(self.startup)
-    true
+  def assign_weekly_class!
+    self.weekly_class = WeeklyClass.current_class
+    save
   end
+
+  protected
 
   def reset_cached_elements
     Cache.delete(['profile_c', self])
@@ -677,7 +666,7 @@ class User < ActiveRecord::Base
     if self.entrepreneur? && self.teammate_emails.present?
       self.teammate_emails.each do |e|
         next if e.blank?
-        Invite.create(:email => e, :weekly_class_id => self.weekly_class_id, :from_id => self.id, :startup_id => self.startup_id, :invite_type => Invite::TEAM_MEMBER)
+        Invite.create(:email => e, :from_id => self.id, :startup_id => self.startup_id, :invite_type => Invite::TEAM_MEMBER)
       end
     end
     true

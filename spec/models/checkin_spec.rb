@@ -51,7 +51,7 @@ describe Checkin do
     
     @checkin.startup.current_checkin.should == @checkin
 
-    Timecop.travel(Week.next_window_for(:after_checkin).first + 10.minutes) do
+    Timecop.travel(Checkin.next_window_for(:after_checkin).first + 10.minutes) do
       checkin2 = FactoryGirl.create(:completed_checkin, 
         :startup => @checkin.startup, 
         :before_video => Youtube.new(:youtube_url => 'http://www.youtube.com/watch?v=1230fdsanE'),

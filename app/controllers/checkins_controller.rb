@@ -104,12 +104,13 @@ class CheckinsController < ApplicationController
 
   def load_current_checkin
     @checkin = @startup.current_checkin unless @startup.blank?
-    if Checkin.in_time_window?
+    in_time_window = Checkin.in_time_window?(@startup.checkin_offset)
+    if in_time_window
       # if no checkin, give them a new one
       if @checkin.blank?
         @checkin = Checkin.new
       # last week's checkin
-      elsif !@checkin.new_record? and (Checkin.prev_checkin(offset) > @checkin.created_at) and Checkin.in_time_window?
+      elsif !@checkin.new_record? and (Checkin.prev_checkin(offset) > @checkin.created_at) and in_time_window
         @checkin = Checkin.new
       end
     end
