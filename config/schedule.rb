@@ -28,9 +28,9 @@ every 24.hours, :at => '12:01am' do
   runner "Checkin.send_checkin_email"
 end
 
-# every 24.hours, :at => '11:25pm' do
-#   runner "Checkin.email_startups_not_completed_checkin_yet"
-# end
+every 24.hours, :at => '11:25pm' do
+  runner "Checkin.email_startups_not_completed_checkin_yet"
+end
 
 # Identify active/inactive teams after the default checkin
 every :wednesday, :at => '12:30am' do 
