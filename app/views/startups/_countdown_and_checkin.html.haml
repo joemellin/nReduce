@@ -1,11 +1,11 @@
 - startup ||= nil
-- next_checkin_at = Week.next_window_for(startup.checkin_offset)
+- next_checkin_ends_at = Checkin.next_window_for(startup.checkin_offset).last
 .countdown
   - unless startup.blank?
     - current_checkin = startup.current_checkin
     - if current_checkin.present?
       - if Checkin.in_time_window?(startup.checkin_offset)
-        .right.time_left= hours_minutes_until(next_checkin_at.last)
+        .right.time_left= hours_minutes_until(next_checkin_ends_at)
       .left.team_details
         .week Team #{startup.name}
         - startup.team_members.each do |tm|
@@ -20,8 +20,9 @@
             .navbar-inner
               %ul.nav
                 - 6.downto(1) do |i|
-                  - past = Time.now > (next_checkin_at.first - (i + 1).days)
-                  %li.day{:class => past ? 'past' : 'future'}= link_to pluralize(i, 'Day'), '#'
+                  - at = next_checkin_ends_at - (i + 1).days
+                  - past = Time.now > at
+                  %li.day{:class => past ? 'past' : 'future'}= link_to at.strftime('%a'), '#'
                   %li.divider-vertical{:class => past ? 'past' : 'future'}
                 %li.day
               .progress

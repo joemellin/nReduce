@@ -1,40 +1,4 @@
 class Week
-  # THIS IS REALLY A DIFFERENT CLASS - TIME WINDOWS
-  
-  def self.default_checkin_offset
-    # [ offset from beginning of week, duration of time window ]
-    [1.day, 24.hours]
-  end
-
-     # Returns true if time given is in the time window. If no time given, defaults to now
-  def self.in_time_window?(offset, time = nil)
-    time ||= Time.now
-    next_window = Week.next_window_for(offset, true)
-    return true if time > next_window.first && time < next_window.last
-    false
-  end
-
-    # Returns array of [start_time, end_time] for this type
-  def self.next_window_for(offset, dont_skip_if_in_window = false)
-    t = Time.now
-    beginning_of_week = t.beginning_of_week
-    window_start = beginning_of_week + offset.first
-    # We're after the beginning of this time window, so add a week unless we're suppressing that
-    window_start += 1.week if (t > window_start) && !dont_skip_if_in_window
-    [window_start, window_start + offset.last]
-  end
-
-  def self.prev_window_for(type)
-    Week.next_window_for(type).map{|t| t - 1.week }
-  end
-
-  # Returns string description of the next time window for this type, ex: Jul 5 to Jul 12 for next class
-  def self.desc_for_next_of_type(type)
-    Week.for_time(Week.next_window_for(type).first)
-  end
-
-  # WEEK STUFF
-
     # Pass in a timestamp and this will return the current week description for that timestamp
   # ex: Jul 5 to Jul 12
   def self.for_time(beginning_of_week)

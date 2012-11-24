@@ -1,7 +1,7 @@
 class Startup < ActiveRecord::Base
   obfuscate_id :spin => 29406582
   include Connectable # methods for relationships
-  has_paper_trail :ignore => [:setup, :cached_industry_list, :active]
+  has_paper_trail :ignore => [:setup, :cached_industry_list, :active, :checkin_day, :time_zone]
   belongs_to :main_contact, :class_name => 'User'
   belongs_to :meeting
   belongs_to :intro_video, :class_name => 'Video', :dependent => :destroy
@@ -93,24 +93,12 @@ class Startup < ActiveRecord::Base
   #   end
   # end
 
-  # def to_param
-  #   "#{ObfuscateId.hide(self.id)}-#{self.name.to_url}"
-  # end
-
-  # Searches all teams and identifies who has checked in the last two weeks - they are marked as active. All others are inactive
+  # Searches all teams and identifies who has checked in the last two weeks (starting at beginning of this current week) - they are marked as active. All others are inactive
   def self.identify_active_teams
-    weeks = []
-    # Current week (so count if they've done before and we're in this week)
-    weeks << Week.integer_for_time(Checkin.prev_checkin_at, Week.default_checkin_offset)
-    # Check previous full week
-    weeks << Week.integer_for_time(Checkin.prev_checkin_at - 1.week, Week.default_checkin_offset)
-    # And another week before that
-    weeks << Week.previous(weeks.first)
     all_ids = Startup.all.map{|s| s.id }
-
     # Count all startups who have checked in last two weeks. If count is 0, they are inactive
     active = []
-    Checkin.where(:week => weeks).group(:startup_id).count.each do |startup_id, num_checkins|
+    Checkin.where(['created_at > ?', Time.now.beginning_of_week - 2.weeks]).group(:startup_id).count.each do |startup_id, num_checkins|
       active << startup_id if num_checkins > 0
     end
     # Update all startups' state who are not already set correctly
@@ -150,12 +138,12 @@ class Startup < ActiveRecord::Base
     ObfuscateId.hide(Startup.nreduce_id)
   end
 
-  # Returns array for calculating checkin window offset [offset from day of week, duration]
+  # Returns array for calculating checkin window offset [offset of day it starts from day of week, duration]
   def checkin_offset
     return @checkin_offset if @checkin_offset.present?
     if self.checkin_day.present? && self.time_zone.present?
-      # Calc offset from beginning of week + duration
-      @checkin_offset = [self.checkin_day.days + self.time_zone_offset, 24.hours]
+      # Calc offset from beginning of week + duration - 1.day
+      @checkin_offset = [self.checkin_day.days - 1.day + self.time_zone_offset, 24.hours]
     else
       @checkin_offset = Week.default_checkin_offset
     end
@@ -299,6 +287,10 @@ class Startup < ActiveRecord::Base
       end
     end
     [completed, total]
+  end
+
+  def checkin_day_human
+    Date::DAYNAMES[self.checkin_day]
   end
 
      # Returns true if mentor & investor elements all pass

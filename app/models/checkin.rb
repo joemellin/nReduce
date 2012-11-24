@@ -127,72 +127,6 @@ class Checkin < ActiveRecord::Base
     c_by_week
   end
 
-  def self.pct_complete_week(offset)
-    nc = Checkin.next_checkin_at(offset)
-    return 100 if nc < Time.now
-    100 - (((nc - Time.now) / (nc - 1.week)) * 100).round
-  end
-
-    # Returns true if in the time window where startups can do their check-in
-  def self.in_time_window?(offset)
-    # tues from 4pm - wed 4pm
-    now = Time.now
-    next_checkin = Checkin.next_checkin_at(offset)
-    return true if now < next_checkin and now > (next_checkin - 24.hours)
-    false
-  end
-
-    # Returns Time of next before checkin given offset
-  def self.next_checkin_at(offset)
-    t = Time.now
-    week_start = Checkin.week_start_for_time(t, offset) + (1.week - offset.last)
-    # # Are we in Mon or tue? - if so next before checkin is this week
-    # if t.monday? or (t.tuesday? and t.hour < 16)
-    #   return t.beginning_of_week + 1.day + 16.hours
-    # else
-    #   # Otherwise it's next week
-    #   return t.beginning_of_week + 1.week + 1.day + 16.hours
-    # end
-  end
-
-  def self.prev_checkin_at(offset)
-    self.next_checkin_at(offset) - 1.week
-  end
-
-  # Pass in a timestamp and this will return the start (default midnight on Tue) of that checkin's week
-  def self.week_start_for_time(time, offset)
-    # reset to tuesday
-    week_start = time.beginning_of_week + offset.first + offset.last
-    if time < week_start
-      # We're in the offset time, so use last week
-      return week_start - 7.days
-    else
-      return week_start
-    end
-  end
-
-  # Pass in a timestamp and this will return the current week description for that timestamp
-  # ex: Jul 5 to Jul 12
-  def self.week_for_time(time, offset)
-    # reset to tuesday
-    beginning_of_week = Checkin.week_start_for_time(time, offset)
-    Week.for_time(beginning_of_week)
-  end
-
-  def self.week_integer_for_time(time, offset)
-    Week.integer_for_time(Checkin.week_start_for_time(time, offset))
-  end
-
-  # Current week for the after checkin
-  def self.current_week(offset)
-    Week.integer_for_time(Time.now, offset)
-  end
-
-  # Pass in a week integer (ex: 20126) and this will pass back the week before, 20125
-  def self.previous_week(week)
-    Week.previous(week)
-  end
-
   # Queues up 'before' email to be sent to all active users
   # def self.send_before_checkin_email
   #   users_with_startups = User.where('email IS NOT NULL').where(:startup_id => Startup.select('id').account_complete.map{|s| s.id })
@@ -231,7 +165,7 @@ class Checkin < ActiveRecord::Base
     checkins = startup.checkins.order('created_at DESC')
     return arr if checkins.blank?
     # add blank elements at the beginning until they've done a checkin - start at end of prev after checkin
-    current_week = Checkin.week_integer_for_time(Checkin.prev_checkin_at)
+    current_week = Checkin.week_integer_for_time(Checkin.prev_checkin_at, startup.checkin_offset)
     checkins.each do |c|
       while current_week != c.week
         arr << [false, false]
@@ -306,14 +240,6 @@ class Checkin < ActiveRecord::Base
     self.save(:validate => false) # don't require validations in case we're during check-in window with requirements
   end
 
-  def time_label
-    Checkin.week_for_time(self.created_at || Time.now, self.startup.checkin_offset)
-  end
-
-  def time_window
-    Week.window_for_integer(self.week, :after_checkin)
-  end
-
   def submitted?
     !submitted_at.blank?
   end
@@ -340,7 +266,7 @@ class Checkin < ActiveRecord::Base
     # Assigns week for this checkin, ex: 20125 is week 5 of 2012
     # uses created at date, or if not yet saved, current time
   def assign_week
-    self.week ||= Checkin.week_integer_for_time(self.created_at || Time.now)
+    self.week ||= Checkin.week_integer_for_time(self.created_at || Time.now, self.startup.checkin_offset)
     true
   end
 
@@ -357,6 +283,93 @@ class Checkin < ActiveRecord::Base
     success
   end
 
+  ####################################
+  #
+  # METHODS FOR TIME CALCULATION
+  #
+  #
+
+  # Default offset is a Monday checkin (due at end of day on Monday)
+  def self.default_offset
+    # [ offset from beginning of week, duration of time window ]
+    [1.day, 24.hours]
+  end
+
+  def self.pct_complete_week(offset)
+    nc = Checkin.next_checkin_at(offset)
+    return 100 if nc < Time.now
+    100 - (((nc - Time.now) / (nc - (nc - 1.week))) * 100).round
+  end
+
+  # Returns time of next checkin deadline
+  def self.next_checkin_at(offset)
+    t = Time.now
+    week_start = Checkin.week_start_for_time(t, offset) + 1.week
+  end
+
+  # Returns time when prev checkin was over
+  def self.prev_checkin_at(offset)
+    self.next_checkin_at(offset) - 1.week
+  end
+
+  # Pass in a timestamp and this will return the start (default midnight on Tue) of that checkin's week
+  def self.week_start_for_time(time, offset)
+    # reset to tuesday
+    week_start = time.beginning_of_week + offset.first + offset.last
+    if time < week_start
+      # We're in the offset time, so use last week
+      return week_start - 7.days
+    else
+      return week_start
+    end
+  end
+
+  # Pass in a timestamp and this will return the current week description for that timestamp
+  # ex: Jul 5 to Jul 12
+  def self.week_for_time(time, offset)
+    # reset to tuesday
+    beginning_of_week = Checkin.week_start_for_time(time, offset)
+    Week.for_time(beginning_of_week)
+  end
+
+  # Given a time, returns its corresponding integer (ex: 201214)
+  def self.week_integer_for_time(time, offset)
+    Week.integer_for_time(Checkin.week_start_for_time(time, offset))
+  end
+
+  # Current week for the checkin
+  def self.current_week(offset)
+    Week.integer_for_time(Time.now, offset)
+  end
+
+      # Returns true if time given is in the time window. If no time given, defaults to now
+  def self.in_time_window?(offset, time = nil)
+    time ||= Time.now
+    next_window = Checkin.next_window_for(offset, true)
+    return true if time > next_window.first && time < next_window.last
+    false
+  end
+
+    # Returns array of [start_time, end_time] for this type
+  def self.next_window_for(offset, dont_skip_if_in_window = false)
+    t = Time.now
+    beginning_of_week = t.beginning_of_week
+    window_start = beginning_of_week + offset.first
+    # We're after the beginning of this time window, so add a week unless we're suppressing that
+    window_start += 1.week if (t > window_start) && !dont_skip_if_in_window
+    [window_start, window_start + offset.last]
+  end
+
+  # Returns label string - ex: Nov 14 - 20th
+  def time_label
+    Checkin.week_for_time(self.created_at || Time.now, self.startup.checkin_offset)
+  end
+
+  # Returns time window for this checkin
+  def time_window
+    Week.window_for_integer(self.week, self.startup.checkin_offset)
+  end
+
   protected
 
   def create_next_week_checkin
@@ -365,7 +378,7 @@ class Checkin < ActiveRecord::Base
     c = Checkin.new
     c.startup_id = self.startup_id
     c.user_id = self.user_id
-    c.week = Checkin.week_integer_for_time(Checkin.next_checkin_at(c.startup.checkin_offset))
+    c.week = Checkin.week_integer_for_time(Checkin.next_checkin_at(c.startup.checkin_offset), c.startup.checkin_offset)
     c.goal = self.next_week_focus
     c.before_video = Youtube.new(:youtube_url => self.next_week_youtube_url) if self.next_week_youtube_url.present?
     c.save(:validate => false) # ignore errors for now

@@ -170,7 +170,7 @@ class WeeklyClass < ActiveRecord::Base
 
   # Create clusters from active users last week
   def create_clusters
-    curr_week = Checkin.week_integer_for_time(Time.now)
+    curr_week = Checkin.week_integer_for_time(Time.now, Checkin.default_offset)
     previous_week = Week.previous(curr_week)
     user_ids = UserAction.where(['created_at > ?', self.time_window.first - 1.week]).group(:user_id).map{|ua| ua.user_id }
     self.clusters = WeeklyClass.create_clusters(User.where(:id => user_ids).geocoded.all) unless user_ids.blank?
