@@ -84,7 +84,7 @@
       .left.commentlinks 
         Written by
         - if comment.user.present?
-          = link_to "#{is_owner ? 'You' : truncate(comment.user.name, :length => 20)}", user_path(comment.user)
+          = link_to "#{is_owner ? 'You' : truncate(comment.user.name, :length => 20)}", user_path(comment.user), :name => "c#{comment.id}"
           - if comment.user.roles?(:mentor) or comment.user.roles?(:nreduce_mentor)
             &nbsp;•&nbsp;Mentor
           - elsif !comment.user.startup_id.blank?
