@@ -64,24 +64,30 @@ class Checkin < ActiveRecord::Base
     end
   end
 
-    # Will queue up emails to be sent to all startups who haven't checked in yet
-    # TODO - need to adapt to new system
+    # Will queue up emails to be sent to all startups who haven't checked in yet on this day
   def self.email_startups_not_completed_checkin_yet
     return true
-    ids = Checkin.where(:week => Week.previous(Checkin.current_week)).map{|c| c.startup_id }
-    completed_this_week = Checkin.where(:week => Checkin.current_week).completed.map{|c| c.startup_id }
+    current_day = Time.now.wday
+    current_week = Checkin.current_week(Checkin.default_offset)
+    # Find all startups that checkin today
+    startup_ids = Startup.where(:checkin_day => current_day).map{|s| s.id }
+    # Now find which ones were active last week
+    ids = Checkin.where(:week => Week.previous(current_week), :startup_id => startup_ids).map{|c| c.startup_id }
+    # And then which have completed a checkin this week
+    completed_this_week = Checkin.where(:week => current_week, :startup_id => startup_ids).completed.map{|c| c.startup_id }
     not_completed = (ids - completed_this_week).shuffle
     if not_completed.size > 0
       # split them half/half so we can a/b test and send only half an email
-      half = not_completed.size / 2
-      c = 0
-      to_email_ids = []
-      not_completed.each do |id|
-        to_email_ids << id if c < half
-        c += 1
-      end
-      not_emailed = not_completed - to_email_ids
-      puts to_email_ids
+      # half = not_completed.size / 2
+      # c = 0
+      # to_email_ids = []
+      # not_completed.each do |id|
+      #   to_email_ids << id if c < half
+      #   c += 1
+      # end
+      # not_emailed = not_completed - to_email_ids
+      to_email_ids = not_completed
+      not_emailed = []
       unless to_email_ids.blank?
         User.where(:startup_id => to_email_ids).each do |u|
           Resque.enqueue(Checkin, :after_checkin_now, u.id) if u.account_setup? && u.email_for?('checkin_now')
@@ -89,7 +95,7 @@ class Checkin < ActiveRecord::Base
       end
       msg = "Emailed all users on these startups: #{to_email_ids.join(', ')}. Didn't email these startups: #{not_emailed.join(', ')}."
     else
-      msg = "All startups have who were active last week completed checkin this week."
+      msg = "All startups have who were active last week completed a checkin today."
     end
     File.open(Rails.root + 'checkin_emailed.txt', 'w') {|f| f.write(msg) }
     return msg

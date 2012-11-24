@@ -1,7 +1,7 @@
 class ModifyForNewCheckinFormat < ActiveRecord::Migration
   def up
     add_column :startups, :time_zone, :string
-    add_column :startups, :checkin_day, :integer, :default => 1
+    add_column :startups, :checkin_day, :integer
     rename_column :checkins, :after_video_id, :video_id
     rename_column :checkins, :end_comments, :notes
     rename_column :checkins, :start_focus, :goal
