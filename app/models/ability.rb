@@ -39,6 +39,8 @@ class Ability
 
         can :first, Checkin if !user.account_setup?
 
+        can :create, Checkin if user.startup.current_checkin.blank?
+
         can :destroy, Checkin, :startup_id => user.startup_id
 
         # Can manage if they created it

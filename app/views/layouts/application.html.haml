@@ -76,3 +76,15 @@
             %br/
             %br/
             = link_to 'Cancel', '#', :onclick => "$('#ciao').modal('hide'); return false;", :class => 'btn'
+
+      - if @force_checkin
+        #checkin_goal.modal.hide
+          .modal-header
+            %h2 Please set your goal for this week
+          .modal-body
+            = semantic_form_for @checkin, :url => startup_checkins_path(@checkin.startup) do |f|
+              = hidden_field_tag 'force_checkin', true
+              = f.hidden_field :startup_id
+              = render 'checkins/goal', :f => f, :hide_number => true
+              = f.submit 'Save', :class => 'btn btn-large btn-success'
+        = javascript_tag "$(function(){ $('#checkin_goal').modal();  });"

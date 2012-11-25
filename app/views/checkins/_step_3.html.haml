@@ -7,3 +7,5 @@
       .controls
         = f.text_field :next_week_goal, :style => 'height: 30px; line-height:24px; font-size:22px', :class => "span4 checkin_start_focus", :placeholder => "Test, Ship or Hustle..."
         = f.semantic_errors :next_week_goal
+
+    = render 'startups/checkin_day_and_time_zone', :f => f

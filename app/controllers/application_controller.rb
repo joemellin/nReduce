@@ -199,6 +199,10 @@ class ApplicationController < ActionController::Base
   def load_requested_or_users_startup
     @startup = Startup.find_by_obfuscated_id(params[:startup_id]) unless params[:startup_id].blank?
     @startup ||= current_user.startup if params[:id].blank? and !current_user.startup_id.blank?
+    if @startup.present? && @startup.current_checkin.blank?
+      @force_checkin = true
+      @checkin = Checkin.new(:startup => @startup)
+    end
   end
 
   def login_required

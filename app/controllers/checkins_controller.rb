@@ -26,14 +26,21 @@ class CheckinsController < ApplicationController
   end
 
   def create
-    was_completed = @checkin.completed?
+    @checkin.attributes = params[:checkin]
     @checkin.startup = @startup
-    if @checkin.save
-      save_completed_state_and_redirect_checkin(@checkin, was_completed)
+    if params[:force_checkin].present?
+      @ua = false
+      @checkin.save
+      redirect_to '/'
     else
-      @ua = false # don't record user action until they are successful
-      initialize_and_add_instruments(@checkin)
-      render :action => :edit
+      was_completed = @checkin.completed?
+      if @checkin.save
+        save_completed_state_and_redirect_checkin(@checkin, was_completed)
+      else
+        @ua = false # don't record user action until they are successful
+        initialize_and_add_instruments(@checkin)
+        render :action => :edit
+      end
     end
     @startup.launched! if params[:startup] && params[:startup][:launched].to_i == 1
   end
