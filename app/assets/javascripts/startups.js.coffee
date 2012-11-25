@@ -5,6 +5,10 @@ $ ->
     val = $(this).data('value')
     $('#checkin_accomplished').val(val)
 
+  $('form.checkin button.checkin_day').click ->
+    val = $(this).data('value')
+    $('#checkin_day').val(val)
+
   # if $('form.checkin').length > 0
   #   setTimeout( ->
   #     enableCheckinFormIfComplete(true)
