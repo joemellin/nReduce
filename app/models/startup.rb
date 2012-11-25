@@ -27,7 +27,7 @@ class Startup < ActiveRecord::Base
     :industry_list, :technology_list, :ideology_list, :industry, :intro_video_url, :elevator_pitch, 
     :logo, :remote_logo_url, :logo_cache, :remove_logo, :checkins_public, :pitch_video_url, 
     :investable, :screenshots_attributes, :business_model, :founding_date, :market_size, :in_signup_flow, 
-    :invites_attributes, :mentorable
+    :invites_attributes, :mentorable, :time_zone, :checkin_day
   attr_accessor :in_signup_flow
 
   accepts_nested_attributes_for :screenshots, :reject_if => proc {|attributes| attributes.all? {|k,v| v.blank?} }, :allow_destroy => true
@@ -116,8 +116,8 @@ class Startup < ActiveRecord::Base
     Startup.with_setup(:goal).active.order('activated_at DESC').limit(limit)
   end
 
-  def self.registration_open?
-    true
+  def self.default_checkin_day
+    1
   end
 
   def self.community_status
@@ -187,7 +187,8 @@ class Startup < ActiveRecord::Base
   end
 
   def previous_checkin
-    checkins.ordered.where(['created_at < ? AND created_at > ?', Checkin.prev_after_checkin, Checkin.prev_after_checkin - 1.week]).first
+    prev_at = Checkin.prev_checkin_at(self.checkin_offset)
+    checkins.ordered.where(['created_at < ? AND created_at > ?', prev_at, prev_at - 1.week]).first
   end
 
   def current_checkin_id
@@ -325,22 +326,6 @@ class Startup < ActiveRecord::Base
     5 => "Big Exit - Facebook"}
   end
 
-  def self.industry_select_options
-    Settings.startup_options.industry
-  end
-
-  def self.stage_select_options
-    Startup.stages.map{|k,v| [v,k]}
-  end
-
-  def self.company_goal_select_options
-    Startup.company_goals.map{|k,v| [v,k]}
-  end
-
-  def self.growth_model_select_options
-    Startup.growth_models.map{|k,v| [v,k]}
-  end
-
   def self.tags_by_startup_id(startups = [])
     tags_by_startup_id = {}
     taggings = ActsAsTaggableOn::Tagging.where(:taggable_type => 'Startup').includes(:tag)
@@ -420,6 +405,7 @@ class Startup < ActiveRecord::Base
     self.active = true
     self.activated_at = Time.now
     connected_to_ids = self.connected_to_ids('Startup')
+    team_member_ids = self.team_member_ids
     unless connected_to_ids.present? && connected_to_ids.size > 0
       Startup.last_activated_teams(3).where(['id != ?', self.id]).each do |s|
         r = Relationship.start_between(self, s, :startup_startup, true)
@@ -428,11 +414,11 @@ class Startup < ActiveRecord::Base
         if r.present? && r.valid?
           r.approve!
 
-          # Add message from new founder to these startup's checkins
-          if s.current_checkin.present? && message_from_user.present?
-            c = Comment.new(:content => message, :checkin_id => s.current_checkin.id)
-            c.user = message_from_user
-            c.save
+          # Send message from new founder to these startups
+          if message_from_user.present?
+            Conversation.create(:to_entity => s,
+                                :participant_ids => team_member_ids,
+                                :messages => [Message.new(:from_id => message_from_user.id, :content => message)])
           end
 
           # Now mark them as setup with connections if they've hit six

@@ -39,6 +39,8 @@ class Ability
 
         can :first, Checkin if !user.account_setup?
 
+        can :create, Checkin if user.startup.current_checkin.blank?
+
         can :destroy, Checkin, :startup_id => user.startup_id
 
         # Can manage if they created it
@@ -241,9 +243,7 @@ class Ability
     end
 
     # Can only create a startup if registration is open and they don't have a current startup
-    can [:new, :create, :edit], Startup do |startup|
-      Startup.registration_open? and user.startup_id.blank?
-    end
+    can [:new, :create, :edit], Startup if user.startup_id.blank?
 
     # User can only manage their own account
     can [:manage, :onboard, :onboard_next], User, :id => user.id
