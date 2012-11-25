@@ -122,7 +122,7 @@ class ApplicationController < ActionController::Base
     # initialize session now so we have a session id to use for a/b test
     session[:foo] = nil
     return true if @ua
-    Timecop.freeze Checkin.next_checkin_at(current_user.startup.checkin_offset) - 1.hour
+    Timecop.freeze Checkin.next_checkin_at(current_user.startup.checkin_offset) - 1.hour if Rails.env.development?
     #Timecop.return
     started = Time.now
     yield
