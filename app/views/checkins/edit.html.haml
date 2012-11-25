@@ -4,9 +4,11 @@
   Check-in
 
 .checkins
-  = render 'checkins/nav'
+  %h2.center Weekly Progress Update for #{@checkin.time_label}
+  .offset2
+    = render 'checkins/nav'
 
-  %h2.center Check-in for #{@checkin.time_label}
+  
   %hr
   = semantic_form_for @checkin, :html => {:class => "form-vertical"} do |f|
     = render "checkins/step_#{@current_step || @checkin.current_step}", :f => f

@@ -1,6 +1,5 @@
 .checkins {
   // Note: styling for checkin progress nav is in onboard.css.scss
-
   form {
     .checkin {
       .stage {
@@ -63,15 +62,17 @@
         .button {
           padding: 20px;
           margin-bottom: 10px;
-          background-color: #ccc;
-          color: #333;
+          background-color: #fff;
+          outline: 1px solid #ccc;
+          color: #666;
           font-size: 1.5em;
           line-height: 1.5em;
           cursor: pointer;
         }
         .button:hover {
-          background-color: #666;
-          color: #fff;
+          background-color: #E9F8FF;
+          outline: 1px solid #3DB7F7;
+          color: #666;
         }
       }
 
