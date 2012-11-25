@@ -71,7 +71,7 @@ class CheckinsController < ApplicationController
   # For creating a first checkin
   def first
     @onboard = @hide_background_image = @hide_footer = true
-
+    @force_checkin = false
     @checkin ||= Checkin.new
     @weekly_class = true
     if params[:checkin].present? && params[:checkin][:goal].present? && params[:message].present?
