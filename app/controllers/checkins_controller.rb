@@ -39,13 +39,14 @@ class CheckinsController < ApplicationController
   end
 
   def edit
-    if @checkin.completed?
+    if @checkin.completed? && params[:current_step].blank?
       flash[:notice] = "Your checkin has already been completed."
       redirect_to @checkin
       return
     end
     @startup ||= @checkin.startup
     initialize_and_add_instruments(@checkin)
+    @current_step = params[:current_step].to_i if params[:current_step].present?
   end
 
   def update

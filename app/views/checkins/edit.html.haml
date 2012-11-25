@@ -9,7 +9,7 @@
   %h2.center Check-in for #{@checkin.time_label}
   %hr
   = semantic_form_for @checkin, :html => {:class => "form-vertical"} do |f|
-    = render "checkins/step_#{@checkin.current_step}", :f => f
+    = render "checkins/step_#{@current_step || @checkin.current_step}", :f => f
     .form-controls.center
       - if @checkin.current_step == Checkin.steps.size
         = f.submit "Submit Checkin", :class => "btn btn-success btn-large submit"
