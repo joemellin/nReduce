@@ -172,7 +172,7 @@ Nreduce::Application.routes.draw do
       get 'stats'
       match 'invite'
       post 'invite_with_confirm'
-      post 'search'
+      get 'search'
     end
     member do
       match 'intro_video'

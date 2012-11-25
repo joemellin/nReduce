@@ -237,12 +237,10 @@ class StartupsController < ApplicationController
   end
 
   def search
-    if params[:query].blank? || params[:query].present? && params[:query].size < 2
-      render :json => [] 
-      return
-    end
-    startups = Startup.select('id, name').where(['name LIKE ?', "#{params[:query]}%"]).with_setup(:profile, :invite_team_members, :intro_video).limit(10)
-    render :json =>  startups.map{|s| s.name }
+    # Force goecode from IP
+    current_user.geocode_from_ip(request.remote_ip) unless current_user.geocoded?
+    @users = User.geo_scope(:within => 30000, :origin => [current_user.lat, current_user.lng]).where('startup_id IS NOT NULL').group(:startup_id).order(:distance).paginate(:page => params[:page] || 1, :per_page => 10)
+    @startups_by_id = Hash.by_key(Startup.where(:id => @users.map{|u| u.startup_id }), :id)
   end
 
   #

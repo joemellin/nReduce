@@ -12,31 +12,22 @@
       %p
     .span10.center
       %b{:style => 'font-size:35px; line-height: 40px; color:#25A6E9'}Awesome!  Lets get you started!
-  .row
-    .span1.offset2{:style => 'padding-top:60px'}
-      %h1 1)
-    .span6
-      
-      .control-group.left{error_css(@checkin, :goal)}
-        %p
-          &nbsp
-        = f.label :goal, "What is your goal for this week?", :style => 'font-size:30px; line-height:45px; padding-top:20px; padding-bottom:25px', :maxlength => 255, :class => 'control-label center'
-        .controls.center
-          = f.text_field :goal, :style => 'height: 30px; line-height:24px; font-size:22px', :class => "span5 checkin_start_focus", :placeholder => "Enter your goal here..."
-          = f.semantic_errors :goal
-    .span3{:style => 'padding-top:80px'}
-      %b Example Goals:
-      %p Talk to 5 users
-      %p Build Sign Up Process
-      %p Close Seed Round
-      
+
+  = render 'checkins/goal', :f => f
+
   .row
     .span1.offset2{:style => 'padding-top:60px'}
       %h1 2)
     .span6
+      = render 'startups/checkin_day_and_time_zone', :f => f
+      
+  .row
+    .span1.offset2{:style => 'padding-top:60px'}
+      %h1 3)
+    .span6
       .control-group.left
         %p
-        = label_tag :message, "Say hello to your group mates :)", :style => 'font-size:30px; line-height:45px; padding-top:40px; padding-bottom:25px', :maxlength => 255, :class => 'control-label center'
+        = label_tag :message, "Say hello to your group mates :)", :style => 'font-size:30px; line-height:45px; padding-top:40px; padding-bottom:25px', :maxlength => 255, :class => 'control-label'
         .controls.center
           = text_field_tag :message, '', :style => 'height: 30px; line-height:24px; font-size:22px', :class => "span5 checkin_start_focus", :placeholder => "Enter a fun hello message here..."
   
