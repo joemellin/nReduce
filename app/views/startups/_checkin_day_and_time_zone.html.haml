@@ -13,4 +13,4 @@
   .control-group
     = s.label :time_zone, 'What is the time zone for your startup?', :class => 'control-label'
     .controls
-      = s.time_zone_select :time_zone
+      = s.time_zone_select :time_zone, ActiveSupport::TimeZone.us_zones, :default => "Pacific Time (US & Canada)"
