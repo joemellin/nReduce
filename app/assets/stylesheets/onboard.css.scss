@@ -20,7 +20,10 @@
       padding-left: 15px;
     }
   }
+}
 
+// Same progress bar for onbaording and checkins
+.onboard, .checkins {
   .navbar {
     margin-top: 25px;
     margin-bottom: 25px;

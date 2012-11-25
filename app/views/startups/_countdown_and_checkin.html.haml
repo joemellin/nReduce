@@ -29,7 +29,10 @@
                 .bar{:style => "width: #{Checkin.pct_complete_week(startup.checkin_offset)}%;"}
               .checkin_btn
                 - if Checkin.in_time_window?(startup.checkin_offset)
-                  .active= link_to 'Check In', edit_checkin_path(current_checkin), :class => "btn btn-large btn-warning"
+                  - if current_checkin.present? && current_checkin.completed?
+                    = link_to 'View Checkin', current_checkin, :class => 'btn btn-large btn-info'
+                  - else
+                    .active= link_to 'Check In', edit_checkin_path(current_checkin), :class => "btn btn-large btn-warning"
                 - else
                   = link_to 'Keep Working', '#', :class => "btn btn-large disabled", :onclick => "return false"
 .countdown_separator
