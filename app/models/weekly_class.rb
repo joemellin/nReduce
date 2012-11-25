@@ -40,15 +40,15 @@ class WeeklyClass < ActiveRecord::Base
   end
 
   def self.current_week
-    Week.integer_for_time(Time.now, Week.default_checkin_offset)
+    Week.integer_for_time(Time.now, Checkin.default_offset)
   end
 
   def self.time_window_for_week(week)
-    Week.window_for_integer(week, Week.default_checkin_offset)
+    Week.window_for_integer(week, Checkin.default_offset)
   end
 
   def self.class_for_user(user)
-    week = Week.integer_for_time(user.created_at, Week.default_checkin_offset)
+    week = Week.integer_for_time(user.created_at, Checkin.default_offset)
     WeeklyClass.find_or_create_by_week(:week => week)
   end
 

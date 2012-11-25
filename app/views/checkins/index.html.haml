@@ -1,18 +1,19 @@
 - content_for :subtitle do
   = 'Your Check-ins'
 
-%h2 Your Check-ins
-.row
-  .span12
-    - if @can_check_in
-      = link_to 'Check-In This Week', new_checkin_path, :class => 'btn btn-primary'
-    %ul
-    - @checkins.each do |checkin|
-      %li{:style => 'margin-bottom: 4px'}
-        = link_to "Check in for #{checkin.time_label}", checkin
-        - if checkin.submitted?
-          &nbsp;
-          %span.label.label-inverse Before
-        - if checkin.completed?
-          &nbsp;
-          %span.label.label-inverse After
+.checkins
+  %h2 Your Check-ins
+  .row
+    .span12
+      - if @can_check_in
+        = link_to 'Check-In This Week', new_checkin_path, :class => 'btn btn-primary'
+      %ul
+      - @checkins.each do |checkin|
+        %li{:style => 'margin-bottom: 4px'}
+          = link_to "Check in for #{checkin.time_label}", checkin
+          - if checkin.submitted?
+            &nbsp;
+            %span.label.label-inverse Before
+          - if checkin.completed?
+            &nbsp;
+            %span.label.label-inverse After

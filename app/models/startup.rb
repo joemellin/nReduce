@@ -145,7 +145,7 @@ class Startup < ActiveRecord::Base
       # Calc offset from beginning of week + duration - 1.day
       @checkin_offset = [self.checkin_day.days - 1.day + self.time_zone_offset, 24.hours]
     else
-      @checkin_offset = Week.default_checkin_offset
+      @checkin_offset = Checkin.default_offset
     end
     @checkin_offset
   end
@@ -192,7 +192,7 @@ class Startup < ActiveRecord::Base
 
   def current_checkin_id
     Cache.get(['current_checkin', self], nil, true){
-      c = checkins.ordered.where(['created_at > ?', Checkin.prev_after_checkin]).first
+      c = checkins.ordered.where(['created_at > ?', Checkin.prev_checkin_at(self.checkin_offset)]).first
       c.id if c.present?
     }
   end

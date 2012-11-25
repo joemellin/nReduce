@@ -28,7 +28,6 @@ class CheckinsController < ApplicationController
   def create
     was_completed = @checkin.completed?
     @checkin.startup = @startup
-    @checkin.valid?
     if @checkin.save
       save_completed_state_and_redirect_checkin(@checkin, was_completed)
     else
@@ -40,6 +39,11 @@ class CheckinsController < ApplicationController
   end
 
   def edit
+    if @checkin.completed?
+      flash[:notice] = "Your checkin has already been completed."
+      redirect_to @checkin
+      return
+    end
     @startup ||= @checkin.startup
     initialize_and_add_instruments(@checkin)
   end
@@ -86,8 +90,7 @@ class CheckinsController < ApplicationController
       end
       redirect_to add_teams_relationships_path
     else
-      flash[:notice] = "Your checkin has been saved!"
-      redirect_to relationships_path
+      redirect_to edit_checkin_path(checkin)
     end
   end
 
@@ -108,10 +111,10 @@ class CheckinsController < ApplicationController
     if in_time_window
       # if no checkin, give them a new one
       if @checkin.blank?
-        @checkin = Checkin.new
+        @checkin = Checkin.new(:startup => @startup)
       # last week's checkin
-      elsif !@checkin.new_record? and (Checkin.prev_checkin(offset) > @checkin.created_at) and in_time_window
-        @checkin = Checkin.new
+      elsif !@checkin.new_record? and (Checkin.prev_checkin_at(@startup.checkin_offset) > @checkin.created_at) and in_time_window
+        @checkin = Checkin.new(:startup => @startup)
       end
     end
   end

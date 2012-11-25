@@ -1,0 +1,83 @@
+.checkins {
+  // Note: styling for checkin progress nav is in onboard.css.scss
+
+  form {
+    .checkin {
+      .stage {
+        .number {
+          margin-left: 30px;
+          margin-top: 10px;
+          width: 60px;
+          height: 60px;
+          border-radius: 30px;
+          font-size: 2.2em;
+          color: #fff;
+          font-weight: bold;
+          line-height: 60px;
+          text-align: center;
+          background-color: green;
+        }
+        vertical-align: middle;
+        font-size: 1.4em;
+        line-height: 60px;
+      }
+      .submit {
+        font-size: 1.8em;
+        line-height: 1.5em;
+        padding: 15px 25px 15px 25px;
+      }
+    }
+
+    // Styling for video embed
+
+    .video_form{
+      .screenr_embed {
+        padding-top: 40px;
+      }
+      .completed {
+        background-color: #fff;
+        color: green;
+        text-align: center;
+        font-size: 2em;
+        .record_again {
+          line-height: 25px;
+          font-size: 12px;
+          margin-top: 20px;
+          color: #000;
+        }
+        .check { 
+          color: green;
+          font-size: 125px;
+          font-weight: bold;
+          line-height: 125px;
+          vertical-align: middle;
+        }
+      }
+      .youtube_embed {
+        input {
+          height: 25px;
+        }
+      }
+
+      .video_embed_buttons {
+        .button {
+          padding: 20px;
+          margin-bottom: 10px;
+          background-color: #ccc;
+          color: #333;
+          font-size: 1.5em;
+          line-height: 1.5em;
+          cursor: pointer;
+        }
+        .button:hover {
+          background-color: #666;
+          color: #fff;
+        }
+      }
+
+      .video_embed_cancel {
+        margin-bottom: 15px;
+      }
+    }
+  }
+}

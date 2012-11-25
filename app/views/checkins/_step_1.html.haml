@@ -1,0 +1,7 @@
+.row
+  .span5
+    .control-group{error_css(@checkin, :video)}
+      = f.semantic_errors :video
+      %p Please record a 1-2 min video documenting what you did this past week.
+      = f.fields_for :video do |v|
+        = render 'videos/form', :video_id => v.object.new_record? ? 'new_video' : "video_#{v.object.id}", :f => v
