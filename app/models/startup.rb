@@ -116,8 +116,8 @@ class Startup < ActiveRecord::Base
     Startup.with_setup(:goal).active.order('activated_at DESC').limit(limit)
   end
 
-  def self.registration_open?
-    true
+  def self.default_checkin_day
+    1
   end
 
   def self.community_status
