@@ -16,11 +16,12 @@ class Checkin < ActiveRecord::Base
   attr_accessible :goal, :start_why, :start_video_url, :end_video_url, :notes,
     :startup_id, :start_comments, :startup, :measurement_attributes, 
     :before_video_attributes, :video_attributes, :accomplished,
-    :next_week_goal, :video
+    :next_week_goal, :video, :startup_attributes
     
   accepts_nested_attributes_for :measurement, :reject_if => proc {|attributes| attributes.all? {|k,v| v.blank?} }, :allow_destroy => true
   accepts_nested_attributes_for :before_video, :reject_if => proc {|attributes| attributes.all? {|k,v| v.blank?} }, :allow_destroy => true
   accepts_nested_attributes_for :video, :reject_if => proc {|attributes| attributes.all? {|k,v| v.blank?} }, :allow_destroy => true
+  accepts_nested_attributes_for :startup, :reject_if => proc {|attributes| attributes.all? {|k,v| v.blank?} }
 
   after_initialize :set_previous_step
   after_validation :add_completed_at_time
@@ -46,6 +47,7 @@ class Checkin < ActiveRecord::Base
   end
 
   def current_step
+    return 0 if self.goal.blank?
     return 1 if self.video.blank? || self.video.new_record?
     return 2 if self.accomplished.nil? # need to add logic for instruments
     return 3 if self.next_week_goal.blank?
@@ -399,7 +401,7 @@ class Checkin < ActiveRecord::Base
   end
 
   def measurement_is_present_if_launched
-    if self.startup.launched?
+    if self.startup.present? && self.startup.launched? && self.previous_step > 0
       if self.measurement.blank? || self.measurement.value.blank?
         self.errors.add(:measurement, 'needs to be added since you are launched - to measure traction & progress')
         return false

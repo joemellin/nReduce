@@ -1,0 +1,14 @@
+= f.fields_for :startup do |s|
+  .control-group
+    = s.label :checkin_day, 'What day do you want to check in?', :class => 'control-label', :style => 'font-size:30px; line-height:45px; padding-top:40px; padding-bottom:25px'
+    .controls
+      .btn-group{'data-toggle' => 'buttons-radio'}
+        - c = 0
+        - Date::DAYNAMES.each do |day|
+          %button.btn.btn-large.accomplished{:type => 'button', 'data-value' => 'false', :class => s.object.checkin_day == c ? 'active' : ''}= day
+          - c += 1
+
+  .control-group
+    = s.label :time_zone, 'Time zone for your startup', :class => 'control-label'
+    .controls
+      = s.time_zone_select :time_zone

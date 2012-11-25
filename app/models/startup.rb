@@ -27,7 +27,7 @@ class Startup < ActiveRecord::Base
     :industry_list, :technology_list, :ideology_list, :industry, :intro_video_url, :elevator_pitch, 
     :logo, :remote_logo_url, :logo_cache, :remove_logo, :checkins_public, :pitch_video_url, 
     :investable, :screenshots_attributes, :business_model, :founding_date, :market_size, :in_signup_flow, 
-    :invites_attributes, :mentorable
+    :invites_attributes, :mentorable, :time_zone, :checkin_day
   attr_accessor :in_signup_flow
 
   accepts_nested_attributes_for :screenshots, :reject_if => proc {|attributes| attributes.all? {|k,v| v.blank?} }, :allow_destroy => true
