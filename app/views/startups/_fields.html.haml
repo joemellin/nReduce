@@ -108,7 +108,7 @@
     .controls
       = f.date_select :founding_date, {:include_blank => true, :end_year => Time.now.year, :use_short_month => true, :order => [:month, :day, :year] }, {:class => 'founding_date'}
 
-- unless @startup.new_record? || hide_screenshots
+- unless 1 == 1 #@startup.new_record? || hide_screenshots
   %hr/
   %br/
   %h3 Product Screenshots
