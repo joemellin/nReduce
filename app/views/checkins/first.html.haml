@@ -13,7 +13,22 @@
     .span10.center
       %b{:style => 'font-size:35px; line-height: 40px; color:#25A6E9'}Awesome!  Lets get you started!
 
-  = render 'checkins/goal', :f => f
+  .row
+    .span1.offset2{:style => 'padding-top:60px'}
+      %h1 1)
+    .span6
+      .control-group.left{error_css(@checkin, :goal)}
+        %p
+          &nbsp
+        = f.label :goal, "What is your goal for this week?", :style => 'font-size:30px; line-height:45px; padding-top:20px; padding-bottom:25px', :maxlength => 255, :class => 'control-label'
+        .controls.center
+          = f.text_field :goal, :style => 'height: 30px; line-height:24px; font-size:22px', :class => "span5 checkin_start_focus", :placeholder => "Enter your goal here..."
+          = f.semantic_errors :goal
+    .span3{:style => 'padding-top:80px'}
+      %b Example Goals:
+      %p Talk to 5 users
+      %p Build Sign Up Process
+      %p Close Seed Round
 
   .row
     .span1.offset2{:style => 'padding-top:60px'}
