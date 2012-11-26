@@ -1,7 +1,7 @@
 .onboard {
   .buttons, .buttons input, .buttons a {
     font-size: 30px;
-    line-height:40px;
+    line-height:45px;
     font-weight: bold;
   }
   .form-actions {
@@ -22,8 +22,9 @@
   }
 
   .navbar {
-    margin-top: 25px;
+    margin-top: 0px;
     margin-bottom: 25px;
+    margin-left:110px;
     .navbar-inner {
       padding-left: 0px;
       padding-right: 0px;
@@ -43,7 +44,7 @@
         }
         li a {
           font-size: 1.3em;
-          line-height: 20px;
+          line-height: 25px;
           background-color: #F8F8F8;
           font-weight: bold;
           padding-left: 29px;
@@ -55,5 +56,12 @@
         }
       }
     }
+  }
+  .title {
+    font-size:35px; 
+    line-height: 40px; 
+    color:#666666;
+    font-weight: bold;
+    padding-top:25px;
   }
 }
