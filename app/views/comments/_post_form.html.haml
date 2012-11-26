@@ -14,7 +14,7 @@
           = f.hidden_field :checkin_id
           = f.text_area :content, :size => '50x1'
       .row
-        .right{:style => 'padding: 0px 0 0 10px;'}= f.submit (comment.new_record? ? 'Post' : 'Update'), :class => 'btn btn-success btn-large', :onclick => "$(this).addClass('disabled');"
+        .right{:style => 'padding: 0px 0 0 10px;'}= f.submit (comment.new_record? ? 'Post' : 'Update'), :class => 'btn btn-info btn-large', :onclick => "$(this).addClass('disabled');"
         .right{:style => 'padding: 5px 0 0 8px;'}
           - if comment.new_record? and cancel_link
             = link_to 'Cancel', '#', :onclick => "$('#comment_#{comment.parent_id} .new_comment').remove(); return false;"

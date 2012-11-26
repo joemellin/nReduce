@@ -1,30 +1,6 @@
 - content_for :subtitle do
   Add Teams
 
-- if @checkin_completed == true
-  #checkin_completed.modal.hide
-    .modal-body.center{:align => 'center'}
-      - if @number_of_consecutive_checkins > 1
-        %p You have completed #{@number_of_consecutive_checkins} consecutive checkins.
-      - else
-        %p You have completed your checkin.
-      .right{:style => 'margin-right: -15px'}= image_tag 'hand_silhouette.png', :width => 270, :height => 220
-      .right{:style => 'width: 250px; height: 270px; position: relative;'}
-        %div{:style => 'position: absolute; top: 30%; right: 30%; height: 270px;'}
-          %h2{:style => 'font-size: 50px; line-height: 50px'}
-            Way to
-            %br/
-            do it!
-      
-      .clear
-
-      %h3{:style => 'color: #666'} Check out some other teams that have been active this week
-      %br/
-      %a.btn.btn-success.btn-large{:href => '#', 'data-dismiss' => 'modal'} View Teams
-  :javascript
-    $('#checkin_completed').modal();
-
-
 .relationships
   / .row
   /   .span4= link_to '<i class="icon-arrow-left"></i> Back'.html_safe, relationships_path, :class => 'btn btn-large'

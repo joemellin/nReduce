@@ -101,6 +101,14 @@
               font-size: .9em;
               font-weight: bold;
             }
+            .from_company {
+              font-size: .9em;
+              color: #ccc;
+              a {
+                color: #ccc;
+                font-weight: normal;
+              }
+            }
             .time_ago { font-size: .8em; }
           }
         }

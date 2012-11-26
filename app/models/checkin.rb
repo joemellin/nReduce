@@ -27,14 +27,14 @@ class Checkin < ActiveRecord::Base
   after_validation :add_completed_at_time
   before_save :notify_user
   before_create :assign_week
-  before_create :create_next_week_checkin
+  before_save :create_next_week_checkin
   after_save :reset_startup_checkin_cache
   after_destroy :reset_startup_checkin_cache
 
   validates_presence_of :startup_id
   validates_presence_of :video, :message => "can't be blank", :if => Proc.new{|f| f.previous_step >= 1 } 
   validates_inclusion_of :accomplished, :in => [true, false], :message => "must be selected", :if => Proc.new{|f| f.previous_step >= 2 } 
-  validates_presence_of :next_week_goal, :message => "can't be blank", :if => Proc.new{|f| f.previous_step >= 3 }
+  validate :next_weeks_goal_is_present
   validate :measurement_is_present_if_launched
 
   scope :ordered, order('created_at DESC')
@@ -42,8 +42,10 @@ class Checkin < ActiveRecord::Base
 
   @queue = :checkin_message
 
-  def self.steps
-    ['Record Video', 'Accomplishments', 'Set Next Week\'s Goal', 'Completed']
+  def self.steps(display_steps_only = false)
+    steps = ['Record Video', 'Accomplishments', 'Set Next Week\'s Goal', 'Completed']
+    steps.pop if display_steps_only # remove last step if we're displaying them
+    steps
   end
 
   def current_step
@@ -220,6 +222,14 @@ class Checkin < ActiveRecord::Base
     longest_streak
   end
 
+  def next_checkin
+    Checkin.where(:startup_id => self.startup_id).where(['created_at > ?', self.created_at]).first
+  end
+
+  def previous_checkin
+    Checkin.where(:startup_id => self.startup_id).where(['created_at < ?', self.created_at]).first
+  end
+
   # Takes youtube urls and converts to our new db-backed format (and uploads to vimeo)
   def convert_to_new_video_format
     return true if self.before_video.present? && self.video.present?
@@ -250,6 +260,15 @@ class Checkin < ActiveRecord::Base
       end
     end
     true
+  end
+
+  # People who awesomed and commented, minus the team members
+  def participants(exclude_ids = [])
+    ids = self.awesomes.map{|a| a.user_id }
+    ids += self.comments.map{|c| c.user_id }
+    ids.uniq!
+    ids -= exclude_ids if exclude_ids.present?
+    User.where(:id => ids)
   end
 
   # Cache # of comments
@@ -364,7 +383,7 @@ class Checkin < ActiveRecord::Base
     [window_start, window_start + offset.last]
   end
 
-  # Returns label string - ex: Nov 14 - 20th
+  # Returns label string - ex: November 14 to November 20th
   def time_label
     Checkin.week_for_time(self.created_at || Time.now, self.startup.present? ? self.startup.checkin_offset : Checkin.default_offset)
   end
@@ -376,8 +395,19 @@ class Checkin < ActiveRecord::Base
 
   protected
 
+  def next_weeks_goal_is_present
+    if self.previous_step >= 3
+      goal = self.next_week_goal
+      goal = self.next_checkin.goal if goal.blank? && self.next_checkin.present?
+      self.errors.add(:goal, "can't be blank") if goal.blank?
+      return false
+    end
+    true
+  end
+
   def create_next_week_checkin
     return true if self.next_week_goal.blank?
+    return true if self.next_checkin.present?
     self.assign_week if self.week.blank?
     c = Checkin.new
     c.startup_id = self.startup_id
