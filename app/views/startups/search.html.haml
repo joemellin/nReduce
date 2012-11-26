@@ -1,25 +1,25 @@
 .startups
   .search
-    = form_tag search_startups_path do
-      .left
-        %h4 Search Startups by Location:
-      .left
-        = text_field_tag 'search', @search
-        = submit_tag 'Search', :class => 'btn'
-      .clear
-
     .row
-      .span1.offset6.center Community Rating
-      .span1.center Weeks Worked
-      .span4
-        %p
+      .span6.offset1{:style => 'padding-right:20px'}
+        = form_tag search_startups_path do
+          .left
+            %h4 Search Startups by Location:
+          .left
+            = text_field_tag 'search', @search
+            = submit_tag 'Search', :class => 'btn'
+          .clear
+      .span1.offset2.center
+        .legend Community Rating
+      .span1.center
+        .legend Weeks Worked
     %hr/
 
     - @users.each do |u|
       - startup = @startups_by_id[u.startup_id]
       .startup{:id => "startup_#{startup.id}"}
         .row
-          .span3
+          .span3.offset1
             .left.startup_logo= link_to image_tag(startup.logo_url(:small), :style => 'width: 50px; height: 50px'), startup
             .left.name
               %h3= link_to startup.name, startup
@@ -28,8 +28,8 @@
               - startup.team_members.each do |tm|
                 .left= image_tag(user_avatar_url(tm), :style => 'width: 50px; height: 50px', :title => tm.name)
               .clear
-          .span3
-            %h4.location
+          .span5
+            %b.location
               - industry_list = startup.industry_list
               - if u.location.present?
                 = u.location
@@ -46,7 +46,8 @@
             .weeks_worked.center
               - if @num_checkins_by_startup[startup.id].present?
                 %h4= @num_checkins_by_startup[startup.id]
-          .span4
-            %p
+        .row
+          .span10.offset1.borderline
 
-    = will_paginate @users
+    .center
+      = will_paginate @users
