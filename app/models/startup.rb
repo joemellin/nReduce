@@ -188,7 +188,7 @@ class Startup < ActiveRecord::Base
 
   def previous_checkin
     prev_at = Checkin.prev_checkin_at(self.checkin_offset)
-    checkins.ordered.where(['created_at < ? AND created_at > ?', prev_at, prev_at - 1.week]).first
+    checkins.ordered.where(['created_at < ? AND created_at > ?', prev_at, prev_at - 1.week]).order('created_at DESC').first
   end
 
   def current_checkin_id
