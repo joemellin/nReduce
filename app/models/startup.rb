@@ -117,7 +117,7 @@ class Startup < ActiveRecord::Base
   end
 
   def self.default_checkin_day
-    1
+    2
   end
 
   def self.community_status

@@ -42,8 +42,10 @@ class Checkin < ActiveRecord::Base
 
   @queue = :checkin_message
 
-  def self.steps
-    ['Record Video', 'Accomplishments', 'Set Next Week\'s Goal', 'Completed']
+  def self.steps(display_steps_only = false)
+    steps = ['Record Video', 'Accomplishments', 'Set Next Week\'s Goal', 'Completed']
+    steps.pop if display_steps_only # remove last step if we're displaying them
+    steps
   end
 
   def current_step

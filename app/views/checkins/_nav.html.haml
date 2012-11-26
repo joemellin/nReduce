@@ -2,7 +2,7 @@
   .navbar-inner
     %ul.nav
       - c = 1
-      - Checkin.steps.each do |s|
+      - Checkin.steps(true).each do |s|
         - if c < @checkin.current_step
           - klass = 'completed'
         - elsif c == @checkin.current_step
