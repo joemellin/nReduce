@@ -118,11 +118,10 @@ class Checkin < ActiveRecord::Base
     # Returns hash of {:startup_id => current_checkin}
   def self.current_checkin_for_startups(startups = [])
     return {} if startups.blank?
-    return {}
-    if Checkin.in_time_window?
-      checkins = Checkin.where(:startup_id => startups.map{|s| s.id }).where(['created_at > ?', Checkin.prev_after_checkin])
+    if Checkin.in_time_window?(Checkin.default_offset)
+      checkins = Checkin.where(:startup_id => startups.map{|s| s.id }).where(['created_at > ?', Checkin.prev_checkin_at(Checkin.default_offset)])
     else # if in before checkin or in the week after, get prev week's checkin start time
-      start_time = Checkin.prev_after_checkin - 24.hours
+      start_time = Checkin.prev_checkin_at(Checkin.default_offset) - 24.hours
       checkins = Checkin.where(:startup_id => startups.map{|s| s.id }).where(['created_at > ? OR completed_at > ?', start_time, start_time])
     end
     checkins.inject({}) do |res, checkin|
@@ -279,6 +278,10 @@ class Checkin < ActiveRecord::Base
 
   def completed?
     !completed_at.blank?
+  end
+
+  def submitted?
+    !submitted_at.blank?
   end
 
   def self.video_url_is_unique?(url)
