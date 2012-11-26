@@ -5,17 +5,23 @@
   .left{:style => 'margin-left: 25px'}= link_to image_tag('nglow.png'), '#'
   .clear
 
-= semantic_form_for @checkin, :url => first_checkins_path, :html => {:class => "form-vertical"} do |f|  
+= semantic_form_for @checkin, :url => first_checkins_path, :html => {:class => "form-vertical first_checkin"} do |f|  
   = f.hidden_field :startup_id
   .row{:style => 'padding-top: 20px'}
     .span1
       %p
     .span10.center
-      %b{:style => 'font-size:35px; line-height: 40px; color:#25A6E9'}Awesome!  Lets get you started!
+      %b{:style => 'font-size:35px; line-height: 40px; color:#25A6E9'}Awesome! Let's get you started!
 
   .row
     .span1.offset2{:style => 'padding-top:60px'}
       %h1 1)
+    .span6
+      = render 'startups/checkin_day_and_time_zone', :f => f
+
+  .row
+    .span1.offset2{:style => 'padding-top:60px'}
+      %h1 2)
     .span6
       .control-group.left{error_css(@checkin, :goal)}
         %p
@@ -29,12 +35,6 @@
       %p Talk to 5 users
       %p Build Sign Up Process
       %p Close Seed Round
-
-  .row
-    .span1.offset2{:style => 'padding-top:60px'}
-      %h1 2)
-    .span6
-      = render 'startups/checkin_day_and_time_zone', :f => f
       
   .row
     .span1.offset2{:style => 'padding-top:60px'}

@@ -1,3 +1,21 @@
+.first_checkin {
+  .checkin_day {
+    label { 
+      font-size:30px; 
+      line-height:45px; 
+      padding-top:40px;
+      padding-bottom:25px
+    }
+    .btn-group {
+      .active {
+        color: white;
+        background-color: #51A351;
+        text-shadow: none;
+      }
+    }
+  }
+}
+
 .checkins {
   .modal#checkin_goal {
     .examples {
@@ -6,85 +24,113 @@
   }
 
   // Note: styling for checkin progress nav is in onboard.css.scss
-  form {
-    .checkin {
-      .stage {
-        .number {
-          margin-left: 30px;
-          margin-top: 10px;
-          width: 60px;
-          height: 60px;
-          border-radius: 30px;
-          font-size: 2.2em;
-          color: #fff;
-          font-weight: bold;
-          line-height: 60px;
-          text-align: center;
-          background-color: green;
-        }
-        vertical-align: middle;
-        font-size: 1.4em;
+  form.checkin {
+    .stage {
+      .number {
+        margin-left: 30px;
+        margin-top: 10px;
+        width: 60px;
+        height: 60px;
+        border-radius: 30px;
+        font-size: 2.2em;
+        color: #fff;
+        font-weight: bold;
         line-height: 60px;
+        text-align: center;
+        background-color: green;
       }
-      .submit {
-        font-size: 1.8em;
-        line-height: 1.5em;
-        padding: 15px 25px 15px 25px;
+      vertical-align: middle;
+      font-size: 1.4em;
+      line-height: 60px;
+    }
+    .btn.submit {
+      font-size: 1.8em;
+      line-height: 1.5em;
+      padding: 12px 20px 12px 20px;
+      margin-top: 30px;
+    }
+    .btn-group {
+      .active {
+        color: white;
+        background-color: #51A351;
+        text-shadow: none;
+      }
+    }
+    .step2 {
+      .control-group {
+        margin-bottom: 20px;
+      }
+      .controls {
+        padding-left:25px;
+      }
+      #instrument_value {
+        .control-group { margin-top: 0px; margin-bottom: 0px; padding-top: 0;}
+      }
+    }
+    .step3 {
+      padding-bottom:180px;
+      h2 {
+        padding-top:20px;
+        padding-bottom:20px
+      }
+      .checkin_day_and_time_zone {
+        margin-top: 40px;
+        h3 { line-height: 1.3em; }
+      }
+    }
+  }
+
+  // Styling for video embed
+
+  .video_form{
+    .screenr_embed {
+      padding-top: 40px;
+    }
+    .completed {
+      background-color: #fff;
+      color: green;
+      text-align: center;
+      font-size: 2em;
+      .record_again {
+        line-height: 25px;
+        font-size: 12px;
+        margin-top: 20px;
+        color: #000;
+      }
+      .check { 
+        color: green;
+        font-size: 125px;
+        font-weight: bold;
+        line-height: 125px;
+        vertical-align: middle;
+      }
+    }
+    .youtube_embed {
+      input {
+        height: 25px;
       }
     }
 
-    // Styling for video embed
-
-    .video_form{
-      .screenr_embed {
-        padding-top: 40px;
-      }
-      .completed {
+    .video_embed_buttons {
+      .button {
+        padding: 20px;
+        margin-bottom: 10px;
         background-color: #fff;
-        color: green;
-        text-align: center;
-        font-size: 2em;
-        .record_again {
-          line-height: 25px;
-          font-size: 12px;
-          margin-top: 20px;
-          color: #000;
-        }
-        .check { 
-          color: green;
-          font-size: 125px;
-          font-weight: bold;
-          line-height: 125px;
-          vertical-align: middle;
-        }
+        outline: 1px solid #ccc;
+        color: #666;
+        font-size: 1.5em;
+        line-height: 1.5em;
+        cursor: pointer;
       }
-      .youtube_embed {
-        input {
-          height: 25px;
-        }
+      .button:hover {
+        background-color: #E9F8FF;
+        outline: 1px solid #3DB7F7;
+        color: #666;
       }
+    }
 
-      .video_embed_buttons {
-        .button {
-          padding: 20px;
-          margin-bottom: 10px;
-          background-color: #fff;
-          outline: 1px solid #ccc;
-          color: #666;
-          font-size: 1.5em;
-          line-height: 1.5em;
-          cursor: pointer;
-        }
-        .button:hover {
-          background-color: #E9F8FF;
-          outline: 1px solid #3DB7F7;
-          color: #666;
-        }
-      }
-
-      .video_embed_cancel {
-        margin-bottom: 15px;
-      }
+    .video_embed_cancel {
+      margin-bottom: 15px;
     }
   }
 }
