@@ -1,65 +1,121 @@
 - content_for :subtitle do
-  Check-in For Week of #{@checkin.time_label}
+  Progress Update For Week of #{@checkin.time_label}
 
+- team_members = @checkin.startup.team_members
 .checkins
-  -# Show team nav if this is someone else's check-ins
-  .row
-    .span4
-      .right
-        %h2{:style => 'margin-bottom: -5px'}= link_to "Team #{@checkin.startup.name}", startup_path(@checkin.startup)
-        - unless @checkin.startup.one_liner.blank?
-          %h3
-            %small "#{@checkin.startup.one_liner}"
-      .left= link_to '<i class="icon icon-chevron-left"></i> All Teams'.html_safe, relationships_path, :class => 'btn btn-large'
-      .clear
-    .span4{:align => 'center'}
-      .inline-block
-        - @checkin.startup.team_members.each do |tm|
-          - title = tm.name + (!tm.twitter.blank? ? " - @#{tm.twitter}" : '')
-          .inline-block{:style => 'margin-left: 0px'}= link_to(image_tag(user_avatar_url(tm), :title => title, :style => 'width: 50px; height: 50px;'), user_path(tm))
-    .span4{:style => 'margin-bottom: 20px'}
-      - if @checkin.startup.website_url.present? && @checkin.startup.website_url_to_uri.present?
-        .left
-          %h2= link_to_external @checkin.startup.website_url_to_uri.hostname, @checkin.startup.website_url, :source => 'checkin'
-      .clear
-  %hr{:style => 'padding-bottom: 0px'}
-  .row
-    .span6{:style => 'text-align: center', :align => 'right',}
-      %p{:style => 'margin-bottom: 0px; font-color: #ff0066'}
-        Before Video
-      .span{:style => 'margin-left:-20px'}
-        = display_checkin_video(@checkin, :before_video, false, 600, 387).html_safe
-    .span6{:style => 'text-align: center;'}
-      %p{:style => 'margin-bottom: 0px'}
-        After Video
-      .span{:style => 'margin-left:-10px'}
-        = display_checkin_video(@checkin, :video, false, 600, 387).html_safe
-  .row
-    .span1
-      %p &nbsp
-    .span4{:align => 'center'}
-      %p{:style => 'margin-top: 10px'}
-        %small Goal for Week:
-        / Can't seem to get auto-link to set target='_blank'
-      %h4= simple_format(auto_link(h(@checkin.goal), :all, :target => '_blank' ))
-    .span2{:align => 'center', :style => 'padding-top: 8px'}
-      - if current_user.startup_id == @checkin.startup_id
-        / - if @checkin.awesome_count > 0
-        /   %br
-        /   = pluralize(@checkin.awesome_count, 'awesome')
-        &nbsp;
-      - elsif @checkin.completed?
-        %p{:style => 'margin-top: 15px'} 
-        != render_awesome_button(@checkin)
-    .span4
-      %p{:style => 'margin-top: 10px', :align => 'center'}
-        %small Help Needed:
-      %h4= simple_format(auto_link(h(@checkin.notes), :all, :target => '_blank' ))
-    .span1
-      %p &nbsp
-  .row{:style => 'margin-top: 15px'}
-    .span12
-      #comments
-        = render :partial => 'comments/form', :object => @new_comment
-        .list
-          = nested_comments @comments
+  .checkin
+    -# Show team nav if this is someone else's check-ins
+    .team_and_nav
+      .row
+        .span3
+          .all_teams= link_to '<i class="icon icon-chevron-left"></i> All Teams'.html_safe, relationships_path, :class => 'btn'
+        .span6
+          .left.team_members
+            - team_members.each do |tm|
+              - title = tm.name + (!tm.twitter.blank? ? " - @#{tm.twitter}" : '')
+              .inline-block{:style => 'margin-left: 0px'}= link_to(image_tag(user_avatar_url(tm), :title => title, :style => 'width: 50px; height: 50px;'), user_path(tm))
+          .left
+            %h4.name_and_link
+              = link_to "Team #{@checkin.startup.name}", startup_path(@checkin.startup)
+              - if @checkin.startup.website_url.present? && @checkin.startup.website_url_to_uri.present?
+                &nbsp;•&nbsp;
+                = link_to_external @checkin.startup.website_url_to_uri.hostname, @checkin.startup.website_url, :source => 'checkin'
+            - unless @checkin.startup.one_liner.blank?
+              %h5 "#{@checkin.startup.one_liner}"
+        .span3
+          %p
+    .separator
+      %hr
+    .row
+      .span3
+        - if @previous_checkin.present?
+          .previous_week_link= link_to "Previous Week's Update", @previous_checkin
+      .span6
+        %h4.center Weekly Progress Update Video for #{@checkin.time_label}
+      .span3
+        - if @next_checkin.present? && @next_checkin.completed?
+          .next_week_link= link_to "Next Week's Update", @next_checkin
+    .row
+      .span3
+        .goal_wrapper.previous_week
+          %h3 Last Week's Goal
+          %p.goal= h(@checkin.goal)
+
+          - if @checkin.accomplished == true
+            %h3.accomplished
+              = image_tag 'goal_accomplished.png'
+              Accomplished!
+          - elsif @checkin.accomplished == false
+            %h3.missed
+              = image_tag 'goal_missed.png'
+              Missed
+
+          - if @checkin.before_video.present? || @checkin.start_video_url.present?
+            .before_video
+              = link_to 'View Before Video', '#', :onclick => "$('#before_video').modal(); return false;"
+              #before_video.modal.hide
+                .modal-header
+                  %button.close{:type => 'button', 'data-dismiss' => 'modal'} x
+                  %h3 Before Video
+                .modal-body
+                  = display_checkin_video(@checkin, :before_video, false, 600, 387).html_safe
+      .span6
+        -# 600, 387
+        .video= display_checkin_video(@checkin, :video, false, 570, 360).html_safe
+
+        .right.posted_at
+          - time = @checkin.video.present? ? @checkin.video.created_at : @checkin.updated_at
+          Posted #{time.strftime('%B %-d at %l:%M%P')}
+
+        - if @checkin.completed? && current_user.startup_id != @checkin.startup_id
+          .left!= render_awesome_button(@checkin)
+        .left.awesome_comment_count
+          - show_from = false
+          %p
+            - if @checkin.awesome_count > 0
+              = pluralize(@checkin.awesome_count, 'awesome')
+              - if @checkin.comment_count > 0
+                and
+              - show_from = true
+            - if @checkin.comment_count > 0
+              = pluralize(@checkin.comment_count, 'comment')
+              - show_from = true
+            - if show_from
+              from:
+        .clear
+
+        .participants
+          - @checkin.participants(team_members.map{|u| u.id }).each do |p|
+            .left= link_to image_tag(p.pic_url(:small)), p, :title => p.name, :alt => p.name
+          .clear
+
+        - unless @checkin.notes.blank?
+          %p{:style => 'margin-top: 10px'}= simple_format(auto_link(h(@checkin.notes), :all, :target => '_blank' ))
+      .span3
+        .goal_wrapper.next_week
+          %h3 Next Week's Goal
+          - if @next_checkin.present?
+            %p.goal= h(@next_checkin.goal)
+
+            - if @next_checkin.accomplished.nil? && !@next_checkin.completed?
+              %h3.in_progress
+                .left.box
+                .left In Progress
+            - else
+              - if @checkin.accomplished == true
+                %h3.accomplished
+                  = image_tag 'goal_accomplished.png'
+                  Accomplished!
+              - elsif @checkin.accomplished == false
+                %h3.missed
+                  = image_tag 'goal_missed.png'
+                  Missed
+          - else
+            %p.goal (None set)
+
+    .row{:style => 'margin-top: 15px'}
+      .span12
+        #comments
+          = render :partial => 'comments/form', :object => @new_comment
+          .list
+            = nested_comments @comments

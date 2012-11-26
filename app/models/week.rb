@@ -3,7 +3,7 @@ class Week
   # ex: Jul 5 to Jul 12
   def self.for_time(beginning_of_week)
     end_of_week = beginning_of_week + 6.days
-    "#{beginning_of_week.strftime('%b %-d')}-#{end_of_week.strftime('%b %-d')}"
+    "#{beginning_of_week.strftime('%B %-d')} to #{end_of_week.strftime('%B %-d')}"
   end
 
     # returns the week integer for this timestamp, ex: 201223
