@@ -17,6 +17,8 @@ class CheckinsController < ApplicationController
   def show
     @new_comment = Comment.new(:checkin_id => @checkin.id)
     @comments = @checkin.comments.includes(:user).arrange(:order => 'created_at DESC') # arrange in nested order
+    @next_checkin = @checkin.next_checkin
+    @previous_checkin = @checkin.previous_checkin
   end
 
   def new
@@ -79,6 +81,7 @@ class CheckinsController < ApplicationController
       @checkin.user = current_user
       if @checkin.save(:validate => false)
         current_user.startup.completed_goal!(params[:message], current_user)
+        session[:checkin_completed] = true
         redirect_to '/'
       else
         flash[:alert] = "Sorry we couldn't save your goal"
@@ -96,7 +99,7 @@ class CheckinsController < ApplicationController
       unless was_completed
         session[:checkin_completed] = true
       end
-      redirect_to add_teams_relationships_path
+      redirect_to relationships_path
     else
       redirect_to edit_checkin_path(checkin)
     end

@@ -30,14 +30,25 @@
   margin-bottom: 15px;
 }
 
-
-.search {
-  .relationship {
-    .btn { width: 150px; }
-  }
-  .community_status {
-    padding: 6px;
-    max-width: 150px;
+.startups {
+  .search {
+    form {
+      h4 { margin-top: 6px; margin-right: 12px;}
+      margin-bottom: 0px;
+      input { margin-bottom: 0px; }
+    }
+    .startup {
+      height: 120px;
+      margin-top: 10px;
+      margin-bottom: 10px;
+      border-bottom: 1px solid #efefef;
+      .name { margin-left: 12px; }
+      .location { line-height: 40px;}
+      .one_liner { color: #999;} 
+      .rating, .weeks_worked {
+        h4 { line-height: 40px; }
+      }
+    }
   }
 }
 

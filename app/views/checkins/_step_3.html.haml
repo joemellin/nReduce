@@ -1,12 +1,25 @@
-.row
-  .span6.offset3
-    %h2.center{:style => 'padding-top:20px; padding-bottom:20px'} Awesome! 
+.step3
+
+  %h2.center Awesome! 
+  .control-group{error_css(@checkin, :next_week_goal)}
     %h3 What is your goal for next week?
     .controls
       = f.text_field :next_week_goal, :style => 'height: 30px; line-height:24px; font-size:22px', :class => "span6 checkin_start_focus", :placeholder => "Enter goal here..."
       = f.semantic_errors :next_week_goal
-    %p{:style => 'padding-top:30px; padding-bottom:180px'} Example Goals:  Talk to 5 Customers, Improve Sign Up UX, Close Angel Round
+    %p{:style => 'padding-top:30px;'} Example Goals:  Talk to 5 Customers, Improve Sign Up UX, Close Angel Round
 
-  .span2.offset1
-    .formbtn=link_to 'Continue','#', :class => 'btn btn-large btn-success'
+  - if @startup.checkin_day.blank? || @startup.time_zone.blank?
+    .checkin_day_and_time_zone
+      %h3
+        %span.label.label-warning New!
+        You can now set your check-in day
+      %p
+        Your progress update will be
+        %span.bold due at midnight
+        in your time zone.
+      %p Please select a day of the week:
+      = render 'startups/checkin_day_and_time_zone', :f => f, :hide_label => true
+
+
+
 

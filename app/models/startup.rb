@@ -117,7 +117,7 @@ class Startup < ActiveRecord::Base
   end
 
   def self.default_checkin_day
-    1
+    2
   end
 
   def self.community_status
@@ -229,7 +229,7 @@ class Startup < ActiveRecord::Base
       # Returns hash of all elements + each team member's completeness as 
   def profile_elements(show_team_member_details = false)
     elements = {
-      :elevator_pitch => (!self.elevator_pitch.blank? && (self.elevator_pitch.size > 10)), 
+      #:elevator_pitch => (!self.elevator_pitch.blank? && (self.elevator_pitch.size > 10)), 
       :markets => !self.cached_industry_list.blank?,
       :one_liner => self.one_liner.present?
     }
