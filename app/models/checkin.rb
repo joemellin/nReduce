@@ -222,11 +222,11 @@ class Checkin < ActiveRecord::Base
   end
 
   def next_checkin
-    Checkin.where(:startup_id => self.startup_id).where(['created_at > ?', self.created_at]).first
+    Checkin.where(:startup_id => self.startup_id).where(['created_at > ?', self.created_at]).order('created_at ASC').first
   end
 
   def previous_checkin
-    Checkin.where(:startup_id => self.startup_id).where(['created_at < ?', self.created_at]).first
+    Checkin.where(:startup_id => self.startup_id).where(['created_at < ?', self.created_at]).order('created_at DESC').first
   end
 
   # Takes youtube urls and converts to our new db-backed format (and uploads to vimeo)
