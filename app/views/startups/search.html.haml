@@ -1,36 +1,52 @@
-= will_paginate @users
+.startups
+  .search
+    = form_tag search_startups_path do
+      .left
+        %h4 Search Startups by Location:
+      .left
+        = text_field_tag 'search', @search
+        = submit_tag 'Search', :class => 'btn'
+      .clear
 
-- @users.each do |u|
-  - startup = @startups_by_id[u.startup_id]
-  .row{:id => "startup_#{startup.id}"}
-    .span1
-      %p &nbsp;
-    .span3
-      = link_to image_tag(startup.logo_url(:square)), startup
-    .span5
-      %h3
-        = link_to startup.name, startup
-        - unless startup.website_url.blank?
-          %small
-            \-
-            #{link_to(startup.website_url, startup.website_url, :target => '_blank', :style => 'color: #999')}
-      %h4= startup.one_liner
-      %p #{u.location}
-      .row
-        .span2
-          %p
-            Team:
-            %br
-            - startup.team_members.each do |tm|
-              .left{:style => 'margin: 0 5px 5px 0'}= image_tag(user_avatar_url(tm), :style => 'width: 50px; height: 50px', :title => tm.name)
+    .row
+      .span1.offset6.center Community Rating
+      .span1.center Weeks Worked
+      .span4
+        %p
+    %hr/
+
+    - @users.each do |u|
+      - startup = @startups_by_id[u.startup_id]
+      .startup{:id => "startup_#{startup.id}"}
+        .row
+          .span3
+            .left.startup_logo= link_to image_tag(startup.logo_url(:small), :style => 'width: 50px; height: 50px'), startup
+            .left.name
+              %h3= link_to startup.name, startup
             .clear
-        .span3
-          %p
-            Industries: #{startup.industry_list.join(', ')}
-    .span3
-      / - unless @entity.blank?
-      /   = render 'relationships/buttons', :entity => @entity, :connected_with => s
-      / .well.community_status
-      /   != rating_link(s, true)
+            .team_members
+              - startup.team_members.each do |tm|
+                .left= image_tag(user_avatar_url(tm), :style => 'width: 50px; height: 50px', :title => tm.name)
+              .clear
+          .span3
+            %h4.location
+              - industry_list = startup.industry_list
+              - if u.location.present?
+                = u.location
+                - if industry_list.present?
+                  &nbsp;•&nbsp;
+              - if industry_list.present?
+                = industry_list.first(3).join(', ')
+            %p.one_liner= startup.one_liner
+          .span1
+            .rating.center
+              - if startup.rating.present?
+                %h4= startup.rating.round(2)
+          .span1
+            .weeks_worked.center
+              - if @num_checkins_by_startup[startup.id].present?
+                %h4= @num_checkins_by_startup[startup.id]
+          .span4
+            %p
 
-= will_paginate @users
+    = will_paginate @users
