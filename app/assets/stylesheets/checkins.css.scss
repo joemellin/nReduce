@@ -17,6 +17,61 @@
 }
 
 .checkins {
+  .checkin {
+    .team_and_nav {
+      margin-bottom: 10px;
+      .team_members { margin-right: 15px; }
+      h4 { margin-top: 4px; margin-bottom: 0px; }
+      h5 { margin-top: 4px; }
+      .name_and_link { color: #08C;}
+      .all_teams { margin-top: 10px; }
+    }
+    .separator { 
+      margin-bottom: 10px;
+    }
+    .goal_wrapper {
+      margin-top: 80px;
+      .goal { margin-bottom: 30px; }
+      .accomplished { color: #00df00; }
+      .missed { color: #999; }
+      .in_progress {
+        .box {
+          border: 1px solid #ccc;
+          border-radius: 5px;
+          width: 30px;
+          height: 30px;
+          margin-right: 8px;
+          margin-top: 2px;
+        }
+        color: #999;
+      }
+    }
+    .goal_wrapper.next_week { margin-left: 30px; }
+    .goal_wrapper.previous_week { margin-right: 30px; }
+    .previous_week_link, .next_week_link {
+      margin-top: 10px;
+      a {
+        color: #999;
+      }
+    }
+    .next_week_link { margin-left: 30px; }
+    .video { margin-bottom: 8px; }
+    .awesome_comment_count { margin-left: 10px; margin-top: 4px; }
+    .posted_at { color: #ccc; font-size: .85em; }
+    .participants { 
+      margin-top: 8px; margin-bottom: 20px;
+      img { width: 50px; height: 50px; }
+    }
+    .before_video {
+      a { color: #999; }
+      #before_video.modal {
+        width: 640px;
+        height: 470px;
+        .modal-body { padding: 20px; }
+      }
+    }
+  }
+
   .modal#checkin_goal {
     .examples {
       margin-top: 40px;

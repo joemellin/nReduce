@@ -1,5 +1,4 @@
 module ApplicationHelper
-
   def js_settings
     %{
       <script type="text/javascript" charset="utf-8">

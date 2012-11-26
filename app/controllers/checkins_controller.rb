@@ -17,6 +17,8 @@ class CheckinsController < ApplicationController
   def show
     @new_comment = Comment.new(:checkin_id => @checkin.id)
     @comments = @checkin.comments.includes(:user).arrange(:order => 'created_at DESC') # arrange in nested order
+    @next_checkin = @checkin.next_checkin
+    @previous_checkin = @checkin.previous_checkin
   end
 
   def new
