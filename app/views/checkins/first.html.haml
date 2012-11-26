@@ -5,25 +5,31 @@
   .left{:style => 'margin-left: 25px'}= link_to image_tag('nglow.png'), '#'
   .clear
 
-= semantic_form_for @checkin, :url => first_checkins_path, :html => {:class => "form-vertical"} do |f|  
+= semantic_form_for @checkin, :url => first_checkins_path, :html => {:class => "form-vertical first_checkin"} do |f|  
   = f.hidden_field :startup_id
   .row{:style => 'padding-top: 20px'}
     .span1
       %p
     .span10.center
-      %b{:style => 'font-size:35px; line-height: 40px; color:#25A6E9'}Awesome!  Lets get you started!
+      %b{:style => 'font-size:35px; line-height: 40px; color:#25A6E9'}Awesome! Let's get you started!
+
   .row
     .span1.offset2{:style => 'padding-top:60px'}
       %h1 1)
     .span6
-      
-      .control-group.left{error_css(@checkin, :start_focus)}
+      = render 'startups/checkin_day_and_time_zone', :f => f
+
+  .row
+    .span1.offset2{:style => 'padding-top:60px'}
+      %h1 2)
+    .span6
+      .control-group.left{error_css(@checkin, :goal)}
         %p
           &nbsp
-        = f.label :start_focus, "What is your goal for this week?", :style => 'font-size:30px; line-height:45px; padding-top:20px; padding-bottom:25px', :maxlength => 255, :class => 'control-label center'
+        = f.label :goal, "What is your goal for this week?", :style => 'font-size:30px; line-height:45px; padding-top:20px; padding-bottom:25px', :maxlength => 255, :class => 'control-label'
         .controls.center
-          = f.text_field :start_focus, :style => 'height: 30px; line-height:24px; font-size:22px', :class => "span5 checkin_start_focus", :placeholder => "Enter your goal here..."
-          = f.semantic_errors :start_focus
+          = f.text_field :goal, :style => 'height: 30px; line-height:24px; font-size:22px', :class => "span5 checkin_start_focus", :placeholder => "Enter your goal here..."
+          = f.semantic_errors :goal
     .span3{:style => 'padding-top:80px'}
       %b Example Goals:
       %p Talk to 5 users
@@ -32,11 +38,11 @@
       
   .row
     .span1.offset2{:style => 'padding-top:60px'}
-      %h1 2)
+      %h1 3)
     .span6
       .control-group.left
         %p
-        = label_tag :message, "Say hello to your group mates :)", :style => 'font-size:30px; line-height:45px; padding-top:40px; padding-bottom:25px', :maxlength => 255, :class => 'control-label center'
+        = label_tag :message, "Say hello to your group mates :)", :style => 'font-size:30px; line-height:45px; padding-top:40px; padding-bottom:25px', :maxlength => 255, :class => 'control-label'
         .controls.center
           = text_field_tag :message, '', :style => 'height: 30px; line-height:24px; font-size:22px', :class => "span5 checkin_start_focus", :placeholder => "Enter a fun hello message here..."
   

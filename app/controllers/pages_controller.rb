@@ -14,7 +14,7 @@ class PagesController < ApplicationController
   end
 
   def home
-    @weekly_class = WeeklyClass.current_class
+    @weekly_class = WeeklyClass.current_class # to load map of active users
     #@demo_day = DemoDay.where(:day => Date.today).first
     @home = true
     if user_signed_in?

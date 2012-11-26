@@ -1,0 +1,52 @@
+.step2
+  .control-group{error_css(@checkin, :accomplished)}
+    %h3 1) Did you accomplish your goal?
+    = f.hidden_field :accomplished
+    .controls
+      %p
+        Last Week's Goal:
+        #{@checkin.goal.blank? ? '(none)' : h(@checkin.goal)}
+      .btn-group{'data-toggle' => 'buttons-radio'}
+        %button.btn.btn-large.accomplished{:type => 'button', 'data-value' => 'false', :class => (!@checkin.accomplished.nil? && @checkin.accomplished? == false) ? 'active' : ''} No
+        %button.btn.btn-large.accomplished{:type => 'button', 'data-value' => 'true', :class => (!@checkin.accomplished.nil? && @checkin.accomplished? == true) ? 'active' : ''} Yes!
+      = f.semantic_errors :accomplished
+
+  .control-group.pre_launch{:class => @checkin.startup.launched? ? 'hide' : ''}
+    = hidden_field_tag 'startup[launched]', @checkin.startup.launched?, :id => 'startup_launched'
+    %h3 2) Have you launched to customers?
+    .controls
+      .btn-group{'data-toggle' => 'buttons-radio'}
+        %button.btn.btn-large{:type => 'button'} No
+        %button.btn.btn-large{:type => 'button', :onclick => "$('#startup_launched').val(1); $('.pre_launch').hide(); $('.launched').fadeIn();"} Yes
+      %p.help-text
+        %i (Privately or Publicly)
+
+  .launched{:class => @checkin.startup.launched? ? '' : 'hide'}
+    = f.fields_for :measurement do |m|
+      = m.hidden_field :instrument_id, :id => 'checkin_instrument_id'
+      .control-group{:style => 'margin-bottom: 0'}
+        %h3 2) Enter your weekly metric:
+        .controls
+          - if m.object.instrument.new_record?
+            #instrument_name_form
+              %p
+                %h3= link_to '<i class="icon-signal"></i> Choose Your Metric'.html_safe, '#', :onclick => "$('#instrument_modal').modal(); return false;", :class => 'btn btn-large'
+                - if @checkin.startup.launched?
+                  %br/
+                  %i Required, since you are launched (to show traction &amp; progress)
+          %p#instrument_name{:class => m.object.instrument.new_record? ? 'hide' : ''}= m.object.instrument.name
+          = f.semantic_errors :measurement
+
+      #instrument_value{:class => m.object.instrument.new_record? ? 'hide' : ''}
+        .control-group{error_css(m.object, :value)}
+          .controls
+            = m.text_field :value, :class => "span2", :id => 'checkin_measurement_value'
+            = m.semantic_errors :value
+
+
+  .control-group{error_css(@checkin, :notes)}
+    %h3 3) Share what happened this week:
+    .controls
+      = f.text_area :notes, :size => '200x2', :class => "span4 checkin_end_comments", :placeholder => "This is what I did this week... Can you give me feedback on... "
+      = f.semantic_errors :notes  
+

@@ -1,0 +1,24 @@
+- hide_label ||= false
+= f.fields_for :startup do |s|
+  - s.object.checkin_day ||= Startup.default_checkin_day
+  .control-group.checkin_day
+    - unless hide_label
+      = s.label :checkin_day, 'What day do you want to post your progress updates?', :class => 'control-label'
+      %p
+        Your weekly video updates are
+        %span.bold due at midnight
+        on the day of your choosing.
+      %p Please select the day of the week you would like to post your progress updates:
+      
+    = s.hidden_field :checkin_day, :id => 'checkin_day'
+    .controls
+      .btn-group{'data-toggle' => 'buttons-radio'}
+        - c = 0
+        - Date::DAYNAMES.each do |day|
+          %button.btn.btn-large.checkin_day{:type => 'button', 'data-value' => c, :class => s.object.checkin_day == c ? 'active' : ''}= day
+          - c += 1
+
+  .control-group.time_zone
+    = s.label :time_zone, 'Please select your time zone:', :class => 'control-label'
+    .controls
+      = s.time_zone_select :time_zone, nil, :default => "London"

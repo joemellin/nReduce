@@ -4,25 +4,27 @@ class Checkin < ActiveRecord::Base
   belongs_to :user # the user logged in who created check-in
   belongs_to :measurement
   belongs_to :before_video, :class_name => 'Video', :dependent => :destroy
-  belongs_to :after_video, :class_name => 'Video', :dependent => :destroy
+  belongs_to :video, :dependent => :destroy
   has_many :comments, :dependent => :destroy
   has_many :awesomes, :as => :awsm, :dependent => :destroy
   has_many :notifications, :as => :attachable
   has_many :user_actions, :as => :attachable
 
-  attr_accessor :next_week_focus
-  attr_accessor :next_week_youtube_url
+  attr_accessor :next_week_goal
+  attr_accessor :previous_step
 
-  attr_accessible :start_focus, :start_why, :start_video_url, :end_video_url, :end_comments, 
+  attr_accessible :goal, :start_why, :start_video_url, :end_video_url, :notes,
     :startup_id, :start_comments, :startup, :measurement_attributes, 
-    :before_video_attributes, :after_video_attributes, :accomplished,
-    :next_week_focus, :next_week_youtube_url
+    :before_video_attributes, :video_attributes, :accomplished,
+    :next_week_goal, :video, :startup_attributes
     
   accepts_nested_attributes_for :measurement, :reject_if => proc {|attributes| attributes.all? {|k,v| v.blank?} }, :allow_destroy => true
   accepts_nested_attributes_for :before_video, :reject_if => proc {|attributes| attributes.all? {|k,v| v.blank?} }, :allow_destroy => true
-  accepts_nested_attributes_for :after_video, :reject_if => proc {|attributes| attributes.all? {|k,v| v.blank?} }, :allow_destroy => true
+  accepts_nested_attributes_for :video, :reject_if => proc {|attributes| attributes.all? {|k,v| v.blank?} }, :allow_destroy => true
+  accepts_nested_attributes_for :startup, :reject_if => proc {|attributes| attributes.all? {|k,v| v.blank?} }
 
-  after_validation :check_submitted_completed_times
+  after_initialize :set_previous_step
+  after_validation :add_completed_at_time
   before_save :notify_user
   before_create :assign_week
   before_save :create_next_week_checkin
@@ -30,18 +32,29 @@ class Checkin < ActiveRecord::Base
   after_destroy :reset_startup_checkin_cache
 
   validates_presence_of :startup_id
-  validates_presence_of :start_focus, :message => "can't be blank", :if => lambda { Checkin.in_before_time_window? }
-  validates_presence_of :before_video, :message => "can't be blank", :if => lambda { Checkin.in_before_time_window? }
-  validates_presence_of :after_video, :message => "can't be blank", :if =>  lambda { Checkin.in_after_time_window? }
-  validates_inclusion_of :accomplished, :in => [true, false], :message => "must be selected", :if => lambda { Checkin.in_after_time_window? }
-  validate :next_week_checkin_is_valid
-  #validate :check_video_urls_are_valid
+  validates_presence_of :video, :message => "can't be blank", :if => Proc.new{|f| f.previous_step >= 1 } 
+  validates_inclusion_of :accomplished, :in => [true, false], :message => "must be selected", :if => Proc.new{|f| f.previous_step >= 2 } 
+  validate :next_weeks_goal_is_present
   validate :measurement_is_present_if_launched
 
   scope :ordered, order('created_at DESC')
   scope :completed, where('completed_at IS NOT NULL')
 
   @queue = :checkin_message
+
+  def self.steps(display_steps_only = false)
+    steps = ['Record Video', 'Accomplishments', 'Set Next Week\'s Goal', 'Completed']
+    steps.pop if display_steps_only # remove last step if we're displaying them
+    steps
+  end
+
+  def current_step
+    return 0 if self.goal.blank?
+    return 1 if self.video.blank? || self.video.new_record?
+    return 2 if self.accomplished.nil? # need to add logic for instruments
+    return 3 if self.next_week_goal.blank?
+    return 4
+  end
 
   def self.add_startups_to_checkin_experiment(startups = [])
     current_ids = Cache.get('checkin_experiment')
@@ -65,22 +78,30 @@ class Checkin < ActiveRecord::Base
     end
   end
 
-    # Will queue up emails to be sent to all startups who haven't checked in yet
+    # Will queue up emails to be sent to all startups who haven't checked in yet on this day
   def self.email_startups_not_completed_checkin_yet
-    ids = Checkin.where(:week => Week.previous(Checkin.current_week)).map{|c| c.startup_id }
-    completed_this_week = Checkin.where(:week => Checkin.current_week).completed.map{|c| c.startup_id }
+    return true
+    current_day = Time.now.wday
+    current_week = Checkin.current_week(Checkin.default_offset)
+    # Find all startups that checkin today
+    startup_ids = Startup.where(:checkin_day => current_day).map{|s| s.id }
+    # Now find which ones were active last week
+    ids = Checkin.where(:week => Week.previous(current_week), :startup_id => startup_ids).map{|c| c.startup_id }
+    # And then which have completed a checkin this week
+    completed_this_week = Checkin.where(:week => current_week, :startup_id => startup_ids).completed.map{|c| c.startup_id }
     not_completed = (ids - completed_this_week).shuffle
     if not_completed.size > 0
       # split them half/half so we can a/b test and send only half an email
-      half = not_completed.size / 2
-      c = 0
-      to_email_ids = []
-      not_completed.each do |id|
-        to_email_ids << id if c < half
-        c += 1
-      end
-      not_emailed = not_completed - to_email_ids
-      puts to_email_ids
+      # half = not_completed.size / 2
+      # c = 0
+      # to_email_ids = []
+      # not_completed.each do |id|
+      #   to_email_ids << id if c < half
+      #   c += 1
+      # end
+      # not_emailed = not_completed - to_email_ids
+      to_email_ids = not_completed
+      not_emailed = []
       unless to_email_ids.blank?
         User.where(:startup_id => to_email_ids).each do |u|
           Resque.enqueue(Checkin, :after_checkin_now, u.id) if u.account_setup? && u.email_for?('checkin_now')
@@ -88,7 +109,7 @@ class Checkin < ActiveRecord::Base
       end
       msg = "Emailed all users on these startups: #{to_email_ids.join(', ')}. Didn't email these startups: #{not_emailed.join(', ')}."
     else
-      msg = "All startups have who were active last week completed checkin this week."
+      msg = "All startups have who were active last week completed a checkin today."
     end
     File.open(Rails.root + 'checkin_emailed.txt', 'w') {|f| f.write(msg) }
     return msg
@@ -97,8 +118,8 @@ class Checkin < ActiveRecord::Base
     # Returns hash of {:startup_id => current_checkin}
   def self.current_checkin_for_startups(startups = [])
     return {} if startups.blank?
-    # next_checkin = Checkin.next_checkin_type_and_time
-    if Checkin.in_after_time_window?
+    return {}
+    if Checkin.in_time_window?
       checkins = Checkin.where(:startup_id => startups.map{|s| s.id }).where(['created_at > ?', Checkin.prev_after_checkin])
     else # if in before checkin or in the week after, get prev week's checkin start time
       start_time = Checkin.prev_after_checkin - 24.hours
@@ -126,138 +147,32 @@ class Checkin < ActiveRecord::Base
     c_by_week
   end
 
-  def self.pct_complete_week
-    nc = Checkin.next_after_checkin
-    pc = Checkin.prev_after_checkin
-    return 100 if nc < Time.now
-    100 - (((nc - Time.now) / (nc - pc)) * 100).round
-  end
-
-  def self.in_a_checkin_window?
-    self.in_before_time_window? or self.in_after_time_window?
-  end
-
-    # Returns true if in the time window where startups can do 'before' check-in
-  def self.in_before_time_window?
-    # tues from 4pm - wed 4pm
-    now = Time.now
-    next_before = Checkin.next_before_checkin
-    return true if now < next_before and now > (next_before - 24.hours)
-    false
-  end
-
-    # Returns true if in the time window where startups can do 'after' check-in
-  def self.in_after_time_window?
-    # monday from 4pm - tue 4pm
-    now = Time.now
-    next_after = Checkin.next_after_checkin
-    return true if now < next_after and now > (next_after - 24.hours)
-    false
-  end
-
-    # Returns Time of next before checkin: Tue 4pm - Wed 4pm
-  def self.next_after_checkin
-    t = Time.now
-    # Are we in Mon or tue? - if so next before checkin is this week
-    if t.monday? or (t.tuesday? and t.hour < 16)
-      return t.beginning_of_week + 1.day + 16.hours
-    else
-      # Otherwise it's next week
-      return t.beginning_of_week + 1.week + 1.day + 16.hours
-    end
-  end
-
-   # Returns Time of next after checkin: Mon 4pm - Tue 4pm
-  def self.next_before_checkin
-    t = Time.now
-    # Are we in Mon or tue? - if so next before checkin is this week
-    if t.monday? or t.tuesday? or (t.wednesday? and t.hour < 16)
-      t.beginning_of_week + 2.days + 16.hours
-    else
-      # Otherwise it's next week
-      t.beginning_of_week + 1.week + 2.days + 16.hours
-    end
-  end
-
-  def self.prev_after_checkin
-    self.next_after_checkin - 1.week
-  end
-
-  def self.prev_before_checkin
-    self.next_before_checkin - 1.week
-  end
-
-  # Returns an array with the next checkin type and time, ex: [:before, Time obj]
-  def self.next_checkin_type_and_time
-    #before = Checkin.next_before_checkin
-    after = Checkin.next_after_checkin
-    #if before < after
-    #  {:type => :before, :time => before}
-    #else
-    {:type => :after, :time => after}
-    #end
-  end
-
-  # Pass in a timestamp and this will return the start (4pm on Tue) of that checkin's week
-  def self.week_start_for_time(time)
-    # reset to tuesday
-    if time.sunday? or time.monday? or (time.tuesday? and time.hour < 16)
-      time = time.beginning_of_week - 5.days
-    else
-      time = time.beginning_of_day - time.days_to_week_start.days + 2.days
-    end
-    time += 16.hours # set it at 4pm
-    time
-  end
-
-  # Pass in a timestamp and this will return the current week description for that timestamp
-  # ex: Jul 5 to Jul 12
-  def self.week_for_time(time)
-    # reset to tuesday
-    beginning_of_week = Checkin.week_start_for_time(time)
-    Week.for_time(beginning_of_week)
-  end
-
-  def self.week_integer_for_time(time)
-    Week.integer_for_time(Checkin.week_start_for_time(time))
-  end
-
-  # Current week for the after checkin
-  def self.current_week
-    Week.integer_for_time(Time.now, :after_checkin)
-  end
-
-  # Pass in a week integer (ex: 20126) and this will pass back the week before, 20125
-  def self.previous_week(week)
-    Week.previous(week)
-  end
-
   # Queues up 'before' email to be sent to all active users
-  def self.send_before_checkin_email
-    users_with_startups = User.where('email IS NOT NULL').where(:startup_id => Startup.select('id').account_complete.map{|s| s.id })
+  # def self.send_before_checkin_email
+  #   users_with_startups = User.where('email IS NOT NULL').where(:startup_id => Startup.select('id').account_complete.map{|s| s.id })
 
-    users_with_startups.each do |u|
-      Resque.enqueue(Checkin, :before, u.id) if u.account_setup? && u.email_for?('docheckin')
-    end
-  end
+  #   users_with_startups.each do |u|
+  #     Resque.enqueue(Checkin, :before, u.id) if u.account_setup? && u.email_for?('docheckin')
+  #   end
+  # end
 
   # Queues up 'after' email to be sent to all active users
-  def self.send_after_checkin_email
-    users_with_startups = User.where('email IS NOT NULL').where(:startup_id => Startup.select('id').account_complete.map{|s| s.id })
+  # checkin type either :checkin or :checkin_now
+  def self.send_checkin_email(checkin_type = :checkin)
+    day_of_week = Time.now.wday
+    users_with_startups = User.where('email IS NOT NULL').where(:startup_id => Startup.select('id').where(:checkin_day => day_of_week).account_complete.map{|s| s.id })
 
     users_with_startups.each do |u|
-      Resque.enqueue(Checkin, :after, u.id) if u.account_setup? && u.email_for?('docheckin')
+      Resque.enqueue(Checkin, checkin_type, u.id) if u.account_setup? && u.email_for?('docheckin')
     end
   end
 
   # Mails checkin message
-  # Checkin type can be either :before, :after
+  # Checkin type can be either :checkin or :checkin_now
   def self.perform(checkin_type, user_id)
-    if checkin_type.to_sym == :before
-      UserMailer.before_checkin_reminder(User.find(user_id)).deliver
-    elsif checkin_type.to_sym == :after
+    if checkin_type.to_sym == :checkin
       UserMailer.after_checkin_reminder(User.find(user_id)).deliver
-    elsif checkin_type.to_sym == :after_checkin_now
+    elsif checkin_type.to_sym == :checkin_now
       UserMailer.checkin_now(User.find(user_id)).deliver
     end
   end
@@ -270,14 +185,14 @@ class Checkin < ActiveRecord::Base
     checkins = startup.checkins.order('created_at DESC')
     return arr if checkins.blank?
     # add blank elements at the beginning until they've done a checkin - start at end of prev after checkin
-    current_week = Checkin.week_integer_for_time(Checkin.prev_after_checkin)
+    current_week = Checkin.week_integer_for_time(Checkin.prev_checkin_at(startup.checkin_offset), startup.checkin_offset)
     checkins.each do |c|
       while current_week != c.week
         arr << [false, false]
         # move current week back one week until we hit the next checkin
         current_week = Week.previous(current_week)
       end
-      arr << [c.submitted?, c.completed?]
+      arr << [c.completed?]
       current_week = Week.previous(current_week)
     end
     arr
@@ -287,9 +202,9 @@ class Checkin < ActiveRecord::Base
     history = Checkin.history_for_startup(startup)
     consecutive_checkins = longest_streak = 0
     prev_week = false
-    history.each do |before, after|
+    history.each do |completed|
       # If the checkin has a before and after video count it
-      if before and after
+      if completed
         # Starting off - first week
         if prev_week.blank?
           consecutive_checkins += 1
@@ -307,9 +222,17 @@ class Checkin < ActiveRecord::Base
     longest_streak
   end
 
+  def next_checkin
+    Checkin.where(:startup_id => self.startup_id).where(['created_at > ?', self.created_at]).first
+  end
+
+  def previous_checkin
+    Checkin.where(:startup_id => self.startup_id).where(['created_at < ?', self.created_at]).first
+  end
+
   # Takes youtube urls and converts to our new db-backed format (and uploads to vimeo)
   def convert_to_new_video_format
-    return true if self.before_video.present? && self.after_video.present?
+    return true if self.before_video.present? && self.video.present?
     if self.start_video_url.present? && self.before_video.blank?
       ext_id = Youtube.id_from_url(self.start_video_url)
       y = Youtube.where(:external_id => ext_id).first
@@ -323,20 +246,29 @@ class Checkin < ActiveRecord::Base
         puts "Couldn't save before video: #{y.errors.full_messages}"
       end
     end
-    if self.end_video_url.present? && self.after_video.blank?
+    if self.end_video_url.present? && self.video.blank?
       ext_id = Youtube.id_from_url(self.end_video_url)
       y = Youtube.where(:external_id => ext_id).first
       y ||= Youtube.new
       y.external_id = ext_id
       y.user = self.user
       if y.save
-        self.after_video = y
+        self.video = y
         self.save(:validate => false)
       else
-        puts "Couldn't save after video: #{y.errors.full_messages}"
+        puts "Couldn't save video: #{y.errors.full_messages}"
       end
     end
     true
+  end
+
+  # People who awesomed and commented, minus the team members
+  def participants(exclude_ids = [])
+    ids = self.awesomes.map{|a| a.user_id }
+    ids += self.comments.map{|c| c.user_id }
+    ids.uniq!
+    ids -= exclude_ids if exclude_ids.present?
+    User.where(:id => ids)
   end
 
   # Cache # of comments
@@ -345,30 +277,8 @@ class Checkin < ActiveRecord::Base
     self.save(:validate => false) # don't require validations in case we're during check-in window with requirements
   end
 
-  def time_label
-    Checkin.week_for_time(self.created_at || Time.now)
-  end
-
-  def time_window
-    Week.window_for_integer(self.week, :after_checkin)
-  end
-
-  def submitted?
-    !submitted_at.blank?
-  end
-
   def completed?
     !completed_at.blank?
-  end
-
-  # Returns true if the 'before' section of the checkin was completed
-  def before_completed?
-    !self.start_focus.blank? and (!self.start_video_url.blank? || !self.before_video.blank?)
-  end
-
-  # Returns true if the 'after' section of the checkin was completed
-  def after_completed?
-    !self.end_video_url.blank? || !self.after_video.blank?
   end
 
   def self.video_url_is_unique?(url)
@@ -379,7 +289,7 @@ class Checkin < ActiveRecord::Base
     # Assigns week for this checkin, ex: 20125 is week 5 of 2012
     # uses created at date, or if not yet saved, current time
   def assign_week
-    self.week ||= Checkin.week_integer_for_time(self.created_at || Time.now)
+    self.week ||= Checkin.week_integer_for_time(self.created_at || Time.now, self.startup.present? ? self.startup.checkin_offset : Checkin.default_offset)
     true
   end
 
@@ -396,43 +306,132 @@ class Checkin < ActiveRecord::Base
     success
   end
 
+  ####################################
+  #
+  # METHODS FOR TIME CALCULATION
+  #
+  #
+
+  # Default offset is a Monday checkin (due at end of day on Monday)
+  def self.default_offset
+    # [ offset from beginning of week, duration of time window ]
+    [1.day, 24.hours]
+  end
+
+  def self.pct_complete_week(offset)
+    nc = Checkin.next_checkin_at(offset)
+    return 100 if nc < Time.now
+    100 - (((nc - Time.now) / (nc - (nc - 1.week))) * 100).round
+  end
+
+  # Returns time of next checkin deadline
+  def self.next_checkin_at(offset)
+    t = Time.now
+    Checkin.next_window_for(offset).last
+  end
+
+  # Returns time when prev checkin was over
+  def self.prev_checkin_at(offset)
+    self.next_checkin_at(offset) - 1.week
+  end
+
+  # Pass in a timestamp and this will return the start (default midnight on Tue) of that checkin's week
+  def self.week_start_for_time(time, offset)
+    # reset to tuesday
+    week_start = time.beginning_of_week + offset.first + offset.last
+    if time < week_start
+      # We're in the offset time, so use last week
+      return week_start - 7.days
+    else
+      return week_start
+    end
+  end
+
+  # Pass in a timestamp and this will return the current week description for that timestamp
+  # ex: Jul 5 to Jul 12
+  def self.week_for_time(time, offset)
+    # reset to tuesday
+    beginning_of_week = Checkin.week_start_for_time(time, offset)
+    Week.for_time(beginning_of_week)
+  end
+
+  # Given a time, returns its corresponding integer (ex: 201214)
+  def self.week_integer_for_time(time, offset)
+    Week.integer_for_time(Checkin.week_start_for_time(time, offset))
+  end
+
+  # Current week for the checkin
+  def self.current_week(offset)
+    Week.integer_for_time(Time.now, offset)
+  end
+
+      # Returns true if time given is in the time window. If no time given, defaults to now
+  def self.in_time_window?(offset, time = nil)
+    time ||= Time.now
+    next_window = Checkin.next_window_for(offset)
+    return true if time > next_window.first && time < next_window.last
+    false
+  end
+
+    # Returns array of [start_time, end_time] for this type
+  def self.next_window_for(offset, dont_skip_if_in_window = false)
+    t = Time.now
+    beginning_of_week = t.beginning_of_week
+    window_start = beginning_of_week + offset.first
+    # We're after the beginning of this time window, so add a week unless we're suppressing that
+    window_start += 1.week if (t > window_start + offset.last) && !dont_skip_if_in_window
+    [window_start, window_start + offset.last]
+  end
+
+  # Returns label string - ex: November 14 to November 20th
+  def time_label
+    Checkin.week_for_time(self.created_at || Time.now, self.startup.present? ? self.startup.checkin_offset : Checkin.default_offset)
+  end
+
+  # Returns time window for this checkin
+  def time_window
+    Week.window_for_integer(self.week, self.startup.checkin_offset)
+  end
+
   protected
 
+  def next_weeks_goal_is_present
+    if self.previous_step >= 3
+      goal = self.next_week_goal
+      goal = self.next_checkin.goal if goal.blank? && self.next_checkin.present?
+      self.errors.add(:goal, "can't be blank") if goal.blank?
+      return false
+    end
+    true
+  end
+
   def create_next_week_checkin
-    return true if self.next_week_focus.blank? && self.next_week_youtube_url.blank?
+    return true if self.next_week_goal.blank?
+    return true if self.next_checkin.present?
     self.assign_week if self.week.blank?
     c = Checkin.new
     c.startup_id = self.startup_id
     c.user_id = self.user_id
-    c.week = Checkin.week_integer_for_time(Checkin.next_before_checkin)
-    c.start_focus = self.next_week_focus
-    c.before_video = Youtube.new(:youtube_url => self.next_week_youtube_url) if self.next_week_youtube_url.present?
+    c.week = Checkin.week_integer_for_time(Checkin.next_checkin_at(c.startup.checkin_offset), c.startup.checkin_offset)
+    c.goal = self.next_week_goal
     c.save(:validate => false) # ignore errors for now
-    true
   end
 
-  def next_week_checkin_is_valid
-    return true if self.next_week_focus.blank? && self.next_week_youtube_url.blank?
-    if self.next_week_youtube_url.present? && self.next_week_focus.blank?
-      self.errors.add(:next_week_focus, 'must be added if you add a before video URL')
-    end
-    true
+  def set_previous_step
+    self.previous_step = self.current_step
   end
 
   def reset_startup_checkin_cache
     self.startup.reset_current_checkin_cache
   end
 
-  def check_submitted_completed_times
-    if self.errors.blank?
-      self.submitted_at = Time.now if !self.submitted? and self.before_completed?
-      self.completed_at = Time.now if !self.completed? and self.after_completed?
-    end
+  def add_completed_at_time
+    self.completed_at = Time.now if !self.completed? && self.errors.blank? && self.current_step == 4
     true
   end
 
   def measurement_is_present_if_launched
-    if self.after_completed? && self.startup.launched?
+    if self.startup.present? && self.startup.launched? && self.previous_step > 0
       if self.measurement.blank? || self.measurement.value.blank?
         self.errors.add(:measurement, 'needs to be added since you are launched - to measure traction & progress')
         return false

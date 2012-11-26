@@ -15,7 +15,7 @@
       %h3 Week of #{c.time_label}
       %p 
         %small Goal:
-      %p= simple_format(truncate(h(c.start_focus), :length => 150))
+      %p= simple_format(truncate(h(c.goal), :length => 150))
     .span3
       %p
         %small Before Video:
@@ -27,7 +27,7 @@
     .span3
       %p
         %small After Video:
-      = display_checkin_video(c, :after_video, false, 250, 188).html_safe
+      = display_checkin_video(c, :video, false, 250, 188).html_safe
       / - if c.end_video_url.blank?
       /   = image_tag('novideo_s.png')
       / - else
@@ -35,7 +35,7 @@
     .span3
       %p
         %small Accomplished:
-      %p= simple_format(truncate(h(c.end_comments), :length => 150))
+      %p= simple_format(truncate(h(c.notes), :length => 150))
       - if c.awesome_count > 0
         %p
           Awesomes

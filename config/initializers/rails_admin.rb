@@ -122,11 +122,11 @@ RailsAdmin.config do |config|
     # configure :user, :belongs_to_association 
     # configure :comments, :has_many_association   #   # Found columns:
     # configure :id, :integer 
-    # configure :start_focus, :string 
+    # configure :goal, :string 
     # configure :start_why, :string 
     # configure :start_video_url, :string 
     # configure :end_video_url, :string 
-    # configure :end_comments, :text 
+    # configure :notes, :text 
     # configure :submitted_at, :datetime 
     # configure :completed_at, :datetime 
     # configure :startup_id, :integer         # Hidden 
@@ -136,13 +136,13 @@ RailsAdmin.config do |config|
     list do
       field :id
       field :startup
-      field :start_focus
+      field :goal
       field :start_video_url
       field :submitted_at
       field :end_video_url
       field :completed_at
       field :start_why
-      field :end_comments
+      field :notes
     end
   end
   # config.model Comment do

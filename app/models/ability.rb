@@ -30,14 +30,16 @@ class Ability
         end
         
         # Can start a checkin if in before or after time window and their startup owns checkin
-        can [:new, :create], Checkin if Checkin.in_after_time_window? or Checkin.in_before_time_window?
+        can [:new, :create], Checkin if Checkin.in_time_window?(user.startup.checkin_offset)
 
         # Can edit a checkin if in the before/after time window and they own it
         can [:edit, :update], Checkin do |checkin|
-          (Checkin.in_after_time_window? or Checkin.in_before_time_window?) and (checkin.startup_id == user.startup_id)
+          Checkin.in_time_window?(user.startup.checkin_offset) && (checkin.startup_id == user.startup_id)
         end
 
         can :first, Checkin if !user.account_setup?
+
+        can :create, Checkin if user.startup.current_checkin.blank?
 
         can :destroy, Checkin, :startup_id => user.startup_id
 
@@ -241,9 +243,7 @@ class Ability
     end
 
     # Can only create a startup if registration is open and they don't have a current startup
-    can [:new, :create, :edit], Startup do |startup|
-      Startup.registration_open? and user.startup_id.blank?
-    end
+    can [:new, :create, :edit], Startup if user.startup_id.blank?
 
     # User can only manage their own account
     can [:manage, :onboard, :onboard_next], User, :id => user.id

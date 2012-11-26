@@ -1,7 +1,7 @@
 class Startup < ActiveRecord::Base
   obfuscate_id :spin => 29406582
   include Connectable # methods for relationships
-  has_paper_trail :ignore => [:setup, :cached_industry_list, :active]
+  has_paper_trail :ignore => [:setup, :cached_industry_list, :active, :checkin_day, :time_zone]
   belongs_to :main_contact, :class_name => 'User'
   belongs_to :meeting
   belongs_to :intro_video, :class_name => 'Video', :dependent => :destroy
@@ -27,7 +27,7 @@ class Startup < ActiveRecord::Base
     :industry_list, :technology_list, :ideology_list, :industry, :intro_video_url, :elevator_pitch, 
     :logo, :remote_logo_url, :logo_cache, :remove_logo, :checkins_public, :pitch_video_url, 
     :investable, :screenshots_attributes, :business_model, :founding_date, :market_size, :in_signup_flow, 
-    :invites_attributes, :mentorable
+    :invites_attributes, :mentorable, :time_zone, :checkin_day
   attr_accessor :in_signup_flow
 
   accepts_nested_attributes_for :screenshots, :reject_if => proc {|attributes| attributes.all? {|k,v| v.blank?} }, :allow_destroy => true
@@ -93,24 +93,12 @@ class Startup < ActiveRecord::Base
   #   end
   # end
 
-  # def to_param
-  #   "#{ObfuscateId.hide(self.id)}-#{self.name.to_url}"
-  # end
-
-  # Searches all teams and identifies who has checked in the last two weeks - they are marked as active. All others are inactive
+  # Searches all teams and identifies who has checked in the last two weeks (starting at beginning of this current week) - they are marked as active. All others are inactive
   def self.identify_active_teams
-    weeks = []
-    # Current week (so count if they've done before and we're in this week)
-    weeks << Week.integer_for_time(Checkin.prev_after_checkin, :after_checkin)
-    # Check previous full week
-    weeks << Week.integer_for_time(Checkin.prev_after_checkin - 1.week, :after_checkin)
-    # And another week before that
-    weeks << Week.previous(weeks.first)
     all_ids = Startup.all.map{|s| s.id }
-
     # Count all startups who have checked in last two weeks. If count is 0, they are inactive
     active = []
-    Checkin.where(:week => weeks).group(:startup_id).count.each do |startup_id, num_checkins|
+    Checkin.where(['created_at > ?', Time.now.beginning_of_week - 2.weeks]).group(:startup_id).count.each do |startup_id, num_checkins|
       active << startup_id if num_checkins > 0
     end
     # Update all startups' state who are not already set correctly
@@ -128,8 +116,8 @@ class Startup < ActiveRecord::Base
     Startup.with_setup(:goal).active.order('activated_at DESC').limit(limit)
   end
 
-  def self.registration_open?
-    true
+  def self.default_checkin_day
+    2
   end
 
   def self.community_status
@@ -148,6 +136,22 @@ class Startup < ActiveRecord::Base
 
   def self.nreduce_obfuscated_id
     ObfuscateId.hide(Startup.nreduce_id)
+  end
+
+  # Returns array for calculating checkin window offset [offset of day it starts from day of week, duration]
+  def checkin_offset
+    return @checkin_offset if @checkin_offset.present?
+    if self.checkin_day.present? && self.time_zone.present?
+      # Calc offset from beginning of week + duration - 1.day
+      @checkin_offset = [self.checkin_day.days - 1.day + self.time_zone_offset, 24.hours]
+    else
+      @checkin_offset = Checkin.default_offset
+    end
+    @checkin_offset
+  end
+
+  def time_zone_offset
+    ActiveSupport::TimeZone[self.time_zone || Settings.default_time_zone].utc_offset
   end
 
   def launched?
@@ -183,12 +187,13 @@ class Startup < ActiveRecord::Base
   end
 
   def previous_checkin
-    checkins.ordered.where(['created_at < ? AND created_at > ?', Checkin.prev_after_checkin, Checkin.prev_after_checkin - 1.week]).first
+    prev_at = Checkin.prev_checkin_at(self.checkin_offset)
+    checkins.ordered.where(['created_at < ? AND created_at > ?', prev_at, prev_at - 1.week]).first
   end
 
   def current_checkin_id
     Cache.get(['current_checkin', self], nil, true){
-      c = checkins.ordered.where(['created_at > ?', Checkin.prev_after_checkin]).first
+      c = checkins.ordered.where(['created_at > ?', Checkin.prev_checkin_at(self.checkin_offset)]).first
       c.id if c.present?
     }
   end
@@ -224,7 +229,7 @@ class Startup < ActiveRecord::Base
       # Returns hash of all elements + each team member's completeness as 
   def profile_elements(show_team_member_details = false)
     elements = {
-      :elevator_pitch => (!self.elevator_pitch.blank? && (self.elevator_pitch.size > 10)), 
+      #:elevator_pitch => (!self.elevator_pitch.blank? && (self.elevator_pitch.size > 10)), 
       :markets => !self.cached_industry_list.blank?,
       :one_liner => self.one_liner.present?
     }
@@ -285,6 +290,10 @@ class Startup < ActiveRecord::Base
     [completed, total]
   end
 
+  def checkin_day_human
+    Date::DAYNAMES[self.checkin_day]
+  end
+
      # Returns true if mentor & investor elements all pass
    # commented out: they haven't invited an nreduce mentor in the last week
   def can_access_mentors_and_investors?
@@ -315,22 +324,6 @@ class Startup < ActiveRecord::Base
     3 => "Steady Revenue - 37Signals",
     4 => "Improve Society - Kiva",
     5 => "Big Exit - Facebook"}
-  end
-
-  def self.industry_select_options
-    Settings.startup_options.industry
-  end
-
-  def self.stage_select_options
-    Startup.stages.map{|k,v| [v,k]}
-  end
-
-  def self.company_goal_select_options
-    Startup.company_goals.map{|k,v| [v,k]}
-  end
-
-  def self.growth_model_select_options
-    Startup.growth_models.map{|k,v| [v,k]}
   end
 
   def self.tags_by_startup_id(startups = [])
@@ -412,6 +405,7 @@ class Startup < ActiveRecord::Base
     self.active = true
     self.activated_at = Time.now
     connected_to_ids = self.connected_to_ids('Startup')
+    team_member_ids = self.team_member_ids
     unless connected_to_ids.present? && connected_to_ids.size > 0
       Startup.last_activated_teams(3).where(['id != ?', self.id]).each do |s|
         r = Relationship.start_between(self, s, :startup_startup, true)
@@ -420,11 +414,11 @@ class Startup < ActiveRecord::Base
         if r.present? && r.valid?
           r.approve!
 
-          # Add message from new founder to these startup's checkins
-          if s.current_checkin.present? && message_from_user.present?
-            c = Comment.new(:content => message, :checkin_id => s.current_checkin.id)
-            c.user = message_from_user
-            c.save
+          # Send message from new founder to these startups
+          if message_from_user.present?
+            Conversation.create(:to_entity => s,
+                                :participant_ids => team_member_ids,
+                                :messages => [Message.new(:from_id => message_from_user.id, :content => message)])
           end
 
           # Now mark them as setup with connections if they've hit six

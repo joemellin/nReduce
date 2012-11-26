@@ -76,3 +76,6 @@
             %br/
             %br/
             = link_to 'Cancel', '#', :onclick => "$('#ciao').modal('hide'); return false;", :class => 'btn'
+
+      - if @force_checkin
+        = render 'checkins/goal_modal'

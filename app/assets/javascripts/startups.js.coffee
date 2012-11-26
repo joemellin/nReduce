@@ -5,6 +5,10 @@ $ ->
     val = $(this).data('value')
     $('#checkin_accomplished').val(val)
 
+  $('form.checkin button.checkin_day').click ->
+    val = $(this).data('value')
+    $('#checkin_day').val(val)
+
   # if $('form.checkin').length > 0
   #   setTimeout( ->
   #     enableCheckinFormIfComplete(true)
@@ -27,7 +31,7 @@ $ ->
     false
   )
 
-  showSpinner = (element) ->
+  showLargeSpinner = (element) ->
     opts = {
       lines: 11, # The number of lines to draw
       length: 11, # The length of each line
@@ -48,7 +52,30 @@ $ ->
     spinner = new Spinner(opts).spin(element)
 
   $('.startup_spinner').each ->
-    showSpinner(this)
+    showLargeSpinner(this)
+
+  showSmallSpinner = (element) ->
+    opts = {
+      lines: 11, # The number of lines to draw
+      length: 3, # The length of each line
+      width: 1, # The line thickness
+      radius: 5, # The radius of the inner circle
+      corners: 1, # Corner roundness (0..1)
+      rotate: 0, # The rotation offset
+      color: '#999', #rgb or #rrggbb
+      speed: 1, # Rounds per second
+      trail: 60, # Afterglow percentage
+      shadow: false, # Whether to render a shadow
+      hwaccel: false, # Whether to use hardware acceleration
+      className: 'spinner', # The CSS class to assign to the spinner
+      zIndex: 2e9, # The z-index (defaults to 2000000000)
+      top: 'auto', # Top position relative to parent in px
+      left: 'auto' # Left position relative to parent in px
+    }
+    spinner = new Spinner(opts).spin(element)
+
+  $('.checkin .in_progress .box').each ->
+    showSmallSpinner(this)
 
   validateYoutubeForm = (element) ->
     video_id = element.data('video-id')

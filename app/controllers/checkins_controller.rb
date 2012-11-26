@@ -17,32 +17,45 @@ class CheckinsController < ApplicationController
   def show
     @new_comment = Comment.new(:checkin_id => @checkin.id)
     @comments = @checkin.comments.includes(:user).arrange(:order => 'created_at DESC') # arrange in nested order
+    @next_checkin = @checkin.next_checkin
+    @previous_checkin = @checkin.previous_checkin
   end
 
   def new
     @checkin.startup = current_user.startup
-    set_disabled_states_and_add_measurement(@checkin)
+    initialize_and_add_instruments(@checkin)
     render :action => :edit
   end
 
   def create
-    was_completed = @checkin.completed?
+    @checkin.attributes = params[:checkin]
     @checkin.startup = @startup
-    @checkin.valid?
-    if @checkin.save
-      save_completed_state_and_redirect_checkin(@checkin, was_completed)
+    if params[:force_checkin].present?
+      @ua = false
+      @checkin.save
+      redirect_to '/'
     else
-      @ua = false # don't record user action until they are successful
-      logger.info "ERRORS: #{@checkin.errors.full_messages}"
-      set_disabled_states_and_add_measurement(@checkin)
-      render :action => :edit
+      was_completed = @checkin.completed?
+      if @checkin.save
+        save_completed_state_and_redirect_checkin(@checkin, was_completed)
+      else
+        @ua = false # don't record user action until they are successful
+        initialize_and_add_instruments(@checkin)
+        render :action => :edit
+      end
     end
     @startup.launched! if params[:startup] && params[:startup][:launched].to_i == 1
   end
 
   def edit
+    if @checkin.completed? && params[:current_step].blank?
+      flash[:notice] = "Your checkin has already been completed."
+      redirect_to @checkin
+      return
+    end
     @startup ||= @checkin.startup
-    set_disabled_states_and_add_measurement(@checkin)
+    initialize_and_add_instruments(@checkin)
+    @current_step = params[:current_step].to_i if params[:current_step].present?
   end
 
   def update
@@ -51,8 +64,7 @@ class CheckinsController < ApplicationController
     if @checkin.update_attributes(params[:checkin])
       save_completed_state_and_redirect_checkin(@checkin, was_completed)
     else
-      logger.info "ERRORS: #{@checkin.errors.full_messages}"
-      set_disabled_states_and_add_measurement(@checkin)
+      initialize_and_add_instruments(@checkin)
       render :action => :edit
     end
     @startup.launched! if params[:startup] && params[:startup][:launched].to_i == 1
@@ -61,14 +73,15 @@ class CheckinsController < ApplicationController
   # For creating a first checkin
   def first
     @onboard = @hide_background_image = @hide_footer = true
-
+    @force_checkin = false
     @checkin ||= Checkin.new
     @weekly_class = true
-    if params[:checkin].present? && params[:checkin][:start_focus].present? && params[:message].present?
+    if params[:checkin].present? && params[:checkin][:goal].present? && params[:message].present?
       @checkin.attributes = params[:checkin]
       @checkin.user = current_user
       if @checkin.save(:validate => false)
         current_user.startup.completed_goal!(params[:message], current_user)
+        session[:checkin_completed] = true
         redirect_to '/'
       else
         flash[:alert] = "Sorry we couldn't save your goal"
@@ -86,10 +99,9 @@ class CheckinsController < ApplicationController
       unless was_completed
         session[:checkin_completed] = true
       end
-      redirect_to add_teams_relationships_path
-    else
-      flash[:notice] = "Your checkin has been saved!"
       redirect_to relationships_path
+    else
+      redirect_to edit_checkin_path(checkin)
     end
   end
 
@@ -106,42 +118,26 @@ class CheckinsController < ApplicationController
 
   def load_current_checkin
     @checkin = @startup.current_checkin unless @startup.blank?
-    if Checkin.in_before_time_window? or Checkin.in_after_time_window?
+    in_time_window = Checkin.in_time_window?(@startup.checkin_offset)
+    if in_time_window
       # if no checkin, give them a new one
       if @checkin.blank?
-        @checkin = Checkin.new
-      elsif @checkin.completed? and Checkin.in_before_time_window?
-        @checkin = Checkin.new
+        @checkin = Checkin.new(:startup => @startup)
       # last week's checkin
-      elsif !@checkin.new_record? and (Checkin.prev_after_checkin > @checkin.created_at) and (Checkin.in_before_time_window? or Checkin.in_after_time_window?)
-        @checkin = Checkin.new
+      elsif !@checkin.new_record? and (Checkin.prev_checkin_at(@startup.checkin_offset) > @checkin.created_at) and in_time_window
+        @checkin = Checkin.new(:startup => @startup)
       end
     end
   end
 
-  def set_disabled_states_and_add_measurement(checkin)
-    @before_disabled = Checkin.in_before_time_window? ? false : true
-    @after_disabled = Checkin.in_after_time_window? ? false : true
-    if !checkin.new_record?
-      @before_disabled = true if checkin.created_at < Checkin.prev_before_checkin
-      @after_disabled = true if checkin.created_at < Checkin.prev_after_checkin
-    end
+  def initialize_and_add_instruments(checkin)
     @instrument = @startup.instruments.first || Instrument.new(:startup => @startup)
     @checkin.measurement = Measurement.new(:instrument => @instrument) if @checkin.measurement.blank?
     # Set startup as launched if they have established an instrument
     @checkin.startup.launched_at = Time.now unless @instrument.new_record?
-    @checkin.before_video = Video.new if @checkin.before_video.blank?
-    @checkin.after_video = Video.new if @checkin.after_video.blank?
+    @checkin.video = Video.new if @checkin.video.blank?
     # disable olark
     @recording_video = true
-
-    if Rails.env.development?
-      @before_disabled = true
-      @after_disabled = false
-      @show_before_experiment = true
-    else
-      @show_before_experiment = Checkin.show_checkin_experiment_for?(@startup.id) if @startup.present?
-    end
   end
 
   def load_obfuscated_checkin

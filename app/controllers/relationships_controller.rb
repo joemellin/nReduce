@@ -67,10 +67,16 @@ class RelationshipsController < ApplicationController
 
     @show_mentor_message = true if current_user.roles?(:nreduce_mentor) && no_startups == true
 
-    @after_checkin_window = Checkin.in_after_time_window? ? true : false
+    @checkin_window = Checkin.in_time_window?(@startup ? @startup.checkin_offset : Checkin.default_offset) ? true : false
 
     store_users_by_ids(User.where(:startup_id => @startups.map{|s| s.id }))
     store_users_by_startup_id(@users_by_id.map{|id, user| user })
+
+    if session[:checkin_completed] == true && !@startup.blank?
+      @checkin_completed = true
+      @number_of_consecutive_checkins = @startup.number_of_consecutive_checkins
+      session[:checkin_completed] = false
+    end
   end
 
   def add_teams
@@ -126,11 +132,6 @@ class RelationshipsController < ApplicationController
     #@invited_startups = current_user.sent_invites.to_startups.not_accepted.ordered
 
     @modal = true
-    if session[:checkin_completed] == true && !@startup.blank?
-      @checkin_completed = true
-      @number_of_consecutive_checkins = @startup.number_of_consecutive_checkins
-      session[:checkin_completed] = false
-    end
   end
 
   def skip_team

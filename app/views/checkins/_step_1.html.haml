@@ -1,0 +1,5 @@
+.step1
+  .control-group{error_css(@checkin, :video)}
+    = f.semantic_errors :video
+    = f.fields_for :video do |v|
+      = render 'videos/form', :video_id => v.object.new_record? ? 'new_video' : "video_#{v.object.id}", :f => v

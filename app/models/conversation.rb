@@ -14,15 +14,23 @@ class Conversation < ActiveRecord::Base
   
   attr_accessible :participant_ids, :messages_attributes, :to_entity, :to, :updated_at, :messages, :latest_message_id
 
-  attr_accessor :to_entity, :to # accepts user_{id} or startup_{id}
+  attr_accessor :to_entity # accepts user_{id}, startup_{id}, or actual object
+  attr_accessor :to # just for form to show to field, not actually used
 
   # Start a new conversation between users or startups. If given a startup the message is effectively started between all the users on a startup
+  # To entity can either be a user or startup, or a string that represents them
   def self.create(attrs = {})
     attrs[:participant_ids] ||= []
 
     # Assign participants from a dropdown
     if attrs[:to_entity].present?
-      tmp = attrs[:to_entity].strip.split('_')
+      if attrs[:to_entity].is_a?(User)
+        tmp = ['user', attrs[:to_entity].id]
+      elsif attrs[:to_entity].is_a?(Startup)
+        tmp = ['startup', attrs[:to_entity].id]
+      else
+        tmp = attrs[:to_entity].strip.split('_')
+      end
       if tmp[0] == 'user' # Person to person message
         attrs[:participant_ids] << tmp[1] 
       elsif tmp[0] == 'startup'
@@ -39,6 +47,7 @@ class Conversation < ActiveRecord::Base
     # Check to see if a conversation already exists between these people, if so append message to that one
     c = Conversation.between(attrs[:participant_ids]) unless attrs[:participant_ids].blank?
     c.messages << Message.new(attrs[:messages_attributes]['0']) if c.present? && attrs[:messages_attributes].present?
+    c.messages << attrs[:messages].first if c.present? && attrs[:messages].present? && attrs[:messages].first.is_a?(Message)
 
     # Otherwise start a new one
     c ||= Conversation.new(attrs)

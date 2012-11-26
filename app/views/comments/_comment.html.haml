@@ -41,7 +41,7 @@
       .left.commentlinks{:style => 'padding-left:30px'}
         .row{:style => 'padding-top:4px'}
           - commented = comment.commented_by?(current_user)
-          = link_to image_tag(commented ? 'quotebbl_white.png' : 'quotebbl.png'), post_path(comment), :class => "btn #{commented ? 'btn-success' : ''}", :title => 'Comment'
+          = link_to image_tag(commented ? 'quotebbl_white.png' : 'quotebbl.png'), post_path(comment), :class => "btn #{commented ? 'btn-info' : ''}", :title => 'Comment'
           - unless comment.reply_count == 0
             = link_to comment.reply_count, post_path(comment) 
         .row{:style => 'padding-top:4px'}
@@ -51,7 +51,7 @@
         - unless is_owner
           - reposted = comment.reposted_by?(current_user)
           .row{:style => 'padding-top:4px'}
-            = link_to "<i class='icon-share-alt #{reposted ? 'icon-white' : ''}'></i>".html_safe, repost_post_path(comment), :class => "btn share #{reposted ? 'btn-success' : ''}", :remote => true, :method => :post, :title => 'Share with your connections'
+            = link_to "<i class='icon-share-alt #{reposted ? 'icon-white' : ''}'></i>".html_safe, repost_post_path(comment), :class => "btn share #{reposted ? 'btn-info' : ''}", :remote => true, :method => :post, :title => 'Share with your connections'
       - unless is_post_page
         .left.commentlinks.postcontent{:style => 'padding-left:40px; padding-top:4px'}
           .row

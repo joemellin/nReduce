@@ -1,0 +1,13 @@
+.navbar
+  .navbar-inner
+    %ul.nav
+      - c = 1
+      - Checkin.steps(true).each do |s|
+        - if c < @checkin.current_step
+          - klass = 'completed'
+        - elsif c == @checkin.current_step
+          - klass = 'active'
+        - else 
+          - klass = ''
+        %li{:class => klass}= link_to s.to_s.titleize, '#'
+        - c += 1
