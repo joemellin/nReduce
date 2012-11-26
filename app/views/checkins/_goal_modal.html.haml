@@ -1,8 +1,8 @@
 .checkins
   #checkin_goal.modal.hide
     .modal-header
-      %h2 What is your goal for this week?
-    .modal-body
+      %h2.center What is your goal for this week?
+    .modal-body.center
       = semantic_form_for @checkin, :url => startup_checkins_path(@checkin.startup) do |f|
         = hidden_field_tag 'force_checkin', true
         = f.hidden_field :startup_id
@@ -10,11 +10,9 @@
 
         .examples
           %b Example Goals:
-          %p Talk to 5 users
-          %p Build Sign Up Process
-          %p Close Seed Round
+          %p Talk to 5 Users, Build Sign Up Flow, Close Seed Round
+        = f.submit 'Set Goal & Enter', :class => 'btn btn-large btn-success'
 
-        = f.submit 'Save', :class => 'btn btn-large btn-success'
+        .graysmaltext Setting Weekly Goals Helps Maintain Productivity
     = javascript_tag "$(function(){ $('#checkin_goal').modal();  });"
 
-    
