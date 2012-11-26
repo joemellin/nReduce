@@ -5,7 +5,7 @@
       %ul.nav.pull-left
         %li= link_to image_tag('nreduce_logo_45.png'), (@demo_day.present? ? '/d' : "/"), :class => 'logo'
         - if current_user.entrepreneur? && current_user.startup.present?
-          %li.add_teams= link_to '<i class="icon icon-user"></i> Find Teams'.html_safe , search_startups_path
+          %li.add_teams= link_to '<i class="icon icon-search"></i> Search Teams'.html_safe , search_startups_path
         %li.dropdown.notifications
           %a.dropdown-toggle{:href => '#', 'data-toggle' => 'dropdown', :rel => @unread_notifications_count}
             .left.icon{:class => @unread_notifications_count > 0 ? 'new' : 'up'}
