@@ -32,13 +32,13 @@
         = render 'videos/form', :video_id => av.object.new_record? ? 'new_before_video' : "video_#{av.object.id}", :f => av
 
     .span5{:style => 'padding-left: 70px'}
-      .control-group{error_css(@checkin, :start_focus)}
+      .control-group{error_css(@checkin, :goal)}
         %p
           &nbsp
-        = f.label :start_focus, "This Week's Goal:", :style => 'font-size:38px; margin-bottom:40px; margin-top:40px', :maxlength => 255, :class => 'control-label'
+        = f.label :goal, "This Week's Goal:", :style => 'font-size:38px; margin-bottom:40px; margin-top:40px', :maxlength => 255, :class => 'control-label'
         .controls
-          = f.text_field :start_focus, :style => 'height: 30px; line-height:24px; font-size:22px', :class => "span4 checkin_start_focus", :placeholder => "Test, Ship or Hustle..."
-          = f.semantic_errors :start_focus
+          = f.text_field :goal, :style => 'height: 30px; line-height:24px; font-size:22px', :class => "span4 checkin_start_focus", :placeholder => "Test, Ship or Hustle..."
+          = f.semantic_errors :goal
 
 - if @after_disabled == true
   / - if @checkin.completed?
@@ -51,14 +51,14 @@
     .span1
       %p 
     .span5
-      .control-group{error_css(@checkin, :after_video)}
-        = f.semantic_errors :after_video
+      .control-group{error_css(@checkin, :video)}
+        = f.semantic_errors :video
       %p Please record a 1-2 min video documenting what you did this past week.
-      = f.fields_for :after_video do |av|
-        = render 'videos/form', :video_id => av.object.new_record? ? 'new_after_video' : "video_#{av.object.id}", :f => av
+      = f.fields_for :video do |v|
+        = render 'videos/form', :video_id => v.object.new_record? ? 'new_video' : "video_#{v.object.id}", :f => v
     .span5{:style => 'padding-left: 20px; padding-top: 10px'}
       %h3 Did you accomplish last week's goal?
-      %h2 #{@checkin.start_focus.blank? ? '(none)' : h(@checkin.start_focus)}
+      %h2 #{@checkin.goal.blank? ? '(none)' : h(@checkin.goal)}
       %p{:style => 'padding-top: 0px;'}
       .control-group{error_css(@checkin, :accomplished), :style => 'margin-bottom: 10px'}
         = f.hidden_field :accomplished
@@ -101,11 +101,11 @@
                   %i &nbsp;(Past Week)
                 = m.semantic_errors :value
 
-      .control-group{error_css(@checkin, :end_comments), :style => 'margin-top: 10px'}
+      .control-group{error_css(@checkin, :notes), :style => 'margin-top: 10px'}
         %h3 How can your fellow nReducers help you?
         .controls
-          = f.text_area :end_comments, :size => '200x1', :class => "span4 checkin_end_comments", :placeholder => "Give me feedback on..."
-          = f.semantic_errors :end_comments
+          = f.text_area :notes, :size => '200x1', :class => "span4 checkin_end_comments", :placeholder => "Give me feedback on..."
+          = f.semantic_errors :notes
 
 
       - if @show_before_experiment

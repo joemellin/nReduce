@@ -98,7 +98,7 @@ class StartupsController < ApplicationController
     @can_view_checkin_details = can? :read, Checkin.new(:startup => @startup)
     @num_checkins = @startup.checkins.count
     @num_awesomes = @startup.awesomes.count
-    @checkins = @startup.checkins.ordered.includes(:before_video, :after_video)
+    @checkins = @startup.checkins.ordered.includes(:before_video, :video)
     if current_user.entrepreneur?
       @entity = current_user.startup unless current_user.startup.blank?
     else
@@ -172,7 +172,6 @@ class StartupsController < ApplicationController
 
   def add_invite_field
     @invite = Invite.new(:startup_id => @startup.id, :from_id => current_user.id)
-    @invite.weekly_class_id = current_user.weekly_class_id unless @startup.account_setup?
     @c = params[:c] || 1
     respond_to do |format|
       format.js { render :action => :add_invite_field }
@@ -238,12 +237,21 @@ class StartupsController < ApplicationController
   end
 
   def search
-    if params[:query].blank? || params[:query].present? && params[:query].size < 2
-      render :json => [] 
-      return
+    # Force goecode from IP
+    if params[:search].present?
+      session[:search] = params[:search]
+      @search = params[:search]
+    elsif session[:search].blank?
+      current_user.geocode_from_ip(request.remote_ip) unless current_user.geocoded?
+      @search = current_user.location
+    elsif session[:search].present?
+      @search = session[:search]
     end
-    startups = Startup.select('id, name').where(['name LIKE ?', "#{params[:query]}%"]).with_setup(:profile, :invite_team_members, :intro_video).limit(10)
-    render :json =>  startups.map{|s| s.name }
+
+    origin = session[:search].present? ? session[:search] : [current_user.lat, current_user.lng]
+    @users = User.geo_scope(:within => 30000, :origin => origin).where('startup_id IS NOT NULL').group(:startup_id).order(:distance).paginate(:page => params[:page] || 1, :per_page => 10)
+    @startups_by_id = Hash.by_key(Startup.where(:id => @users.map{|u| u.startup_id }), :id)
+    @num_checkins_by_startup = Checkin.where(:startup_id => @startups_by_id.keys).group(:startup_id).count
   end
 
   #

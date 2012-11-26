@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121121195603) do
+ActiveRecord::Schema.define(:version => 20121123154744) do
 
   create_table "ab_tests", :force => true do |t|
     t.string   "name"
@@ -66,11 +66,11 @@ ActiveRecord::Schema.define(:version => 20121121195603) do
   add_index "calls", ["from_id", "created_at"], :name => "index_calls_on_from_id_and_created_at"
 
   create_table "checkins", :force => true do |t|
-    t.string   "start_focus"
+    t.string   "goal"
     t.string   "start_why"
     t.string   "start_video_url"
     t.string   "end_video_url"
-    t.text     "end_comments"
+    t.text     "notes"
     t.datetime "submitted_at"
     t.datetime "completed_at"
     t.integer  "startup_id"
@@ -83,7 +83,7 @@ ActiveRecord::Schema.define(:version => 20121121195603) do
     t.integer  "comment_count",   :default => 0
     t.integer  "week"
     t.integer  "before_video_id"
-    t.integer  "after_video_id"
+    t.integer  "video_id"
     t.integer  "measurement_id"
     t.boolean  "accomplished"
   end
@@ -357,6 +357,8 @@ ActiveRecord::Schema.define(:version => 20121121195603) do
     t.string   "cached_industry_list"
     t.boolean  "mentorable",           :default => false
     t.datetime "activated_at"
+    t.string   "time_zone"
+    t.integer  "checkin_day"
   end
 
   add_index "startups", ["public"], :name => "index_startups_on_public"

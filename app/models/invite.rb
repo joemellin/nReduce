@@ -68,8 +68,6 @@ class Invite < ActiveRecord::Base
     if self.invite_type == Invite::TEAM_MEMBER
       user.startup_id = self.startup_id if !self.startup_id.blank? or !user.startup_id.blank?
       user.set_account_type(:entrepreneur)
-      # Assign user same weekly class as the rest of the startup
-      user.weekly_class = self.weekly_class if self.weekly_class.present?
       # Bypass forcing user to setup account if they were invited from startup that is setup, also don't suggest startups
       user.setup_complete! if self.startup.account_setup?
     elsif self.invite_type == Invite::STARTUP

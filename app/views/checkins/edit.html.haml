@@ -3,14 +3,20 @@
 - content_for :subtitle do
   Check-in
 
-- hide_nav = @checkin.submitted?
+.checkins
+  %h2.center Weekly Progress Update for #{@checkin.time_label}
+  .offset2
+    = render 'checkins/nav'
 
-%h2.center Check-in for #{@checkin.time_label}
-%hr
-.row
-  .span12
-    = semantic_form_for @checkin, :html => {:class => "form-vertical"} do |f|
-      = render 'checkins/fields', :f => f
+  
+  %hr
+  = semantic_form_for @checkin, :html => {:class => "form-vertical"} do |f|
+    .row
+      .span6.offset3= render "checkins/step_#{@current_step || @checkin.current_step}", :f => f
+      .span2.offset1
+        - if @checkin.current_step == Checkin.steps.size - 1
+          = f.submit "Save", :class => "btn btn-success btn-large submit"
+        - else
+          = f.submit "Continue", :class => "btn btn-large submit"
 
-= render 'instruments/modal'
-    
+  = render 'instruments/modal'

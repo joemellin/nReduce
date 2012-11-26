@@ -1,0 +1,94 @@
+- content_for :subtitle do
+  Discover Startups
+
+.search
+  = form_tag search_startups_path, :method => :post, :class => 'form-inline'  do
+    .row
+      .span2{:align => 'right'}
+        %p &nbsp;
+        %h4 Search Startups:
+      .span3
+        %p
+          %small Startup Name
+        = text_field_tag 'search[name]', @search[:name], :class => 'input-large'
+      / .span3
+      /   %p
+      /     %small Meeting Location
+      /   = select_tag 'search[meeting_id]', options_for_select(@meetings_by_id.map{|id, name| [name, id] }, @search[:meeting_id].to_i), :class => 'input-large', :include_blank => true
+      .span3
+        %p
+          %small Market(s)
+        = text_field_tag 'search[industries]', @search[:industries], :class => 'input-large industries_list_autocomplete'
+      .span4
+        %p &nbsp;
+        = submit_tag 'Search', :class => 'btn btn-large'
+        &nbsp;&nbsp;
+        = link_to 'Reset', search_startups_path
+  %hr/
+
+  - if @search_results.hits.size > 0
+    / .row
+    /   .span1
+    /     %p &nbsp;
+    /   .span11
+    /     .right
+    /       - if @search_results.results.total_pages > 1
+    /         %h3{:style => 'color: #ccc'} Page #{@search_results.results.current_page} of #{@search_results.results.total_pages}
+    /     .left
+    /       %h2 #{pluralize(@search_results.total, 'startup')}:
+    /     .clear
+    %br/
+    - @search_results.each_hit_with_result do |hit, s|
+      .row{:id => "startup_#{s.id}"}
+        .span1
+          %p &nbsp;
+        .span3
+          - vid_url = Youtube.embed_url(s.intro_video_url)
+          - if vid_url.blank?
+            %h4 [No intro video]
+          - else
+            %iframe{:width => '250', :height => '188', :src => vid_url, :frameborder => 0, :allowfullscreen => true}
+        .span5
+          %h4
+            = link_to s.name, startup_path(s)
+            - unless s.website_url.blank?
+              %small
+                \-
+                #{s.website_url}
+          %h3= s.one_liner
+          .row
+            .span2
+              - unless s.company_goal.blank?
+                %p Goal: #{Startup.company_goals[s.company_goal.to_i]}
+              %p
+                Meeting:
+                = !s.meeting_id.blank? and !@meetings_by_id[s.meeting_id].blank? ? @meetings_by_id[s.meeting_id] : 'none'
+              %p
+                Team:
+                %br
+                - s.team_members.each do |tm|
+                  .left{:style => 'margin: 0 5px 5px 0'}= image_tag(user_avatar_url(tm), :style => 'width: 50px; height: 50px', :title => tm.name)
+                .clear
+            .span3
+              - unless s.stage.blank?
+                %p Idea Stage: #{Startup.stages[s.stage.to_i]}
+              %p
+                Industry:
+                - if hit.stored(:industries_cached).blank?
+                  none
+                - else
+                  = hit.stored(:industries_cached).join(', ')
+        .span3
+          - unless @entity.blank?
+            = render 'relationships/buttons', :entity => @entity, :connected_with => s
+          .well.community_status
+            != rating_link(s, true)
+              
+          
+      %hr
+      %br
+    %center
+      %p (end of visible results)
+    =# will_paginate @search_results.results
+  - else
+    %h4 No startups matched your search

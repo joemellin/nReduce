@@ -20,7 +20,17 @@
       padding-left: 15px;
     }
   }
+}
 
+// Same progress bar for onbaording and checkins
+.onboard, .checkins {
+
+  .formbtn {
+    font-size:80px; 
+    color:#25A6E9; 
+    line-height:75px;
+    padding-top: 20px;
+  }
   .navbar {
     margin-top: 0px;
     margin-bottom: 25px;
@@ -37,10 +47,10 @@
         margin-right: auto;
         left: 1%;
         li.completed a, li.active a {
-          background-color: #24a7ea;
+          background-color: #57C7FF;
         }
         li.completed a {
-          color: #1a80b3;
+          color: #A7E1FF;
         }
         li a {
           font-size: 1.3em;
@@ -50,6 +60,7 @@
           padding-left: 29px;
           padding-right: 29px;
           text-shadow: none;
+          color:#666;
         }
         li a:hover {
           color: #000;

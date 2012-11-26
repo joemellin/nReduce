@@ -5,7 +5,7 @@
 %br
 %h4.h4 They Need Help With
 %br
-%h4.h4 #{simple_format(h(@checkin.end_comments))}
+%h4.h4 #{simple_format(h(@checkin.notes))}
 %br
 %h3.h3= link_to 'Give Awesome Feedback', startup_checkin_url(@checkin.startup, @checkin)
 = render :partial => 'footer'
