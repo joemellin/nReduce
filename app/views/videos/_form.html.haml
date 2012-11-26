@@ -31,9 +31,9 @@
       .button{'data-embed-class' => 'viddler_embed', 'data-video-id' => video_id}
         = image_tag 'webcam_icon.png', :style => 'width: 28px; height: 23px; margin-right: 10px;'
         Record Via Webcam
-      .button
-        %span.badge.badge-success New? 
-        Learn how to make a great video!
+      / .button
+      /   %span.badge.badge-success New? 
+      /   Learn how to make a great video!
     .video_embed_cancel{:class => show_video_type.present? ? '' : 'hide'}
       .button= link_to '<i class="icon-arrow-left"></i> All Video Types'.html_safe, '#', :class => 'btn', 'data-video-id' => video_id
     .viddler_embed.video_embed{:class => show_video_type == :viddler ? '' : 'hide'}
