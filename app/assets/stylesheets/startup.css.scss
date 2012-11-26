@@ -54,11 +54,14 @@
     
     }
     .startup {
-      height: 120px;
+      height: 130px;
       margin-top: 10px;
       margin-bottom: 10px;
       border-bottom: 0px solid #efefef;
-      .name { margin-left: 12px; }
+      .name {
+        margin-left: 12px;
+        word-wrap: break-word;
+      }
       .location { margin-top: 17px; font-weight: bold; }
       .one_liner { color: #999;} 
       .rating, .weeks_worked {
