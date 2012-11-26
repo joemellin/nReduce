@@ -1,7 +1,20 @@
 .checkins {
   .modal#checkin_goal {
     .examples {
-      margin-top: 50px;
+      margin-top: 40px;
+      margin-bottom:60px;
+    }
+    .modal-body{
+    padding-top:50px;
+
+    }
+    .modal-header {
+      padding-top:20px;
+
+    }
+    .graysmaltext {
+      color:#ccc;
+      padding-top:20px;
     }
   }
 
