@@ -31,23 +31,40 @@
 }
 
 .startups {
+  .borderline {
+      margin-top: 10px;
+      margin-bottom: 10px;
+      border-bottom: 1px solid #efefef;
+    }
+  .legend {
+      color: #cccccc;
+      font-size:12px;
+      padding-top:20px
+    }
   .search {
+    margin-top: 40px; 
     form {
       h4 { margin-top: 6px; margin-right: 12px;}
-      margin-bottom: 0px;
-      input { margin-bottom: 0px; }
+      margin-bottom: 20px;
+      margin-top: 20px;
+      input {
+       margin-bottom: 10px; 
+
+      }
+    
     }
     .startup {
       height: 120px;
       margin-top: 10px;
       margin-bottom: 10px;
-      border-bottom: 1px solid #efefef;
+      border-bottom: 0px solid #efefef;
       .name { margin-left: 12px; }
       .location { line-height: 40px;}
       .one_liner { color: #999;} 
       .rating, .weeks_worked {
         h4 { line-height: 40px; }
       }
+    
     }
   }
 }
