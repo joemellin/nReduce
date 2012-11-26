@@ -1,8 +1,12 @@
 = div_for(message) do
-  .left.pic= link_to image_tag(message.from.pic_url(:small)), message.from
+  - from = @users_by_id[message.from_id] || message.from
+  .left.pic= link_to image_tag(from.pic_url(:small)), from
   .left.content_wrapper
     .right.time_ago= time_for_conversation(message.created_at)
-    .left.from_user= link_to message.from.name, message.from
+    .left.from_user= link_to from.name, from
+    - unless from.startup_id.blank?
+      .left.from_company
+        &nbsp;•&nbsp;#{link_to(from.startup.name, from.startup)}
     .clear
     .content= simple_format(h(message.content))
   .clear

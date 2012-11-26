@@ -97,8 +97,9 @@ module ApplicationHelper
       when :new_comment_for_checkin then [obj.user.pic_url(:small), "<span class='entity'>#{obj.user.name}</span> commented on your #{obj.checkin.time_label} checkin", checkin_path(obj.checkin)]
       when :new_nudge then [obj.from.pic_url(:small), "<span class='entity'>#{obj.from.name}</span> nudged you to complete your check-in", url_for(obj.from)]
       when :new_comment_for_post then [obj.user.pic_url(:small), "<span class='entity'>#{obj.user.name}</span> commented on your post", post_path(obj)]
-      when :new_like then [obj.user.pic_url(:small), "<span class='entity'>#{obj.user.name}</span> liked your post", post_path(obj)]
+      when :new_like then [obj.user.pic_url(:small), "<span class='entity'>#{obj.user.name}</span> likes your post", post_path(obj)]
       when :new_team_joined then [obj.logo_url(:small), "<span class='entity'>#{obj.name}</span> joined nReduce", url_for(obj)]
+      when :new_awesome then [obj.user.pic_url(:small), "<span class='entity'>#{obj.user.name}</span> thinks you made some awesome progress!", url_for(obj.awsm)]
       else [nil, notification.message, nil]
     end
   end 

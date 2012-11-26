@@ -17,7 +17,7 @@ class Notification < ActiveRecord::Base
     # Remember to update method in helpers/application_helper.rb with new object types if they are added for correct messaging
   def self.actions
     [
-      :new_checkin, :relationship_request, :relationship_approved, 
+      :new_checkin, :relationship_request, :relationship_approved, :new_awesome,
       :mentorship_approved, :investor_approved, :new_comment_for_checkin, 
       :new_comment_for_post, :new_nudge, :new_team_joined, :new_like, :join_next_week, :relationship_introduced, :new_message
     ]
@@ -126,11 +126,12 @@ class Notification < ActiveRecord::Base
         n = Notification.new
         n.attachable = awesome
         n.user = u
-        n.message = "#{awesome.user.name} thought your checkin was awesome!"
+        n.action = :new_awesome
+        n.message = "#{awesome.user.name} thinks your progress is awesome!"
         n.save
       end
     elsif awesome.for_comment?
-      Notification.create_and_send(awesome.awsm.user, awesome, :new_like, "You have a new like")
+      Notification.create_and_send(awesome.awsm.user, awesome, :new_like, "#{awesome.user.name} liked your post")
     end
   end
 
