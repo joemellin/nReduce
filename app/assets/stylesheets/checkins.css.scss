@@ -1,4 +1,10 @@
 .checkins {
+  .modal#checkin_goal {
+    .examples {
+      margin-top: 50px;
+    }
+  }
+
   // Note: styling for checkin progress nav is in onboard.css.scss
   form {
     .checkin {
