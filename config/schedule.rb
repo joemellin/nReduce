@@ -25,7 +25,7 @@ end
 
 # Send reminder to everyone who has a checkin due within 24 hours
 every 24.hours, :at => '12:01am' do
-  runner "Checkin.send_checkin_email"
+  #runner "Checkin.send_checkin_email"
 end
 
 every 24.hours, :at => '11:25pm' do
