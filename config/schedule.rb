@@ -33,7 +33,7 @@ end
 # end
 
 # Identify active/inactive teams after the default checkin
-every :wednesday, :at => '12:30am' do 
+every 24.hours, :at => '12:30am' do 
   runner "Startup.identify_active_teams"
 end
 
