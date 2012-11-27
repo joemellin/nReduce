@@ -27,10 +27,14 @@
               %h5 "#{@checkin.startup.one_liner}"
     .row
       .span3
-        - if @previous_checkin.present?
-          .previous_week_link= link_to "Previous Week's Update", @previous_checkin
         .goal_wrapper.previous_week
-          %h3 Last Week's Goal
+          %h3
+            .left.previous_week_link
+              - if @previous_checkin.present?
+                = link_to '<i class="icon-chevron-left"></i>'.html_safe, @previous_checkin, :class => 'btn'
+            .left
+              Last Week's Goal
+            .clear
           %p.goal= h(@checkin.goal)
 
           - if @checkin.accomplished == true
@@ -85,10 +89,14 @@
         - unless @checkin.notes.blank?
           %p{:style => 'margin-top: 10px'}= simple_format(auto_link(h(@checkin.notes), :all, :target => '_blank' ))
       .span3
-        - if @next_checkin.present? && @next_checkin.completed?
-          .next_week_link= link_to "Next Week's Update", @next_checkin
         .goal_wrapper.next_week
-          %h3 Next Week's Goal
+          %h3
+            .right.next_week_link
+              - if @next_checkin.present?
+                = link_to '<i class="icon-chevron-right"></i>'.html_safe, @next_checkin, :class => 'btn'
+            .left
+              Next Week's Goal
+            .clear
           - if @next_checkin.present?
             %p.goal= h(@next_checkin.goal)
 

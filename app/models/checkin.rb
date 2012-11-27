@@ -155,14 +155,28 @@ class Checkin < ActiveRecord::Base
   # end
 
   # Queues up 'after' email to be sent to all active users
+  # Looks for all startups that need to check in exactly 24 hours from now
+  # Scheduled to run every hour (using whenever)
   # checkin type either :checkin or :checkin_now
   def self.send_checkin_email(checkin_type = :checkin)
-    day_of_week = Time.now.utc.wday
-    users_with_startups = User.where('email IS NOT NULL').where(:startup_id => Startup.select('id').where(:checkin_day => day_of_week).account_complete.map{|s| s.id })
-
-    users_with_startups.each do |u|
-      Resque.enqueue(Checkin, checkin_type, u.id) if u.account_setup? && u.email_for?('docheckin')
+    days_of_week = [Time.now.utc.wday, (Time.now + 1.day).utc.wday]
+    startup_ids = []
+    Startup.where(:checkin_day => days_of_week).account_complete.each do |s| 
+      next_checkin_at = Checkin.next_checkin_at(s.checkin_offset)
+      # If between 24 and 25 hours in the future, then message them
+      startup_ids << s.id if next_checkin_at > (Time.now + 24.hours) && next_checkin_at < (Time.now + 25.hours)
     end
+    return 'No users to email.' if startup_ids.blank?
+
+    # Find all users on these startups and email them
+    c = 0
+    User.where('email IS NOT NULL').where(:startup_id => startup_ids).each do |u|
+      if u.account_setup? && u.email_for?('docheckin')
+        Resque.enqueue(Checkin, checkin_type, u.id) 
+        c += 1
+      end
+    end
+    return "#{c} users emailed to checkin."
   end
 
   # Mails checkin message
