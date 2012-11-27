@@ -50,7 +50,7 @@ class Checkin < ActiveRecord::Base
   def current_step
     return 0 if self.goal.blank?
     return 1 if self.video.blank? || self.video.new_record?
-    return 2 if self.accomplished.nil? # need to add logic for instruments
+    return 2 if self.accomplished.nil? || (self.startup.present? && self.startup.launched? && (self.measurement.blank? || self.measurement.value.blank?))
     return 3 if self.next_week_goal.blank?
     return 4
   end
@@ -433,7 +433,7 @@ class Checkin < ActiveRecord::Base
   end
 
   def measurement_is_present_if_launched
-    if self.startup.present? && self.startup.launched? && self.previous_step >= 2
+    if self.startup.present? && self.startup.launched? && self.current_step >= 2
       if self.measurement.blank? || self.measurement.value.blank?
         self.errors.add(:measurement, 'needs to be added since you are launched - to measure traction & progress')
         return false
