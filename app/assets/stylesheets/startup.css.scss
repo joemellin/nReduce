@@ -54,13 +54,17 @@
     
     }
     .startup {
-      height: 130px;
+      height: 110px;
       margin-top: 10px;
       margin-bottom: 10px;
       border-bottom: 0px solid #efefef;
       .name {
+        max-width: 200px;
         margin-left: 12px;
-        word-wrap: break-word;
+        h3 a {
+          white-space: nowrap;
+          text-wrap:none;
+        }
       }
       .location { margin-top: 17px; font-weight: bold; }
       .one_liner { color: #999;} 

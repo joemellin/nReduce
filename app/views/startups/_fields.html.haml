@@ -32,7 +32,7 @@
         - new_invite.weekly_class_id = @startup.team_members.first.weekly_class_id
       .invites
         %div{:style => 'margin: 10px 0 20px 0'}
-          = f.fields_for :invite, new_invite do |i|
+          = f.fields_for :invites, new_invite do |i|
             = i.hidden_field :startup_id, :class => 'startup_invite'
             = i.hidden_field :from_id, :class => 'startup_invite'
             = i.hidden_field :weekly_class_id, :class => 'startup_invite'
