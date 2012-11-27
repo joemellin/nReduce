@@ -77,7 +77,7 @@
         .clear
 
         .participants
-          - @checkin.participants(team_members.map{|u| u.id }).each do |p|
+          - @checkin.participants.each do |p|
             .left= link_to image_tag(p.pic_url(:small)), p, :title => p.name, :alt => p.name
           .clear
 
