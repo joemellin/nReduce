@@ -434,7 +434,7 @@ class Checkin < ActiveRecord::Base
   end
 
   def measurement_is_present_if_launched
-    if self.startup.present? && self.startup.launched? && self.previous_step > 0
+    if self.startup.present? && self.startup.launched? && self.previous_step >= 2
       if self.measurement.blank? || self.measurement.value.blank?
         self.errors.add(:measurement, 'needs to be added since you are launched - to measure traction & progress')
         return false
