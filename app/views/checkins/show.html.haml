@@ -56,8 +56,9 @@
         .video.well.center= display_checkin_video(@checkin, :video, false, 530, 320).html_safe
 
         .right.posted_at
-          - time = @checkin.video.present? ? @checkin.video.created_at : @checkin.updated_at
-          Posted #{time.strftime('%B %-d at %l:%M%P')}
+          - t = @checkin.video.present? ? @checkin.video.created_at : @checkin.updated_at
+          - if t.present?
+            Posted #{t.strftime('%B %-d at %-l:%M%P')}
 
         - if @checkin.completed?
           .left!= render_awesome_button(@checkin)
