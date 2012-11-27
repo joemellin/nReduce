@@ -59,7 +59,7 @@
           - time = @checkin.video.present? ? @checkin.video.created_at : @checkin.updated_at
           Posted #{time.strftime('%B %-d at %l:%M%P')}
 
-        - if @checkin.completed? && current_user.startup_id != @checkin.startup_id
+        - if @checkin.completed?
           .left!= render_awesome_button(@checkin)
         .left.awesome_comment_count
           - show_from = false
