@@ -10,7 +10,6 @@ class Checkin < ActiveRecord::Base
   has_many :notifications, :as => :attachable
   has_many :user_actions, :as => :attachable
 
-  attr_accessor :next_week_goal
   attr_accessor :previous_step
 
   attr_accessible :goal, :start_why, :start_video_url, :end_video_url, :notes,
