@@ -159,12 +159,12 @@ class Checkin < ActiveRecord::Base
   # Scheduled to run every hour (using whenever)
   # checkin type either :checkin or :checkin_now
   def self.send_checkin_email(checkin_type = :checkin)
-    days_of_week = [Time.now.utc.wday, (Time.now + 1.day).utc.wday]
+    days_of_week = [Time.now.utc.wday, (Time.now.utc + 1.day).wday]
     startup_ids = []
     Startup.where(:checkin_day => days_of_week).account_complete.each do |s| 
       next_checkin_at = Checkin.next_checkin_at(s.checkin_offset)
       # If between 24 and 25 hours in the future, then message them
-      startup_ids << s.id if next_checkin_at > (Time.now + 24.hours) && next_checkin_at < (Time.now + 25.hours)
+      startup_ids << s.id if next_checkin_at > (Time.now.utc + 24.hours) && next_checkin_at < (Time.now.utc + 25.hours)
     end
     return 'No users to email.' if startup_ids.blank?
 
