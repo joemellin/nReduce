@@ -81,7 +81,7 @@ class Checkin < ActiveRecord::Base
     # Will queue up emails to be sent to all startups who haven't checked in yet on this day
   def self.email_startups_not_completed_checkin_yet
     return true
-    current_day = Time.now.wday
+    current_day = Time.now.utc.wday
     current_week = Checkin.current_week(Checkin.default_offset)
     # Find all startups that checkin today
     startup_ids = Startup.where(:checkin_day => current_day).map{|s| s.id }
@@ -158,7 +158,7 @@ class Checkin < ActiveRecord::Base
   # Queues up 'after' email to be sent to all active users
   # checkin type either :checkin or :checkin_now
   def self.send_checkin_email(checkin_type = :checkin)
-    day_of_week = Time.now.wday
+    day_of_week = Time.now.utc.wday
     users_with_startups = User.where('email IS NOT NULL').where(:startup_id => Startup.select('id').where(:checkin_day => day_of_week).account_complete.map{|s| s.id })
 
     users_with_startups.each do |u|
@@ -323,13 +323,13 @@ class Checkin < ActiveRecord::Base
 
   def self.pct_complete_week(offset)
     nc = Checkin.next_checkin_at(offset)
-    return 100 if nc < Time.now
-    100 - (((nc - Time.now) / (nc - (nc - 1.week))) * 100).round
+    return 100 if nc < Time.now.utc
+    100 - (((nc - Time.now.utc) / (nc - (nc - 1.week))) * 100).round
   end
 
   # Returns time of next checkin deadline
   def self.next_checkin_at(offset)
-    t = Time.now
+    t = Time.now.utc
     Checkin.next_window_for(offset).last
   end
 
@@ -365,12 +365,12 @@ class Checkin < ActiveRecord::Base
 
   # Current week for the checkin
   def self.current_week(offset)
-    Week.integer_for_time(Time.now, offset)
+    Week.integer_for_time(Time.now.utc, offset)
   end
 
       # Returns true if time given is in the time window. If no time given, defaults to now
   def self.in_time_window?(offset, time = nil)
-    time ||= Time.now
+    time ||= Time.now.utc
     next_window = Checkin.next_window_for(offset)
     return true if time > next_window.first && time < next_window.last
     false
@@ -378,7 +378,7 @@ class Checkin < ActiveRecord::Base
 
     # Returns array of [start_time, end_time] for this type
   def self.next_window_for(offset, dont_skip_if_in_window = false)
-    t = Time.now
+    t = Time.now.utc
     beginning_of_week = t.beginning_of_week
     window_start = beginning_of_week + offset.first
     # We're after the beginning of this time window, so add a week unless we're suppressing that
@@ -388,7 +388,7 @@ class Checkin < ActiveRecord::Base
 
   # Returns label string - ex: November 14 to November 20th
   def time_label
-    Checkin.week_for_time(self.created_at || Time.now, self.startup.present? ? self.startup.checkin_offset : Checkin.default_offset)
+    Checkin.week_for_time(self.created_at || Time.now.utc, self.startup.present? ? self.startup.checkin_offset : Checkin.default_offset)
   end
 
   # Returns time window for this checkin
