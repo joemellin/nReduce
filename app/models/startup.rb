@@ -193,7 +193,7 @@ class Startup < ActiveRecord::Base
 
   def current_checkin_id
     Cache.get(['current_checkin', self], nil, true){
-      c = checkins.ordered.where(['created_at > ?', Checkin.prev_checkin_at(self.checkin_offset)]).first
+      c = checkins.order('created_at ASC').where(['created_at > ?', Checkin.prev_checkin_at(self.checkin_offset)]).first
       c.id if c.present?
     }
   end
