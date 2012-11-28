@@ -200,11 +200,11 @@ class Checkin < ActiveRecord::Base
     current_week = Checkin.week_integer_for_time(Checkin.prev_checkin_at(startup.checkin_offset), startup.checkin_offset)
     checkins.each do |c|
       while current_week != c.week
-        arr << [false, false]
+        arr << false
         # move current week back one week until we hit the next checkin
         current_week = Week.previous(current_week)
       end
-      arr << [c.completed?]
+      arr << c.completed?
       current_week = Week.previous(current_week)
     end
     arr
