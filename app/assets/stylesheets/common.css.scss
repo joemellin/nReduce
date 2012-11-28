@@ -423,3 +423,17 @@ hr {
   }
 }
 
+
+
+.in_progress {
+  .box {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 30px;
+    height: 30px;
+    margin-right: 8px;
+    margin-top: 2px;
+  }
+  color: #999;
+}
+
