@@ -15,17 +15,20 @@
           - next if checkin.blank?
           - owner = (@startup && (s.id == @startup.id)) ? true : false
           .item.checkin
-            .team_name Team #{s.name}
-            .left.pics
-              = image_tag s.logo_url(:small)
-              - @users_by_startup_id[s.id].shuffle.each do |tm|
-                = image_tag(user_avatar_url(tm), :title => tm.name)
-            .left.headline
-              %h3
-                - if checkin.accomplished?
-                  Accomplished Their Goal!
-                - else
-                  Posted Their Progress
+            .right.time= time_for_conversation(checkin.completed_at.present? ? checkin.completed_at : checkin.updated_at)
+            .left
+              .team_name Team #{s.name}
+              .left.pics
+                = image_tag s.logo_url(:small)
+                - @users_by_startup_id[s.id].shuffle.each do |tm|
+                  = image_tag(user_avatar_url(tm), :title => tm.name)
+              .left.headline
+                %h3
+                  - if checkin.accomplished?
+                    Accomplished Their Goal!
+                  - else
+                    Posted Their Progress
+              .clear
             .clear
             .left.video= display_checkin_video(checkin, :video, false, 265, 160).html_safe
             .left.goals
