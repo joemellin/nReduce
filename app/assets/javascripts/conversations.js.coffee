@@ -35,7 +35,7 @@ window.initializeConversationAutocomplete = ->
       if last_conversation_search < (now.valueOf() - 1500)
         $.ajax(
           type: 'POST'
-          url: '/messages/search_people_and_startups'
+          url: '/messages/search_startups'
           data: {query: query}
           dataType: 'json'
           success: (results) ->

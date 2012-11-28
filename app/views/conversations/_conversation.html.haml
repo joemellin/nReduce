@@ -1,6 +1,6 @@
 = div_for(conversation) do
   .head
-    %h5 #{conversation.participants(current_user.id).map{|u| u.name }.join(', ')}
+    %h5 #{conversation.participants(current_user.id).map{|u| u.name }.to_sentence}
 
   .messages_wrapper
     .messages

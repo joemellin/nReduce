@@ -4,9 +4,9 @@
   .details{:class => cs.unread? ? 'new' : '', :rel => url_for(conversation), :id => "conversation_#{conversation.id}_details"}
     .right
       .time= time_for_conversation(conversation.updated_at)
-    -# If more than two participants show startup logo
+    -# If team to team show startups
     - name = pic = nil
-    - if conversation.participant_ids.size > 2
+    - if conversation.team_to_team?
       - startup = nil
       - conversation.participant_ids_without(current_user.id).each do |id|
         - if @users_by_id[id].startup_id.present? && @users_by_id[id].startup_id != current_user.startup_id
@@ -16,7 +16,7 @@
     - else
       - user = @users_by_id[conversation.participant_ids_without(current_user.id).first]
       - pic = user.pic_url(:small)
-      - name = conversation.participant_ids_without(current_user.id).map{|id| @users_by_id[id].present? ? @users_by_id[id].name : "blank - #{id}" }.join(', ')
+      - name = conversation.participant_ids_without(current_user.id).map{|id| @users_by_id[id].present? ? @users_by_id[id].name : '' }.join(', ')
     .pic.left= image_tag(pic)
     .left
       .names= truncate(name, :length => 26)

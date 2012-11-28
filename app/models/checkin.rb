@@ -354,7 +354,7 @@ class Checkin < ActiveRecord::Base
   # Pass in a timestamp and this will return the start (default midnight on Tue) of that checkin's week
   def self.week_start_for_time(time, offset)
     # reset to tuesday
-    week_start = time.beginning_of_week + offset.first + offset.last
+    week_start = time.beginning_of_week(:sunday) + offset.first + offset.last
     if time < week_start
       # We're in the offset time, so use last week
       return week_start - 7.days
@@ -392,7 +392,7 @@ class Checkin < ActiveRecord::Base
     # Returns array of [start_time, end_time] for this type
   def self.next_window_for(offset, dont_skip_if_in_window = false)
     t = Time.now.utc
-    beginning_of_week = t.beginning_of_week
+    beginning_of_week = t.beginning_of_week(:sunday)
     window_start = beginning_of_week + offset.first
     # We're after the beginning of this time window, so add a week unless we're suppressing that
     window_start += 1.week if (t > window_start + offset.last) && !dont_skip_if_in_window

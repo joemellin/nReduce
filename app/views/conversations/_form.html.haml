@@ -2,11 +2,12 @@
   .to
     %h5
       To:
-      = text_field_tag 'conversation[to]', conversation.participants(current_user.id).map{|u| u.name }.join(', '), :class => 'conversation-to-autocomplete span4'
+      = text_field_tag 'conversation[to]', conversation.to || conversation.participants(current_user.id).map{|u| u.name }.join(', '), :class => 'conversation-to-autocomplete span4'
   - if f.object.participant_ids.present?
     - f.object.participant_ids.each do |id|
       = hidden_field_tag 'conversation[participant_ids][]', id
   = f.hidden_field :to_entity
+  = f.hidden_field :team_to_team
   .messages_wrapper
     .messages
   .new_message_area
