@@ -118,9 +118,9 @@ class Checkin < ActiveRecord::Base
   def self.current_checkin_for_startups(startups = [])
     return {} if startups.blank?
     if Checkin.in_time_window?(Checkin.default_offset)
-      checkins = Checkin.where(:startup_id => startups.map{|s| s.id }).where(['created_at > ?', Checkin.prev_checkin_at(Checkin.default_offset)])
+      checkins = Checkin.where(:startup_id => startups.map{|s| s.id }).where(['created_at > ?', Checkin.prev_checkin_due_at(Checkin.default_offset)])
     else # if in before checkin or in the week after, get prev week's checkin start time
-      start_time = Checkin.prev_checkin_at(Checkin.default_offset) - 24.hours
+      start_time = Checkin.prev_checkin_due_at(Checkin.default_offset) - 24.hours
       checkins = Checkin.where(:startup_id => startups.map{|s| s.id }).where(['created_at > ? OR completed_at > ?', start_time, start_time])
     end
     checkins.inject({}) do |res, checkin|
@@ -162,7 +162,7 @@ class Checkin < ActiveRecord::Base
     days_of_week = [Time.current.wday, (Time.current + 1.day).wday]
     startup_ids = []
     Startup.where(:checkin_day => days_of_week).account_complete.each do |s| 
-      next_checkin_at = Checkin.next_checkin_at(s.checkin_offset)
+      next_checkin_at = Checkin.next_checkin_due_at(s.checkin_offset)
       # If between 24 and 25 hours in the future, then message them
       startup_ids << s.id if next_checkin_at > (Time.current + 24.hours) && next_checkin_at < (Time.current + 25.hours)
     end
@@ -197,7 +197,7 @@ class Checkin < ActiveRecord::Base
     checkins = startup.checkins.order('created_at DESC')
     return arr if checkins.blank?
     # add blank elements at the beginning until they've done a checkin - start at end of prev after checkin
-    current_week = Checkin.week_integer_for_time(Checkin.prev_checkin_at(startup.checkin_offset), startup.checkin_offset)
+    current_week = Checkin.week_integer_for_time(Checkin.prev_checkin_due_at(startup.checkin_offset), startup.checkin_offset)
     checkins.each do |c|
       while current_week != c.week
         arr << false
@@ -335,26 +335,27 @@ class Checkin < ActiveRecord::Base
   end
 
   def self.pct_complete_week(offset)
-    nc = Checkin.next_checkin_at(offset)
-    return 100 if nc < Time.current
-    100 - (((nc - Time.current) / (nc - (nc - 1.week))) * 100).round
+    time ||= Time.current
+    nc = Checkin.next_checkin_due_at(offset)
+    return 100 if nc < time
+    100 - (((nc - time) / 7.days) * 100).round
   end
 
   # Returns time of next checkin deadline
-  def self.next_checkin_at(offset)
+  def self.next_checkin_due_at(offset)
     t = Time.current
     Checkin.next_window_for(offset).last
   end
 
   # Returns time when prev checkin was over
-  def self.prev_checkin_at(offset)
-    self.next_checkin_at(offset) - 1.week
+  def self.prev_checkin_due_at(offset)
+    self.next_checkin_due_at(offset) - 1.week
   end
 
   # Pass in a timestamp and this will return the start (default midnight on Tue) of that checkin's week
   def self.week_start_for_time(time, offset)
     # reset to tuesday
-    week_start = time.beginning_of_week(:sunday) + offset.first + offset.last
+    week_start = time.in_time_zone.beginning_of_week(:sunday) + offset.first + offset.last
     if time < week_start
       # We're in the offset time, so use last week
       return week_start - 7.days
@@ -385,7 +386,7 @@ class Checkin < ActiveRecord::Base
   def self.in_time_window?(offset, time = nil)
     time ||= Time.current
     next_window = Checkin.next_window_for(offset)
-    return true if time > next_window.first && time < next_window.last
+    return true if time.in_time_zone > next_window.first && time.in_time_zone < next_window.last
     false
   end
 
@@ -428,7 +429,7 @@ class Checkin < ActiveRecord::Base
     c = Checkin.new
     c.startup_id = self.startup_id
     c.user_id = self.user_id
-    c.week = Checkin.week_integer_for_time(Checkin.next_checkin_at(c.startup.checkin_offset), c.startup.checkin_offset)
+    c.week = Checkin.week_integer_for_time(Checkin.next_checkin_due_at(c.startup.checkin_offset), c.startup.checkin_offset)
     c.goal = self.next_week_goal
     c.save(:validate => false) # ignore errors for now
   end
