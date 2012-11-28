@@ -89,8 +89,8 @@
                         .left
                           .name= name
                           .message
-                            - if from.id == current_user.id
-                              &lt;&nbsp;
+                            / - if from.id == current_user.id
+                            /   &lt;&nbsp;
                             #{truncate(latest_message.content, :length => 25)}
                         .clear
                 %li.title.link.center= link_to 'See All', conversations_path
