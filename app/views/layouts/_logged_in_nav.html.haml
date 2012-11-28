@@ -65,7 +65,7 @@
                   %li.item= link_to 'You don\'t have any messages', '#'
                 - else
                   .scrollable
-                    - @conversation_statuses.each do |cs|
+                    - @conversation_statuses.first(20).each do |cs|
                       - latest_message = @latest_message_by_conversation[cs.conversation_id]
                       - participants = cs.conversation.participant_ids_without(current_user.id).map{|id| @users_by_id[id].present? ? @users_by_id[id] : nil }.compact
                       - from = @users_by_id[latest_message.from_id]
