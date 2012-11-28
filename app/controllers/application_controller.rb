@@ -74,7 +74,6 @@ class ApplicationController < ActionController::Base
   def run_ab_test
     @ab_test_id = 1
     @ab_test_version = AbTest.version_for_session_id(@ab_test_id, request.session_options[:id])
-    logger.info "session: #{request.session_options[:id]}"
   end
 
   def hc_url_fix
@@ -203,6 +202,7 @@ class ApplicationController < ActionController::Base
     if controller_name.to_sym != :onboard && current_user.startup.present? && current_user.startup.current_checkin.blank?
       @force_checkin = true
       @checkin = Checkin.new(:startup => current_user.startup)
+      Time.zone = current_user.startup.time_zone if current_user.startup.time_zone.present?
     end
   end
 
