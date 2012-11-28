@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121127114011) do
+ActiveRecord::Schema.define(:version => 20121128110229) do
 
   create_table "ab_tests", :force => true do |t|
     t.string   "name"
@@ -122,6 +122,7 @@ ActiveRecord::Schema.define(:version => 20121127114011) do
     t.string   "participant_ids"
     t.datetime "updated_at"
     t.integer  "latest_message_id"
+    t.boolean  "team_to_team",      :default => false
   end
 
   create_table "demo_days", :force => true do |t|

@@ -23,6 +23,7 @@ class ConversationsController < ApplicationController
   end
 
   def new
+    @conversation.team_to_team = true # All messages by default right now are team to team
     @new_message = true
     load_users_and_startups_for_conversations unless request.xhr?
     # When you start a message to someone on a startup - need it to automatically include your co-founders?
@@ -32,6 +33,11 @@ class ConversationsController < ApplicationController
       @conversation.participant_ids = params[:participant_ids].split('|') 
     else
       @conversation.participant_ids = [current_user.id]
+    end
+    if params[:startup_id].present?
+      s = Startup.find_by_obfuscated_id(params[:startup_id])
+      @conversation.to = "#{s.name} (Team to Team Message)"
+      @conversation.to_entity = "startup_#{s.id}"
     end
     respond_to do |format|
       format.js
@@ -74,15 +80,17 @@ class ConversationsController < ApplicationController
     redirect_to :action => :index
   end
 
-  def search_people_and_startups
+  def search_startups
     if !current_user.entrepreneur? || params[:query].blank? || params[:query].present? && params[:query].size < 1
       render :json => [] 
       return
     end
-    connected_to_ids = current_user.startup.connected_to_ids('Startup')
-    users = User.select('id, name').where(['name LIKE ?', "#{params[:query]}%"]).where("startup_id IN (#{connected_to_ids.join(',')})").limit(10)
-    startups = Startup.select('id, name').where(['name LIKE ?', "#{params[:query]}%"]).where("id IN (#{connected_to_ids.join(',')})").limit(10)
-    render :json => (users + startups).sort{|a,b| a.name <=> b.name }.map{ |e| e.is_a?(User) ? {:name => e.name, :id => "user_#{e.id}"} : {:name => "#{e.name} (Team to Team Message)", :id => "startup_#{e.id}" } }
+    # Autocomplete for anyone they're connected to + nReduce
+    connected_to_ids = current_user.startup.connected_to_ids('Startup') + [Startup.nreduce_id]
+    #users = User.select('id, name').where(['name LIKE ?', "#{params[:query]}%"]).where("startup_id IN (#{connected_to_ids.join(',')})").limit(10)
+    startups = Startup.select('id, name').where(['name LIKE ?', "#{params[:query]}%"]).where("id IN (#{connected_to_ids.join(',')})").order(:name).limit(20)
+    #render :json => (users + startups).sort{|a,b| a.name <=> b.name }.map{ |e| e.is_a?(User) ? {:name => e.name, :id => "user_#{e.id}"} : {:name => "#{e.name} (Team to Team Message)", :id => "startup_#{e.id}" } }
+    render :json => startups.map{|s| { :name => "#{s.name} (Team to Team Message)", :id => "startup_#{s.id}" } }
   end
 
   def mark_all_as_seen

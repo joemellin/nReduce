@@ -142,8 +142,8 @@ class Startup < ActiveRecord::Base
   def checkin_offset
     #return @checkin_offset if @checkin_offset.present?
     if self.checkin_day.present? && self.time_zone.present?
-      # Calc offset from beginning of week + duration - 1.day
-      @checkin_offset = [self.checkin_day.days - 1.day + self.time_zone_offset, 24.hours]
+      # Calc offset from beginning of week + duration
+      @checkin_offset = [self.checkin_day.days + self.time_zone_offset, 24.hours]
     else
       @checkin_offset = Checkin.default_offset
     end
