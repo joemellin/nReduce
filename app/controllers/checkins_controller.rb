@@ -22,6 +22,11 @@ class CheckinsController < ApplicationController
   end
 
   def new
+    if @checkin.completed?
+      flash[:notice] = "Your checkin has already been completed."
+      redirect_to @checkin
+      return
+    end
     @checkin.startup = current_user.startup
     initialize_and_add_instruments(@checkin)
     render :action => :edit
