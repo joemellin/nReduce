@@ -129,7 +129,7 @@ class CheckinsController < ApplicationController
       if @checkin.blank?
         @checkin = Checkin.new(:startup => @startup)
       # last week's checkin
-      elsif !@checkin.new_record? and (Checkin.prev_checkin_at(@startup.checkin_offset) > @checkin.created_at) and in_time_window
+      elsif !@checkin.new_record? and (Checkin.prev_checkin_due_at(@startup.checkin_offset) > @checkin.created_at) and in_time_window
         @checkin = Checkin.new(:startup => @startup)
       end
     end

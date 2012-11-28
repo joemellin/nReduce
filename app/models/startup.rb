@@ -187,13 +187,13 @@ class Startup < ActiveRecord::Base
   end
 
   def previous_checkin
-    prev_at = Checkin.prev_checkin_at(self.checkin_offset) - self.checkin_offset.last
+    prev_at = Checkin.prev_checkin_due_at(self.checkin_offset) - self.checkin_offset.last
     checkins.ordered.where(['created_at < ? AND created_at > ?', prev_at, prev_at - 1.week]).order('created_at DESC').first
   end
 
   def current_checkin_id
     Cache.get(['current_checkin', self], nil, true){
-      d = Checkin.prev_checkin_at(self.checkin_offset) - self.checkin_offset.last
+      d = Checkin.prev_checkin_due_at(self.checkin_offset) - self.checkin_offset.last
       c = checkins.order('created_at ASC').where(['created_at > ?', d]).first
       c.id if c.present?
     }

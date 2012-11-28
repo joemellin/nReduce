@@ -121,7 +121,7 @@ class ApplicationController < ActionController::Base
     # initialize session now so we have a session id to use for a/b test
     session[:foo] = nil
     return true if @ua
-    #Timecop.freeze Checkin.next_checkin_at(current_user.startup.checkin_offset) - 1.hour if Rails.env.development?
+    #Timecop.freeze Checkin.next_checkin_due_at(current_user.startup.checkin_offset) - 1.hour if Rails.env.development?
     #Timecop.return
     started = Time.now
     yield
@@ -199,10 +199,13 @@ class ApplicationController < ActionController::Base
     @startup = Startup.find_by_obfuscated_id(params[:startup_id]) unless params[:startup_id].blank?
     @startup ||= current_user.startup if params[:id].blank? and !current_user.startup_id.blank?
     # Make sure they have a goal set
-    if controller_name.to_sym != :onboard && current_user.startup.present? && current_user.startup.current_checkin.blank?
-      @force_checkin = true
-      @checkin = Checkin.new(:startup => current_user.startup)
+    if current_user.startup.present?
+      # Localize time to startup
       Time.zone = current_user.startup.time_zone if current_user.startup.time_zone.present?
+      if controller_name.to_sym != :onboard && current_user.startup.current_checkin.blank?
+        @force_checkin = true
+        @checkin = Checkin.new(:startup => current_user.startup)
+      end
     end
   end
 
