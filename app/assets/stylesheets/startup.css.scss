@@ -100,11 +100,13 @@
     }
   }
   .goal_details {
+    max-width: 700px;
     .goal {
-      margin-top: 20px;
-      margin-bottom: 0;
+      margin-top: 10px;
+      margin-bottom: 8px;
       font-weight: normal;
       font-size: 2em;
+      line-height: 1.2em;
       color: #888888;
     }
   }
