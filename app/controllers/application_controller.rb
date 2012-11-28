@@ -202,7 +202,7 @@ class ApplicationController < ActionController::Base
     # Make sure they have a goal set
     if controller_name.to_sym != :onboard && current_user.startup.present? && current_user.startup.current_checkin.blank?
       @force_checkin = true
-      @checkin = Checkin.new(:startup => @startup)
+      @checkin = Checkin.new(:startup => current_user.startup)
     end
   end
 
