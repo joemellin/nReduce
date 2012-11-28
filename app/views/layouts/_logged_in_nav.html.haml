@@ -83,6 +83,7 @@
                           - name = [participants.first.name, "#{participants.size - 1} others"].join(', ')
                         - else
                           - name = participants.map{|u| u.name }.to_sentence
+                      - pic_url ||= from.pic_url(:small)
                       %li.item{:class => cs.unread? ? 'new' : '', :rel => conversation_path(cs.conversation)}
                         .right.time_ago= time_for_conversation(latest_message.created_at)
                         .img.left= image_tag(pic_url)
