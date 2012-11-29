@@ -13,7 +13,7 @@ class BaseUploader < CarrierWave::Uploader::Base
   include Sprockets::Helpers::IsolatedHelper
 
   # Choose what kind of storage to use for this uploader:
-  storage Rails.env.production? ? :fog : :file
+  storage (Rails.env.production? || Rails.env.development?) ? :fog : :file
 
   #
   # IMAGE PROCESSING AND SIZES
@@ -52,7 +52,7 @@ class BaseUploader < CarrierWave::Uploader::Base
   # Override the directory where uploaded files will be stored.
   # This is a sensible default for uploaders that are meant to be mounted:
   def store_dir
-    if Rails.env.production?
+    if Rails.env.production? || Rails.env.development?
       "#{model.class.to_s.underscore}/#{mounted_as}/#{model.id}"
     else
       "uploads/#{model.class.to_s.underscore}/#{mounted_as}/#{model.id}"
@@ -125,6 +125,17 @@ if Rails.env.production?
     config.fog_directory  =  Settings.aws.s3.bucket                  # required
     #config.fog_host       = 'https://assets.example.com'            # optional, defaults to nil
     #config.fog_public     = false                                   # optional, defaults to true
+    config.fog_attributes = {'Cache-Control'=>'max-age=315576000'}  # optional, defaults to {}
+  end
+elsif Rails.env.development?
+  CarrierWave.configure do |config|
+    config.fog_credentials = {
+      :provider               => 'AWS',
+      :aws_access_key_id      => 'fake',
+      :aws_secret_access_key  => 'fake',
+      :region                 => 'us-east-1'  # optional, defaults to 'us-east-1'
+    }
+    config.fog_directory  =  Settings.aws.s3.bucket                  # required
     config.fog_attributes = {'Cache-Control'=>'max-age=315576000'}  # optional, defaults to {}
   end
 end
