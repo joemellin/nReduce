@@ -23,7 +23,8 @@
                 - @users_by_startup_id[s.id].shuffle.each do |tm|
                   = image_tag(user_avatar_url(tm), :title => tm.name)
               .left.headline
-                %h3
+                %h4
+                  Team #{s.name}
                   - if checkin.accomplished?
                     Accomplished Their Goal!
                   - else
