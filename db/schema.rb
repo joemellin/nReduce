@@ -81,9 +81,9 @@ ActiveRecord::Schema.define(:version => 20121128110229) do
     t.text     "start_comments"
     t.integer  "comment_count",   :default => 0
     t.integer  "week"
+    t.integer  "measurement_id"
     t.integer  "before_video_id"
     t.integer  "video_id"
-    t.integer  "measurement_id"
     t.boolean  "accomplished"
     t.string   "next_week_goal"
   end
@@ -170,9 +170,9 @@ ActiveRecord::Schema.define(:version => 20121128110229) do
   create_table "measurements", :force => true do |t|
     t.integer  "instrument_id"
     t.float    "value"
-    t.datetime "created_at",                  :null => false
-    t.datetime "updated_at",                  :null => false
-    t.float    "delta",         :limit => 10
+    t.datetime "created_at",    :null => false
+    t.datetime "updated_at",    :null => false
+    t.float    "delta"
   end
 
   create_table "meeting_messages", :force => true do |t|
@@ -285,7 +285,6 @@ ActiveRecord::Schema.define(:version => 20121128110229) do
     t.string   "connected_with_type"
     t.text     "message"
     t.integer  "context"
-    t.string   "reason"
     t.datetime "pending_at"
     t.boolean  "initiated",           :default => false
     t.datetime "removed_at"
@@ -349,33 +348,22 @@ ActiveRecord::Schema.define(:version => 20121128110229) do
     t.string   "pitch_video_url"
     t.integer  "setup"
     t.boolean  "investable",           :default => false
-    t.integer  "week"
-    t.integer  "intro_video_id"
-    t.integer  "pitch_video_id"
     t.text     "business_model"
     t.date     "founding_date"
     t.string   "market_size"
     t.string   "tokbox_session_id"
+    t.integer  "intro_video_id"
+    t.integer  "pitch_video_id"
+    t.integer  "week"
     t.string   "cached_industry_list"
     t.boolean  "mentorable",           :default => false
     t.datetime "activated_at"
     t.string   "time_zone"
-    t.integer  "checkin_day",          :default => 1
+    t.integer  "checkin_day"
   end
 
   add_index "startups", ["public"], :name => "index_startups_on_public"
   add_index "startups", ["week"], :name => "index_startups_on_week"
-
-  create_table "suggested_startups", :force => true do |t|
-    t.string   "entity_type"
-    t.string   "suggested_entity_type"
-    t.integer  "entity_id"
-    t.integer  "state"
-    t.string   "reason"
-    t.datetime "decided_at"
-    t.datetime "created_at",            :null => false
-    t.datetime "updated_at",            :null => false
-  end
 
   create_table "taggings", :force => true do |t|
     t.integer  "tag_id"
@@ -454,8 +442,8 @@ ActiveRecord::Schema.define(:version => 20121128110229) do
     t.integer  "onboarded"
     t.integer  "email_on"
     t.integer  "setup"
-    t.integer  "intro_video_id"
     t.integer  "followers_count"
+    t.integer  "intro_video_id"
     t.integer  "weekly_class_id"
     t.string   "country"
     t.string   "cached_skill_list"
@@ -486,14 +474,16 @@ ActiveRecord::Schema.define(:version => 20121128110229) do
     t.integer  "vimeo_id"
     t.datetime "created_at",                         :null => false
     t.datetime "updated_at",                         :null => false
+    t.integer  "startup_id"
     t.boolean  "vimeod",          :default => false
     t.string   "type"
     t.string   "title"
-    t.integer  "startup_id"
     t.string   "image"
     t.string   "external_url"
     t.integer  "ecc",             :default => 0
   end
+
+  add_index "videos", ["external_id", "type"], :name => "index_videos_on_external_id_and_type"
 
   create_table "weekly_classes", :force => true do |t|
     t.integer  "week"
