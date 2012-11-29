@@ -56,12 +56,12 @@ class RelationshipsController < ApplicationController
       @startups = [@startup] + @startups.reverse
     end
 
-    @active_startups = @startups.select{|s| s.active? }
+    @active_startups = @startups.select{|s| s.active? || s.id == @startup.id }
 
     # Pad active startups with :joining_soon symbols for easy iteration
-    @active_startups.size.upto(Startup::NUM_ACTIVE_REQUIRED){ @active_startups << :joining_soon } if @startup.present? && !@startup.setup?(:connected)
+    @active_startups.size.upto(Startup::NUM_ACTIVE_REQUIRED){ @active_startups << :joining_soon } if @startup.present? && !@startup.setup?(:connections)
 
-    @inactive_startups = @startups.select{|s| !s.active? }
+    @inactive_startups = @startups.select{|s| !s.active? && s.id != @startup.id }
 
     @commented_on_checkin_ids = current_user.commented_on_checkin_ids
 

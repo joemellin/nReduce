@@ -12,7 +12,7 @@ class Week
     week = time.strftime("%Y%W").to_i
     return week if offset.blank?
     # subtract one week if we're actually before the week 'starts'
-    return Week.previous(week) if (time.beginning_of_week + offset.first) > time
+    return Week.previous(week) if (time.beginning_of_week(:sunday) + offset.first) > time
     week
   end
 
@@ -22,7 +22,7 @@ class Week
     week = week.to_s
     year = week.slice!(0..3)
     return [] if year.blank? || week.blank?
-    start_date = Time.parse("#{year}-01-01 00:00:00").beginning_of_week
+    start_date = Time.parse("#{year}-01-01 00:00:00").beginning_of_week(:sunday)
     start_date += (week.to_i * 7).days
     start_date += offset if offset.present?
     end_date = start_date.end_of_week

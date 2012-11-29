@@ -22,6 +22,11 @@ class CheckinsController < ApplicationController
   end
 
   def new
+    if @checkin.completed?
+      flash[:notice] = "Your checkin has already been completed."
+      redirect_to @checkin
+      return
+    end
     @checkin.startup = current_user.startup
     initialize_and_add_instruments(@checkin)
     render :action => :edit
@@ -124,7 +129,7 @@ class CheckinsController < ApplicationController
       if @checkin.blank?
         @checkin = Checkin.new(:startup => @startup)
       # last week's checkin
-      elsif !@checkin.new_record? and (Checkin.prev_checkin_at(@startup.checkin_offset) > @checkin.created_at) and in_time_window
+      elsif !@checkin.new_record? and (Checkin.prev_checkin_due_at(@startup.checkin_offset) > @checkin.created_at) and in_time_window
         @checkin = Checkin.new(:startup => @startup)
       end
     end

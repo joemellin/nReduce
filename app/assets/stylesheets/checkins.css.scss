@@ -50,12 +50,13 @@
     .goal_wrapper.next_week { margin-left: 30px; }
     .goal_wrapper.previous_week { margin-right: 30px; }
     .previous_week_link, .next_week_link {
-      margin-top: 10px;
-      a {
-        color: #999;
+      .btn {
+        padding: 4px 6px;
+        margin-bottom: 4px;
       }
     }
-    .next_week_link { margin-left: 30px; }
+    .previous_week_link { margin-right: 12px; }
+    .next_week_link { margin-left: 12px; }
     .video { margin-bottom: 8px; }
     .awesome_comment_count { margin-left: 10px; margin-top: 4px; }
     .posted_at { color: #ccc; font-size: .85em; }
