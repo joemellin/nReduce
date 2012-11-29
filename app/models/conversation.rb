@@ -2,6 +2,7 @@ class Conversation < ActiveRecord::Base
   has_many :messages, :dependent => :destroy
   has_many :conversation_statuses, :dependent => :destroy
   belongs_to :latest_message, :class_name => 'Message'
+  belongs_to :to_startup, :class_name => 'Startup'
 
   serialize :participant_ids, Array
 
@@ -12,7 +13,8 @@ class Conversation < ActiveRecord::Base
 
   before_create :generate_conversation_statuses
   
-  attr_accessible :participant_ids, :messages_attributes, :to_entity, :to, :updated_at, :messages, :latest_message_id
+  attr_accessible :participant_ids, :messages_attributes, :to_entity, :to, :updated_at, 
+    :messages, :latest_message_id, :to_startup_id, :team_to_team
 
   attr_accessor :to_entity # accepts user_{id}, startup_{id}, or actual object
   attr_accessor :to # just for form to show to field, not actually used
@@ -21,6 +23,8 @@ class Conversation < ActiveRecord::Base
   # To entity can either be a user or startup, or a string that represents them
   def self.create(attrs = {})
     attrs[:participant_ids] ||= []
+
+    team_to_team = false
 
     # Assign participants from a dropdown
     if attrs[:to_entity].present?
@@ -40,10 +44,11 @@ class Conversation < ActiveRecord::Base
         attrs[:participant_ids] += Startup.find(tmp[1]).team_member_ids
         # Add co-founders at end
         attrs[:participant_ids] += your_team_ids
+        team_to_team = true
       end
       attrs[:participant_ids] = Conversation.clean_ids(attrs[:participant_ids])
     end
-    
+
     # Check to see if a conversation already exists between these people, if so append message to that one
     c = Conversation.between(attrs[:participant_ids]) unless attrs[:participant_ids].blank?
     c.messages << Message.new(attrs[:messages_attributes]['0']) if c.present? && attrs[:messages_attributes].present?
@@ -51,6 +56,7 @@ class Conversation < ActiveRecord::Base
 
     # Otherwise start a new one
     c ||= Conversation.new(attrs)
+    c.team_to_team = attrs[:team_to_team] || team_to_team
     c.save
     c
   end

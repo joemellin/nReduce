@@ -21,7 +21,7 @@
               %ul.nav
                 - 6.downto(1) do |i|
                   - at = next_checkin_ends_at - (i + 1).days
-                  - past = Time.now > at
+                  - past = Time.current > at
                   %li.day{:class => past ? 'past' : 'future'}= link_to at.strftime('%A'), '#'
                   %li.divider-vertical{:class => past ? 'past' : 'future'}
                 %li.day

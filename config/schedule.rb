@@ -24,16 +24,16 @@ every 12.hours do
 end
 
 # Send reminder to everyone who has a checkin due within 24 hours
-every 24.hours, :at => '12:01am' do
+every 1.hour do
   runner "Checkin.send_checkin_email"
 end
 
-every 24.hours, :at => '11:25pm' do
-  runner "Checkin.email_startups_not_completed_checkin_yet"
-end
+# every 24.hours, :at => '11:25pm' do
+#   runner "Checkin.email_startups_not_completed_checkin_yet"
+# end
 
 # Identify active/inactive teams after the default checkin
-every :wednesday, :at => '12:30am' do 
+every 24.hours, :at => '12:30am' do 
   runner "Startup.identify_active_teams"
 end
 

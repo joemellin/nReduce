@@ -9,7 +9,7 @@
           .clear
         .list= render 'conversations/list'
     .span6
-      - if @new_message.present?
+      - if @new_message == true
         .conversation= render 'conversations/form', :conversation => @conversation
       - elsif @conversations.blank?
         .conversation You haven't started any conversations yet.

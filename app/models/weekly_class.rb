@@ -105,6 +105,7 @@ class WeeklyClass < ActiveRecord::Base
 
   # This is the time window in which you join
   def in_join_window?
+    return false
     starts = self.time_window.last + 1.second
     duration = Week.time_window_offsets[:join_class].last
     ends = starts + duration

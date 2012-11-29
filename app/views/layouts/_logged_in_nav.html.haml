@@ -65,15 +65,34 @@
                   %li.item= link_to 'You don\'t have any messages', '#'
                 - else
                   .scrollable
-                    - @conversation_statuses.each do |cs|
+                    - @conversation_statuses.first(20).each do |cs|
                       - latest_message = @latest_message_by_conversation[cs.conversation_id]
+                      - participants = cs.conversation.participant_ids_without(current_user.id).map{|id| @users_by_id[id].present? ? @users_by_id[id] : nil }.compact
                       - from = @users_by_id[latest_message.from_id]
+                      - if cs.conversation.team_to_team?
+                        - other_startup = nil
+                        - participants.each do |u|
+                          - unless u.startup_id == current_user.startup_id
+                            - other_startup = u.startup
+                        - pic_url = other_startup.logo_url(:small)
+                        - name = other_startup.name
+                      - elsif from.id == current_user.id
+                        - user = participants.first
+                        - pic_url = user.pic_url(:small)
+                        - if participants.size > 2
+                          - name = [participants.first.name, "#{participants.size - 1} others"].join(', ')
+                        - else
+                          - name = participants.map{|u| u.name }.to_sentence
+                      - pic_url ||= from.pic_url(:small)
                       %li.item{:class => cs.unread? ? 'new' : '', :rel => conversation_path(cs.conversation)}
                         .right.time_ago= time_for_conversation(latest_message.created_at)
-                        .img.left= image_tag(from.pic_url(:small))
+                        .img.left= image_tag(pic_url)
                         .left
-                          .name= from.name
-                          .message "#{truncate(latest_message.content, :length => 25)}"
+                          .name= name
+                          .message
+                            / - if from.id == current_user.id
+                            /   &lt;&nbsp;
+                            #{truncate(latest_message.content, :length => 25)}
                         .clear
                 %li.title.link.center= link_to 'See All', conversations_path
 

@@ -5,7 +5,7 @@
   .row
     .span5.offset7
       - if !@owner
-        .right= link_to '<i class="icon-envelope"></i> Message'.html_safe, new_conversation_path(:participant_ids => (@startup.team_member_ids + [current_user.id]).join('|')), :class => 'btn'
+        .right= link_to_message_startup(@startup)
       - else
         .edit_btn.right= link_to "Edit Startup", "/startup/edit", :class => "btn"
       .clear
