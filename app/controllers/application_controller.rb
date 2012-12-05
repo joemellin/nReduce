@@ -5,6 +5,8 @@ class ApplicationController < ActionController::Base
   before_filter :authenticate_if_staging
   protect_from_forgery
 
+  #link_to title, capture_and_login_path(:redirect_to => request.fullpath), options
+
   # Visit an external site
   def ciao
     redirect_to '/' && return if params[:url].blank?
