@@ -302,7 +302,7 @@ class Stats
   def self.generate_week_hash(since_date = nil)
     since_date ||= Time.now - 10.weeks
     tmp = []
-    current = Week.integer_for_time(Time.now)
+    current = Week.integer_for_time(Time.now.end_of_week)
     last = Week.integer_for_time(since_date)
     while current > last
       tmp << current
