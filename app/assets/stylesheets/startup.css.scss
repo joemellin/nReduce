@@ -47,9 +47,8 @@
       h4 { margin-top: 6px; margin-right: 12px;}
       margin-bottom: 20px;
       margin-top: 20px;
-      input {
-       margin-bottom: 10px; 
-
+      input, select {
+       margin-bottom: 0px; 
       }
     
     }
@@ -59,8 +58,7 @@
       margin-bottom: 10px;
       border-bottom: 0px solid #efefef;
       .name {
-        max-width: 200px;
-        margin-left: 12px;
+        max-width: 260px;
         h3 a {
           white-space: nowrap;
           text-wrap:none;

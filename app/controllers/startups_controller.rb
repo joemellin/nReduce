@@ -237,21 +237,49 @@ class StartupsController < ApplicationController
   end
 
   def search
-    # Force goecode from IP
+    @search = {:search_type => 'location'}
     if params[:search].present?
-      session[:search] = params[:search]
-      @search = params[:search]
-    elsif session[:search].blank?
-      current_user.geocode_from_ip(request.remote_ip) unless current_user.geocoded?
-      @search = current_user.location
-    elsif session[:search].present?
+      # sanitize search params
+      params[:search].select{|k,v| [:query, :industry_ids, :search_type].include?(k) }
+
+      # save in session for pagination
+      @search = session[:search] = params[:search]
+    elsif params[:page].present?
       @search = session[:search]
     end
 
+    # Force goecode from IP if no search + user doesn't hae location
+    if @search[:search_type] == 'location' && @search[:query].blank?
+      current_user.geocode_from_ip(request.remote_ip) unless current_user.geocoded?
+      @search[:query] = current_user.location
+    end
+
+    @search[:page] = params[:page] || 1
+    @search[:per_page] = 10
+    @search[:industry_ids] ||= []
+
     @startups_by_id = Hash.by_key(Startup.where(:active => true), :id)
-    origin = session[:search].present? ? session[:search] : [current_user.lat, current_user.lng]
-    @users = User.geo_scope(:within => 30000, :origin => origin).where(:startup_id => @startups_by_id.keys).group(:startup_id).order(:distance).paginate(:page => params[:page] || 1, :per_page => 10)
-    @num_checkins_by_startup = Checkin.where(:startup_id => @startups_by_id.keys).group(:startup_id).count
+    if @search[:search_type] == 'location'
+      origin = @search[:query].present? ? @search[:query] : [current_user.lat, current_user.lng]
+      @results = User.geocoded.geo_scope(:origin => origin).where(:startup_id => @startups_by_id.keys).group(:startup_id).order(:distance).paginate(:page => params[:page] || 1, :per_page => 10) 
+      startup_ids = @results.map{|s| s.startup_id }
+    else
+      @search_results = Startup.search do |s|
+        s.fulltext(@search[:query], {:fields => :name}) if @search[:query].present? && @search[:search_type] == 'startup_name'
+        s.fulltext(@search[:query], {:fields => :team_member_names}) if @search[:query].present? && @search[:search_type] == 'founder_name'
+        s.with :active, true
+        s.with :industry_ids, @search[:industry_ids].map{|id| id.to_i } if @search[:industry_ids].present?
+        s.paginate :page => @search[:page], :per_page => @search[:per_page]
+      end
+      startup_ids = @search_results.hits.map{|s| s.stored(:id) }
+      @results = @search_results.results
+    end
+    @num_checkins_by_startup = Checkin.where(:startup_id => startup_ids).group(:startup_id).count
+
+    @tag_id_count = ActsAsTaggableOn::Tagging.where(:context => 'industries').where(:taggable_id => @startups_by_id.keys).group(:tag_id).count
+    @sorted_tag_ids = @tag_id_count.sort{|a,b| a.last <=> b.last }.reverse.map{|id_count| id_count.first }
+    @tags_by_id = Hash.by_key(ActsAsTaggableOn::Tag.where(:id => @sorted_tag_ids), :id)
+
   end
 
   #
