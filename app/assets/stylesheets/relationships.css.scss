@@ -19,16 +19,40 @@
         width: 50px;
         height: 50px;
       }
-      .goal_wrapper {
-        p { margin-bottom: 2px; }
-        margin-bottom: 20px;
-        .goal_state { margin-right: 5px; }
-        .goal { line-height: 35px;}
+      .goals {
+        max-width: 290px;
+        .goal_wrapper {
+          p { margin-bottom: 2px; }
+          margin-bottom: 20px;
+          .goal_state { 
+            margin-right: 5px;
+            .box { margin-right: 0px; }
+          }
+          .goal { 
+            line-height: 1.4em;
+            max-width: 245px;
+            max-height: 62px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+        }
       }
       .awesome_comment_count {
         p { margin-bottom: 2px; font-size: .8em;}
       }
-      .video { margin-right: 10px; margin-bottom: 5px; }
+      .video { 
+        width: 265px;
+        margin-right: 10px;
+        margin-bottom: 5px;
+      }
+      .action_buttons .left {
+        margin-left: 10px;
+      }
+      .participants {
+        max-width: 300px;
+        img { width: 50px; height: 50px; }
+      }
+
     }
   }
   .inactive_teams {
