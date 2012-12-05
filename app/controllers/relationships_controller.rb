@@ -16,52 +16,41 @@ class RelationshipsController < ApplicationController
       redirect_to current_user
       return
     end
+
     @startups = @entity.connected_to
-        # Add nreduce to list if they don't have any startups
+    # Add nreduce to list if they don't have any startups
     if !current_user.entrepreneur? and @startups.blank?
       @startups = Startup.where(:id => Startup.nreduce_id)
       no_startups = true
-    end 
+    end
 
     if current_user.mentor?
       @checkins_by_startup = Checkin.current_checkin_for_startups(@startups)
     else
       @checkins_by_startup = Checkin.current_checkin_for_startups(@startups + [@startup])
     end
-    
+
     # Sort by startups who have the most recent completed checkins first
     long_ago = Time.now - 100.years
     @startups.sort! do |a,b|
       a_time, b_time = long_ago, long_ago
       if !@checkins_by_startup[a.id].blank?
-        if @checkins_by_startup[a.id].completed?
-          a_time = @checkins_by_startup[a.id].completed_at
-        elsif @checkins_by_startup[a.id].submitted?
-          a_time = @checkins_by_startup[a.id].submitted_at
-        end
+        a_time = @checkins_by_startup[a.id].completed_at if @checkins_by_startup[a.id].completed?
       end
       if !@checkins_by_startup[b.id].blank?
-        if @checkins_by_startup[b.id].completed?
-          b_time = @checkins_by_startup[b.id].completed_at
-        elsif @checkins_by_startup[b.id].submitted?
-          b_time = @checkins_by_startup[b.id].submitted_at
-        end
+        b_time = @checkins_by_startup[b.id].completed_at if @checkins_by_startup[b.id].completed?
       end
       a_time <=> b_time
     end
-    # Add user's startup (if not mentor) to the beginning, and then sort by reverse chrono order
-    if current_user.mentor?
-      @startups.reverse!
-    else
-      @startups = [@startup] + @startups.reverse
-    end
+    # Sort by reverse chrono order
+    @startups.reverse!
+   
+    # @active_startups = @startups.select{|s| s.active? || s.id == @startup.id }
 
-    @active_startups = @startups.select{|s| s.active? || s.id == @startup.id }
+    # # Pad active startups with :joining_soon symbols for easy iteration
+    # @active_startups.size.upto(Startup::NUM_ACTIVE_REQUIRED){ @active_startups << :joining_soon } if @startup.present? && !@startup.setup?(:connections)
 
-    # Pad active startups with :joining_soon symbols for easy iteration
-    @active_startups.size.upto(Startup::NUM_ACTIVE_REQUIRED){ @active_startups << :joining_soon } if @startup.present? && !@startup.setup?(:connections)
-
-    @inactive_startups = @startups.select{|s| !s.active? && s.id != @startup.id }
+    # @inactive_startups = @startups.select{|s| !s.active? && s.id != @startup.id }
 
     @commented_on_checkin_ids = current_user.commented_on_checkin_ids
 

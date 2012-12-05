@@ -100,7 +100,8 @@
 
       %ul.nav.pull-right
         - if current_user.entrepreneur? && current_user.startup.present?
-          %li{:class => is_controller_action?('relationships', 'index') ? 'active' : ''}= link_to "Work Room", work_room_path    
+          %li{:class => is_controller_action?('relationships', 'index') ? 'active' : ''}= link_to "Work Room", work_room_path
+          %li{:class => is_controller_action?('posts') ? 'active' : ''}= link_to "Water Cooler", posts_path    
         %li.dropdown
           %a.dropdown-toggle{:href => '#', 'data-toggle' => 'dropdown'}
             My Profile
