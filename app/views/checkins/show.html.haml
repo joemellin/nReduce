@@ -69,16 +69,7 @@
         .left.awesome_comment_count
           - show_from = false
           %p
-            - if @checkin.awesome_count > 0
-              = pluralize(@checkin.awesome_count, 'awesome')
-              - if @checkin.comment_count > 0
-                and
-              - show_from = true
-            - if @checkin.comment_count > 0
-              = pluralize(@checkin.comment_count, 'comment')
-              - show_from = true
-            - if show_from
-              from:
+            = awesome_comment_count_summary(@checkin)
         .clear
 
         .participants
@@ -95,7 +86,7 @@
               - if @next_checkin.present?
                 = link_to '<i class="icon-chevron-right"></i>'.html_safe, @next_checkin, :class => 'btn'
             .left
-              Next Week's Goal
+              This Week's Goal
             .clear
           - if @next_checkin.present?
             %p.goal= h(@next_checkin.goal)

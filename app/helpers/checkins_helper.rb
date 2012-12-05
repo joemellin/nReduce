@@ -50,4 +50,13 @@ module CheckinsHelper
     text += "#{minutes}m Remaining"
     text
   end
+
+  def awesome_comment_count_summary(checkin)
+    ret = []
+    ret << pluralize(checkin.comment_count, 'comment') if checkin.comment_count > 0
+    ret << pluralize(checkin.awesome_count, 'awesome') if checkin.awesome_count > 0
+    return '' if ret.blank?
+    ret = ret.to_sentence
+    ret + ' from:'
+  end
 end

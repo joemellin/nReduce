@@ -117,12 +117,14 @@ class Checkin < ActiveRecord::Base
     # Returns hash of {:startup_id => current_checkin}
   def self.current_checkin_for_startups(startups = [])
     return {} if startups.blank?
-    if Checkin.in_time_window?(Checkin.default_offset)
-      checkins = Checkin.where(:startup_id => startups.map{|s| s.id }).where(['created_at > ?', Checkin.prev_checkin_due_at(Checkin.default_offset)])
-    else # if in before checkin or in the week after, get prev week's checkin start time
-      start_time = Checkin.prev_checkin_due_at(Checkin.default_offset) - 24.hours
-      checkins = Checkin.where(:startup_id => startups.map{|s| s.id }).where(['created_at > ? OR completed_at > ?', start_time, start_time])
-    end
+    checkins = Checkin.where(:startup_id => startups.map{|s| s.id }).where(['created_at > ?', Time.current - 2.months]).order('created_at ASC')
+    
+    # if Checkin.in_time_window?(Checkin.default_offset)
+    #   checkins = Checkin.where(:startup_id => startups.map{|s| s.id }).where(['created_at > ?', Checkin.prev_checkin_due_at(Checkin.default_offset)])
+    # else # if in before checkin or in the week after, get prev week's checkin start time
+    #   start_time = Checkin.prev_checkin_due_at(Checkin.default_offset) - 24.hours
+    #   checkins = Checkin.where(:startup_id => startups.map{|s| s.id }).where(['created_at > ? OR completed_at > ?', start_time, start_time])
+    # end
     checkins.inject({}) do |res, checkin|
       # completed checkins override checkins with just a before
       res[checkin.startup_id] = checkin if res[checkin.startup_id].blank? || checkin.completed?

@@ -35,17 +35,7 @@
       .goal { margin-bottom: 30px; }
       .accomplished { color: #00df00; }
       .missed { color: #999; }
-      .in_progress {
-        .box {
-          border: 1px solid #ccc;
-          border-radius: 5px;
-          width: 30px;
-          height: 30px;
-          margin-right: 8px;
-          margin-top: 2px;
-        }
-        color: #999;
-      }
+      // see common.css for .in_progress style
     }
     .goal_wrapper.next_week { margin-left: 30px; }
     .goal_wrapper.previous_week { margin-right: 30px; }

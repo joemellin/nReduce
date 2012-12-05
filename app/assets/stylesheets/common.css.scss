@@ -1,8 +1,8 @@
-body{
+body {
   position: relative;
   background-color: #EAEAEA;
   font-family: "Open Sans", sans-serif;
-  h1,h2,h3,h4,h5,p,textarea {
+  h1,h2,h3,h4,h5,textarea {
     font-family: "myriad-pro",sans-serif;
     font-style: normal;
     font-weight: 300;
@@ -427,5 +427,19 @@ hr {
   .email {
     padding: 10px 0 10px 0;
   }
+}
+
+
+
+.in_progress {
+  .box {
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    width: 33px;
+    height: 33px;
+    margin-right: 8px;
+    margin-top: 2px;
+  }
+  color: #999;
 }
 
