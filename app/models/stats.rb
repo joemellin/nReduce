@@ -241,7 +241,7 @@ class Stats
 
     # Group startups by date created
     weeks.keys.each do |week|
-      time_window = Week.window_for_integer(week, :after_checkin)
+      time_window = Week.window_for_integer(week, Checkin.default_offset)
       ids = []
       startups.values.each do |s|
         ids << s.id if time_window.first <= s.created_at && time_window.last >= s.created_at
@@ -334,11 +334,11 @@ class Stats
       previous_week_ids.each do |id|
         c = checkins_by_startup[id]
         if c.present?
-          if c.before_completed? && !c.after_completed?
+          if c.goal.present? && !c.completed?
             this_count[:before_checkin] += 1
-          elsif c.before_completed? && c.after_completed?
+          elsif c.goal.present? && c.completed?
             this_count[:before_after_checkin] += 1
-          elsif !c.before_completed? && c.after_completed?
+          elsif c.goal.blank? && c.completed?
             this_count[:after_checkin] += 1
           end
         else
