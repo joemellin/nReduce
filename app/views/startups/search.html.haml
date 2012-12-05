@@ -17,11 +17,12 @@
     %hr/
     .row
       .span2
-        - @sorted_tag_ids.each do |id|
-          - tag = @tags_by_id[id]
-          %div
-            = check_box_tag "search[industry_ids][]", tag.id, (@search[:industry_ids].present? && @search[:industry_ids].include?(tag.id))
-            = label_tag tag.id, "#{tag.name} (#{@tag_id_count[tag.id]})", :style => 'display: inline; padding-left: 5px; font-size: .9em'
+        &nbsp;
+        / - @sorted_tag_ids.each do |id|
+        /   - tag = @tags_by_id[id]
+        /   %div
+        /     = check_box_tag "search[industry_ids][]", tag.id, (@search[:industry_ids].present? && @search[:industry_ids].include?(tag.id))
+        /     = label_tag tag.id, "#{tag.name} (#{@tag_id_count[tag.id]})", :style => 'display: inline; padding-left: 5px; font-size: .9em'
       .span10
         - @results.each do |e|
           - if e.is_a?(User)
