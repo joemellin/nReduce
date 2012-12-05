@@ -45,15 +45,16 @@
                 .left.goal= checkin.next_week_goal
                 .clear
             .clear
-            .right
+            .right.action_buttons
               - if owner
-                = link_to 'Respond to Feedback', startup_checkin_path(s, checkin), :class => 'btn btn-success'
+                .left= link_to 'Respond to Feedback', startup_checkin_path(s, checkin), :class => 'btn btn-success'
               - elsif @commented_on_checkin_ids.include?(checkin.id)
-                = link_to '<i class="icon icon-ok"></i> Feedback Given'.html_safe, startup_checkin_path(s, checkin), :class => 'btn'
+                .left= link_to '<i class="icon icon-ok"></i> Feedback Given'.html_safe, startup_checkin_path(s, checkin), :class => 'btn'
               - else
-                = link_to 'Comment', startup_checkins_path(s, checkin), :class => 'btn btn-success'
+                .left= link_to 'Comment', startup_checkins_path(s, checkin), :class => 'btn btn-success'
               - if checkin.completed?
-                != render_awesome_button(checkin)
+                .left!= render_awesome_button(checkin)
+              .clear
             .left
               .awesome_comment_count
                 %p= awesome_comment_count_summary(checkin)
