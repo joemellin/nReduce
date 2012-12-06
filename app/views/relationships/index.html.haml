@@ -53,7 +53,7 @@
                 - elsif @commented_on_checkin_ids.include?(checkin.id)
                   .left= link_to '<i class="icon icon-ok"></i> Feedback Given'.html_safe, startup_checkin_path(s, checkin), :class => 'btn'
                 - else
-                  .left= link_to 'Comment', startup_checkins_path(s, checkin), :class => 'btn btn-info'
+                  .left= link_to 'Comment', startup_checkin_path(s, checkin), :class => 'btn btn-info'
                 - if checkin.completed?
                   .left!= render_awesome_button(checkin)
                 .clear
