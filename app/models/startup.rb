@@ -74,7 +74,7 @@ class Startup < ActiveRecord::Base
     end
 
     # filterable fields
-    integer :id
+    integer :id, :stored => true
     integer :industry_ids, :multiple => true
     boolean :active
     double  :rating
