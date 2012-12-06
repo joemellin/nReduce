@@ -147,15 +147,6 @@ class Checkin < ActiveRecord::Base
     c_by_week
   end
 
-  # Queues up 'before' email to be sent to all active users
-  # def self.send_before_checkin_email
-  #   users_with_startups = User.where('email IS NOT NULL').where(:startup_id => Startup.select('id').account_complete.map{|s| s.id })
-
-  #   users_with_startups.each do |u|
-  #     Resque.enqueue(Checkin, :before, u.id) if u.account_setup? && u.email_for?('docheckin')
-  #   end
-  # end
-
   # Queues up 'after' email to be sent to all active users
   # Looks for all startups that need to check in exactly 24 hours from now
   # Scheduled to run every hour (using whenever)
@@ -163,11 +154,13 @@ class Checkin < ActiveRecord::Base
   def self.send_checkin_email(checkin_type = :checkin)
     days_of_week = [Time.current.wday, (Time.current + 1.day).wday]
     startup_ids = []
-    Startup.where(:checkin_day => days_of_week).account_complete.each do |s| 
+    Startup.where(:checkin_day => days_of_week).account_complete.each do |s|
+      Time.zone = s.time_zone || Settings.default_time_zone
       next_checkin_at = Checkin.next_checkin_due_at(s.checkin_offset)
       # If between 24 and 25 hours in the future, then message them
       startup_ids << s.id if next_checkin_at > (Time.current + 24.hours) && next_checkin_at < (Time.current + 25.hours)
     end
+    Time.zone = Settings.default_time_zone
     return 'No users to email.' if startup_ids.blank?
 
     # Find all users on these startups and email them
@@ -337,10 +330,10 @@ class Checkin < ActiveRecord::Base
   end
 
   def self.pct_complete_week(offset)
-    time ||= Time.current
+    time = Time.current
     nc = Checkin.next_checkin_due_at(offset)
     return 100 if nc < time
-    100 - (((nc - time) / 7.days) * 100).round
+    (100 - (((nc - time) / 7.days) * 100)).round(2)
   end
 
   # Returns time of next checkin deadline
