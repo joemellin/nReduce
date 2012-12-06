@@ -21,8 +21,9 @@
                 .team_name Team #{s.name}
                 .left.pics
                   = image_tag s.logo_url(:small)
-                  - @users_by_startup_id[s.id].shuffle.each do |tm|
-                    = image_tag(user_avatar_url(tm), :title => tm.name)
+                  - if @users_by_startup_id[s.id].present?
+                    - @users_by_startup_id[s.id].shuffle.each do |tm|
+                      = image_tag(user_avatar_url(tm), :title => tm.name)
                 .left.headline
                   %h4
                     Team #{s.name}
