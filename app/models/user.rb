@@ -26,6 +26,8 @@ class User < ActiveRecord::Base
   has_many :ratings_awesomes, :through => :ratings, :source => :awesomes
   has_many :questions
   has_many :videos
+  has_many :requests
+  has_many :responses
 
   # Include default devise modules. Others available are:
   # :token_authenticatable, :confirmable,

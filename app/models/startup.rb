@@ -21,6 +21,8 @@ class Startup < ActiveRecord::Base
   has_many :screenshots, :dependent => :destroy
   has_many :ratings
   has_many :questions
+  has_many :requests
+  has_many :responses, :through => :requests
 
   attr_accessible :name, :investable, :team_size, :website_url, :main_contact_id, :phone, 
     :growth_model, :stage, :company_goal, :meeting_id, :one_liner, :active, :launched_at, 
