@@ -396,8 +396,16 @@ class Checkin < ActiveRecord::Base
   end
 
   # Returns label string - ex: November 14 to November 20th
+  # Uses default offset if checkin was created before we allowed people to change offset (so their current offset doesn't affect time label calc)
   def time_label
-    Checkin.week_for_time(self.created_at || Time.current, self.startup.present? ? self.startup.checkin_offset : Checkin.default_offset)
+    time = self.created_at || Time.current
+    co = self.startup.checkin_offset
+    if time < Time.parse('2012-11-27 00:00:00') || co.blank?
+      offset = Checkin.default_offset
+    else
+      offset = co
+    end
+    Checkin.week_for_time(time,offset)
   end
 
   # Returns time window for this checkin
