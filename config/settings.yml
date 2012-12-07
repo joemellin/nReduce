@@ -14,129 +14,80 @@ default_reply_to_email: "nReduce Support <support@nreduce.com>"
 client:
   test: "test"
 
-coworking_locations:
-  uptown_espresso:
-    name: 'The Uptown Espresso'
-    location: 'Seattle, WA, USA'
-    twitter: '@thevelvetfoam'
-    url: 'http://www.uptownespresso.net/'
-    map_url: 'https://maps.google.com/maps?f=q&amp;source=s_q&amp;hl=en&amp;geocode=&amp;q=Uptown+Espresso,+4th+Avenue,+Seattle,+WA&amp;aq=0&amp;oq=uptown+espresso+&amp;sll=47.623322,-122.33825&amp;sspn=0.020305,0.045447&amp;ie=UTF8&amp;hq=Uptown+Espresso,+4th+Avenue,+Seattle,+WA&amp;t=m&amp;ll=47.621554,-122.346668&amp;spn=0.040496,0.091839&amp;z=13&amp;iwloc=A&amp;output=embed'
-    images: ['ue_tables.jpg', 'ue_boardroom.jpg', 'ue_window.jpg', 'ue_bar.jpg', 'ue_details.jpg']
+request_questions:
+  retweet:
+    - "What is the link to the tweet you'd like others to re-tweet? ex: https://twitter.com/nreduce/status/274112721451102208"
+  hn_upvote:
+    - "What is the link to the HN Post? ex: http://news.ycombinator.com/item?id=4887575"
+  ui_ux_feedback:
+    - "What is the URL for the feature, product or prototype you'd like to be tested?"
+    - "Instructions"
+    - "Task #1"
+    - "Task #2"
+    - "Task #3"
+    - "Question #1"
+    - "Question #2"
+    - "Question #3"
+  value_prop_feedback:
+    - "What is your ideal customer for this value proposition? Be as specific as possible."
+    - "What is the URL that you would like to send the above customer to?"
 
-location_options:
-  - "San Francisco (downtown)"
-  - "South Bay (Palo Alto, Mountain View, etc)"
-  - "New York City"
-  - "Seattle"
-  - "Houston"
-  - "London"
-  - "Los Angeles"
-  - "Amsterdam"
-  - "Paris"
-  - "Berlin"
-  - "San Diego"
-  - "Austin"
-  - "San Diego"
-  - "Washington DC"
-  - "Other..."
+request_prices:
+  retweet: 1
+  hn_upvote: 2
+  ui_ux_feedback: 5
+  value_prop_feedback: 20
 
-startup_options:
-  growth_model:
-    "Not Sure Yet :)": 1
-    "Viral": 2
-    "SEO": 3
-    "Advertising": 4
-    "Partnerships": 5
-    "SMB Sales": 6
-    "Enterprise Sales": 7
-  stage:
-    "Idea": 1
-    "Prototype": 2
-    "Private Alpha/Beta": 3
-    "Launched": 4
-    "Generating Revenue/Scaling": 5
-  company_goal:
-    "Fun Project - Chatroulette": 1
-    "Life Style Business - 4 Hour Workweek": 2
-    "Steady Revenue - 37Signals": 3
-    "Improve Society - Kiva": 4
-    "Big Exit - Facebook": 5
-  industry:
-    - "Advertising"
-    - "Analytics"
-    - "B2B"
-    - "Big Data"
-    - "Biotech"
-    - "Cleantech"
-    - "Consumer Web"
-    - "Crowdsourcing"
-    - "Digital Media"
-    - "E-Commerce"
-    - "Education"
-    - "Energy"
-    - "Enterprise Software"
-    - "Entertainment"
-    - "Facebook Applications"
-    - "Fashion"
-    - "Financial Services"
-    - "Food and Beverages"
-    - "Games"
-    - "Health"
-    - "Journalism"
-    - "Kids"
-    - "Knowledge Management"
-    - "Legal"
-    - "Location Based Services"
-    - "Manufacturing"
-    - "Marketplaces"
-    - "Medical Services"
-    - "Mobile"
-    - "Mobile Commerce"
-    - "Mobile Games"
-    - "Music"
-    - "Physical Goods"
-    - "Professional Services"
-    - "Publishing"
-    - "Real Estate"
-    - "Recruiting"
-    - "SaaS"
-    - "Search"
-    - "Security"
-    - "Sports"
-    - "SMB Focused"
-    - "Social Commerce"
-    - "Social Games"
-    - "Social Media"
-    - "Travel"
-    - "Transportation"
-    - "Ventures for Good"
-    - "Video"
-
-
-yes_no_options:
-  -
-    - "Yes"
-    - true
-  -
-    - "No"
-    - false
-
-agree_options:
-  -
-    - "Agree"
-    - true
-  -
-    - "Disagree"
-    - false
-
-q1: "Are you free on Tuesday evenings (in your timezone) to meet with other entrepreneurs (either in person or virtually)?"
-q2: "Does someone on your team know how to code?"
-q3: "Do you feel that with your current team can make ship product updates and/or make meaningful customer traction every week?"
-q4: "Do you have more than one founder on your team?"
-q5: "Are you and all your cofounders willing to commit fulltime to your startup this summer?"
-q6: "nReduce is about bringing elite startups together, not about forming startups. nReduce can not help recruit or add team members. Teams that can't make progress with their current team will not be able to finish the program. nReduce can not provide recruiting services for our startups."
-q7: "nReduce startups only have to share what they feel comfortable sharing about their startups. You'll never be forced to tell other startups specific proprietary information or trade secret information about your company. However, sharing your general weekly progress, and what you've shipped (even without specifics) is required."
-
+industries:
+  - "Advertising"
+  - "Analytics"
+  - "B2B"
+  - "Big Data"
+  - "Biotech"
+  - "Cleantech"
+  - "Consumer Web"
+  - "Crowdsourcing"
+  - "Digital Media"
+  - "E-Commerce"
+  - "Education"
+  - "Energy"
+  - "Enterprise Software"
+  - "Entertainment"
+  - "Facebook Applications"
+  - "Fashion"
+  - "Financial Services"
+  - "Food and Beverages"
+  - "Games"
+  - "Health"
+  - "Journalism"
+  - "Kids"
+  - "Knowledge Management"
+  - "Legal"
+  - "Location Based Services"
+  - "Manufacturing"
+  - "Marketplaces"
+  - "Medical Services"
+  - "Mobile"
+  - "Mobile Commerce"
+  - "Mobile Games"
+  - "Music"
+  - "Physical Goods"
+  - "Professional Services"
+  - "Publishing"
+  - "Real Estate"
+  - "Recruiting"
+  - "SaaS"
+  - "Search"
+  - "Security"
+  - "Sports"
+  - "SMB Focused"
+  - "Social Commerce"
+  - "Social Games"
+  - "Social Media"
+  - "Travel"
+  - "Transportation"
+  - "Ventures for Good"
+  - "Video"
 
 apis:
   twitter:
