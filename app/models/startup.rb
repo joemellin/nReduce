@@ -23,6 +23,8 @@ class Startup < ActiveRecord::Base
   has_many :questions
   has_many :requests
   has_many :responses, :through => :requests
+  has_one :account, :as => :owner
+  has_many :account_transfers, :through => :account
 
   attr_accessible :name, :investable, :team_size, :website_url, :main_contact_id, :phone, 
     :growth_model, :stage, :company_goal, :meeting_id, :one_liner, :active, :launched_at, 
@@ -130,6 +132,14 @@ class Startup < ActiveRecord::Base
     ObfuscateId.hide(Startup.nreduce_id)
   end
 
+  def account_balance
+    self.account.balance
+  end
+
+  def escrow_balance
+    self.account.escrow_balance
+  end
+
   # Returns array for calculating checkin window offset [offset of day it starts from day of week, duration]
   def checkin_offset
     #return @checkin_offset if @checkin_offset.present?
@@ -184,7 +194,9 @@ class Startup < ActiveRecord::Base
   end
 
   def current_checkin_id
-    Cache.get(['current_checkin', self], nil, true){
+    # expire when next checkin due
+    expires_in = Checkin.next_checkin_due_at(self.checkin_offset) - Time.current
+    Cache.get(['current_checkin', self], expires_in, true){
       d = Checkin.prev_checkin_due_at(self.checkin_offset) - self.checkin_offset.last
       c = checkins.order('created_at ASC').where(['created_at > ?', d]).first
       c.id if c.present?

@@ -10,6 +10,5 @@ class CreateRequests < ActiveRecord::Migration
     end
 
     add_index :requests, :num
-    add_column :startups, :helpful_balance, :integer, :default => 0
   end
 end
