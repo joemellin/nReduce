@@ -2,6 +2,7 @@ class Response < ActiveRecord::Base
   belongs_to :request
   belongs_to :user
   has_many :notifications, :as => :attachable
+  has_one :account_transfer, :as => :attachable
 
   serialize :data, Array
 
@@ -10,6 +11,7 @@ class Response < ActiveRecord::Base
   validate :request_is_open, :if => :new_record?
   validate :user_hasnt_already_performed_request, :if => :new_record?
   
+  before_create :move_balance_to_escrow
   after_create :decrement_request_num
 
   attr_accessible :data, :amount_paid, :rejected_because, :request, :request_id, :user, :user_id
@@ -17,34 +19,64 @@ class Response < ActiveRecord::Base
   scope :rejected, where('rejected_because IS NOT NULL')
   scope :accepted, where('accepted_at IS NOT NULL')
   scope :started, where('accepted_at IS NULL')
+  scope :expired, where('expired_at IS NOT NULL')
 
     # Once a requesting user has reviewed it they can accept it
     # Can pass in amount paid if different than what was offered on the request
   def accept!(amount_paid = nil)
+    return true if self.accepted? || self.rejected?
+    self.amount_paid = amount_paid || self.request.price
     self.validate_questions_are_answered
     self.validate_balance_is_available
-    if self.valid?
-      self.accepted_at = Time.now
-      self.amount_paid = amount_paid || self.request.price
-      self.save
-    else
-      false
+    return false unless self.valid?
+    self.accepted_at = Time.now
+    Response.transaction do
+      if self.save && self.decrement_request_num && self.pay_user
+        true
+      else
+        false
+      end
     end
   end
 
   # Once a requesting user has reviewed it they can reject it (reason needed)
-  def reject(reason)
+  def reject!(reason)
+    return true if self.accepted? || self.rejected?
     self.rejected_because = reason
-    self.accepted_at = nil
-    if self.save
-      self.increment_request_num
-    else
-      false
+    self.cancel!
+  end
+
+  # Request has gone past expiry
+  def expire!
+    self.expired_at = Time.now
+    self.cancel!
+  end
+
+  # Save and increment the number of responses on the request
+  def cancel!
+    Response.transaction do
+      if self.save && self.increment_request_num
+        true
+      else
+        false
+      end
     end
   end
 
   def questions
     self.request.data
+  end
+
+  def accepted?
+    self.accepted_at.present?
+  end
+
+  def rejected?
+    self.rejected_because.present?
+  end
+
+  def expired?
+    self.expired_at.present?
   end
 
   protected
@@ -69,7 +101,7 @@ class Response < ActiveRecord::Base
 
   # Validates startup can pay for this response, and that num on request is above 0
   def validate_balance_is_available
-    if self.startup.helpful_balance < self.price
+    if self.startup.escrow_balance < self.amount_paid
       self.errors.add(:request, "startup doesn't have enough helpfuls to pay you, sorry")
       false
     else
@@ -77,7 +109,9 @@ class Response < ActiveRecord::Base
     end
   end
 
-  def 
+  def pay_user
+    AccountTransfer.perform(self.request.startup.account, self.user.account, :escrow, :balance, self.amount_paid)
+  end
 
   def user_hasnt_already_performed_request
     if Response.where(:request_id => self.request_id, :user_id => self.user_id).count > 0

@@ -160,6 +160,10 @@ class User < ActiveRecord::Base
     User.where(:email => Settings.joe_email).first
   end
 
+  def account
+    self.startup.account
+  end
+
   def is_joe?
     self.email == Settings.joe_email
   end
