@@ -15,55 +15,90 @@
           - next if checkin.blank?
           - owner = (@startup && (s.id == @startup.id)) ? true : false
           .item.checkin
-            .right.time= time_for_conversation(checkin.completed_at.present? ? checkin.completed_at : checkin.updated_at)
-            .left
-              .team_name Team #{s.name}
-              .left.pics
-                = image_tag s.logo_url(:small)
-                - @users_by_startup_id[s.id].shuffle.each do |tm|
-                  = image_tag(user_avatar_url(tm), :title => tm.name)
-              .left.headline
-                %h4
-                  Team #{s.name}
-                  - if checkin.accomplished?
-                    Accomplished Their Goal!
-                  - else
-                    Posted Their Progress
+            .header
+              .right.time= time_for_conversation(checkin.completed_at.present? ? checkin.completed_at : checkin.updated_at)
+              .left
+                .team_name Team #{s.name}
+                .left.pics
+                  = image_tag s.logo_url(:small)
+                  - if @users_by_startup_id[s.id].present?
+                    - @users_by_startup_id[s.id].shuffle.each do |tm|
+                      = image_tag(user_avatar_url(tm), :title => tm.name)
+                .left.headline
+                  %h4
+                    Team #{s.name}
+                    - if checkin.accomplished?
+                      Accomplished Their Goal!
+                    - else
+                      Posted Their Progress
+                .clear
               .clear
-            .clear
-            .left.video= display_checkin_video(checkin, :video, false, 265, 160).html_safe
-            .left.goals
-              .goal_wrapper
-                %p Last Week's Goal
-                .left.goal_state= image_tag checkin.accomplished? ? 'goal_accomplished.png' : 'goal_missed.png'
-                .left.goal= checkin.goal
+            .body
+              .left.video= display_checkin_video(checkin, :video, false, 265, 160).html_safe
+              .left.goals
+                .goal_wrapper
+                  %p Last Week's Goal
+                  .left.goal_state= image_tag checkin.accomplished? ? 'goal_accomplished.png' : 'goal_missed.png'
+                  .left.goal= checkin.goal
+                  .clear
+                .goal_wrapper
+                  %p This Week's Goal
+                  .left.in_progress.goal_state
+                    .box
+                  .left.goal= checkin.next_week_goal
+                  .clear
+              .clear
+              .right.action_buttons
+                - if owner
+                  .left= link_to 'Respond to Feedback', startup_checkin_path(s, checkin), :class => 'btn btn-success'
+                - elsif @commented_on_checkin_ids.include?(checkin.id)
+                  .left= link_to '<i class="icon icon-ok"></i> Feedback Given'.html_safe, startup_checkin_path(s, checkin), :class => 'btn'
+                - else
+                  .left= link_to 'Comment', startup_checkin_path(s, checkin), :class => 'btn btn-info'
+                - if checkin.completed?
+                  .left!= render_awesome_button(checkin)
                 .clear
-              .goal_wrapper
-                %p This Week's Goal
-                .left.in_progress.goal_state
-                  .box
-                .left.goal= checkin.next_week_goal
-                .clear
-            .clear
-            .right
-              - if owner
-                = link_to 'Respond to Feedback', startup_checkin_path(s, checkin), :class => 'btn btn-success'
-              - elsif @commented_on_checkin_ids.include?(checkin.id)
-                = link_to '<i class="icon icon-ok"></i> Feedback Given'.html_safe, startup_checkin_path(s, checkin), :class => 'btn'
-              - else
-                = link_to 'Comment', startup_checkins_path(s, checkin), :class => 'btn btn-success'
-              - if checkin.completed?
-                != render_awesome_button(checkin)
-            .left
-              .awesome_comment_count
-                %p= awesome_comment_count_summary(checkin)
-              .participants
-                - checkin.participants.each do |p|
-                  .left= link_to image_tag(p.pic_url(:small)), p, :title => p.name, :alt => p.name
-                .clear
-            .clear
+              .left
+                .awesome_comment_count
+                  %p= awesome_comment_count_summary(checkin)
+                .participants
+                  - participants = checkin.participants
+                  - participants.first(5).each do |p|
+                    .left= link_to image_tag(p.pic_url(:small)), p, :title => p.name, :alt => p.name
+                  - if participants.size > 5
+                    .left.others
+                      + #{participants.size - 5}
+                      %br/
+                      more
+                  .clear
+              .clear
     .span6
-      %h3 Get Help
+      .traction_machine
+        %h3.intro Introducing Traction Machine
+
+        %h5.launching
+          %i Launching Mid-December
+
+        %p Traction Machine is an nReduce-wide marketplace for teams to help each other and be tangibly rewarded for doing so.
+
+        %p Teams earn "Helpfuls" by assisting other teams.  Teams can use "Helpfuls" to get help on their startup, including:
+
+        %p
+          %div 1 - Retweet
+          %div 2 - HN Comment
+          %div 10 - UI/UX Feedback
+          %div 50 - Value Prop Feedback From Target Customer
+
+        %b How it works:
+        %ol
+          %li An "Asking" Team can spend 10 "Helpfuls" on UI/UX feedback for their new landing page.
+          %li A "Helping" Team sees and can accept the request and give them feedback.
+          %li The "Asking" Team then sees the feedback and is prompted to confirm whether or not it was helpful. 
+          %li If the helpfulness is confirmed, then the "Helpfuls" are transferred to the "Helping" team.
+
+        %p Our goal is that each team can use this daily and that for it to be a great source of value for your startup.
+
+        %h3= link_to 'View The Prototype', 'http://invis.io/CM9OBI4A', :target => '_blank'
 
   - if @show_mentor_message
     %hr{:style => 'margin: 20px 0 20px 0;'}

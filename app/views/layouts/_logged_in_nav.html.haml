@@ -69,13 +69,15 @@
                       - latest_message = @latest_message_by_conversation[cs.conversation_id]
                       - participants = cs.conversation.participant_ids_without(current_user.id).map{|id| @users_by_id[id].present? ? @users_by_id[id] : nil }.compact
                       - from = @users_by_id[latest_message.from_id]
+                      - name = ''
                       - if cs.conversation.team_to_team?
                         - other_startup = nil
                         - participants.each do |u|
                           - unless u.startup_id == current_user.startup_id
                             - other_startup = u.startup
-                        - pic_url = other_startup.logo_url(:small)
-                        - name = other_startup.name
+                        - if other_startup.present?
+                          - pic_url = other_startup.logo_url(:small)
+                          - name = other_startup.name
                       - elsif from.id == current_user.id
                         - user = participants.first
                         - pic_url = user.pic_url(:small)
@@ -90,9 +92,9 @@
                         .left
                           .name= name
                           .message
-                            / - if from.id == current_user.id
-                            /   &lt;&nbsp;
-                            #{truncate(latest_message.content, :length => 25)}
+                            - if from.id == current_user.id
+                              = image_tag 'reply_arrow.png'
+                            #{truncate(latest_message.content, :length => 80)}
                         .clear
                 %li.title.link.center= link_to 'See All', conversations_path
 

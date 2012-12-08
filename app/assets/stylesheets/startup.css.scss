@@ -47,9 +47,8 @@
       h4 { margin-top: 6px; margin-right: 12px;}
       margin-bottom: 20px;
       margin-top: 20px;
-      input {
-       margin-bottom: 10px; 
-
+      input, select {
+       margin-bottom: 0px; 
       }
     
     }
@@ -59,8 +58,7 @@
       margin-bottom: 10px;
       border-bottom: 0px solid #efefef;
       .name {
-        max-width: 200px;
-        margin-left: 12px;
+        max-width: 260px;
         h3 a {
           white-space: nowrap;
           text-wrap:none;
@@ -83,7 +81,8 @@
   border-bottom: 2px solid #efefef;
 }
 .countdown {
-  width: 1100px;
+  overflow-x: hidden;
+  width: 1097px;
   margin-left: 35px;
   position: relative;
   .week {
@@ -134,7 +133,7 @@
         top: 0;
         left: 0;
         li.day {
-          width: 12%;
+          width: 155px;
           a { text-align: center; }
         }
         li.past {
@@ -142,17 +141,12 @@
             color: #20A7E5; 
             text-shadow: none;
           }
+          border-right: 1px solid #20A7E5
         }
         li.future {
           a { color: #ccc; }
-        }
-        li.divider-vertical.past {
-          border-left: 1px solid #20A7E5;
-          border-right: none;
-        }
-        li.divider-vertical.future {
-          border-left: 1px solid #ccc;
-          border-right: 1px solid white;
+          border-right: 1px solid #ccc;
+          border-left: 1px solid #fff;
         }
       }
       .progress {

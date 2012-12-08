@@ -3,7 +3,14 @@
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
 .relationships, .weekly_classes {
+  .traction_machine {
+    .intro { margin-bottom: 0px; }
+    .launching { margin-top: 0px; }
+  } 
   .feed {
+    margin-right: -15px;
+    padding-right: 15px;
+    border-right: 1px solid #ccc;
     .item {
       padding-top: 10px;
       padding-bottom: 10px;
@@ -12,6 +19,7 @@
       margin-top: 15px;
     }
     .checkin {
+      .body { margin-top: 8px; }
       .time { font-size: .8em; }
       .headline { margin-left: 10px; }
       .team_name { font-size: .8em; color: #999; }
@@ -19,16 +27,51 @@
         width: 50px;
         height: 50px;
       }
-      .goal_wrapper {
-        p { margin-bottom: 2px; }
-        margin-bottom: 20px;
-        .goal_state { margin-right: 5px; }
-        .goal { line-height: 35px;}
+      .goals {
+        max-width: 290px;
+        .goal_wrapper {
+          p { margin-bottom: 2px; }
+          margin-bottom: 20px;
+          .goal_state { 
+            margin-right: 5px;
+            .box { margin-right: 0px; }
+          }
+          .goal { 
+            line-height: 1.4em;
+            max-width: 245px;
+            max-height: 62px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+        }
       }
       .awesome_comment_count {
         p { margin-bottom: 2px; font-size: .8em;}
       }
-      .video { margin-right: 10px; margin-bottom: 5px; }
+      .video { 
+        width: 265px;
+        margin-right: 10px;
+        margin-bottom: 5px;
+      }
+      .action_buttons .left {
+        margin-left: 10px;
+        margin-bottom: 8px;
+      }
+      .participants {
+        img { width: 50px; height: 50px; }
+        .others {
+          width: 50px;
+          height: 36px;
+          background-color: #666;
+          line-height: 1em;
+          font-size: .8em;
+          text-align: center;
+          color: #efefef;
+          padding-top: 14px;
+
+        }
+      }
+
     }
   }
   .inactive_teams {

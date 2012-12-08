@@ -1,52 +1,65 @@
 .startups
   .search
     .row
-      .span6.offset1
+      .span8.offset1
         = form_tag search_startups_path do
           .left
-            %h4 Search Startups by Location:
+            %h4 Search Startups by
           .left
-            = text_field_tag 'search', @search
+            = select_tag 'search[search_type]', options_for_select([['Location', 'location'], ['Founder Name', 'founder_name'], ['Startup Name', 'startup_name']], @search[:search_type])
+            = text_field_tag 'search[query]', @search[:query]
             = submit_tag 'Search', :class => 'btn'
           .clear
-      .span1.offset2.center
+      .span1.center
         .legend Community Rating
       .span1.center
         .legend Weeks Worked
     %hr/
+    .row
+      .span2
+        &nbsp;
+        / - @sorted_tag_ids.each do |id|
+        /   - tag = @tags_by_id[id]
+        /   %div
+        /     = check_box_tag "search[industry_ids][]", tag.id, (@search[:industry_ids].present? && @search[:industry_ids].include?(tag.id))
+        /     = label_tag tag.id, "#{tag.name} (#{@tag_id_count[tag.id]})", :style => 'display: inline; padding-left: 5px; font-size: .9em'
+      .span10
+        - @results.each do |e|
+          - if e.is_a?(User)
+            - startup = @startups_by_id[e.startup_id]
+            - location = e.location
+          - elsif e.is_a?(Startup)
+            - startup = e
+            - location = e.location
+          .row.startup{:id => "startup_#{startup.id}"}
+            .span3
+              .name
+                %h3= link_to truncate(startup.name, :length => 18), startup
+              .left.startup_logo= link_to image_tag(startup.logo_url(:small), :style => 'width: 50px; height: 50px'), startup
+              .left.team_members
+                - startup.team_members.each do |tm|
+                  .left= link_to image_tag(user_avatar_url(tm), :style => 'width: 50px; height: 50px', :title => tm.name), tm
+                .clear
+            .span5
+              %p.location
+                - industry_list = startup.cached_industry_list
+                - if location.present?
+                  = location
+                  - if industry_list.present?
+                    &nbsp;•&nbsp;
+                - if industry_list.present?
+                  = industry_list.split(',').first(3).join(',')
+              %p.one_liner= startup.one_liner
+            .span1
+              .rating.center
+                - if startup.rating.present?
+                  %h4= startup.rating.round(2)
+            .span1
+              .weeks_worked.center
+                - if @num_checkins_by_startup[startup.id].present?
+                  %h4= @num_checkins_by_startup[startup.id]
+          .row
+            .span10.offset1.borderline
 
-    - @users.each do |u|
-      - startup = @startups_by_id[u.startup_id]
-      .row.startup{:id => "startup_#{startup.id}"}
-        .span3.offset1
-          .left.startup_logo= link_to image_tag(startup.logo_url(:small), :style => 'width: 50px; height: 50px'), startup
-          .left.name
-            %h3= link_to truncate(startup.name, :length => 18), startup
-          .clear
-          .team_members
-            - startup.team_members.each do |tm|
-              .left= image_tag(user_avatar_url(tm), :style => 'width: 50px; height: 50px', :title => tm.name)
-            .clear
-        .span5
-          %p.location
-            - industry_list = startup.industry_list
-            - if u.location.present?
-              = u.location
-              - if industry_list.present?
-                &nbsp;•&nbsp;
-            - if industry_list.present?
-              = industry_list.first(3).join(', ')
-          %p.one_liner= startup.one_liner
-        .span1
-          .rating.center
-            - if startup.rating.present?
-              %h4= startup.rating.round(2)
-        .span1
-          .weeks_worked.center
-            - if @num_checkins_by_startup[startup.id].present?
-              %h4= @num_checkins_by_startup[startup.id]
-      .row
-        .span10.offset1.borderline
-
-    .center
-      = will_paginate @users
+        .center
+          = will_paginate @results

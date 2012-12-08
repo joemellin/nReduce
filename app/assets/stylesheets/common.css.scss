@@ -1,8 +1,8 @@
-body{
+body {
   position: relative;
   background-color: #EAEAEA;
   font-family: "Open Sans", sans-serif;
-  h1,h2,h3,h4,h5,p,textarea {
+  h1,h2,h3,h4,h5,textarea {
     font-family: "myriad-pro",sans-serif;
     font-style: normal;
     font-weight: 300;
@@ -167,7 +167,7 @@ hr {
       .notifications {
         li.item:hover { background-color: #efefef; }
         li.item { cursor: pointer;}
-        .message { width: 200px; }
+        .message { width: 170px; }
         .icon.new { background: image-url('notifications_new2.png') no-repeat; }
         .icon.up { background: image-url('notifications_up.png') no-repeat; }
         .icon.down { background: image-url('notifications_down.png') no-repeat; }
@@ -188,7 +188,13 @@ hr {
       .conversations {
         li.item:hover { background-color: #efefef; }
         li.item { cursor: pointer;}
-        .message { width: 140px; margin-right: 10px; }
+        .message { 
+          max-width: 190px;
+          margin-right: 10px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
         .btn { max-width: 50px; }
         .icon.new { background: image-url('message_new2.png') no-repeat; }
         .icon.up { background: image-url('message_up.png') no-repeat; }
@@ -243,6 +249,7 @@ hr {
           }
           min-width: 250px;
           .item {
+            position: relative;
             background-color: #fff;
             width: 280px;
             .img {
@@ -257,14 +264,13 @@ hr {
             }
             padding: 10px;
             border-bottom: 1px solid #ccc;
-            .time_ago { font-size: .8em; color: #666; margin-top: -3px; }
+            .time_ago { font-size: .8em; color: #666; margin-top: -3px; position: absolute; right: 10px; }
             .name {
               font-size: .9em;
               font-weight: bold;
             }
             .message {
-              font-size: .9em;
-              max-width: 170px;
+              font-size: .85em;
             }
             .team {
               font-size: .9em;

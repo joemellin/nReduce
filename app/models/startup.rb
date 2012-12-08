@@ -66,32 +66,22 @@ class Startup < ActiveRecord::Base
 
   # Uses Sunspot gem with Solr backend. Docs: http://outoftime.github.com/sunspot/docs/index.html
   # https://github.com/outoftime/sunspot
-  # searchable do
-  #   # full-text search fields - can add :stored => true if you don't want to hit db
-  #   text :name, :boost => 4.0, :stored => true
-  #   # text :location do
-  #   #   team_members.map{|tm| tm.location }.delete_if{|l| l.blank? }
-  #   # end
-  #   # text :industries_cached, :stored => true do
-  #   #   self.industries.map{|t| t.name.titleize }.join(', ')
-  #   # end
-  #   # text :website_url
-  #   # text :one_liner
+  searchable do
+    # full-text search fields - can add :stored => true if you don't want to hit db
+    text :name, :boost => 4.0, :stored => true
+    text :team_member_names do
+      team_members.map{|tm| tm.name.downcase }.join(',')
+    end
 
-  #   # filterable fields
-  #   integer :id
-  #   #integer :stage
-  #   #integer :company_goal
-  #   boolean :onboarded do
-  #     self.account_setup?
-  #   end
-  #   # double  :rating
-  #   boolean :public
-  #   boolean :investable
-  #   string :sort_name do
-  #     name.downcase.gsub(/^(an?|the)/, '')
-  #   end
-  # end
+    # filterable fields
+    integer :id, :stored => true
+    integer :industry_ids, :multiple => true
+    boolean :active
+    double  :rating
+    string :sort_name do
+      name.downcase.gsub(/^(an?|the)/, '')
+    end
+  end
 
   # Searches all teams and identifies who has checked in the last two weeks (starting at beginning of this current week) - they are marked as active. All others are inactive
   def self.identify_active_teams
