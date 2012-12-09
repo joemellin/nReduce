@@ -3,7 +3,8 @@ class CreateResponses < ActiveRecord::Migration
     create_table :responses do |t|
       t.text :data
       t.integer :amount_paid, :default => 0
-      t.datetime :accepted_at, :expired_at
+      t.integer :status
+      t.datetime :accepted_at, :expired_at, :completed_at
       t.string :rejected_because
       t.references :request, :user
       t.timestamps

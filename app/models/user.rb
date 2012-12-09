@@ -161,7 +161,7 @@ class User < ActiveRecord::Base
   end
 
   def account
-    self.startup.account
+    self.startup_id.present? ? self.startup.account : nil
   end
 
   def is_joe?

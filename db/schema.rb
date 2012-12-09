@@ -35,6 +35,8 @@ ActiveRecord::Schema.define(:version => 20121208220101) do
     t.datetime "updated_at",        :null => false
   end
 
+  add_index "account_transfers", ["from_account_id", "to_account_id"], :name => "index_account_transfers_on_from_account_id_and_to_account_id"
+
   create_table "accounts", :force => true do |t|
     t.integer  "owner_id"
     t.string   "owner_type"
@@ -333,8 +335,10 @@ ActiveRecord::Schema.define(:version => 20121208220101) do
   create_table "responses", :force => true do |t|
     t.text     "data"
     t.integer  "amount_paid",      :default => 0
+    t.integer  "status"
     t.datetime "accepted_at"
     t.datetime "expired_at"
+    t.datetime "completed_at"
     t.string   "rejected_because"
     t.integer  "request_id"
     t.integer  "user_id"

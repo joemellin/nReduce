@@ -8,13 +8,13 @@ class Request < ActiveRecord::Base
   before_validation :set_price_for_request_type
   before_create :transfer_balance_to_escrow
 
-  validates_numericality_of :num, :greater_than_or_equal_to => 1
+  validates_numericality_of :num, :greater_than_or_equal_to => 0
   validates_presence_of :request_type
   validates_presence_of :startup_id
   validates_presence_of :user_id
   validates_presence_of :price
   validate :questions_are_answered
-  validate :balance_is_available_for_request
+  validate :balance_is_available_for_request, :if => :new_record?
 
   serialize :data, Array
 
@@ -27,13 +27,6 @@ class Request < ActiveRecord::Base
 
   def questions
     Settings.request_questions.send(self.request_type.first.to_s)
-  end
-
-  # Call when a user is starting a request - as we need to lock this from being responded to too many people at once
-  def start_response(user)
-    # Don't do anything if people have already answered
-    return false if self.closed?
-    Response.create(:request => self, :user => user)
   end
 
   def total_price
@@ -67,6 +60,7 @@ class Request < ActiveRecord::Base
   end
 
   def balance_is_available_for_request
+    self.errors.add(:num, "of responses required must be more than 0") if self.num == 0
     if self.startup.present? && self.startup.balance < self.total_price
       self.errors.add(:startup, "doesn't have enough of a balance to make this request (#{self.total_price} helpfuls required)")
       false
