@@ -11,15 +11,19 @@ class Response < ActiveRecord::Base
   validate :request_is_open, :if => :new_record?
   validate :user_hasnt_already_performed_request, :if => :new_record?
   
-  before_create :move_balance_to_escrow
+  before_create :set_default_status
   after_create :decrement_request_num
 
   attr_accessible :data, :amount_paid, :rejected_because, :request, :request_id, :user, :user_id
 
-  scope :rejected, where('rejected_because IS NOT NULL')
-  scope :accepted, where('accepted_at IS NOT NULL')
-  scope :started, where('accepted_at IS NULL')
-  scope :expired, where('expired_at IS NOT NULL')
+  bitmask :status, :as => [:started, :completed, :accepted, :rejected, :expired, :canceled]
+
+  def complete!(data)
+    self.data = data
+    self.status = :completed
+    self.completed_at = Time.now
+    self.save
+  end
 
     # Once a requesting user has reviewed it they can accept it
     # Can pass in amount paid if different than what was offered on the request
@@ -29,9 +33,10 @@ class Response < ActiveRecord::Base
     self.validate_questions_are_answered
     self.validate_balance_is_available
     return false unless self.valid?
+    self.status = :accepted
     self.accepted_at = Time.now
     Response.transaction do
-      if self.save && self.decrement_request_num && self.pay_user
+      if self.save && self.pay_user
         true
       else
         false
@@ -43,18 +48,20 @@ class Response < ActiveRecord::Base
   def reject!(reason)
     return true if self.accepted? || self.rejected?
     self.rejected_because = reason
-    self.cancel!
+    self.cancel!(:rejected)
   end
 
-  # Request has gone past expiry
+  # Request has gone past expiry - only allow to expire if it hasn't been completed
   def expire!
+    return false unless self.started?
     self.expired_at = Time.now
-    self.cancel!
+    self.cancel!(:expired)
   end
 
   # Save and increment the number of responses on the request
-  def cancel!
+  def cancel!(status = :canceled)
     Response.transaction do
+      self.status = status
       if self.save && self.increment_request_num
         true
       else
@@ -67,27 +74,45 @@ class Response < ActiveRecord::Base
     self.request.data
   end
 
+  def started?
+    self.status == [:started]
+  end
+
   def accepted?
-    self.accepted_at.present?
+    self.status == [:accepted]
+  end
+
+  def completed?
+    self.status == [:completed]
   end
 
   def rejected?
-    self.rejected_because.present?
+    self.status == [:rejected]
   end
 
   def expired?
-    self.expired_at.present?
+    self.status == [:expired]
+  end
+
+  def canceled?
+    self.status == [:canceled]
   end
 
   protected
 
+  def set_default_status
+    self.status = :started
+  end
+
   # Increment num of requests avail - if a response is canceled
   def increment_request_num
-    self.request.update_attribute('num', self.request.num + 1)
+    self.request.num += 1
+    self.request.save
   end
 
   def decrement_request_num
-    self.request.update_attribute('num', self.request.num - 1)
+    self.request.num -= 1
+    self.request.save
   end
 
   def request_is_open
@@ -101,7 +126,7 @@ class Response < ActiveRecord::Base
 
   # Validates startup can pay for this response, and that num on request is above 0
   def validate_balance_is_available
-    if self.startup.escrow_balance < self.amount_paid
+    if self.request.startup.escrow < self.amount_paid
       self.errors.add(:request, "startup doesn't have enough helpfuls to pay you, sorry")
       false
     else

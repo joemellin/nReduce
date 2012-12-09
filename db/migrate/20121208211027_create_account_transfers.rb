@@ -6,5 +6,7 @@ class CreateAccountTransfers < ActiveRecord::Migration
       t.references :from_account, :to_account 
       t.timestamps
     end
+
+    add_index :account_transfers, [:from_account_id, :to_account_id]
   end
 end
