@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121128110229) do
+ActiveRecord::Schema.define(:version => 20121208220101) do
 
   create_table "ab_tests", :force => true do |t|
     t.string   "name"
@@ -22,6 +22,29 @@ ActiveRecord::Schema.define(:version => 20121128110229) do
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
   end
+
+  create_table "account_transfers", :force => true do |t|
+    t.string   "attachable_type"
+    t.string   "from_account_type"
+    t.string   "to_account_type"
+    t.integer  "attachable_id"
+    t.integer  "amount"
+    t.integer  "from_account_id"
+    t.integer  "to_account_id"
+    t.datetime "created_at",        :null => false
+    t.datetime "updated_at",        :null => false
+  end
+
+  create_table "accounts", :force => true do |t|
+    t.integer  "owner_id"
+    t.string   "owner_type"
+    t.integer  "balance",    :default => 0
+    t.integer  "escrow",     :default => 0
+    t.datetime "created_at",                :null => false
+    t.datetime "updated_at",                :null => false
+  end
+
+  add_index "accounts", ["owner_id", "owner_type"], :name => "index_accounts_on_owner_id_and_owner_type", :unique => true
 
   create_table "authentications", :force => true do |t|
     t.string   "provider"
@@ -292,6 +315,34 @@ ActiveRecord::Schema.define(:version => 20121128110229) do
   end
 
   add_index "relationships", ["entity_id", "entity_type", "status"], :name => "relationship_index"
+
+  create_table "requests", :force => true do |t|
+    t.string   "title"
+    t.integer  "request_type"
+    t.integer  "price"
+    t.integer  "num",          :default => 0
+    t.text     "data"
+    t.integer  "startup_id"
+    t.integer  "user_id"
+    t.datetime "created_at",                  :null => false
+    t.datetime "updated_at",                  :null => false
+  end
+
+  add_index "requests", ["num"], :name => "index_requests_on_num"
+
+  create_table "responses", :force => true do |t|
+    t.text     "data"
+    t.integer  "amount_paid",      :default => 0
+    t.datetime "accepted_at"
+    t.datetime "expired_at"
+    t.string   "rejected_because"
+    t.integer  "request_id"
+    t.integer  "user_id"
+    t.datetime "created_at",                      :null => false
+    t.datetime "updated_at",                      :null => false
+  end
+
+  add_index "responses", ["request_id"], :name => "index_responses_on_request_id"
 
   create_table "rsvps", :force => true do |t|
     t.string   "email"
