@@ -1,6 +1,7 @@
 class Startup < ActiveRecord::Base
   obfuscate_id :spin => 29406582
   include Connectable # methods for relationships
+  include Accountable # allows startup to have account (for helpfuls)
   has_paper_trail :ignore => [:setup, :cached_industry_list, :active, :checkin_day, :time_zone]
   belongs_to :main_contact, :class_name => 'User'
   belongs_to :meeting
@@ -23,8 +24,6 @@ class Startup < ActiveRecord::Base
   has_many :questions
   has_many :requests
   has_many :responses, :through => :requests
-  has_one :account, :as => :owner
-  has_many :account_transfers, :through => :account
 
   attr_accessible :name, :investable, :team_size, :website_url, :main_contact_id, :phone, 
     :growth_model, :stage, :company_goal, :meeting_id, :one_liner, :active, :launched_at, 
@@ -130,14 +129,6 @@ class Startup < ActiveRecord::Base
 
   def self.nreduce_obfuscated_id
     ObfuscateId.hide(Startup.nreduce_id)
-  end
-
-  def account_balance
-    self.account.balance
-  end
-
-  def escrow_balance
-    self.account.escrow_balance
   end
 
   # Returns array for calculating checkin window offset [offset of day it starts from day of week, duration]
