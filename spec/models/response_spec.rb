@@ -1,5 +1,7 @@
 require 'spec_helper'
 
 describe Response do
-  pending "add some examples to (or delete) #{__FILE__}"
+  describe "responding to a request" do
+
+  end
 end

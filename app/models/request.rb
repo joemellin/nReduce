@@ -5,17 +5,16 @@ class Request < ActiveRecord::Base
   has_many :notifications, :as => :attachable
   has_many :account_transfers, :as => :attachable
 
-  after_initialize :set_default_price, :if => :new_record?
-  before_validation :set_default_price
+  before_validation :set_price_for_request_type
+  before_create :transfer_balance_to_escrow
 
   validates_numericality_of :num, :greater_than_or_equal_to => 1
+  validates_presence_of :request_type
   validates_presence_of :startup_id
   validates_presence_of :user_id
   validates_presence_of :price
   validate :questions_are_answered
   validate :balance_is_available_for_request
-
-  before_create :transfer_balance_to_escrow
 
   serialize :data, Array
 
@@ -45,13 +44,22 @@ class Request < ActiveRecord::Base
     self.num == 0
   end
 
+  def close!
+    num_started = self.responses.started.count
+    # only allow it to be closed at number of started (unfinished) requests
+    if num_started > 0
+      #self.errors.add(:num, "responses are open - we have closed the request for any new responses but you have to wait for those to complete")
+      self.num = num_started
+    else
+      self.num = 0
+    end
+    self.save  
+  end
+
   protected
 
-   # Set default price if blank or less than default
-  def set_default_price
-    default_price = Settings.request_prices.send(self.request_type.first.to_s)
-    self.price = default_price if self.price.blank? || (self.price.present? && self.price < default_price)
-    true
+  def set_price_for_request_type
+    self.price = Settings.request_prices.send(self.request_type.first.to_s) unless self.request_type.blank?
   end
 
   def transfer_balance_to_escrow
@@ -59,7 +67,7 @@ class Request < ActiveRecord::Base
   end
 
   def balance_is_available_for_request
-    if self.startup.account_balance < self.price
+    if self.startup.present? && self.startup.balance < self.total_price
       self.errors.add(:startup, "doesn't have enough of a balance to make this request (#{self.total_price} helpfuls required)")
       false
     else
