@@ -17,6 +17,11 @@ class Payment < ActiveRecord::Base
     self.status == [:completed]
   end
 
+  def cancel!
+    self.status = :canceled
+    self.save
+  end
+
   protected
 
   def deposit_payment

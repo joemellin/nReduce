@@ -10,19 +10,40 @@ class Response < ActiveRecord::Base
   validates_presence_of :user_id
   validate :request_is_open, :if => :new_record?
   validate :user_hasnt_already_performed_request, :if => :new_record?
+  validate :questions_are_answered, :if => :completed?
   
-  before_create :set_default_status
+  after_initialize :set_default_status
   after_create :decrement_request_num
+
+  before_destroy :increment_request_on_destroy
 
   attr_accessible :data, :amount_paid, :rejected_because, :request, :request_id, :user, :user_id
 
   bitmask :status, :as => [:started, :completed, :accepted, :rejected, :expired, :canceled]
 
-  def complete!(data)
-    self.data = data
+  def data=(new_data)
+    # Allows us to post from form with specific order of hash
+    if new_data.is_a?(Hash)
+      self['data'] = new_data.sort.map{|arr| arr.last}
+    else
+      self['data'] = new_data
+    end
+    self['data']
+  end
+
+    # Completes the task and verifies it has been completed
+  def complete!
+    return true if self.completed?
     self.status = :completed
     self.completed_at = Time.now
+    # retweet / upvote / etc
+    self.perform_request_specific_tasks
     self.save
+  end
+
+    # Returns boolean if this response is valid and can be completed
+  def can_be_completed?
+    self.valid? && self.questions_are_answered && self.started?
   end
 
     # Once a requesting user has reviewed it they can accept it
@@ -30,7 +51,7 @@ class Response < ActiveRecord::Base
   def accept!(amount_paid = nil)
     return true if self.accepted? || self.rejected?
     self.amount_paid = amount_paid || self.request.price
-    self.validate_questions_are_answered
+    self.questions_are_answered
     self.validate_balance_is_available
     return false unless self.valid?
     self.status = :accepted
@@ -74,6 +95,10 @@ class Response < ActiveRecord::Base
     self.request.data
   end
 
+  def request_type
+    self.request.request_type.first
+  end
+
   def started?
     self.status == [:started]
   end
@@ -98,10 +123,21 @@ class Response < ActiveRecord::Base
     self.status == [:canceled]
   end
 
+  def perform_request_specific_tasks
+    if self.request_type == :retweet && Rails.env.production? && !self.completed?
+      tc = self.user.twitter_client
+      if tc.present?
+        self.errors.add(:data, "Could not retweet the original tweet. Please try again later") unless tc.retweet(self.request.extra_data['tweet_id'])
+      else
+        self.errors.add(:user, "doesn't have a valid Twitter authentication - please add it again") if tc.blank?        
+      end
+    end
+  end
+
   protected
 
   def set_default_status
-    self.status = :started
+    self.status = :started if self.status.blank?
   end
 
   # Increment num of requests avail - if a response is canceled
@@ -139,7 +175,7 @@ class Response < ActiveRecord::Base
   end
 
   def user_hasnt_already_performed_request
-    if Response.where(:request_id => self.request_id, :user_id => self.user_id).count > 0
+    if Response.where(:request_id => self.request_id, :user_id => self.user_id).with_status(:completed, :rejected).count > 0
       self.errors.add(:user, "has already responded to this help request")
       false
     else
@@ -147,12 +183,20 @@ class Response < ActiveRecord::Base
     end
   end
 
-  def validate_questions_are_answered
+  def questions_are_answered
+    # These types of responses don't need any input from the user
+    return true if [:retweet, :hn_upvote].include?(self.request_type)
+    # Otherwise check to see if user has answered all questions
     if self.data.present? && self.data.select{|q| q.present? }.size == self.questions.size
       true
     else
       self.errors.add(:data, "questions haven't all been answered")
       false
     end
+  end
+
+  def increment_request_on_destroy
+    self.increment_request_num if !self.new_record? && (self.started? || self.completed? || self.accepted?)
+    true
   end
 end

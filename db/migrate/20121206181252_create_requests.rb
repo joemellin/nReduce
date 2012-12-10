@@ -4,7 +4,7 @@ class CreateRequests < ActiveRecord::Migration
       t.string :title
       t.integer :request_type, :price
       t.integer :num, :default => 0
-      t.text :data
+      t.text :data, :extra_data
       t.references :startup, :user
       t.timestamps
     end

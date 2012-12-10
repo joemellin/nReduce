@@ -78,8 +78,10 @@ class Ability
 
         can :manage, Request, :startup_id => user.startup_id
         
-        # Anyone on a startup can help another startup
-        can [:new, :create], Response
+        # Anyone on a startup can help another startup, as long as they didn't post it
+        can [:new, :create], Response do |r|
+          r.request.startup_id != user.startup_id
+        end
 
         # Can manage response if it was created by that user
         can :manage, Response, :user_id => user.id

@@ -6,6 +6,7 @@ class Request < ActiveRecord::Base
   has_many :account_transactions, :as => :attachable
 
   before_create :transfer_balance_to_escrow
+  before_create :perform_request_specific_setup_tasks
 
   validates_presence_of :request_type
   validates_numericality_of :num, :greater_than_or_equal_to => 0
@@ -17,6 +18,7 @@ class Request < ActiveRecord::Base
   validate :balance_is_available_for_request, :if => :new_record?
 
   serialize :data, Array
+  serialize :extra_data, Hash
 
   attr_accessible :title, :request_type, :price, :num, :data, :startup, :startup_id, :user, :user_id
 
@@ -24,6 +26,17 @@ class Request < ActiveRecord::Base
 
   scope :available, where('num != 0')
   scope :closed, where(:num => 0)
+  scope :ordered, order('created_at DESC')
+
+  def data=(new_data)
+    # Allows us to post from form with specific order of hash
+    if new_data.is_a?(Hash)
+      self['data'] = new_data.sort.map{|arr| arr.last}
+    else
+      self['data'] = new_data
+    end
+    self['data']
+  end
 
   def questions
     Settings.request_questions.send(self.request_type.first.to_s)
@@ -49,7 +62,24 @@ class Request < ActiveRecord::Base
     self.save  
   end
 
+  def request_type_human
+    self.request_type.first.to_s.titleize
+  end
+
   protected
+
+  def perform_request_specific_setup_tasks
+    if self.request_type.first == :retweet
+      # Get tweet id and tweet content
+      self.extra_data['tweet_id'] = self.data.first.strip.match(/[0-9]+$/)[0]
+      self.extra_data['tweet_content'] = Twitter.status(self.extra_data['tweet_id']).text unless self.extra_data['tweet_id'].blank?
+      if self.extra_data['tweet_content'].blank?
+        self.errors.add(:data, 'did not contain a valid Twitter status URL') 
+        return false
+      end
+    end
+    true
+  end
 
   def price_is_correct
     if self.request_type.present?
@@ -73,11 +103,15 @@ class Request < ActiveRecord::Base
   end
 
   def questions_are_answered
-    if self.data.present? && self.data.select{|q| q.present? }.size == self.questions.size
-      true
+    if self.questions.present?
+      if self.data.present? && self.data.select{|q| q.present? }.size == self.questions.size
+        true
+      else
+        self.errors.add(:data, "questions haven't all been written")
+        false
+      end
     else
-      self.errors.add(:data, "questions haven't all been written")
-      false
+      true
     end
   end
 end

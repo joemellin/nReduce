@@ -39,6 +39,19 @@ describe Request do
       @ui_ux_request.errors[:data].count.should == 1
     end
 
+    it "should allow a hash for data from the form" do
+      data = {}
+      c = 0
+      @ui_ux_request.questions.each do
+        data[c.to_s] = "Another response #{c}"
+        c += 1
+      end
+      @ui_ux_request.data = data
+      @ui_ux_request.data.first.should == "Another response 0"
+      @ui_ux_request.valid?
+      @ui_ux_request.errors[:data].count.should == 0
+    end
+
     it "should allow other request types" do
       @account.balance = 2
       @account.save

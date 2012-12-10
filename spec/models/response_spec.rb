@@ -32,13 +32,13 @@ describe Response do
 
     it "should allow the responder to complete a request" do
       @response.save
-      @response.complete!(@response_data).should be_true
+      @response.data = @response_data
+      @response.complete!.should be_true
       @response.status.should == [:completed]
     end
 
     it "should allow the responder to cancel a response" do
       @response.save
-      @response.complete!(@response_data)
       @response.cancel!.should be_true
       @response.status.should == [:canceled]
       @response.canceled?.should be_true
@@ -52,7 +52,8 @@ describe Response do
       prev_num = @ui_ux_request.reload.num
 
       # Complete & accept request
-      @response.complete!(@response_data)
+      @response.data = @response_data
+      @response.complete!.should be_true
       @response.accept!.should be_true
       @response.status.should == [:accepted]
 
@@ -70,7 +71,8 @@ describe Response do
     it "should allow the requestor to reject a request" do
       prev_num = @ui_ux_request.reload.num
       @response.save
-      @response.complete!(@response_data)
+      @response.data = @response_data
+      @response.complete!.should be_true
       @response.reject!("I didn't see you actually load the website").should be_true
       @response.status.should == [:rejected]
       @ui_ux_request.reload
@@ -88,7 +90,8 @@ describe Response do
 
     it "shouldn't allow the system to expire a completed request" do
       @response.save
-      @response.complete!(@response_data)
+      @response.data = @response_data
+      @response.complete!.should be_true
       @response.expire!.should be_false
       @response.status.should == [:completed]
       @response.expired_at.should be_nil

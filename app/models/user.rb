@@ -464,6 +464,15 @@ class User < ActiveRecord::Base
     )
   end
 
+  def update_twitter_followers_count
+    t = self.twitter_client
+    return false if t.blank?
+    # # get followers
+    # res = t.get_followers
+    # self.followers_count = res
+    # self.save
+  end
+
   #
   # LINKEDIN
   #

@@ -73,31 +73,50 @@
               .clear
     .span6
       .traction_machine
-        %h3.intro Introducing Traction Machine
+        - @requests.each do |r|
+          .span1= image_tag r.startup.logo_url(:small)
+          .span2= r.title
+          .span1 earn #{pluralize(r.price, 'helpful')}
+          .span1
+            - if current_user.startup_id == r.startup_id
+              = link_to 'Review', r, :class => 'btn'
+            - else
+              - if r.request_type == [:retweet]
+                - if @authenticated_for_twitter
+                  = form_for [r, Response.new(:request_id => r.id)] do |f|
+                    = f.hidden_field :request_id
+                    = f.submit 'Retweet', :class => 'btn'
+                - else
+                  = link_to 'Retweet', capture_and_login_path(:redirect_to => new_request_response_path(r)), :class => 'btn'
+                
+          .clear
 
-        %h5.launching
-          %i Launching Mid-December
+        .hide
+          %h3.intro Introducing Traction Machine
 
-        %p Traction Machine is an nReduce-wide marketplace for teams to help each other and be tangibly rewarded for doing so.
+          %h5.launching
+            %i Launching Mid-December
 
-        %p Teams earn "Helpfuls" by assisting other teams.  Teams can use "Helpfuls" to get help on their startup, including:
+          %p Traction Machine is an nReduce-wide marketplace for teams to help each other and be tangibly rewarded for doing so.
 
-        %p
-          %div 1 - Retweet
-          %div 2 - HN Comment
-          %div 10 - UI/UX Feedback
-          %div 50 - Value Prop Feedback From Target Customer
+          %p Teams earn "Helpfuls" by assisting other teams.  Teams can use "Helpfuls" to get help on their startup, including:
 
-        %b How it works:
-        %ol
-          %li An "Asking" Team can spend 10 "Helpfuls" on UI/UX feedback for their new landing page.
-          %li A "Helping" Team sees and can accept the request and give them feedback.
-          %li The "Asking" Team then sees the feedback and is prompted to confirm whether or not it was helpful. 
-          %li If the helpfulness is confirmed, then the "Helpfuls" are transferred to the "Helping" team.
+          %p
+            %div 1 - Retweet
+            %div 2 - HN Comment
+            %div 10 - UI/UX Feedback
+            %div 50 - Value Prop Feedback From Target Customer
 
-        %p Our goal is that each team can use this daily and that for it to be a great source of value for your startup.
+          %b How it works:
+          %ol
+            %li An "Asking" Team can spend 10 "Helpfuls" on UI/UX feedback for their new landing page.
+            %li A "Helping" Team sees and can accept the request and give them feedback.
+            %li The "Asking" Team then sees the feedback and is prompted to confirm whether or not it was helpful. 
+            %li If the helpfulness is confirmed, then the "Helpfuls" are transferred to the "Helping" team.
 
-        %h3= link_to 'View The Prototype', 'http://invis.io/CM9OBI4A', :target => '_blank'
+          %p Our goal is that each team can use this daily and that for it to be a great source of value for your startup.
+
+          %h3= link_to 'View The Prototype', 'http://invis.io/CM9OBI4A', :target => '_blank'
 
   - if @show_mentor_message
     %hr{:style => 'margin: 20px 0 20px 0;'}

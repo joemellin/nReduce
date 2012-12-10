@@ -10,6 +10,9 @@ class Account < ActiveRecord::Base
 
   after_save :set_cached_object
 
+  # Retrieves an in-memory cache of account balance/escrow
+  # Will create an account if one doesn't exist
+
   def self.cached_account_for_owner(owner, dont_create = false)
     Cache.get([owner, 'account']){
       account = owner.account
