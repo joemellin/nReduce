@@ -1,7 +1,9 @@
 class Account < ActiveRecord::Base
+  # ALL AMOUNTS ARE IN HELPFULS
   belongs_to :owner, :polymorphic => true
-  has_many :outgoing_transfers, :class_name => 'AccountTransfer', :foreign_key => :from_account_id
-  has_many :incoming_transfers, :class_name => 'AccountTransfer', :foreign_key => :to_account_id
+  has_many :outgoing_transactions, :class_name => 'AccountTransaction', :foreign_key => :from_account_id
+  has_many :incoming_transactions, :class_name => 'AccountTransaction', :foreign_key => :to_account_id
+  has_many :payments
 
   validates_numericality_of :balance, :greater_than_or_equal_to => 0
   validates_numericality_of :escrow, :greater_than_or_equal_to => 0
@@ -11,7 +13,7 @@ class Account < ActiveRecord::Base
   def self.cached_account_for_owner(owner, dont_create = false)
     Cache.get([owner, 'account']){
       account = owner.account
-      return nil if account.blank? && !dont_create
+      return nil if account.blank? && dont_create
       account ||= Account.create_for_owner(owner)
       account.to_array
     }

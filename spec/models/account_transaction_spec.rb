@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe AccountTransfer do
+describe AccountTransaction do
   before :each do 
     @startup1 = FactoryGirl.create(:startup)
     @startup2 = FactoryGirl.create(:startup, :name => 'Facebook for Dinosaurs')
@@ -10,16 +10,16 @@ describe AccountTransfer do
 
   describe "Transfer between accounts" do
     it "shouldn't allow transfer between blank accounts" do
-      AccountTransfer.perform(@account1, @account2, :balance, :balance, 5).should be_false
-      AccountTransfer.perform(@account1, @account2, :balance, :escrow, 5).should be_false
-      AccountTransfer.perform(@account1, @account1, :balance, :balance, 5).should be_false
+      AccountTransaction.transfer(5, @account1, @account2, :balance, :balance).new_record?.should be_true
+      AccountTransaction.transfer(5, @account1, @account2, :balance, :escrow).new_record?.should be_true
+      AccountTransaction.transfer(5, @account1, @account1, :balance, :balance).new_record?.should be_true
     end
 
     it "should allow to transfer between accounts" do
       @account1.balance = 6
       @account1.save
       @startup1.balance.should == 6
-      AccountTransfer.perform(@account1, @account2, :balance, :balance, 5).should be_true
+      AccountTransaction.transfer(5, @account1, @account2, :balance, :balance).new_record?.should be_false
 
       @account2.reload
       @account2.balance.should == 5
@@ -32,15 +32,19 @@ describe AccountTransfer do
     it "should be allowed to transfer between internal accounts on one account" do
       @account1.balance = 6
       @account1.save
-      AccountTransfer.perform(@account1, @account1, :balance, :escrow, 5).should be_true
+      AccountTransaction.transfer(5, @account1, @account1, :balance, :escrow).new_record?.should be_false
 
       @account1.reload
       @account1.balance.should == 1
       @startup1.balance.should == 1
       @account1.escrow.should == 5
 
-      AccountTransfer.perform(@account1, @account2, :escrow, :balance, 5).should be_true
+      AccountTransaction.transfer(5, @account1, @account2, :escrow, :balance).new_record?.should be_false
       @startup2.balance.should == 5
     end
+  end
+
+  describe "Deposit from payment account" do
+
   end
 end

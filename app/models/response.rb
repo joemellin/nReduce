@@ -2,7 +2,7 @@ class Response < ActiveRecord::Base
   belongs_to :request
   belongs_to :user
   has_many :notifications, :as => :attachable
-  has_one :account_transfer, :as => :attachable
+  has_one :account_transaction, :as => :attachable
 
   serialize :data, Array
 
@@ -126,7 +126,7 @@ class Response < ActiveRecord::Base
 
   # Validates startup can pay for this response, and that num on request is above 0
   def validate_balance_is_available
-    if self.request.startup.escrow < self.amount_paid
+    if AccountTransaction.sufficient_funds?(self.request.startup, self.amount_paid, :escrow)
       self.errors.add(:request, "startup doesn't have enough helpfuls to pay you, sorry")
       false
     else
@@ -135,7 +135,7 @@ class Response < ActiveRecord::Base
   end
 
   def pay_user
-    AccountTransfer.perform(self.request.startup.account, self.user.account, :escrow, :balance, self.amount_paid)
+    !AccountTransaction.transfer(self.amount_paid, self.request.startup.account, self.user.account, :escrow, :balance).new_record?
   end
 
   def user_hasnt_already_performed_request
