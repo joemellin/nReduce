@@ -390,4 +390,14 @@ class ApplicationController < ActionController::Base
       true
     end
   end
+
+  def require_ssl
+    # SSL needs to be forced if the server is in production and the request is not already SSL
+    if Rails.env.production? && !request.ssl?
+      flash.keep
+      redirect_to :protocol => "https://", :host => Settings.ssl_host
+      return false
+    end
+    true
+  end
 end

@@ -1,6 +1,9 @@
 require 'spec_helper'
 
 describe Request do
+
+  # Note: request prices are set in settings.yml (request_prices)
+
   before :each do
     @startup = FactoryGirl.create(:startup)
     @user = FactoryGirl.create(:user, :startup => @startup)
@@ -39,27 +42,27 @@ describe Request do
     it "should allow other request types" do
       @account.balance = 2
       @account.save
-      @retweet = @ui_ux_request
+      @retweet = @ui_ux_request.dup
       @retweet.request_type = :retweet
       @retweet.data = ['https://twitter.com/statuses/1231231']
       @retweet.save.should be_true
 
-      @hn_upvote = @ui_ux_request
+      @hn_upvote = @ui_ux_request.dup
       @hn_upvote.request_type = :hn_upvote
       @hn_upvote.data = ['http://news.ycombinator.com/link']
 
       # first test not enough balance for this
-      @account.balance = 2
-      @account.save
+      @account.balance = 1
+      @account.save.should be_true
 
       @hn_upvote.save.should be_false
 
-      @hn_upvote = @ui_ux_request
+      @hn_upvote = @ui_ux_request.dup
       @hn_upvote.request_type = :hn_upvote
       @hn_upvote.data = ['http://news.ycombinator.com/link']
 
       @account.balance = 4
-      @account.save
+      @account.save.should be_true
 
       @hn_upvote.save.should be_true
     end
@@ -69,9 +72,9 @@ describe Request do
     it "should close request if no started responses" do
       @account.balance = 10
       @account.save
-      @ui_ux_request.save
+      @ui_ux_request.save.should be_true
 
-      @ui_ux_request.close!
+      @ui_ux_request.close!.should be_true
 
       @ui_ux_request.closed?.should be_true
     end
@@ -79,13 +82,13 @@ describe Request do
     it "shouldn't close a request if there are responses started" do
       @account.balance = 10
       @account.save 
-      @ui_ux_request.save
+      @ui_ux_request.save.should be_true
 
       response = Response.new
       response.request = @ui_ux_request
       response.user = FactoryGirl.create(:user2, :roles => [])
 
-      @ui_ux_request.close!
+      @ui_ux_request.close!.should be_true
       @ui_ux_request.closed?.should be_true
     end
   end

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121208220101) do
+ActiveRecord::Schema.define(:version => 20121210095337) do
 
   create_table "ab_tests", :force => true do |t|
     t.string   "name"
@@ -23,27 +23,29 @@ ActiveRecord::Schema.define(:version => 20121208220101) do
     t.datetime "updated_at", :null => false
   end
 
-  create_table "account_transfers", :force => true do |t|
+  create_table "account_transactions", :force => true do |t|
     t.string   "attachable_type"
     t.string   "from_account_type"
     t.string   "to_account_type"
     t.integer  "attachable_id"
     t.integer  "amount"
+    t.integer  "transaction_type"
     t.integer  "from_account_id"
     t.integer  "to_account_id"
     t.datetime "created_at",        :null => false
     t.datetime "updated_at",        :null => false
   end
 
-  add_index "account_transfers", ["from_account_id", "to_account_id"], :name => "index_account_transfers_on_from_account_id_and_to_account_id"
+  add_index "account_transactions", ["from_account_id", "to_account_id"], :name => "index_account_transactions_on_from_account_id_and_to_account_id"
 
   create_table "accounts", :force => true do |t|
     t.integer  "owner_id"
     t.string   "owner_type"
-    t.integer  "balance",    :default => 0
-    t.integer  "escrow",     :default => 0
-    t.datetime "created_at",                :null => false
-    t.datetime "updated_at",                :null => false
+    t.integer  "balance",            :default => 0
+    t.integer  "escrow",             :default => 0
+    t.datetime "created_at",                        :null => false
+    t.datetime "updated_at",                        :null => false
+    t.string   "stripe_customer_id"
   end
 
   add_index "accounts", ["owner_id", "owner_type"], :name => "index_accounts_on_owner_id_and_owner_type", :unique => true
@@ -257,6 +259,20 @@ ActiveRecord::Schema.define(:version => 20121208220101) do
     t.datetime "updated_at", :null => false
     t.integer  "invite_id"
   end
+
+  create_table "payments", :force => true do |t|
+    t.string   "stripe_id"
+    t.float    "amount"
+    t.integer  "num_helpfuls"
+    t.integer  "status"
+    t.integer  "account_id"
+    t.integer  "user_id"
+    t.integer  "account_transaction_id"
+    t.datetime "created_at",             :null => false
+    t.datetime "updated_at",             :null => false
+  end
+
+  add_index "payments", ["account_id"], :name => "index_payments_on_account_id"
 
   create_table "questions", :force => true do |t|
     t.string   "content"
