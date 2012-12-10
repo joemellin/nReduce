@@ -344,6 +344,7 @@ ActiveRecord::Schema.define(:version => 20121210095337) do
     t.integer  "user_id"
     t.datetime "created_at",                  :null => false
     t.datetime "updated_at",                  :null => false
+    t.text     "extra_data"
   end
 
   add_index "requests", ["num"], :name => "index_requests_on_num"
