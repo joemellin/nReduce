@@ -3,10 +3,118 @@
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
 .relationships, .weekly_classes {
-  .traction_machine {
-    .intro { margin-bottom: 0px; }
-    .launching { margin-top: 0px; }
-  } 
+
+  .wkrheader {
+    .wkrtitle {
+      color:#999;
+      font-size: 1.7em;
+      line-height:3.0em;
+    }
+    .askbutton {
+      margin: 10px 0px 0px 0px;
+    }
+    .bigcoin {
+      padding-right:20px;
+    }
+    .bigcount {
+      color:#FF9900;
+      font-size: 3.5em;
+      font-weight: bold;
+      padding-top:10px;
+      padding-right:5px;
+    }
+    .coinlable {
+      color:#ccc;
+      font-size: .7em;
+    }
+
+
+  }
+  .helpexchange{
+    margin-right: -15px;
+    padding-right: 15px;
+
+    .columnTitles {
+      margin-left: 5px;
+      padding-top:5px;
+      p { 
+        color: #999;
+        font-size: .7em;
+        line-height: .8em;
+        width: 50px;
+        text-align: center;
+      }
+    }
+
+    .taskheader {
+      color: #ccc;
+      font-size: .7em;
+      line-height: 1.5em;
+      padding-top:10px;
+      padding-left:5px;
+      font-weight:bold;
+    }
+
+    .viewmore {
+      color: #ccc;
+      font-size: .7em;
+      line-height: 1.5em;
+      text-align:center;
+
+    }
+
+    .task {
+      background-color: #fff;
+      background-image: -moz-linear-gradient(top, #fff, #ECECEC);
+      background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#fff), to(#ECECEC));
+      background-image: -webkit-linear-gradient(top, #fff, #ECECEC);
+      background-image: -o-linear-gradient(top, #fff, #ECECEC);
+      background-image: linear-gradient(to bottom, #fff, #ECECEC);
+      background-repeat: repeat-x;
+      padding: 5px 5px 5px 5px;
+      border: 1px solid #E4E4E4;
+      width: 560px;
+      max-height: 62px;
+
+      .coin {
+        padding-top: 3px;
+        .count {
+          color:#FF9900;
+          font-size: 1.2em;
+
+        }
+        text-align: center;
+        width: 50px;
+
+      }
+      .summary {
+        padding-left:5px;
+        padding-top:3px;
+        .title {
+          color: #999;
+          font-size: .8em;
+          line-height: .8em;
+          padding : 1px 0px 3px 0px;
+          font-weight:bold;
+        }
+        max-width: 235px;
+        max-height: 62px;
+        color: #999990;
+        font-size: .9em;
+        line-height: 1.25em;
+
+      }
+      .rtbutton {
+        padding: 5px 0px 0px 20px;
+
+      }
+
+    }
+
+
+  }
+
+
   .feed {
     margin-right: -15px;
     padding-right: 15px;
@@ -28,17 +136,19 @@
         height: 50px;
       }
       .goals {
-        max-width: 290px;
+        max-width: 240px;
         .goal_wrapper {
           p { margin-bottom: 2px; }
           margin-bottom: 20px;
+          color:#999999;
+          font-size: .9em;
           .goal_state { 
             margin-right: 5px;
             .box { margin-right: 0px; }
           }
           .goal { 
             line-height: 1.4em;
-            max-width: 245px;
+            max-width: 195px;
             max-height: 62px;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -46,10 +156,14 @@
         }
       }
       .awesome_comment_count {
-        p { margin-bottom: 2px; font-size: .8em;}
+        p { 
+        margin-bottom: 2px; 
+        font-size: .8em;
+        color:#999999;
+        }
       }
       .video { 
-        width: 265px;
+        width: 320px;
         margin-right: 10px;
         margin-bottom: 5px;
       }
@@ -67,7 +181,7 @@
           font-size: .8em;
           text-align: center;
           color: #efefef;
-          padding-top: 14px;
+          padding-top: 10px;
 
         }
       }
