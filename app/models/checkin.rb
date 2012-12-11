@@ -400,7 +400,7 @@ class Checkin < ActiveRecord::Base
   def time_label
     time = self.created_at || Time.current
     co = self.startup.checkin_offset
-    if time < Time.parse('2012-11-27 00:00:00') || co.blank?
+    if time < Time.parse('2012-11-27 23:59:59') || co.blank?
       offset = Checkin.default_offset
     else
       offset = co
