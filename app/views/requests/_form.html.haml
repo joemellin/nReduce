@@ -1,28 +1,72 @@
-= semantic_form_for @request, :html => {:class => 'form-horizontal'} do |f|
-  = hidden_field_tag "request[request_type]", @request.request_type.first.to_s
-  - unless @request.request_type_s == 'retweet'
-    .control-group{error_css(@request, :title)}
-      = f.label :title, :class => 'control-label'
-      .controls
-        = f.text_field :title, :class => 'span4'
-        = f.semantic_errors :title
+.row
+  .span5.offset4
+    = semantic_form_for @request, :html => {:class => 'form-vertical'} do |f|
+      = hidden_field_tag "request[request_type]", @request.request_type.first.to_s
+      - unless @request.request_type_s == 'retweet'
+        .control-group{error_css(@request, :title)}
+          = f.label :title, :class => 'control-label'
+          .controls
+            = f.text_field :title, :class => 'span4'
+            = f.semantic_errors :title
 
-  .control-group{error_css(@request, :data)}
-    = f.semantic_errors :data
-  - c = 0
-  - @request.questions.each do |q|
-    .control-group
-      = f.label :data, q, :class => 'control-label'
-      .controls
-        = text_field_tag "request[data][#{c}]", @request.data[c], :class => 'span4'
-    - c += 1
+      .control-group.data{error_css(@request, :data)}
+        = f.semantic_errors :data
 
-  .control-group{error_css(@request, :num)}
-    = f.label :num, '# of Responses', :class => 'control-label'
-    .controls
-      = f.text_field :num, :class => 'span1'
-      = f.semantic_errors :num
+      - c = 0
+      - @request.questions.each do |q|
+        .control-group
+          = f.label :data, q, :class => 'control-label'
+          .controls
+            = text_field_tag "request[data][#{c}]", @request.data[c], :class => 'span4'
+        - c += 1
 
-  .control-group
-    .controls
-      = f.submit 'Post Request', :class => 'btn btn-large btn-info'
+      %table.pricing
+        %tr.labels
+          %td= f.label :num, 'Desired Reach', :class => 'control-label'
+          %td{:align => 'right'}= label_tag 'Rate Per 100 Reached'
+          %td &nbsp;
+          %td= label_tag 'Total Cost'
+        %tr
+          %td{:valign => 'center'}
+            .control-group{error_css(@request, :num)}
+              .controls
+                = f.select :num, options_for_select(1.upto(10).map{|i| ["#{i * 100} Followers",i] }, @request.num), {}, {:class => 'num'}
+                = f.semantic_errors :num
+          %td
+            .right= image_tag 'headercoin.png'
+            .right.coin 1
+            .clear
+          %td.equals =
+          %td
+            .left.coin= @request.total_price
+            .left= image_tag 'headercoin.png'
+            .clear
+        %tr
+          %td{:colspan => 4}
+            %hr/
+        %tr
+          %td{:colspan => 2, :align => 'right'} Current Balance
+          %td.equals =
+          %td
+            .left.coin= @request.startup.balance
+            .left= image_tag 'headercoin.png'
+            .clear
+
+        %tr
+          %td{:colspan => 2, :align => 'right'} Sufficient Funds
+          %td.equals =
+          %td.has_balance
+            - if @request.startup_has_balance?
+              Yes
+            - else
+              .left No
+              -#.left= link_to 'Buy', '#'
+              .left= link_to 'Earn', '/', :class => 'btn btn-success'
+              .clear
+
+      .control-group
+        .controls.center
+          - if @request.startup_has_balance?
+            = f.submit 'Post Request', :class => 'btn btn-large btn-success'
+          - else
+            = f.submit 'Post Request', :class => 'btn btn-large btn-disabled', :disabled => true

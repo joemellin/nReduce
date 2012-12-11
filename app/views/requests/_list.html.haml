@@ -31,8 +31,7 @@
     - if c == limit
       .viewmore View More
     -# don't show unless this person responded, or this is the request owner and the response hasn't been canceled, rejected or expired
-    #{rs.user_id == current_user.id}
-    - next unless rs.user_id == current_user.id || (owner && !rs.canceled? && !rs.rejected? && !rs.expired?)
+    - next unless rs.user_id == current_user.id && owner && !rs.canceled? && !rs.rejected? && !rs.expired?
     .task{:class => c >= limit ? 'hide' : ''}
       .left.pic{:title => type_titleized}= image_tag "requests/#{r.request_type_s}.png", :alt => type_titleized
       .left.pic= link_to image_tag(r.startup.logo_url(:small), :alt => r.startup.name), r.startup, :title => r.startup.name

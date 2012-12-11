@@ -5,12 +5,13 @@ class Request < ActiveRecord::Base
   has_many :notifications, :as => :attachable
   has_many :account_transactions, :as => :attachable
 
+  after_initialize :set_price, :if => :new_record?
   before_create :transfer_balance_to_escrow
   before_create :perform_request_specific_setup_tasks
 
   validates_presence_of :request_type
   validates_numericality_of :num, :greater_than_or_equal_to => 0
-  validate :price_is_correct  
+  validate :set_price
   validates_presence_of :startup_id
   validates_presence_of :user_id
   validates_presence_of :price
@@ -28,6 +29,10 @@ class Request < ActiveRecord::Base
   scope :available, where('num != 0')
   scope :closed, where(:num => 0)
   scope :ordered, order('created_at DESC')
+
+  def startup_has_balance?
+    self.startup.balance >= self.total_price
+  end
 
   def title_required?
     self.request_type_s != 'retweet'
@@ -90,7 +95,7 @@ class Request < ActiveRecord::Base
     true
   end
 
-  def price_is_correct
+  def set_price
     if self.request_type.present?
       self.price = Settings.requests.prices.send(self.request_type_s) if self.price.blank? || self.new_record? || self.request_type_changed?
     end

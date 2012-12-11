@@ -4,8 +4,10 @@ class RequestsController < ApplicationController
   load_and_authorize_resource 
 
   def new
-    # hardcode only request type available for now
-    @request.request_type = :retweet
+    # hardcode only request type available for now - and have to initialize or else price isn't set
+    num = params[:num].present? ? params[:num].to_i : 1
+    num = 10 if num > 10
+    @request = Request.new(:startup => current_user.startup, :request_type => :retweet, :num => num)
   end
 
   def create
