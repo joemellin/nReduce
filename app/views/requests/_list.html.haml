@@ -1,0 +1,57 @@
+- owner ||= false
+- limit ||= 10
+- c = 1
+- requests.each do |r|
+  - type_titleized = r.request_type_s.titleize
+  - if c == limit
+    .viewmore= link_to 'View More', '#', :onclick => "$('.task.hide').show(); return false;"
+  - unless r.closed?
+    .task{:class => c >= limit ? 'hide' : ''}
+      .left.pic{:title => type_titleized}= image_tag "requests/#{r.request_type_s}.png", :alt => type_titleized
+      .left.pic= link_to image_tag(r.startup.logo_url(:small), :alt => r.startup.name), r.startup, :title => r.startup.name
+      .left.pic= image_tag "ready.png"
+      .left
+        .coin.center
+          .count= r.price
+          = image_tag "smallcoin.png"
+      - if r.request_type == [:retweet]
+        .left.summary
+          %span.title TWEET:
+          = r.extra_data['tweet_content']
+        .right.rtbutton
+          - if @authenticated_for_twitter
+            = form_for [r, Response.new(:request_id => r.id)] do |f|
+              = f.hidden_field :request_id
+              = f.submit 'Retweet', :class => 'btn btn-large btn-success'
+          - else
+            = link_to 'Retweet', capture_and_login_path(:redirect_to => new_request_response_path(r)), :class => 'btn btn-large btn-success'
+      .clear
+    - c += 1
+  - r.responses.each do |rs|
+    - if c == limit
+      .viewmore View More
+    -# don't show unless this person responded, or this is the request owner and the response hasn't been canceled, rejected or expired
+    #{rs.user_id == current_user.id}
+    - next unless rs.user_id == current_user.id || (owner && !rs.canceled? && !rs.rejected? && !rs.expired?)
+    .task{:class => c >= limit ? 'hide' : ''}
+      .left.pic{:title => type_titleized}= image_tag "requests/#{r.request_type_s}.png", :alt => type_titleized
+      .left.pic= link_to image_tag(r.startup.logo_url(:small), :alt => r.startup.name), r.startup, :title => r.startup.name
+      .left.pic= link_to image_tag(rs.user.pic_url(:small), :alt => rs.user.name), rs.user, :title => rs.user.name
+      .left
+        .coin.center
+          .count= r.price
+          = image_tag "smallcoin.png"
+      .left.summary
+        %span.title TWEET:
+        = r.extra_data['tweet_content']
+      .right.rtbutton
+        - if rs.started? && rs.user_id == current_user.id
+          = link_to 'Complete', [r, rs], :class => 'btn btn-disabled btn-large'
+        - elsif rs.completed? && owner
+          = button_to 'Accept', accept_request_response_path(r, rs), :class => 'btn btn-success btn-large'
+        - elsif rs.accepted? && owner
+          = button_to 'Thank Them', [r, rs], :class => 'btn btn-success btn-large'
+        - else
+          %h4= rs.status.first.to_s.titleize
+      .clear
+    - c += 1

@@ -33,7 +33,7 @@
               - if @previous_checkin.present?
                 = link_to '<i class="icon-chevron-left"></i>'.html_safe, @previous_checkin, :class => 'btn'
             .left
-              Last Week's Goal
+              This Week's Goal
             .clear
           %p.goal= h(@checkin.goal)
 
@@ -86,7 +86,7 @@
               - if @next_checkin.present?
                 = link_to '<i class="icon-chevron-right"></i>'.html_safe, @next_checkin, :class => 'btn'
             .left
-              This Week's Goal
+              Next Week's Goal
             .clear
           - if @next_checkin.present?
             %p.goal= h(@next_checkin.goal)

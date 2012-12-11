@@ -1,0 +1,28 @@
+= semantic_form_for @request, :html => {:class => 'form-horizontal'} do |f|
+  = hidden_field_tag "request[request_type]", @request.request_type.first.to_s
+  - unless @request.request_type_s == 'retweet'
+    .control-group{error_css(@request, :title)}
+      = f.label :title, :class => 'control-label'
+      .controls
+        = f.text_field :title, :class => 'span4'
+        = f.semantic_errors :title
+
+  .control-group{error_css(@request, :data)}
+    = f.semantic_errors :data
+  - c = 0
+  - @request.questions.each do |q|
+    .control-group
+      = f.label :data, q, :class => 'control-label'
+      .controls
+        = text_field_tag "request[data][#{c}]", @request.data[c], :class => 'span4'
+    - c += 1
+
+  .control-group{error_css(@request, :num)}
+    = f.label :num, '# of Responses', :class => 'control-label'
+    .controls
+      = f.text_field :num, :class => 'span1'
+      = f.semantic_errors :num
+
+  .control-group
+    .controls
+      = f.submit 'Post Request', :class => 'btn btn-large btn-info'

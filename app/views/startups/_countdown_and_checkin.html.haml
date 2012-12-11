@@ -8,7 +8,7 @@
         .right.time_left= hours_minutes_until(next_checkin_ends_at)
       .left.team_details
         .week Team #{startup.name}
-        - startup.team_members.each do |tm|
+        - startup.team_members.shuffle.first(3).each do |tm|
           .team_member.left= image_tag tm.pic_url(:small)
       .left.goal_details
         .week Goal For Week Of #{current_checkin.time_label}:

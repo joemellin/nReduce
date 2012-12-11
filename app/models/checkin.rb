@@ -48,7 +48,7 @@ class Checkin < ActiveRecord::Base
   end
 
   def current_step
-    return 0 if self.goal.blank? && !self.new_record? # only return 0 if it's been saved and doesn't have goal
+    return 0 if self.goal.blank? # only return 0 if it's been saved and doesn't have goal
     return 1 if self.video.blank? || self.video.new_record?
     return 2 if self.accomplished.nil? || (self.startup.present? && self.startup.launched? && (self.measurement.blank? || self.measurement.value.blank?))
     return 3 if self.next_week_goal.blank?
@@ -400,7 +400,7 @@ class Checkin < ActiveRecord::Base
   def time_label
     time = self.created_at || Time.current
     co = self.startup.checkin_offset
-    if time < Time.parse('2012-11-27 00:00:00') || co.blank?
+    if time < Time.parse('2012-11-27 23:59:59') || co.blank?
       offset = Checkin.default_offset
     else
       offset = co

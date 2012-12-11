@@ -22,6 +22,7 @@ class CheckinsController < ApplicationController
   end
 
   def new
+    (redirect_to('/') && return) if @force_checkin == true
     if @checkin.completed?
       flash[:notice] = "Your checkin has already been completed."
       redirect_to @checkin
@@ -53,6 +54,7 @@ class CheckinsController < ApplicationController
   end
 
   def edit
+    (redirect_to('/') && return) if @force_checkin == true
     if @checkin.completed? && params[:current_step].blank?
       flash[:notice] = "Your checkin has already been completed."
       redirect_to @checkin

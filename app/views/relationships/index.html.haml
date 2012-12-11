@@ -40,12 +40,12 @@
                 .left.video= display_checkin_video(checkin, :video, false, 320, 193).html_safe
                 .left.goals
                   .goal_wrapper
-                    %p Last Week's Goal
+                    %p This Week's Goal
                     .left.goal_state= image_tag checkin.accomplished? ? 'goal_accomplished.png' : 'goal_missed.png'
                     .left.goal= checkin.goal
                     .clear
                   .goal_wrapper
-                    %p This Week's Goal
+                    %p Next Week's Goal
                     .left.in_progress.goal_state
                       .box
                     .left.goal= checkin.next_week_goal
@@ -76,15 +76,13 @@
                     .clear
                 .clear
       .span6
-        .left 
-          .wkrtitle The Help Exchange
-        .right
-          .askbutton= image_tag "askforhelp.png"
+        .left.wkrtitle The Help Exchange
+        .right.askbutton= link_to 'Ask For Help', new_request_path, :class => 'btn btn-large btn-success'
         .right
           .coinlable
             Your Team's Coins
           .right.bigcoin= image_tag "headercoin.png"
-          .right.bigcount 50
+          .right.bigcount= current_user.startup.balance
           .clear
         .clear
         %hr/
@@ -100,44 +98,14 @@
               %p Thanks
             .clear
           %hr/
-          .taskheader Help You Have Asked For
-          .task
-            .left 
-              .pic= image_tag "twitter.png"
-            .left 
-              .pic= image_tag "logo.png"
-            .left   
-              .pic= image_tag "ready.png"
-            .left
-              .coin.center
-                .count 1
-                = image_tag "smallcoin.png"
-            .left
-              .summary
-                %span.title TWEET : 
-                We're throwing open the doors on Dec 14th for all to come & try out the new @TechHubManc... View 
-            .left
-              .rtbutton= image_tag "rtbutton.png"
-            .clear
-          .task
-            .left 
-              .pic= image_tag "twitter.png"
-            .left 
-              .pic= image_tag "logo.png"
-            .left   
-              .pic= image_tag "ready.png"
-            .left
-              .coin.center
-                .count 1
-                = image_tag "smallcoin.png"
-            .left
-              .summary
-                %span.title TWEET : 
-                We're throwing open the doors on Dec 14th for all to come & try out the new @TechHubManc... View
-            .left
-              .rtbutton= image_tag "rtbutton.png"
-            .clear
-          .viewmore View More
+
+          - if @users_requests.present?
+            .taskheader Tasks You Posted
+            = render 'requests/list', :requests => @users_requests, :owner => true, :limit => 2
+
+          - if @available_requests.present?
+            .taskheader All Available Tasks
+            = render 'requests/list', :requests => @available_requests
 
   - if @show_mentor_message
     %hr{:style => 'margin: 20px 0 20px 0;'}
@@ -145,7 +113,7 @@
       .span3
         &nbsp;
       .span6
-        %h3 Welcome to the nReduce Mentor network!  
+        %h3 Welcome to the nReduce Mentor network!
         %br/ 
         %p Startups earn the ability to access the mentor network with 1-3 months of hard work on nReduce. Once they earn access they can contact one mentor per week. If you are contacted by a startup for a mentorship, you will receive an email and the startup will appear above. You can then learn about the startup and decide if you would like to mentor them.
         %p If you decide to mentor the startup, you will be notified about their weekly progress and be able to give feedback and advice.  To help you get familiar with the system, we have connected you with team nReduce.

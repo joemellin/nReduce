@@ -68,6 +68,33 @@ class Ability
         can :repost, Comment do |c|
           c.can_be_viewed_by?(user)
         end
+
+        can [:read], Request
+
+        # Can create a new request only if they have a balance that permits it in their account
+        can [:new, :create], Request do |r|
+          u.startup.helpful_balance >= r.price
+        end
+
+        can :manage, Request, :startup_id => user.startup_id
+        
+        # Anyone on a startup can help another startup, as long as they didn't post it
+        can [:new, :create], Response do |r|
+          r.request.startup_id != user.startup_id
+        end
+
+        # Can manage response if it was created by that user
+        can :manage, Response, :user_id => user.id
+
+        # Can read, accept a response if on the startup team
+        can [:read, :accept], Response do |r|
+          r.startup_id == user.startup_id
+        end
+
+        # Can reject a response if on startup team and response hasn't already been accepted
+        can :reject, Response do |r|
+          r.startup_id == user.startup_id && !r.accepted?
+        end
       end
 
       # Can destroy if they were assigned as receiver or created it

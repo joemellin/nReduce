@@ -26,6 +26,8 @@ class User < ActiveRecord::Base
   has_many :ratings_awesomes, :through => :ratings, :source => :awesomes
   has_many :questions
   has_many :videos
+  has_many :requests
+  has_many :responses
 
   # Include default devise modules. Others available are:
   # :token_authenticatable, :confirmable,
@@ -156,6 +158,10 @@ class User < ActiveRecord::Base
 
   def self.joe
     User.where(:email => Settings.joe_email).first
+  end
+
+  def account
+    self.startup_id.present? ? self.startup.account : nil
   end
 
   def is_joe?
@@ -456,6 +462,15 @@ class User < ActiveRecord::Base
       :oauth_token => auth.token,
       :oauth_token_secret => auth.secret
     )
+  end
+
+  def update_twitter_followers_count
+    t = self.twitter_client
+    return false if t.blank?
+    # # get followers
+    # res = t.get_followers
+    # self.followers_count = res
+    # self.save
   end
 
   #

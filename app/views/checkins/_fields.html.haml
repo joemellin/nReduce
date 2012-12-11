@@ -37,7 +37,7 @@
           &nbsp
         = f.label :goal, "This Week's Goal:", :style => 'font-size:38px; margin-bottom:40px; margin-top:40px', :maxlength => 255, :class => 'control-label'
         .controls
-          = f.text_field :goal, :style => 'height: 30px; line-height:24px; font-size:22px', :class => "span4 checkin_start_focus", :placeholder => "Test, Ship or Hustle..."
+          = f.text_field :goal, :style => 'height: 30px; line-height:24px; font-size:22px', :class => "span4 checkin_start_focus", :placeholder => "Test, Ship or Hustle...", :maxlength => 100
           = f.semantic_errors :goal
 
 - if @after_disabled == true

@@ -244,7 +244,7 @@ class StartupsController < ApplicationController
 
       # save in session for pagination
       @search = session[:search] = params[:search]
-    elsif params[:page].present?
+    elsif params[:page].present? && session[:search].present?
       @search = session[:search]
     end
 
