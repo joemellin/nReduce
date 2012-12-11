@@ -6,7 +6,7 @@
       = semantic_form_for @checkin, :url => startup_checkins_path(@checkin.startup) do |f|
         = hidden_field_tag 'force_checkin', true
         = f.hidden_field :startup_id
-        = f.text_field :goal, :style => 'height: 30px; line-height:24px; font-size:22px', :class => "span5 checkin_start_focus", :placeholder => "Enter your goal here..."
+        = f.text_field :goal, :style => 'height: 30px; line-height:24px; font-size:22px', :class => "span5 checkin_start_focus", :placeholder => "Enter your goal here...", :maxlength => 100
 
         .examples
           %b Example Goals:
