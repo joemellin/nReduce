@@ -39,7 +39,7 @@ class Request < ActiveRecord::Base
   end
 
   def questions
-    Settings.request_questions.send(self.request_type.first.to_s)
+    Settings.requests.questions.send(self.request_type.first.to_s)
   end
 
   def total_price
@@ -71,7 +71,7 @@ class Request < ActiveRecord::Base
   def perform_request_specific_setup_tasks
     if self.request_type.first == :retweet
       # Get tweet id and tweet content
-      self.extra_data['tweet_id'] = self.data.first.strip.match(/[0-9]+$/)[0]
+      self.extra_data['tweet_id'] = self.data.first.strip.match(/[0-9]+$/)[0] unless self.data.blank?
       self.extra_data['tweet_content'] = Twitter.status(self.extra_data['tweet_id']).text unless self.extra_data['tweet_id'].blank?
       if self.extra_data['tweet_content'].blank?
         self.errors.add(:data, 'did not contain a valid Twitter status URL') 
@@ -83,7 +83,7 @@ class Request < ActiveRecord::Base
 
   def price_is_correct
     if self.request_type.present?
-      self.price = Settings.request_prices.send(self.request_type.first.to_s) if self.price.blank? || self.new_record? || self.request_type_changed?
+      self.price = Settings.requests.prices.send(self.request_type.first.to_s) if self.price.blank? || self.new_record? || self.request_type_changed?
     end
     true
   end

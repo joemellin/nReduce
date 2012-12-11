@@ -15,29 +15,34 @@ default_reply_to_email: "nReduce Support <support@nreduce.com>"
 client:
   test: "test"
 
-request_questions:
-  retweet:
-    - "What is the link to the tweet you'd like others to re-tweet? ex: https://twitter.com/nreduce/status/274112721451102208"
-  hn_upvote:
-    - "What is the link to the HN Post? ex: http://news.ycombinator.com/item?id=4887575"
-  ui_ux_feedback:
-    - "What is the URL for the feature, product or prototype you'd like to be tested?"
-    - "Instructions"
-    - "Task #1"
-    - "Task #2"
-    - "Task #3"
-    - "Question #1"
-    - "Question #2"
-    - "Question #3"
-  value_prop_feedback:
-    - "What is your ideal customer for this value proposition? Be as specific as possible."
-    - "What is the URL that you would like to send the above customer to?"
-
-request_prices:
-  retweet: 1
-  hn_upvote: 2
-  ui_ux_feedback: 5
-  value_prop_feedback: 20
+requests:
+  prices:
+    retweet: 1
+    hn_upvote: 2
+    ui_ux_feedback: 5
+    value_prop_feedback: 20
+  expire_in_minutes:
+    retweet: 30
+    hn_upvote: 30
+    ui_ux_feedback: 60
+    value_prop_feedback: 4320
+  questions:
+    retweet:
+      - "What is the link to the tweet you'd like others to re-tweet? ex: https://twitter.com/nreduce/status/274112721451102208"
+    hn_upvote:
+      - "What is the link to the HN Post? ex: http://news.ycombinator.com/item?id=4887575"
+    ui_ux_feedback:
+      - "What is the URL for the feature, product or prototype you'd like to be tested?"
+      - "Instructions"
+      - "Task #1"
+      - "Task #2"
+      - "Task #3"
+      - "Question #1"
+      - "Question #2"
+      - "Question #3"
+    value_prop_feedback:
+      - "What is your ideal customer for this value proposition? Be as specific as possible."
+      - "What is the URL that you would like to send the above customer to?"
 
 industries:
   - "Advertising"

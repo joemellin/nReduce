@@ -97,4 +97,36 @@ describe Response do
       @response.expired_at.should be_nil
     end
   end
+
+  describe "expiring responses" do
+    it "should expire if the response is old" do
+      @response.save
+      # More than 60 minutes for ui/ux requests
+      Timecop.freeze(Time.now + 2.hours) do
+        @response.should_be_expired?.should be_true
+      end
+
+      # change to tweet - which is 30 minutes
+      @ui_ux_request.request_type = :retweet
+      @ui_ux_request.data = ['link']
+      @ui_ux_request.save
+      @response.reload
+
+      Timecop.freeze(Time.now + 35.minutes) do
+        @response.should_be_expired?.should be_true
+      end
+    end
+
+    it "shouldn't be expire if not yet passed threshold" do
+      @response.save
+      # Try moving just 5 minutes in future
+      Timecop.freeze(Time.now + 5.minutes) do
+        @response.should_be_expired?.should be_false
+      end
+      # or in the past
+      Timecop.freeze(Time.now - 10.minutes) do
+        @response.should_be_expired?.should be_false
+      end
+    end
+  end
 end

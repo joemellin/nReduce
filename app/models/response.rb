@@ -21,6 +21,18 @@ class Response < ActiveRecord::Base
 
   bitmask :status, :as => [:started, :completed, :accepted, :rejected, :expired, :canceled]
 
+  # Finds all responses started more than an hour ago and expires them
+  def self.expire_all_uncompleted_responses
+    Response.transaction do
+      Response.where(['created_at < ?', Time.now - 1.day]).with_status(:started).each{|r| r.expire! if r.should_be_expired? }
+    end
+  end
+
+  def title
+    return self.extra_data['tweet_content'] if self.request_type == [:retweet] && self.extra_data['tweet_content'].present?
+    self['title']
+  end
+
   def data=(new_data)
     # Allows us to post from form with specific order of hash
     if new_data.is_a?(Hash)
@@ -44,6 +56,11 @@ class Response < ActiveRecord::Base
     # Returns boolean if this response is valid and can be completed
   def can_be_completed?
     self.valid? && self.questions_are_answered && self.started?
+  end
+
+  def should_be_expired?
+    mins = Settings.requests.expire_in_minutes.send(self.request_type)
+    (self.created_at + mins.to_i.minutes < Time.now) && self.started?
   end
 
     # Once a requesting user has reviewed it they can accept it
@@ -126,7 +143,7 @@ class Response < ActiveRecord::Base
   def perform_request_specific_tasks
     if self.request_type == :retweet && Rails.env.production? && !self.completed?
       tc = self.user.twitter_client
-      if tc.present?
+      if tc.present? && self.request.extra_data['tweet_id'].present?
         self.errors.add(:data, "Could not retweet the original tweet. Please try again later") unless tc.retweet(self.request.extra_data['tweet_id'])
       else
         self.errors.add(:user, "doesn't have a valid Twitter authentication - please add it again") if tc.blank?        
