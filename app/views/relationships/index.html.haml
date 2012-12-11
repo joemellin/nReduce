@@ -40,12 +40,12 @@
                 .left.video= display_checkin_video(checkin, :video, false, 320, 193).html_safe
                 .left.goals
                   .goal_wrapper
-                    %p Last Week's Goal
+                    %p This Week's Goal
                     .left.goal_state= image_tag checkin.accomplished? ? 'goal_accomplished.png' : 'goal_missed.png'
                     .left.goal= checkin.goal
                     .clear
                   .goal_wrapper
-                    %p This Week's Goal
+                    %p Next Week's Goal
                     .left.in_progress.goal_state
                       .box
                     .left.goal= checkin.next_week_goal
