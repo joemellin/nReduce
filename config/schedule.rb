@@ -28,6 +28,10 @@ every 1.hour do
   runner "Checkin.send_checkin_email"
 end
 
+every 30.minutes do
+  runner "Response.expire_all_uncompleted_responses"
+end
+
 # every 24.hours, :at => '11:25pm' do
 #   runner "Checkin.email_startups_not_completed_checkin_yet"
 # end
