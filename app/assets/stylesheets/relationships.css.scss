@@ -7,14 +7,16 @@
     margin-bottom: 30px;
   }
   table.pricing {
-    td { padding: 4px 8px 8px 8px; }
+    td { padding: 8px; }
     .labels {
+      td{ padding-bottom: 0px; }
       label {
         font-size: 12px;
         line-height: 12px;
       }
       line-height: 12px;
     }
+    .select_row { td { padding-top: 0px; } }
     .coin {
       color:#FF9900;
       font-size: 50px;
@@ -30,9 +32,13 @@
     .control-group { margin-bottom: 0px; }
     .equals { color: #999; }
     .has_balance {
+      .yes, .no { font-size: 40px; line-height: 40px; font-weight: bold; }
+      .yes { color: green; }
+      .no { color: #ff0000; }
       .btn { margin-left: 10px; }
     }
   }
+  .submit_btn { margin-top: 20px; }
 }
 
 .relationships, .weekly_classes {

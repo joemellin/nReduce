@@ -26,7 +26,7 @@
           %td{:align => 'right'}= label_tag 'Rate Per 100 Reached'
           %td &nbsp;
           %td= label_tag 'Total Cost'
-        %tr
+        %tr.select_row
           %td{:valign => 'center'}
             .control-group{error_css(@request, :num)}
               .controls
@@ -57,14 +57,14 @@
           %td.equals =
           %td.has_balance
             - if @request.startup_has_balance?
-              Yes
+              .yes Yes
             - else
-              .left No
+              .left.no No
               -#.left= link_to 'Buy', '#'
               .left= link_to 'Earn', '/', :class => 'btn btn-success'
               .clear
 
-      .control-group
+      .control-group.submit_btn
         .controls.center
           - if @request.startup_has_balance?
             = f.submit 'Post Request', :class => 'btn btn-large btn-success'
