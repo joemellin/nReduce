@@ -31,7 +31,17 @@ class Request < ActiveRecord::Base
   scope :ordered, order('created_at DESC')
 
   def startup_has_balance?
-    self.startup.balance >= self.total_price
+    AccountTransaction.sufficient_funds?(self.startup, self.total_price)
+  end
+
+  def user_can_earn(user)
+    if self.request_type_s == 'retweet' && user.followers_count.present?
+      avail = (user.followers_count.to_f / 100.0).floor
+      avail = num if avail > num
+      self.price * avail
+    else
+      self.price
+    end
   end
 
   def title_required?
@@ -73,7 +83,7 @@ class Request < ActiveRecord::Base
     else
       self.num = 0
     end
-    self.save  
+    self.save
   end
 
   def request_type_human
@@ -85,11 +95,13 @@ class Request < ActiveRecord::Base
   def perform_request_specific_setup_tasks
     if self.request_type.first == :retweet
       # Get tweet id and tweet content
-      self.extra_data['tweet_id'] = self.data.first.strip.match(/[0-9]+$/)[0] unless self.data.blank?
-      self.extra_data['tweet_content'] = Twitter.status(self.extra_data['tweet_id']).text unless self.extra_data['tweet_id'].blank?
-      if self.extra_data['tweet_content'].blank?
-        self.errors.add(:data, 'did not contain a valid Twitter status URL') 
-        return false
+      if Rails.env.production?
+        self.extra_data['tweet_id'] = self.data.first.strip.match(/[0-9]+$/)[0] unless self.data.blank?
+        self.extra_data['tweet_content'] = Twitter.status(self.extra_data['tweet_id']).text unless self.extra_data['tweet_id'].blank?
+        if self.extra_data['tweet_content'].blank?
+          self.errors.add(:data, 'did not contain a valid Twitter status URL') 
+          return false
+        end
       end
     end
     true
@@ -108,7 +120,7 @@ class Request < ActiveRecord::Base
 
   def balance_is_available_for_request
     self.errors.add(:num, "of responses required must be more than 0") if self.num == 0
-    if self.startup.present? && !AccountTransaction.sufficient_funds?(self.startup, self.total_price)
+    if self.startup.present? && !self.startup_has_balance?
       self.errors.add(:startup, "doesn't have enough of a balance to make this request (#{self.total_price} helpfuls required)")
       false
     else

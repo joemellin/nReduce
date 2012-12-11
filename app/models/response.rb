@@ -9,7 +9,7 @@ class Response < ActiveRecord::Base
   validates_presence_of :request_id
   validates_presence_of :user_id
   validate :request_is_open, :if => :new_record?
-  validate :user_hasnt_already_performed_request, :if => :new_record?
+  validate :user_hasnt_already_performed_request_or_created_request, :if => :new_record?
   validate :questions_are_answered, :if => :completed?
   
   after_initialize :set_default_status
@@ -71,14 +71,14 @@ class Response < ActiveRecord::Base
     # Can pass in amount paid if different than what was offered on the request
   def accept!(amount_paid = nil)
     return true if self.accepted? || self.rejected?
-    self.amount_paid = amount_paid || self.request.price
+    self.amount_paid = amount_paid || self.request.user_can_earn(self.user)
     self.questions_are_answered
     self.validate_balance_is_available
     return false unless self.valid?
     self.status = :accepted
     self.accepted_at = Time.now
     Response.transaction do
-      if self.save && self.pay_user
+      if self.save && self.decrement_request_num(self.amount_paid) && self.pay_user
         true
       else
         false
@@ -168,13 +168,14 @@ class Response < ActiveRecord::Base
   end
 
   # Increment num of requests avail - if a response is canceled
-  def increment_request_num
-    self.request.num += 1
+  def increment_request_num(num = 1)
+    self.request.num += num
     self.request.save
   end
 
-  def decrement_request_num
-    self.request.num -= 1
+  def decrement_request_num(num = 1)
+    self.request.num -= num
+    self.request.num = 0 if self.request.num < 0
     self.request.save
   end
 
@@ -201,13 +202,17 @@ class Response < ActiveRecord::Base
     !AccountTransaction.transfer(self.amount_paid, self.request.startup.account, self.user.account, :escrow, :balance).new_record?
   end
 
-  def user_hasnt_already_performed_request
+  def user_hasnt_already_performed_request_or_created_request
+    res = true
+    if self.request.startup_id == self.user.startup_id || self.request.user_id == self.user_id
+      self.errors.add(:user, "User made help request - therefore can't respond")
+      res = false
+    end
     if Response.where(:request_id => self.request_id, :user_id => self.user_id).with_status(:completed, :rejected).count > 0
       self.errors.add(:user, "has already responded to this help request")
-      false
-    else
-      true
+      res = false
     end
+    res
   end
 
   def questions_are_answered

@@ -79,6 +79,25 @@ describe Request do
 
       @hn_upvote.save.should be_true
     end
+
+    it "should allow users to earn more points if they have more followers" do
+      @user.followers_count = 80
+      @retweet = @ui_ux_request.dup
+      @retweet.request_type = :retweet
+      @retweet.num = 5
+      @retweet.data = ['https://twitter.com/statuses/1231231']
+      @retweet.save
+
+      # shouldn't be able to earn anything if they don't have enough followers
+      @retweet.user_can_earn(@user).should == 0
+
+      @user.followers_count = 500
+      @retweet.user_can_earn(@user).should == 5
+
+      # Shouldn't be able to earn more than max # user is willing to pay
+      @user.followers_count = 10000
+      @retweet.user_can_earn(@user).should == 5
+    end
   end
 
   describe "closing a request to new participants" do

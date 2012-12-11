@@ -68,6 +68,30 @@ describe Response do
       @account2.balance.should == 5
     end
 
+    it "should adjust payment for tasks that a user can earn more - like retweets" do
+      @retweet = @ui_ux_request.dup
+      @retweet.request_type = :retweet
+      @retweet.num = 5
+      @retweet.data = ['https://twitter.com/statuses/1231231']
+      puts "account balance #{@account.balance}"
+      puts "startup has balance: #{@retweet.startup_has_balance?}"
+      @retweet.save #.should be_true
+      puts @retweet.errors.inspect
+
+      @user.followers_count = 430
+      @response = Response.new
+      @response.user = @user2
+      @response.request = @retweet
+      @response.save
+      @response.complete! #.should be_true
+      puts @response.errors.inspect
+      @response.accept!.should be_true
+
+      @retweet.reload
+      @retweet.num.should == 1
+      @response.amount_paid.should == 4
+    end
+
     it "should allow the requestor to reject a request" do
       prev_num = @ui_ux_request.reload.num
       @response.save
@@ -95,6 +119,11 @@ describe Response do
       @response.expire!.should be_false
       @response.status.should == [:completed]
       @response.expired_at.should be_nil
+    end
+
+    it "shouldn't allow user who started request to complete it" do
+      @response.user = @user
+      @response.save.should be_false
     end
   end
 

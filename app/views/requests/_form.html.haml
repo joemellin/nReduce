@@ -41,7 +41,7 @@
             .left.coin= @request.total_price
             .left= image_tag 'headercoin.png'
             .clear
-        %tr
+        %tr.line
           %td{:colspan => 4}
             %hr/
         %tr
@@ -69,4 +69,4 @@
           - if @request.startup_has_balance?
             = f.submit 'Post Request', :class => 'btn btn-large btn-success'
           - else
-            = f.submit 'Post Request', :class => 'btn btn-large btn-disabled', :disabled => true
+            = link_to 'Post Request', '#', :class => 'btn btn-large btn-disabled', :disabled => true
