@@ -82,6 +82,11 @@ group :test, :development do
   #gem 'jasmine-rails' # also need to do: brew install qt
 end
 
+group :development do
+  gem "better_errors"
+  gem 'binding_of_caller'
+end
+
 # Gems used only for assets and not required
 # in production environments by default.
 group :assets do

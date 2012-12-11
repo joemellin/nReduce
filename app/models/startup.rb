@@ -1,6 +1,7 @@
 class Startup < ActiveRecord::Base
   obfuscate_id :spin => 29406582
   include Connectable # methods for relationships
+  include Accountable # allows startup to have account (for helpfuls)
   has_paper_trail :ignore => [:setup, :cached_industry_list, :active, :checkin_day, :time_zone]
   belongs_to :main_contact, :class_name => 'User'
   belongs_to :meeting
@@ -21,6 +22,8 @@ class Startup < ActiveRecord::Base
   has_many :screenshots, :dependent => :destroy
   has_many :ratings
   has_many :questions
+  has_many :requests
+  has_many :responses, :through => :requests
 
   attr_accessible :name, :investable, :team_size, :website_url, :main_contact_id, :phone, 
     :growth_model, :stage, :company_goal, :meeting_id, :one_liner, :active, :launched_at, 
@@ -182,7 +185,9 @@ class Startup < ActiveRecord::Base
   end
 
   def current_checkin_id
-    Cache.get(['current_checkin', self], nil, true){
+    # expire when next checkin due
+    expires_in = Checkin.next_checkin_due_at(self.checkin_offset) - Time.current
+    Cache.get(['current_checkin', self], expires_in, true){
       d = Checkin.prev_checkin_due_at(self.checkin_offset) - self.checkin_offset.last
       c = checkins.order('created_at ASC').where(['created_at > ?', d]).first
       c.id if c.present?

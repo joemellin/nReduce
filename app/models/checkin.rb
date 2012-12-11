@@ -48,7 +48,7 @@ class Checkin < ActiveRecord::Base
   end
 
   def current_step
-    return 0 if self.goal.blank? && !self.new_record? # only return 0 if it's been saved and doesn't have goal
+    return 0 if self.goal.blank? # only return 0 if it's been saved and doesn't have goal
     return 1 if self.video.blank? || self.video.new_record?
     return 2 if self.accomplished.nil? || (self.startup.present? && self.startup.launched? && (self.measurement.blank? || self.measurement.value.blank?))
     return 3 if self.next_week_goal.blank?

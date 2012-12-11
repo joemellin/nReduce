@@ -96,4 +96,21 @@ FactoryGirl.define do
   factory :youtube do
     youtube_url 'http://www.youtube.com/watch?v=4vkqBfv8OMM'
   end
+
+  factory :request do
+    num 2
+    factory :ui_ux_request do
+      title 'Give feedback on Traction Machine'
+      request_type :ui_ux_feedback
+      data ['http://nreduce.com/traction_machine', 'See if you can post a request', 'Start a new retweet request', 'Enter this tweet url and post request for 1 user: http://twitter.com/statuses/1233129', 'Validate your request has been posted', 'What was the most difficult thing to do?', 'What did you understand would happen after the request was posted?', 'Any feedback?']
+    end
+  end
+
+  factory :rating do
+    investor_id 1
+    startup_id 1
+    interested false
+    feedback 1
+    explanation "MyText"
+  end
 end

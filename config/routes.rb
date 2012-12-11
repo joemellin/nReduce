@@ -38,6 +38,23 @@ Nreduce::Application.routes.draw do
     end
   end
 
+  resources :requests do
+    resources :responses do
+      member do
+        post 'complete'
+        post 'accept'
+        post 'cancel'
+        post 'reject'
+      end
+    end
+  end
+
+  resources :payments do
+    member do
+      post 'cancel'
+    end
+  end
+
   resources :notifications, :only => [:index] do
     collection do
       post 'mark_all_as_read'
