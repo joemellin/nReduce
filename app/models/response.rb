@@ -58,9 +58,13 @@ class Response < ActiveRecord::Base
     self.valid? && self.questions_are_answered && self.started?
   end
 
-  def should_be_expired?
+  def expires_at
     mins = Settings.requests.expire_in_minutes.send(self.request_type)
-    (self.created_at + mins.to_i.minutes < Time.now) && self.started?
+    self.created_at + mins.to_i.minutes
+  end
+
+  def should_be_expired?
+    (self.expires_at < Time.now) && self.started?
   end
 
     # Once a requesting user has reviewed it they can accept it
