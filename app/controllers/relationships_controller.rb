@@ -60,7 +60,7 @@ class RelationshipsController < ApplicationController
       session[:checkin_completed] = false
     end
 
-    @requests = Request.available.ordered.all
+    @requests = Request.ordered.all.includes(:responses)
 
     @authenticated_for_twitter = current_user.authenticated_for?('twitter')
   end
