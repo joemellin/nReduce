@@ -30,35 +30,75 @@
 
 
   }
-  .helpexchange{
+  .helpexchange {
     margin-right: -15px;
     padding-right: 15px;
+
+    .success_modal {
+      color: #FF9900;
+      width: 500px;
+      .smalltext {
+        font-size: 1.0em;
+        padding-top:20px;
+        padding-bottom: 20px;
+
+      }
+      .bigmessage {
+        width: 500px;
+      }
+      .mediumtext {
+        font-size: 1.7em;
+        padding-top:20px;
+      }
+      .bigtext{
+        font-size: 9.7em;
+        line-height:1.0em;
+        vertical-align: none;
+        width: 260px;
+        text-align:right;
+      }
+      .coinimage {
+        width:150px;
+      }
+    }
+
 
     .columnTitles {
       margin-left: 5px;
       padding-top:5px;
       p { 
-        color: #999;
+        color: #ccc;
         font-size: .7em;
-        line-height: .8em;
+        line-height: 0em;
         width: 50px;
         text-align: center;
+        font-weight:bold;
       }
     }
 
     .taskheader {
-      color: #ccc;
-      font-size: .7em;
+      color: #999;
+      font-size: .8em;
       line-height: 1.5em;
       padding-top:10px;
       padding-left:5px;
-      font-weight:bold;
     }
 
     .viewmore {
+      background-color: #fff;
+      background-image: -moz-linear-gradient(top, #F7F7F7, #fff);
+      background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#F7F7F7), to(#fff));
+      background-image: -webkit-linear-gradient(top, #F7F7F7, #fff);
+      background-image: -o-linear-gradient(top, #F7F7F7, #fff);
+      background-image: linear-gradient(to bottom, #F7F7F7, #fff);
+      background-repeat: repeat-x;
+      padding: 5px 5px 5px 5px;
+      border: 0px solid #E4E4E4;
+      width: 562px;
+      max-height: 17px;
       color: #ccc;
       font-size: .7em;
-      line-height: 1.5em;
+      line-height: 1.3em;
       text-align:center;
 
     }

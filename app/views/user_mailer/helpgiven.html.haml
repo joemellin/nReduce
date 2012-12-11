@@ -1,0 +1,7 @@
+= render :partial => 'header'
+%h1.h1 Wooo Hooo!
+%br
+%h4.h4 #{@message.from.name} retweeted your message to x followers.
+%br
+%h3.h3= link_to 'Say Thank You', conversation_url(@message.conversation)
+= render :partial => 'footer'

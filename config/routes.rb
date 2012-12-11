@@ -115,6 +115,7 @@ Nreduce::Application.routes.draw do
   get "/privacy" => "pages#privacy", :as => "privacy"
   get "/testemail" => "pages#testemail", :as => "testemail"
   get "/metrics" => "pages#metrics", :as => "metrics"
+  get "/success_modal" => "pages#success_modal", :as => "success_modal"
 
   resources :mentors, :only => [:index] do
     collection do
