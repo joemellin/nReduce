@@ -148,7 +148,13 @@ class Response < ActiveRecord::Base
     if self.request_type == :retweet && Rails.env.production? && !self.completed?
       tc = self.user.twitter_client
       if tc.present? && self.request.extra_data['tweet_id'].present?
-        self.errors.add(:data, "Could not retweet the original tweet. Please try again later") unless tc.retweet(self.request.extra_data['tweet_id'])
+        rt = tc.retweet(self.request.extra_data['tweet_id'])
+        if rt.present?
+          self.extra_data['retweet_id'] = rt
+          self.extra_data['followers_count'] = self.user.followers_count
+        else
+          self.errors.add(:data, "Could not retweet the original tweet. Please try again later")
+        end
       else
         self.errors.add(:user, "doesn't have a valid Twitter authentication - please add it again") if tc.blank?        
       end

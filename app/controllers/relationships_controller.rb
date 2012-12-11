@@ -60,9 +60,12 @@ class RelationshipsController < ApplicationController
       session[:checkin_completed] = false
     end
 
-    @requests = Request.ordered.all.includes(:responses)
-
-    @authenticated_for_twitter = current_user.authenticated_for?('twitter')
+    if current_user.entrepreneur?
+      requests = Request.ordered.includes(:responses).all
+      @users_requests = requests.select{|r| r.startup_id == current_user.startup_id }
+      @available_requests = requests.select{|r| r.startup_id != current_user.startup_id && !r.closed? }
+      @authenticated_for_twitter = current_user.authenticated_for?('twitter')
+    end
   end
 
   def add_teams

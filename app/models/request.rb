@@ -14,6 +14,7 @@ class Request < ActiveRecord::Base
   validates_presence_of :startup_id
   validates_presence_of :user_id
   validates_presence_of :price
+  validates_presence_of :title, :if => :title_required?
   validate :questions_are_answered
   validate :balance_is_available_for_request, :if => :new_record?
 
@@ -28,6 +29,10 @@ class Request < ActiveRecord::Base
   scope :closed, where(:num => 0)
   scope :ordered, order('created_at DESC')
 
+  def title_required?
+    self.request_type_s != 'retweet'
+  end
+
   def data=(new_data)
     # Allows us to post from form with specific order of hash
     if new_data.is_a?(Hash)
@@ -38,8 +43,12 @@ class Request < ActiveRecord::Base
     self['data']
   end
 
+  def request_type_s
+    self.request_type.first.to_s
+  end
+
   def questions
-    Settings.requests.questions.send(self.request_type.first.to_s)
+    Settings.requests.questions.send(self.request_type_s)
   end
 
   def total_price
@@ -63,7 +72,7 @@ class Request < ActiveRecord::Base
   end
 
   def request_type_human
-    self.request_type.first.to_s.titleize
+    self.request_type_s.titleize
   end
 
   protected
@@ -83,7 +92,7 @@ class Request < ActiveRecord::Base
 
   def price_is_correct
     if self.request_type.present?
-      self.price = Settings.requests.prices.send(self.request_type.first.to_s) if self.price.blank? || self.new_record? || self.request_type_changed?
+      self.price = Settings.requests.prices.send(self.request_type_s) if self.price.blank? || self.new_record? || self.request_type_changed?
     end
     true
   end
