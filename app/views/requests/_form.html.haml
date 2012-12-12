@@ -17,7 +17,7 @@
         .control-group
           = f.label :data, q, :class => 'control-label taskheader'
           .controls
-            = text_field_tag "request[data][#{c}]", @request.data[c], :class => 'span5'
+            = text_field_tag "request[data][#{c}]", @request.data[c], :class => 'span5', :placeholder =>  @request.request_type_s == 'retweet' ? 'https://twitter.com/nReduce/status/274112721451102208' : ''
         - c += 1
       - if @request.request_type_s == 'retweet'
         .tutorial_link
