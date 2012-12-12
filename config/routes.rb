@@ -137,7 +137,7 @@ Nreduce::Application.routes.draw do
   get "/testemail" => "pages#testemail", :as => "testemail"
   get "/metrics" => "pages#metrics", :as => "metrics"
   get "/success_modal" => "pages#success_modal", :as => "success_modal"
-
+  get "/twitter_url" => "pages#twitter_url", :as => "twitter_url"
   resources :mentors, :only => [:index] do
     collection do
       post 'change_status'
