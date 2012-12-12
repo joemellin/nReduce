@@ -9,6 +9,16 @@ class ResponsesController < ApplicationController
   end
 
   def new
+    # if they auth'd and then came to complete task that can be completed, just do it
+    if @response.can_be_completed?
+      if @response.complete!
+        redirect_to '/'
+      else
+        flash.now[:alert] = @response.errors.full_messages.join('. ')
+        render :action => :edit
+      end
+      return
+    end
   end
 
   def create
