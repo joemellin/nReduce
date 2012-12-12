@@ -47,6 +47,8 @@ class RelationshipsController < ApplicationController
 
     @commented_on_checkin_ids = current_user.commented_on_checkin_ids
 
+    #@checkin_data = Checkin.participant_data_for_checkins(@checkins_by_startup.values.map{|c| c.id })
+
     @show_mentor_message = true if current_user.roles?(:nreduce_mentor) && no_startups == true
 
     @checkin_window = Checkin.in_time_window?(@startup ? @startup.checkin_offset : Checkin.default_offset) ? true : false
