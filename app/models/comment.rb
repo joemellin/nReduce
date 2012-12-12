@@ -26,6 +26,10 @@ class Comment < ActiveRecord::Base
   scope :deleted, where(:deleted => true)
   scope :not_deleted, where(:deleted => false)
 
+  def self.comments_per_checkin(checkin_ids = [])
+    Comment.where(:checkin_id => checkin_ids).group(:checkin_id).count
+  end
+
   # Finds the hottest post 24 hours ago until time
   def self.hottest_post
     comment_id = Comment.hottest_post_id

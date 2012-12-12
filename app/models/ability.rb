@@ -88,7 +88,7 @@ class Ability
 
         # Can read, accept a response if on the startup team
         can [:read, :accept], Response do |r|
-          r.startup_id == user.startup_id
+          r.request_id.present? && r.request.startup_id == user.startup_id
         end
 
         # Can reject a response if on startup team and response hasn't already been accepted

@@ -49,18 +49,22 @@ class ResponsesController < ApplicationController
 
   def complete
     @response.complete!
+    redirect_to [@request, @response]
   end
 
   def accept
     @response.accept!
+    redirect_to [@request, @response]
   end
 
   def cancel
     @response.cancel!
+    redirect_to [@request, @response]
   end
 
   def reject
     @response.reject!(params[:reject_because])
+    redirect_to [@request, @response]
   end
 
   def thank_you

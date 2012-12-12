@@ -269,6 +269,11 @@ class Checkin < ActiveRecord::Base
     true
   end
 
+  # Finds all of the users who have commented or awesomed a checkin and returns a hash of {checkin_id => {:c => [user, user]}}
+  # def self.participants_for_checkins(checkin_ids = [])
+  #   Awesome.where(:awsm_id => checkin_ids, :awsm_type => 'Checkin')
+  # end
+
   # People who awesomed and commented, minus the team members
   def participants(exclude_ids = [])
     ids = self.awesomes.map{|a| a.user_id }
