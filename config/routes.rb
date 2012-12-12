@@ -39,6 +39,9 @@ Nreduce::Application.routes.draw do
   end
 
   resources :requests do
+    member do
+      post 'cancel'
+    end
     resources :responses do
       member do
         post 'complete'

@@ -18,7 +18,11 @@
           = r.extra_data['tweet_content']
         .right.rtbutton
           - if r.startup_id == current_user.startup_id
-            %h4= r.num > 0 ? 'Open' : 'Completed'
+            - if r.num > 0
+              %h4.open Open
+              .cancel= link_to 'Cancel', cancel_request_path(r), :method => :post, :confirm => "Are you sure you want to cancel it?"
+            - else
+              %h4.completed Completed
           - else
             - if @authenticated_for_twitter
               = form_for [r, Response.new(:request_id => r.id)] do |f|
