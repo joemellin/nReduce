@@ -67,6 +67,13 @@ class RelationshipsController < ApplicationController
       @users_requests = requests.select{|r| r.startup_id == current_user.startup_id }
       @available_requests = requests.select{|r| r.startup_id != current_user.startup_id && !r.closed? }
       @authenticated_for_twitter = current_user.authenticated_for?('twitter')
+      if !current_user.seen_help_exchange_message?
+        @earn_message = true
+        current_user.shem = true
+        current_user.save
+      elsif params[:earn].present?
+        @earn_message = true
+      end
     end
 
     # just successfully completed request

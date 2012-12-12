@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121210095337) do
+ActiveRecord::Schema.define(:version => 20121212180551) do
 
   create_table "ab_tests", :force => true do |t|
     t.string   "name"
@@ -340,29 +340,29 @@ ActiveRecord::Schema.define(:version => 20121210095337) do
     t.integer  "price"
     t.integer  "num",          :default => 0
     t.text     "data"
-    t.text     "extra_data"
     t.integer  "startup_id"
     t.integer  "user_id"
     t.datetime "created_at",                  :null => false
     t.datetime "updated_at",                  :null => false
+    t.text     "extra_data"
   end
 
   add_index "requests", ["num"], :name => "index_requests_on_num"
 
   create_table "responses", :force => true do |t|
     t.text     "data"
-    t.text     "extra_data"
     t.integer  "amount_paid",      :default => 0
     t.integer  "status"
     t.datetime "accepted_at"
     t.datetime "expired_at"
     t.datetime "completed_at"
     t.string   "rejected_because"
-    t.boolean  "thanked",          :default => false
     t.integer  "request_id"
     t.integer  "user_id"
     t.datetime "created_at",                          :null => false
     t.datetime "updated_at",                          :null => false
+    t.text     "extra_data"
+    t.boolean  "thanked",          :default => false
   end
 
   add_index "responses", ["request_id"], :name => "index_responses_on_request_id"
@@ -522,6 +522,7 @@ ActiveRecord::Schema.define(:version => 20121210095337) do
     t.string   "country"
     t.string   "cached_skill_list"
     t.string   "cached_industry_list"
+    t.boolean  "shem",                   :default => false
   end
 
   add_index "users", ["email"], :name => "index_users_on_email", :unique => true

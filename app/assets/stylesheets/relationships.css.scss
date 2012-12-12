@@ -103,6 +103,7 @@
     }
   }
   .helpexchange {
+    .alert { margin-top: 10px; }
     margin-right: -15px;
     padding-right: 15px;
 
@@ -225,7 +226,7 @@
         .open { color: #5BB75B; font-weight: bold; }
         padding: 5px 0px 0px 10px;
         max-width: 110px;
-        h4 { text-align: center; width: 100px; margin-bottom: 4px; }
+        h4 { text-align: center; width: 100px; margin-bottom: 2px; margin-top: 0px; }
         .btn-large {
           font-size: 16px;
           padding: 8px 15px;
