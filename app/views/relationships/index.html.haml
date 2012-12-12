@@ -82,7 +82,7 @@
           .coinlable
             Your Team's Coins
           .right.bigcoin= image_tag "headercoin.png"
-          .right.bigcount= current_user.startup.balance
+          .right.bigcount.account_balance= current_user.startup.balance
           .clear
         .clear
         %hr/
@@ -106,6 +106,12 @@
           - if @available_requests.present?
             .taskheader All Available Tasks
             = render 'requests/list', :requests => @available_requests
+
+          - if @response.present?
+            .response
+              = render 'responses/success_modal'
+            :javascript
+              $(function(){ $('.success_modal').modal(); });
 
   - if @show_mentor_message
     %hr{:style => 'margin: 20px 0 20px 0;'}

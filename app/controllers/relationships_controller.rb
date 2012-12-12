@@ -66,6 +66,12 @@ class RelationshipsController < ApplicationController
       @available_requests = requests.select{|r| r.startup_id != current_user.startup_id && !r.closed? }
       @authenticated_for_twitter = current_user.authenticated_for?('twitter')
     end
+
+    # just successfully completed request
+    if session[:response_success_id].present?
+      @response = Response.find(session[:response_success_id])
+      session[:response_success_id] = nil
+    end
   end
 
   def add_teams

@@ -14,8 +14,11 @@ class ResponsesController < ApplicationController
     @response.user = current_user
     @response.request = @request
     if @response.can_be_completed? ? @response.complete! : @response.save
-      redirect_to [@request, @response]
+      session[:response_success_id] = @response.id
+      # redirect_to [@request, @response]
+      redirect_to '/'
     else
+      flash.now[:alert] = @response.errors.full_messages.join('. ')
       render :action => :edit
     end
   end
@@ -28,6 +31,7 @@ class ResponsesController < ApplicationController
     if @response.can_be_completed? ? @response.complete! : @response.save
       redirect_to [@request, @response]
     else
+      flash[:alert] = @response.errors.full_messages.join('. ')
       render :action => :edit
     end
   end

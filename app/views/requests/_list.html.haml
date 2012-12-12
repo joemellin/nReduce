@@ -6,7 +6,7 @@
   - if c == limit
     .viewmore= link_to 'View More', '#', :onclick => "$('.task.hide').show(); $(this).hide(); return false;"
   - unless r.closed?
-    .task{:class => c >= limit ? 'hide' : ''}
+    = div_for r, :class => c >= limit ? 'hide task' : 'task' do
       .left.pic{:title => type_titleized}= image_tag "requests/#{r.request_type_s}.png", :alt => type_titleized
       .left.pic= link_to image_tag(r.startup.logo_url(:small), :alt => r.startup.name), r.startup, :title => r.startup.name
       .left.pic= image_tag "ready.png"
@@ -32,7 +32,7 @@
       .viewmore= link_to 'View More', '#', :onclick => "$('.task.hide').show(); $(this).hide(); return false;"
     -# don't show unless this person responded, or this is the request owner and the response hasn't been canceled, rejected or expired
     - next unless rs.user_id == current_user.id && owner && !rs.canceled? && !rs.rejected? && !rs.expired?
-    .task{:class => c >= limit ? 'hide' : ''}
+    = div_for rs, :class => c >= limit ? 'hide task' : 'task' do
       .left.pic{:title => type_titleized}= image_tag "requests/#{r.request_type_s}.png", :alt => type_titleized
       .left.pic= link_to image_tag(r.startup.logo_url(:small), :alt => r.startup.name), r.startup, :title => r.startup.name
       .left.pic= link_to image_tag(rs.user.pic_url(:small), :alt => rs.user.name), rs.user, :title => rs.user.name
