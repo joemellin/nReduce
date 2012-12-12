@@ -99,6 +99,7 @@ module ApplicationHelper
       when :new_like then [obj.user.pic_url(:small), "<span class='entity'>#{obj.user.name}</span> likes your post", post_path(obj)]
       when :new_team_joined then [obj.logo_url(:small), "<span class='entity'>#{obj.name}</span> joined nReduce", url_for(obj)]
       when :new_awesome then [obj.user.pic_url(:small), "<span class='entity'>#{obj.user.name}</span> thinks you made some awesome progress!", url_for(obj.awsm)]
+      when :response_completed then [obj.user.pic_url(:small), "<span class='entity'>#{obj.user.name}</span> completed your help request!", '#']
       else [nil, notification.message, nil]
     end
   end 

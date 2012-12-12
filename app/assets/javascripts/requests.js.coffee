@@ -5,4 +5,7 @@
 $ ->
   $('select.num').change ->
     val = $(this).val()
-    window.location = "/requests/new?num=#{val}"
+    url = "/requests/new?num=#{val}"
+    tweet_url = $('#request_data_0').val()
+    url += "&tweet_url=#{encodeURIComponent(tweet_url)}" if tweet_url?
+    window.location = url
