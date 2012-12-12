@@ -47,6 +47,7 @@ class Startup < ActiveRecord::Base
   before_validation :encode_pitch_video
   before_save :format_url
   before_save :reset_cached_elements
+  after_create :setup_account
   after_create :initiate_relationships_from_invites
   after_create :notify_joe_of_new_startup
 
@@ -548,5 +549,9 @@ class Startup < ActiveRecord::Base
       self.pitch_video.user_id = self.team_members.first.id
     end
     true
+  end
+
+  def setup_account
+    Account.create_for_owner(self)
   end
 end

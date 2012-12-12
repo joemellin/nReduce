@@ -1,3 +1,6 @@
-%h2 Help #{@request.request_type_human} #{@request.title}
+.responses
+  .center
+    %h2 Help #{@request.request_type_human} #{@request.title}
+  %hr/
 
-Status: #{@response.status.first.to_s}
+  Status: #{@response.status.first.to_s}
