@@ -15,7 +15,7 @@
       - c = 0
       - @request.questions.each do |q|
         .control-group
-          = f.label :data, q, :class => 'control-label'
+          = f.label :data, q, :class => 'control-label taskheader'
           .controls
             = text_field_tag "request[data][#{c}]", @request.data[c], :class => 'span5'
         - c += 1

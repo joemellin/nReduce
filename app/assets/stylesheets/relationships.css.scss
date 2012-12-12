@@ -6,6 +6,19 @@
   .data {
     margin-bottom: 30px;
   }
+  .requestheader {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    text-align:center;
+  }
+
+  .taskheader {
+    font-size: 17px;
+    line-height: 20px;
+    color: #666;
+    padding-top:10px;
+  }
+
   table.pricing {
     td { padding: 8px; }
     .labels {
@@ -14,6 +27,7 @@
         font-size: 12px;
         line-height: 12px;
       }
+      color: #999999;
       line-height: 12px;
     }
     .line { td { padding: 0px; } }
