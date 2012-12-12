@@ -17,12 +17,15 @@
           %span.title TWEET:
           = r.extra_data['tweet_content']
         .right.rtbutton
-          - if @authenticated_for_twitter
-            = form_for [r, Response.new(:request_id => r.id)] do |f|
-              = f.hidden_field :request_id
-              = f.submit 'Retweet', :class => 'btn btn-large btn-success'
+          - if r.startup_id == current_user.startup_id
+            %h4= r.num > 0 ? 'In Progress' : 'Completed'
           - else
-            = link_to 'Retweet', capture_and_login_path(:redirect_to => new_request_response_path(r)), :class => 'btn btn-large btn-success'
+            - if @authenticated_for_twitter
+              = form_for [r, Response.new(:request_id => r.id)] do |f|
+                = f.hidden_field :request_id
+                = f.submit 'Retweet', :class => 'btn btn-large btn-success'
+            - else
+              = button_to 'Retweet', capture_and_login_path(:redirect_to => new_request_response_path(r)), :method => :get, :class => 'btn btn-large btn-success'
       .clear
     - c += 1
     - if c == limit

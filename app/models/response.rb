@@ -189,6 +189,18 @@ class Response < ActiveRecord::Base
     self['amount_paid']
   end
 
+  def questions_are_answered
+    # These types of responses don't need any input from the user
+    return true if [:retweet, :hn_upvote].include?(self.request_type)
+    # Otherwise check to see if user has answered all questions
+    if self.data.present? && self.data.select{|q| q.present? }.size == self.questions.size
+      true
+    else
+      self.errors.add(:data, "questions haven't all been answered")
+      false
+    end
+  end
+
   protected
 
   def set_default_status
@@ -238,18 +250,6 @@ class Response < ActiveRecord::Base
       res = false
     end
     res
-  end
-
-  def questions_are_answered
-    # These types of responses don't need any input from the user
-    return true if [:retweet, :hn_upvote].include?(self.request_type)
-    # Otherwise check to see if user has answered all questions
-    if self.data.present? && self.data.select{|q| q.present? }.size == self.questions.size
-      true
-    else
-      self.errors.add(:data, "questions haven't all been answered")
-      false
-    end
   end
 
   def increment_request_on_destroy
