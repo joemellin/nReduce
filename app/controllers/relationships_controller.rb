@@ -18,6 +18,7 @@ class RelationshipsController < ApplicationController
     end
 
     @startups = @entity.connected_to
+    
     # Add nreduce to list if they don't have any startups
     if !current_user.entrepreneur? and @startups.blank?
       @startups = Startup.where(:id => Startup.nreduce_id)

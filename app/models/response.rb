@@ -168,6 +168,7 @@ class Response < ActiveRecord::Base
         if tc.present? && self.request.extra_data['tweet_id'].present?
           rt = tc.retweet(self.request.extra_data['tweet_id'])
           if rt.present?
+            self.extra_data ||= {}
             self.extra_data['retweet_id'] = rt
             self.extra_data['followers_count'] = self.user.followers_count
             self.ready_to_accept = true

@@ -133,8 +133,16 @@ class User < ActiveRecord::Base
       :checkin => 'New checkin',
       :relationship => 'Connection requests',
       :new_comment_for_post => 'New comment on your post',
-      :message => 'New private message'
+      :message => 'New private message',
+      :response_completed => 'Help request completed'
     }
+  end
+
+  def self.update_twitter_followers_count_for_all_users
+    # Update twitter follower count for all users with startups
+    User.transaction do
+      Authentication.group(:user_id).includes(:user).where(:provider => 'twitter').each{|a| a.user.update_twitter_followers_count if a.user.startup_id.present? }
+    end
   end
 
   def self.default_email_on
