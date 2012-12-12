@@ -8,18 +8,21 @@ class Response < ActiveRecord::Base
 
   validates_presence_of :request_id
   validates_presence_of :user_id
+  validates_presence_of :amount_paid
   validate :request_is_open, :if => :new_record?
-  validate :user_hasnt_already_performed_request, :if => :new_record?
+  validate :user_hasnt_already_performed_request_or_created_request, :if => :new_record?
   validate :questions_are_answered, :if => :completed?
   
-  after_initialize :set_default_status
-  after_create :decrement_request_num
+  after_initialize :set_default_status, :if => :new_record?
+  after_create :decrement_request_by_amount_paid
 
   before_destroy :increment_request_on_destroy
 
   attr_accessible :data, :amount_paid, :rejected_because, :request, :request_id, :user, :user_id
 
   bitmask :status, :as => [:started, :completed, :accepted, :rejected, :expired, :canceled]
+
+  attr_accessor :ready_to_accept
 
   # Finds all responses started more than an hour ago and expires them
   def self.expire_all_uncompleted_responses
@@ -46,11 +49,19 @@ class Response < ActiveRecord::Base
     # Completes the task and verifies it has been completed
   def complete!
     return true if self.completed?
+    
+    # Retweet / upvote / etc - must be performed before assigning completion flag
+    self.perform_request_specific_tasks
+
+    # Auto-accept if task doesn't need confirmation from requestor
     self.status = :completed
     self.completed_at = Time.now
-    # retweet / upvote / etc
-    self.perform_request_specific_tasks
-    self.save
+    
+    if self.ready_to_accept == true
+      self.accept!
+    else
+      self.save
+    end
   end
 
     # Returns boolean if this response is valid and can be completed
@@ -69,9 +80,8 @@ class Response < ActiveRecord::Base
 
     # Once a requesting user has reviewed it they can accept it
     # Can pass in amount paid if different than what was offered on the request
-  def accept!(amount_paid = nil)
+  def accept!
     return true if self.accepted? || self.rejected?
-    self.amount_paid = amount_paid || self.request.price
     self.questions_are_answered
     self.validate_balance_is_available
     return false unless self.valid?
@@ -104,7 +114,7 @@ class Response < ActiveRecord::Base
   def cancel!(status = :canceled)
     Response.transaction do
       self.status = status
-      if self.save && self.increment_request_num
+      if self.save && self.increment_request_by_amount_paid
         true
       else
         false
@@ -145,20 +155,31 @@ class Response < ActiveRecord::Base
   end
 
   def perform_request_specific_tasks
-    if self.request_type == :retweet && Rails.env.production? && !self.completed?
-      tc = self.user.twitter_client
-      if tc.present? && self.request.extra_data['tweet_id'].present?
-        rt = tc.retweet(self.request.extra_data['tweet_id'])
-        if rt.present?
-          self.extra_data['retweet_id'] = rt
-          self.extra_data['followers_count'] = self.user.followers_count
+    if self.request_type == :retweet && !self.completed?
+      if Rails.env.production?
+        tc = self.user.twitter_client
+        if tc.present? && self.request.extra_data['tweet_id'].present?
+          rt = tc.retweet(self.request.extra_data['tweet_id'])
+          if rt.present?
+            self.extra_data['retweet_id'] = rt
+            self.extra_data['followers_count'] = self.user.followers_count
+            self.ready_to_accept = true
+          else
+            self.errors.add(:data, "Could not retweet the original tweet. Please try again later")
+          end
         else
-          self.errors.add(:data, "Could not retweet the original tweet. Please try again later")
+          self.errors.add(:user, "doesn't have a valid Twitter authentication - please add it again") if tc.blank?        
         end
-      else
-        self.errors.add(:user, "doesn't have a valid Twitter authentication - please add it again") if tc.blank?        
+      else # auto-accept in dev/test
+        self.ready_to_accept = true
       end
     end
+  end
+
+  def amount_paid
+    return self['amount_paid'] unless self['amount_paid'] == 0
+    self['amount_paid'] = self.request.user_can_earn(self.user) if self.request_id.present? && self.user_id.present?
+    self['amount_paid']
   end
 
   protected
@@ -168,14 +189,12 @@ class Response < ActiveRecord::Base
   end
 
   # Increment num of requests avail - if a response is canceled
-  def increment_request_num
-    self.request.num += 1
-    self.request.save
+  def increment_request_by_amount_paid
+    self.request.adjust_num_from_amount_paid(self.amount_paid)
   end
 
-  def decrement_request_num
-    self.request.num -= 1
-    self.request.save
+  def decrement_request_by_amount_paid
+    self.request.adjust_num_from_amount_paid(0 - self.amount_paid)
   end
 
   def request_is_open
@@ -189,7 +208,7 @@ class Response < ActiveRecord::Base
 
   # Validates startup can pay for this response, and that num on request is above 0
   def validate_balance_is_available
-    if AccountTransaction.sufficient_funds?(self.request.startup, self.amount_paid, :escrow)
+    if AccountTransaction.sufficient_funds?(self.request.startup.account, self.amount_paid, :escrow)
       self.errors.add(:request, "startup doesn't have enough helpfuls to pay you, sorry")
       false
     else
@@ -201,13 +220,17 @@ class Response < ActiveRecord::Base
     !AccountTransaction.transfer(self.amount_paid, self.request.startup.account, self.user.account, :escrow, :balance).new_record?
   end
 
-  def user_hasnt_already_performed_request
+  def user_hasnt_already_performed_request_or_created_request
+    res = true
+    if self.request.startup_id == self.user.startup_id || self.request.user_id == self.user_id
+      self.errors.add(:user, "User made help request - therefore can't respond")
+      res = false
+    end
     if Response.where(:request_id => self.request_id, :user_id => self.user_id).with_status(:completed, :rejected).count > 0
       self.errors.add(:user, "has already responded to this help request")
-      false
-    else
-      true
+      res = false
     end
+    res
   end
 
   def questions_are_answered
@@ -223,7 +246,8 @@ class Response < ActiveRecord::Base
   end
 
   def increment_request_on_destroy
-    self.increment_request_num if !self.new_record? && (self.started? || self.completed? || self.accepted?)
+    # don't increment if already paid
+    self.increment_request_by_amount_paid if !self.new_record? && !self.accepted? && (self.started? || self.completed?)
     true
   end
 end

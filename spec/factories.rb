@@ -104,6 +104,11 @@ FactoryGirl.define do
       request_type :ui_ux_feedback
       data ['http://nreduce.com/traction_machine', 'See if you can post a request', 'Start a new retweet request', 'Enter this tweet url and post request for 1 user: http://twitter.com/statuses/1233129', 'Validate your request has been posted', 'What was the most difficult thing to do?', 'What did you understand would happen after the request was posted?', 'Any feedback?']
     end
+    factory :retweet_request do
+      request_type :retweet
+      num 5
+      data ['https://twitter.com/statuses/1230930']
+    end
   end
 
   factory :rating do

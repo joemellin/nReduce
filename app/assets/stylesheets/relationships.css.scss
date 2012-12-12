@@ -2,8 +2,47 @@
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
-.relationships, .weekly_classes {
+.request {
+  .data {
+    margin-bottom: 30px;
+  }
+  table.pricing {
+    td { padding: 8px; }
+    .labels {
+      td{ padding-bottom: 0px; }
+      label {
+        font-size: 12px;
+        line-height: 12px;
+      }
+      line-height: 12px;
+    }
+    .line { td { padding: 0px; } }
+    .select_row { td { padding-top: 0px; } }
+    .coin {
+      color:#FF9900;
+      font-size: 50px;
+      line-height: 40px;
+      font-weight: bold;
+      padding-right:5px;
+    }
+    color: #666;
+    font-size: 1.4em;
+    line-height: 40px;
+    vertical-align: middle;
+    select.num { width: 150px; }
+    .control-group { margin-bottom: 0px; }
+    .equals { color: #999; }
+    .has_balance {
+      .yes, .no { font-size: 40px; line-height: 40px; font-weight: bold; }
+      .yes { color: green; }
+      .no { color: #ff0000; }
+      .btn { margin-left: 10px; }
+    }
+  }
+  .submit_btn { margin-top: 20px; }
+}
 
+.relationships, .weekly_classes {
   .wkrheader {
     .wkrtitle {
       color:#999;
@@ -16,6 +55,11 @@
     .bigcoin {
       padding-right:20px;
     }
+    .coinlable {
+      color:#ccc;
+      font-size: .7em;
+    }
+
     .bigcount {
       color:#FF9900;
       font-size: 3.5em;
@@ -23,12 +67,6 @@
       padding-top:10px;
       padding-right:5px;
     }
-    .coinlable {
-      color:#ccc;
-      font-size: .7em;
-    }
-
-
   }
   .helpexchange {
     margin-right: -15px;

@@ -48,6 +48,10 @@ class UserAction < ActiveRecord::Base
   def self.by_action(action_name)
     where(:action => self.id_for(action_name))
   end
+
+  def self.weekly_actives
+    UserAction.where(:action => UserAction.id_for('relationships_index')).where(['created_at > ?', Time.now - 1.week]).group(:user_id).count.size
+  end
   
   def action_name
     UserAction.actions.each{|k,v| return k if v == self.action }

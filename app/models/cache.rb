@@ -36,6 +36,7 @@ class Cache
     elsif value.nil? and !block.blank?
       #Cache.logger.info "CACHE: set a get for key #{key}"
       value = yield
+      return value if value.blank?
       Cache.set(key, value, expires_in, raw)
     end
     value

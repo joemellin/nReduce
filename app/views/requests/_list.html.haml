@@ -1,10 +1,10 @@
 - owner ||= false
 - limit ||= 10
-- c = 1
+- c = 0
 - requests.each do |r|
   - type_titleized = r.request_type_s.titleize
   - if c == limit
-    .viewmore= link_to 'View More', '#', :onclick => "$('.task.hide').show(); return false;"
+    .viewmore= link_to 'View More', '#', :onclick => "$('.task.hide').show(); $(this).hide(); return false;"
   - unless r.closed?
     .task{:class => c >= limit ? 'hide' : ''}
       .left.pic{:title => type_titleized}= image_tag "requests/#{r.request_type_s}.png", :alt => type_titleized
@@ -12,7 +12,7 @@
       .left.pic= image_tag "ready.png"
       .left
         .coin.center
-          .count= r.price
+          .count= r.user_can_earn(current_user)
           = image_tag "smallcoin.png"
       - if r.request_type == [:retweet]
         .left.summary
@@ -29,10 +29,9 @@
     - c += 1
   - r.responses.each do |rs|
     - if c == limit
-      .viewmore View More
+      .viewmore= link_to 'View More', '#', :onclick => "$('.task.hide').show(); $(this).hide(); return false;"
     -# don't show unless this person responded, or this is the request owner and the response hasn't been canceled, rejected or expired
-    #{rs.user_id == current_user.id}
-    - next unless rs.user_id == current_user.id || (owner && !rs.canceled? && !rs.rejected? && !rs.expired?)
+    - next unless rs.user_id == current_user.id && owner && !rs.canceled? && !rs.rejected? && !rs.expired?
     .task{:class => c >= limit ? 'hide' : ''}
       .left.pic{:title => type_titleized}= image_tag "requests/#{r.request_type_s}.png", :alt => type_titleized
       .left.pic= link_to image_tag(r.startup.logo_url(:small), :alt => r.startup.name), r.startup, :title => r.startup.name
