@@ -49,11 +49,14 @@ class Response < ActiveRecord::Base
     # Completes the task and verifies it has been completed
   def complete!
     return true if self.completed?
+    
+    # Retweet / upvote / etc - must be performed before assigning completion flag
+    self.perform_request_specific_tasks
+
+    # Auto-accept if task doesn't need confirmation from requestor
     self.status = :completed
     self.completed_at = Time.now
-    # Retweet / upvote / etc
-    self.perform_request_specific_tasks
-    # Auto-accept if task doesn't need confirmation from requestor
+    
     if self.ready_to_accept == true
       self.accept!
     else
@@ -152,19 +155,23 @@ class Response < ActiveRecord::Base
   end
 
   def perform_request_specific_tasks
-    if self.request_type == :retweet && Rails.env.production? && !self.completed?
-      tc = self.user.twitter_client
-      if tc.present? && self.request.extra_data['tweet_id'].present?
-        rt = tc.retweet(self.request.extra_data['tweet_id'])
-        if rt.present?
-          self.extra_data['retweet_id'] = rt
-          self.extra_data['followers_count'] = self.user.followers_count
-          self.ready_to_accept = true
+    if self.request_type == :retweet && !self.completed?
+      if Rails.env.production?
+        tc = self.user.twitter_client
+        if tc.present? && self.request.extra_data['tweet_id'].present?
+          rt = tc.retweet(self.request.extra_data['tweet_id'])
+          if rt.present?
+            self.extra_data['retweet_id'] = rt
+            self.extra_data['followers_count'] = self.user.followers_count
+            self.ready_to_accept = true
+          else
+            self.errors.add(:data, "Could not retweet the original tweet. Please try again later")
+          end
         else
-          self.errors.add(:data, "Could not retweet the original tweet. Please try again later")
+          self.errors.add(:user, "doesn't have a valid Twitter authentication - please add it again") if tc.blank?        
         end
-      else
-        self.errors.add(:user, "doesn't have a valid Twitter authentication - please add it again") if tc.blank?        
+      else # auto-accept in dev/test
+        self.ready_to_accept = true
       end
     end
   end
