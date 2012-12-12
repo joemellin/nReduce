@@ -30,6 +30,7 @@ class CheckinsController < ApplicationController
     end
     @checkin.startup = current_user.startup
     initialize_and_add_instruments(@checkin)
+    @current_step = @checkin.current_step == 0 ? 1 : @checkin.current_step
     render :action => :edit
   end
 
