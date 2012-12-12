@@ -23,6 +23,7 @@ class Account < ActiveRecord::Base
   end
 
   def self.create_for_owner(owner)
+    return owner.account if owner.account.present?
     account = Account.new
     account.owner = owner
     account.save

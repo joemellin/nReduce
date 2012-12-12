@@ -80,18 +80,6 @@ class Request < ActiveRecord::Base
     self.num == 0
   end
 
-  def close!
-    num_started = self.responses.with_status(:started).count
-    # only allow it to be closed at number of started (unfinished) requests
-    if num_started > 0
-      #self.errors.add(:num, "responses are open - we have closed the request for any new responses but you have to wait for those to complete")
-      self.num = num_started
-    else
-      self.num = 0
-    end
-    self.save
-  end
-
   # Cancel/delete a request - only if no responses
   def cancel!
     if AccountTransaction.transfer(self.num * self.price, self.startup.account, self.startup.account, :escrow, :balance).new_record?
