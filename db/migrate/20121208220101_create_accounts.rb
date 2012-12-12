@@ -8,5 +8,8 @@ class CreateAccounts < ActiveRecord::Migration
     end
 
     add_index :accounts, [:owner_id, :owner_type], :unique => true
+
+    # Create accounts for everyone
+    Startup.all.each{|s| Account.create_for_owner(s) }
   end
 end
