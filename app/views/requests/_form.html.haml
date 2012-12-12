@@ -22,7 +22,7 @@
       - if @request.request_type_s == 'retweet'
         .tutorial_link
           Need help finding the 
-          = link_to 'URL of a Tweet?', twitter_url_path
+          = link_to 'URL of a Tweet?', twitter_url_path, :target => '_blank'
 
       %table.pricing
         %tr.labels
