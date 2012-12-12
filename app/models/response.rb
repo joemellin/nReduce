@@ -22,6 +22,8 @@ class Response < ActiveRecord::Base
 
   bitmask :status, :as => [:started, :completed, :accepted, :rejected, :expired, :canceled]
 
+  attr_accessor :ready_to_accept
+
   # Finds all responses started more than an hour ago and expires them
   def self.expire_all_uncompleted_responses
     Response.transaction do
@@ -49,9 +51,14 @@ class Response < ActiveRecord::Base
     return true if self.completed?
     self.status = :completed
     self.completed_at = Time.now
-    # retweet / upvote / etc
+    # Retweet / upvote / etc
     self.perform_request_specific_tasks
-    self.save
+    # Auto-accept if task doesn't need confirmation from requestor
+    if self.ready_to_accept == true
+      self.accept!
+    else
+      self.save
+    end
   end
 
     # Returns boolean if this response is valid and can be completed
@@ -152,6 +159,7 @@ class Response < ActiveRecord::Base
         if rt.present?
           self.extra_data['retweet_id'] = rt
           self.extra_data['followers_count'] = self.user.followers_count
+          self.ready_to_accept = true
         else
           self.errors.add(:data, "Could not retweet the original tweet. Please try again later")
         end

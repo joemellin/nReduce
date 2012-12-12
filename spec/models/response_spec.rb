@@ -87,7 +87,8 @@ describe Response do
       @response.request = @retweet
       @response.save
       @response.complete!.should be_true
-      @response.accept!.should be_true
+      # it should be auto-accepted for a retweet
+      @response.accepted?.should be_true
 
       @retweet.reload
       @response.amount_paid.should == 4
