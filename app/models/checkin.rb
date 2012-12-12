@@ -184,7 +184,7 @@ class Checkin < ActiveRecord::Base
     end
   end
 
-  # Returns an array of checkin history for this startup, each array element being whether they completed a before/after video
+  # Returns an array of checkin history for this startup, each array element being whether they completed a checkin that week
   # ex: [[true, false], [false, false], [true, false]]
   def self.history_for_startup(startup)
     arr = []
@@ -270,9 +270,17 @@ class Checkin < ActiveRecord::Base
   end
 
   # Finds all of the users who have commented or awesomed a checkin and returns a hash of {checkin_id => {:c => [user, user]}}
-  # def self.participants_for_checkins(checkin_ids = [])
-  #   Awesome.where(:awsm_id => checkin_ids, :awsm_type => 'Checkin')
-  # end
+  def self.participant_data_for_checkins(checkin_ids = [])
+    awesomes = Hash.by_key(Awesome.where(:awsm_id => checkin_ids, :awsm_type => 'Checkin').includes(:user), :awsm_id, nil, true)
+    comments = Hash.by_key(Comment.where(:checkin_id => checkin_ids).includes(:user), :checkin_id, nil, true)
+    checkin_data = {}
+    checkin_ids.each do |cid|
+      checkin_data[cid] = {}
+      checkin_data[cid][:a] = awesomes[cid].map{|a| a.user } || []
+      checkin_data[cid][:c] = comments[cid].map{|c| c.user } || []
+    end
+    checkin_data
+  end
 
   # People who awesomed and commented, minus the team members
   def participants(exclude_ids = [])

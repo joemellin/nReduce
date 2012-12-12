@@ -47,6 +47,8 @@ class RelationshipsController < ApplicationController
 
     @commented_on_checkin_ids = current_user.commented_on_checkin_ids
 
+    #@checkin_data = Checkin.participant_data_for_checkins(@checkins_by_startup.values.map{|c| c.id })
+
     @show_mentor_message = true if current_user.roles?(:nreduce_mentor) && no_startups == true
 
     @checkin_window = Checkin.in_time_window?(@startup ? @startup.checkin_offset : Checkin.default_offset) ? true : false
@@ -65,6 +67,13 @@ class RelationshipsController < ApplicationController
       @users_requests = requests.select{|r| r.startup_id == current_user.startup_id }
       @available_requests = requests.select{|r| r.startup_id != current_user.startup_id && !r.closed? }
       @authenticated_for_twitter = current_user.authenticated_for?('twitter')
+      if !current_user.seen_help_exchange_message?
+        @earn_message = true
+        current_user.shem = true
+        current_user.save
+      elsif params[:earn].present?
+        @earn_message = true
+      end
     end
 
     # just successfully completed request

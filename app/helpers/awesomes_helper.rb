@@ -21,7 +21,7 @@ module AwesomesHelper
     if awesome_id.blank?
       ret += link_to("<i class=\"icon-thumbs-up icon\"></i> #{label}".html_safe, "/awesomes/?awsm_type=#{object.class.to_s}&awsm_id=#{object.id}", :remote => true, :method => :post, :class => 'btn')
     else
-      ret += link_to("<i class=\"icon-thumbs-up icon-white\"></i> #{label}".html_safe, awesome_path(:id => awesome_id), :remote => true, :method => :delete, :class => 'btn btn-info')
+      ret += link_to("<i class=\"icon-ok\"></i> #{label}d".html_safe, awesome_path(:id => awesome_id), :remote => true, :method => :delete, :class => 'btn disabled')
     end
     # if object.awesome_count > 0
     #   ret += pluralize(object.awesome_count, 'awesome')

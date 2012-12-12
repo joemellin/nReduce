@@ -164,6 +164,10 @@ class User < ActiveRecord::Base
     self.startup_id.present? ? self.startup.account : nil
   end
 
+  def seen_help_exchange_message?
+    self.shem?
+  end
+
   def is_joe?
     self.email == Settings.joe_email
   end
