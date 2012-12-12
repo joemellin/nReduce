@@ -6,10 +6,30 @@
   .data {
     margin-bottom: 30px;
   }
+  .tutorial_link {
+    font-size: .9em;
+    color:#ccc;
+    line-height:0em;
+    padding-bottom: 40px;
+    a {
+     color:#999;
+    }
+  } 
   .requestheader {
     padding-top: 10px;
     padding-bottom: 10px;
     text-align:center;
+  }
+  .tutorial_txt {
+    font-size: 1.6em;
+    color:#666666;
+    margin-top:80px;
+    line-height:2.0em;
+  }
+  .tutorial_header {
+    font-size: 2.6em;
+    color:#333;
+    margin-top:80px;
   }
 
   .taskheader {
