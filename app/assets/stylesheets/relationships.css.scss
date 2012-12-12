@@ -218,9 +218,14 @@
 
       }
       .rtbutton {
+        .cancel { 
+          text-align: center;
+          a { color: #999; }
+        }
+        .open { color: #5BB75B; font-weight: bold; }
         padding: 5px 0px 0px 10px;
         max-width: 110px;
-        h4 { text-align: center; width: 100px; }
+        h4 { text-align: center; width: 100px; margin-bottom: 4px; }
         .btn-large {
           font-size: 16px;
           padding: 8px 15px;

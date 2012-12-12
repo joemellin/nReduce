@@ -17,7 +17,6 @@ class RequestsController < ApplicationController
     if @request.save
       redirect_to '/'
     else
-      logger.info "REQUEST ERRORS: #{@request.errors.inspect}"
       render :action => :edit
     end
   end
@@ -29,6 +28,14 @@ class RequestsController < ApplicationController
   def update
     if @request.save
       redirect_to @request
+    else
+      render :action => :edit
+    end
+  end
+
+  def cancel
+    if @request.cancel!
+      redirect_to '/'
     else
       render :action => :edit
     end

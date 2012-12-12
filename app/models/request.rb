@@ -80,16 +80,18 @@ class Request < ActiveRecord::Base
     self.num == 0
   end
 
-  def close!
-    num_started = self.responses.with_status(:started).count
-    # only allow it to be closed at number of started (unfinished) requests
-    if num_started > 0
-      #self.errors.add(:num, "responses are open - we have closed the request for any new responses but you have to wait for those to complete")
-      self.num = num_started
-    else
-      self.num = 0
+  # Cancel/delete a request - only if no responses
+  def cancel!
+    if AccountTransaction.transfer(self.num * self.price, self.startup.account, self.startup.account, :escrow, :balance).new_record?
+      self.errors.add(:num, 'could not be refunded to your startup\'s balance') 
+      return false
     end
-    self.save
+    if self.responses.count > 0
+      self.num = 0
+      self.save
+    else
+      self.destroy
+    end
   end
 
   def request_type_human
@@ -102,10 +104,14 @@ class Request < ActiveRecord::Base
     if self.request_type.first == :retweet
       # Get tweet id and tweet content
       if Rails.env.production?
-        self.extra_data['tweet_id'] = self.data.first.strip.match(/[0-9]+$/)[0] unless self.data.blank?
+        self.extra_data ||= {}
+        unless self.data.blank?
+          match = self.data.first.strip.match(/[0-9]+$/)
+          self.extra_data['tweet_id'] = match[0] if match.present?
+        end
         self.extra_data['tweet_content'] = Twitter.status(self.extra_data['tweet_id']).text unless self.extra_data['tweet_id'].blank?
         if self.extra_data['tweet_content'].blank?
-          self.errors.add(:data, 'did not contain a valid Twitter status URL') 
+          self.errors.add(:data, 'says: "You need to put in a valid Twitter URL"') 
           return false
         end
       end

@@ -100,28 +100,35 @@ describe Request do
     end
   end
 
-  describe "closing a request to new participants" do
-    it "should close request if no started responses" do
+  describe "canceling a request" do
+    it "should cancel a request and delete if no responses" do
       @account.balance = 10
       @account.save
       @ui_ux_request.save.should be_true
+      id = @ui_ux_request.id
+      @ui_ux_request.cancel!.should be_true
 
-      @ui_ux_request.close!.should be_true
-
-      @ui_ux_request.closed?.should be_true
+      Request.exists?(id).should be_false
+      @account.reload.balance.should == 10
+      @account.escrow.should == 0
     end
 
-    it "shouldn't close a request if there are responses started" do
+    it "should close a request if there have been responses" do
       @account.balance = 10
-      @account.save 
+      @account.save
       @ui_ux_request.save.should be_true
 
       response = Response.new
       response.request = @ui_ux_request
       response.user = FactoryGirl.create(:user2, :roles => [])
+      response.save
 
-      @ui_ux_request.close!.should be_true
-      @ui_ux_request.closed?.should be_true
+      @ui_ux_request.cancel!.should be_true
+      Request.exists?(@ui_ux_request.id).should be_true
+
+      @account.reload
+      @account.balance.should == 5 # total amount - 1 response
+      @account.escrow.should == 5 # still waiting for other response to complete
     end
   end
 end
