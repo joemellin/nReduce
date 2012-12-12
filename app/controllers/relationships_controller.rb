@@ -65,6 +65,7 @@ class RelationshipsController < ApplicationController
     if current_user.entrepreneur?
       requests = Request.ordered.includes(:responses).all
       @users_requests = requests.select{|r| r.startup_id == current_user.startup_id }
+      @users_requests.sort!{|a,b| a_score = !a.closed? ? 1 : 0 <=> !b.closed? ? 1 : 0 }.reverse!
       @available_requests = requests.select{|r| r.startup_id != current_user.startup_id && !r.closed? }
       @authenticated_for_twitter = current_user.authenticated_for?('twitter')
       if !current_user.seen_help_exchange_message?
