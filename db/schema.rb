@@ -359,8 +359,10 @@ ActiveRecord::Schema.define(:version => 20121210095337) do
     t.string   "rejected_because"
     t.integer  "request_id"
     t.integer  "user_id"
-    t.datetime "created_at",                      :null => false
-    t.datetime "updated_at",                      :null => false
+    t.datetime "created_at",                          :null => false
+    t.datetime "updated_at",                          :null => false
+    t.text     "extra_data"
+    t.boolean  "thanked",          :default => false
   end
 
   add_index "responses", ["request_id"], :name => "index_responses_on_request_id"

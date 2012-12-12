@@ -78,7 +78,7 @@ class User < ActiveRecord::Base
   # adds methods and scopes: https://github.com/joelmoss/bitmask_attributes
   bitmask :roles, :as => [:admin, :entrepreneur, :mentor, :investor, :nreduce_mentor, :spectator, :approved_investor]
   bitmask :onboarded, :as => [:startup, :mentor, :nreduce_mentor, :investor]
-  bitmask :email_on, :as => [:docheckin, :comment, :meeting, :checkin, :relationship, :new_comment_for_post, :message]
+  bitmask :email_on, :as => [:docheckin, :comment, :meeting, :checkin, :relationship, :new_comment_for_post, :message, :response_completed]
   bitmask :setup, :as => [:account_type, :onboarding, :profile, :invite_startups, :welcome]
 
   # Number of startups an investor can contact per week

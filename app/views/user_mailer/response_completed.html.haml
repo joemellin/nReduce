@@ -1,0 +1,8 @@
+= render :partial => 'header'
+%h1.h1 Wooo Hooo!
+%br
+- if @response.request_type == :retweet
+  %h4.h4 #{@response.user.name} retweeted your message to #{@response.user.followers_count} followers.
+%br
+%h3.h3= link_to 'Say Thank You', thank_you_response_path(@response)
+= render :partial => 'footer'

@@ -48,6 +48,7 @@ Nreduce::Application.routes.draw do
       end
     end
   end
+  get '/responses/:id/thank_you' => 'responses#thank_you', :as => 'thank_you_response'
 
   resources :payments do
     member do

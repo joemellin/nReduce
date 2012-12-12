@@ -95,6 +95,10 @@ class Ability
         can :reject, Response do |r|
           r.startup_id == user.startup_id && !r.accepted?
         end
+
+        can :thank_you, Response do |r|
+          r.request.startup_id == user.startup_id
+        end
       end
 
       # Can destroy if they were assigned as receiver or created it

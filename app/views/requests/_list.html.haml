@@ -3,8 +3,6 @@
 - c = 0
 - requests.each do |r|
   - type_titleized = r.request_type_s.titleize
-  - if c == limit
-    .viewmore= link_to 'View More', '#', :onclick => "$('.task.hide').show(); $(this).hide(); return false;"
   - unless r.closed?
     = div_for r, :class => c >= limit ? 'hide task' : 'task' do
       .left.pic{:title => type_titleized}= image_tag "requests/#{r.request_type_s}.png", :alt => type_titleized
@@ -27,11 +25,11 @@
             = link_to 'Retweet', capture_and_login_path(:redirect_to => new_request_response_path(r)), :class => 'btn btn-large btn-success'
       .clear
     - c += 1
-  - r.responses.each do |rs|
     - if c == limit
-      .viewmore= link_to 'View More', '#', :onclick => "$('.task.hide').show(); $(this).hide(); return false;"
+      .viewmore= link_to 'View More', '#', :onclick => "$('.task.hide').show(); $(this).parent().hide(); return false;"
+  - r.responses.each do |rs|
     -# don't show unless this person responded, or this is the request owner and the response hasn't been canceled, rejected or expired
-    - next unless rs.user_id == current_user.id && owner && !rs.canceled? && !rs.rejected? && !rs.expired?
+    - next unless (rs.user_id == current_user.id || owner) && !rs.canceled? && !rs.rejected? && !rs.expired?
     = div_for rs, :class => c >= limit ? 'hide task' : 'task' do
       .left.pic{:title => type_titleized}= image_tag "requests/#{r.request_type_s}.png", :alt => type_titleized
       .left.pic= link_to image_tag(r.startup.logo_url(:small), :alt => r.startup.name), r.startup, :title => r.startup.name
@@ -49,8 +47,13 @@
         - elsif rs.completed? && owner
           = button_to 'Accept', accept_request_response_path(r, rs), :class => 'btn btn-success btn-large'
         - elsif rs.accepted? && owner
-          = button_to 'Thank Them', [r, rs], :class => 'btn btn-success btn-large'
+          - if rs.thanked?
+            %h4 Thanked
+          - else
+            = button_to 'Thank', thank_you_response_path(rs), :class => 'btn btn-success btn-large', :method => :get
         - else
           %h4= rs.status.first.to_s.titleize
       .clear
     - c += 1
+    - if c == limit
+      .viewmore= link_to 'View More', '#', :onclick => "$('.task.hide').show(); $(this).parent().hide(); return false;"

@@ -185,11 +185,12 @@
       }
       .rtbutton {
         padding: 5px 0px 0px 10px;
-        width: 110px;
-        text-align: center;
+        max-width: 110px;
+        h4 { text-align: center; width: 100px; }
         .btn-large {
           font-size: 16px;
           padding: 8px 15px;
+          width: 100px;
         }
         form { margin-bottom: 0px; float: right; }
       }

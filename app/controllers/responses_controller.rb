@@ -1,8 +1,9 @@
 class ResponsesController < ApplicationController
   before_filter :login_required
   before_filter :load_requested_or_users_startup
-  load_and_authorize_resource :request
-  load_and_authorize_resource :response, :through => :request
+  load_and_authorize_resource :request, :except => [:thank_you]
+  load_and_authorize_resource :response, :through => :request, :except => [:thank_you]
+  load_and_authorize_resource :only => [:thank_you]
 
   def show
   end
@@ -50,5 +51,11 @@ class ResponsesController < ApplicationController
 
   def reject
     @response.reject!(params[:reject_because])
+  end
+
+  def thank_you
+    # redirect to message
+    @response.thanked!
+    redirect_to new_conversation_path(:startup_id => @response.user.startup.to_param)
   end
 end

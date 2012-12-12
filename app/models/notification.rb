@@ -19,7 +19,8 @@ class Notification < ActiveRecord::Base
     [
       :new_checkin, :relationship_request, :relationship_approved, :new_awesome,
       :mentorship_approved, :investor_approved, :new_comment_for_checkin, 
-      :new_comment_for_post, :new_nudge, :new_team_joined, :new_like, :join_next_week, :relationship_introduced, :new_message
+      :new_comment_for_post, :new_nudge, :new_team_joined, :new_like, :join_next_week, 
+      :relationship_introduced, :new_message, :response_completed
     ]
   end
 
@@ -45,6 +46,12 @@ class Notification < ActiveRecord::Base
       end
     end
     n
+  end
+
+  def self.create_for_response_completed(response)
+    response.request.startup.team_members.each do |u|
+      Notification.create_and_send(u, response, :response_completed)
+    end
   end
 
   def self.create_for_new_message(message, recipient)

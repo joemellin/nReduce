@@ -6,6 +6,7 @@ class CreateResponses < ActiveRecord::Migration
       t.integer :status
       t.datetime :accepted_at, :expired_at, :completed_at
       t.string :rejected_because
+      t.boolean :thanked, :default => false
       t.references :request, :user
       t.timestamps
     end

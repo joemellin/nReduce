@@ -58,10 +58,12 @@ class Response < ActiveRecord::Base
     self.completed_at = Time.now
     
     if self.ready_to_accept == true
-      self.accept!
+      res = self.accept!
     else
-      self.save
+      res = self.save
     end
+    Notification.create_for_response_completed(self) if res == true
+    res
   end
 
     # Returns boolean if this response is valid and can be completed
@@ -120,6 +122,11 @@ class Response < ActiveRecord::Base
         false
       end
     end
+  end
+
+  def thanked!
+    self.thanked = true
+    self.save
   end
 
   def questions

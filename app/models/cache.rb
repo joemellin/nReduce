@@ -12,7 +12,7 @@ class Cache
     value = JSON.generate(value) unless raw
     res = $redis.set(key, value) == 'OK' ? true : false
     #Cache.logger.info "CACHE: #{res ? 'hit' : 'miss'} #{key}"
-    $redis.expire(key, expires_in) if res and !expires_in.blank?
+    $redis.expire(key, expires_in.to_i) if res and !expires_in.blank?
     res
   end
 
@@ -37,7 +37,7 @@ class Cache
       #Cache.logger.info "CACHE: set a get for key #{key}"
       value = yield
       return value if value.blank?
-      Cache.set(key, value, expires_in, raw)
+      Cache.set(key, value, expires_in.to_i, raw)
     end
     value
   end

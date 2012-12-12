@@ -2,6 +2,12 @@ class UserMailer < ActionMailer::Base
   default from: Settings.default_from_email
   default reply_to: Settings.default_reply_to_email
 
+  def response_completed(notification)
+    @response = notification.attachable
+    @to = notification.user
+    mail(:to => @to.email, :subject => "#{@response.user.name} completed your help request")
+  end
+
   def new_message(message, user)
     @message = message
     @user = user

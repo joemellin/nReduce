@@ -1,0 +1,5 @@
+Wooo Hooo!\n\n
+- if @response.request_type == :retweet
+  #{@response.user.name} retweeted your message to #{@response.user.followers_count} followers.\n\n
+\n
+Say Thank You: #{thank_you_response_url(@response)}
