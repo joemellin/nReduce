@@ -8,12 +8,13 @@ class Response < ActiveRecord::Base
 
   validates_presence_of :request_id
   validates_presence_of :user_id
+  validates_presence_of :amount_paid
   validate :request_is_open, :if => :new_record?
   validate :user_hasnt_already_performed_request_or_created_request, :if => :new_record?
   validate :questions_are_answered, :if => :completed?
   
-  after_initialize :set_default_status
-  after_create :decrement_request_num
+  after_initialize :set_default_status, :if => :new_record?
+  after_create :decrement_request_by_amount_paid
 
   before_destroy :increment_request_on_destroy
 
@@ -69,16 +70,15 @@ class Response < ActiveRecord::Base
 
     # Once a requesting user has reviewed it they can accept it
     # Can pass in amount paid if different than what was offered on the request
-  def accept!(amount_paid = nil)
+  def accept!
     return true if self.accepted? || self.rejected?
-    self.amount_paid = amount_paid || self.request.user_can_earn(self.user)
     self.questions_are_answered
     self.validate_balance_is_available
     return false unless self.valid?
     self.status = :accepted
     self.accepted_at = Time.now
     Response.transaction do
-      if self.save && self.decrement_request_num(self.amount_paid) && self.pay_user
+      if self.save && self.pay_user
         true
       else
         false
@@ -104,7 +104,7 @@ class Response < ActiveRecord::Base
   def cancel!(status = :canceled)
     Response.transaction do
       self.status = status
-      if self.save && self.increment_request_num
+      if self.save && self.increment_request_by_amount_paid
         true
       else
         false
@@ -161,6 +161,12 @@ class Response < ActiveRecord::Base
     end
   end
 
+  def amount_paid
+    return self['amount_paid'] unless self['amount_paid'] == 0
+    self['amount_paid'] = self.request.user_can_earn(self.user) if self.request_id.present? && self.user_id.present?
+    self['amount_paid']
+  end
+
   protected
 
   def set_default_status
@@ -168,15 +174,12 @@ class Response < ActiveRecord::Base
   end
 
   # Increment num of requests avail - if a response is canceled
-  def increment_request_num(num = 1)
-    self.request.num += num
-    self.request.save
+  def increment_request_by_amount_paid
+    self.request.adjust_num_from_amount_paid(self.amount_paid)
   end
 
-  def decrement_request_num(num = 1)
-    self.request.num -= num
-    self.request.num = 0 if self.request.num < 0
-    self.request.save
+  def decrement_request_by_amount_paid
+    self.request.adjust_num_from_amount_paid(0 - self.amount_paid)
   end
 
   def request_is_open
@@ -190,7 +193,7 @@ class Response < ActiveRecord::Base
 
   # Validates startup can pay for this response, and that num on request is above 0
   def validate_balance_is_available
-    if AccountTransaction.sufficient_funds?(self.request.startup, self.amount_paid, :escrow)
+    if AccountTransaction.sufficient_funds?(self.request.startup.account, self.amount_paid, :escrow)
       self.errors.add(:request, "startup doesn't have enough helpfuls to pay you, sorry")
       false
     else
@@ -228,7 +231,8 @@ class Response < ActiveRecord::Base
   end
 
   def increment_request_on_destroy
-    self.increment_request_num if !self.new_record? && (self.started? || self.completed? || self.accepted?)
+    # don't increment if already paid
+    self.increment_request_by_amount_paid if !self.new_record? && !self.accepted? && (self.started? || self.completed?)
     true
   end
 end

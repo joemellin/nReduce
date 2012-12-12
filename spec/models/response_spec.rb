@@ -2,6 +2,7 @@ require 'spec_helper'
 
 describe Response do
   before :each do
+    $redis.flushall # had problems with accounts being cached
     @startup = FactoryGirl.create(:startup)
     @startup2 = FactoryGirl.create(:startup2)
     @user = FactoryGirl.create(:user, :startup => @startup)
@@ -69,27 +70,28 @@ describe Response do
     end
 
     it "should adjust payment for tasks that a user can earn more - like retweets" do
-      @retweet = @ui_ux_request.dup
-      @retweet.request_type = :retweet
-      @retweet.num = 5
-      @retweet.data = ['https://twitter.com/statuses/1231231']
-      puts "account balance #{@account.balance}"
-      puts "startup has balance: #{@retweet.startup_has_balance?}"
-      @retweet.save #.should be_true
-      puts @retweet.errors.inspect
+      # have to re-up the balance because it is put into escrow when ui_ux_request is created
+      @startup.account.balance = 10
+      @startup.account.escrow = 0
+      @startup.account.save
 
-      @user.followers_count = 430
+      # having problems with account balance being cached... need to make sure this isn't a problem in production on stale balances
+      @retweet = FactoryGirl.build(:retweet_request, :startup => @startup, :user => @user, :num => 5)
+      @retweet.save.should be_true
+
+      @user2.followers_count = 430
+      @user2.save
+
       @response = Response.new
       @response.user = @user2
       @response.request = @retweet
       @response.save
-      @response.complete! #.should be_true
-      puts @response.errors.inspect
+      @response.complete!.should be_true
       @response.accept!.should be_true
 
       @retweet.reload
-      @retweet.num.should == 1
       @response.amount_paid.should == 4
+      @retweet.num.should == 1
     end
 
     it "should allow the requestor to reject a request" do

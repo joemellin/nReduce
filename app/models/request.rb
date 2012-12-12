@@ -31,7 +31,7 @@ class Request < ActiveRecord::Base
   scope :ordered, order('created_at DESC')
 
   def startup_has_balance?
-    AccountTransaction.sufficient_funds?(self.startup, self.total_price)
+    AccountTransaction.sufficient_funds?(self.startup.account, self.total_price)
   end
 
   def user_can_earn(user)
@@ -42,6 +42,12 @@ class Request < ActiveRecord::Base
     else
       self.price
     end
+  end
+
+  def adjust_num_from_amount_paid(amount_paid)
+    return true if amount_paid == 0
+    self.num += amount_paid / self.price
+    self.save
   end
 
   def title_required?

@@ -13,11 +13,11 @@ class Account < ActiveRecord::Base
   # Retrieves an in-memory cache of account balance/escrow
   # Will create an account if one doesn't exist
 
-  def self.cached_account_for_owner(owner, dont_create = false)
+  def self.cached_account_for_owner(owner)
+    return nil if owner.new_record?
     Cache.get([owner, 'account']){
       account = owner.account
-      return nil if account.blank? && dont_create
-      account ||= Account.create_for_owner(owner)
+      return nil if account.blank?
       account.to_array
     }
   end
