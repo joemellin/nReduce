@@ -63,6 +63,8 @@ class CheckinsController < ApplicationController
     @startup ||= @checkin.startup
     initialize_and_add_instruments(@checkin)
     @current_step = params[:current_step].to_i if params[:current_step].present?
+    # force above 0
+    @current_step = @checkin.current_step == 0 ? 1 : @checkin.current_step
   end
 
   def update
