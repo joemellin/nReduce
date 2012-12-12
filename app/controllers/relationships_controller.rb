@@ -69,7 +69,7 @@ class RelationshipsController < ApplicationController
       @authenticated_for_twitter = current_user.authenticated_for?('twitter')
       if !current_user.seen_help_exchange_message?
         @earn_message = true
-        current_user.shem = true
+        current_user.setup << :help_exchange
         current_user.save
       elsif params[:earn].present?
         @earn_message = true

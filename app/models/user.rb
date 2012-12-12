@@ -79,7 +79,7 @@ class User < ActiveRecord::Base
   bitmask :roles, :as => [:admin, :entrepreneur, :mentor, :investor, :nreduce_mentor, :spectator, :approved_investor]
   bitmask :onboarded, :as => [:startup, :mentor, :nreduce_mentor, :investor]
   bitmask :email_on, :as => [:docheckin, :comment, :meeting, :checkin, :relationship, :new_comment_for_post, :message, :response_completed]
-  bitmask :setup, :as => [:account_type, :onboarding, :profile, :invite_startups, :welcome]
+  bitmask :setup, :as => [:account_type, :onboarding, :profile, :invite_startups, :welcome, :help_exchange]
 
   # Number of startups an investor can contact per week
   INVESTOR_MENTOR_STARTUPS_PER_WEEK = 5
@@ -165,7 +165,7 @@ class User < ActiveRecord::Base
   end
 
   def seen_help_exchange_message?
-    self.shem?
+    self.setup?(:help_exchange)
   end
 
   def is_joe?
