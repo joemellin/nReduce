@@ -4,8 +4,11 @@ module Accountable
     # Adding relationships here so it doesn't complain that active_record isn't avail
     base.class_eval do
       has_one :account, :as => :owner
-      has_many :account_transactions, :through => :account
     end
+  end
+
+  def account_transactions
+    self.account.account_transactions
   end
 
   def cached_account
