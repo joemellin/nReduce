@@ -129,6 +129,8 @@ class ApplicationController < ActionController::Base
     yield
     begin
       return true if @ua == false # set @ua to false if you don't want to record action
+      # Don't store rackspace agent
+      return true if request.env['HTTP_USER_AGENT'].present? && request.env['HTTP_USER_AGENT'].match(/^Rackspace/) != nil
       @ua ||= {}
       # for user tracking
       elapsed = Time.now - started
