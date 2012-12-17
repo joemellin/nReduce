@@ -243,16 +243,18 @@ class StartupsController < ApplicationController
       params[:search].select{|k,v| [:query, :industry_ids, :search_type].include?(k) }
 
       # save in session for pagination
-      @search = session[:search] = params[:search]
+      @search = params[:search]
     elsif params[:page].present? && session[:search].present?
       @search = session[:search]
     end
 
-    # Force goecode from IP if no search + user doesn't hae location
+    # Force geocode from IP if no search + user doesn't hae location
     if @search[:search_type] == 'location' && @search[:query].blank?
       current_user.geocode_from_ip(request.remote_ip) unless current_user.geocoded?
       @search[:query] = current_user.location
     end
+
+    session[:search] = @search
 
     @search[:page] = params[:page] || 1
     @search[:per_page] = 10
