@@ -17,13 +17,18 @@ class RelationshipsController < ApplicationController
       return
     end
 
-    @startups = @entity.connected_to
-    
+    startup_ids = @entity.connected_to_ids('Startup')
+
     # Add nreduce to list if they don't have any startups
-    if !current_user.entrepreneur? and @startups.blank?
-      @startups = Startup.where(:id => Startup.nreduce_id)
+    if !current_user.entrepreneur? and startup_ids.blank?
       no_startups = true
     end
+      
+    # Add nReduce for everyone to see
+    startup_ids << Startup.nreduce_id
+
+    # Load startups
+    @startups = Startup.where(:id => startup_ids).all
 
     if current_user.mentor?
       @checkins_by_startup = Checkin.current_checkin_for_startups(@startups)
