@@ -352,7 +352,7 @@ class Checkin < ActiveRecord::Base
   # Returns time of next checkin deadline
   def self.next_checkin_due_at(offset)
     t = Time.current
-    Checkin.next_window_for(offset, true).last
+    Checkin.next_window_for(offset).last
   end
 
   # Returns time when prev checkin was over
