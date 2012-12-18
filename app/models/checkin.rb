@@ -442,10 +442,10 @@ class Checkin < ActiveRecord::Base
     return true if self.next_week_goal.blank?
     return true if self.next_checkin.present?
     self.assign_week if self.week.blank?
-    next_due_at = Checkin.next_checkin_due_at(c.startup.checkin_offset)
     c = Checkin.new
     c.startup_id = self.startup_id
     c.user_id = self.user_id
+    next_due_at = Checkin.next_checkin_due_at(c.startup.checkin_offset)
     c.week = Checkin.week_integer_for_time(next_due_at, c.startup.checkin_offset)
     c.created_at = c.updated_at = next_due_at - 1.hour
     c.goal = self.next_week_goal
