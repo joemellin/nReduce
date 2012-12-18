@@ -35,7 +35,10 @@ class Request < ActiveRecord::Base
   end
 
   def user_can_earn(user)
-    if self.request_type_s == 'retweet' && user.followers_count.present?
+    # completely variable pricing based on followers count
+    if self.request_type_s == 'retweet'
+      num_followers = user.followers_count.present? ? user.followers_count : 0
+      # price is per 100 followers
       avail = (user.followers_count.to_f / 100.0).floor
       avail = num if avail > num
       self.price * avail

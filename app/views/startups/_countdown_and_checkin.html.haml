@@ -1,5 +1,5 @@
 - startup ||= nil
-- next_checkin_ends_at = Checkin.next_window_for(startup.checkin_offset).last
+- next_checkin_ends_at = Checkin.next_window_for(startup.checkin_offset, true).last
 .countdown
   - unless startup.blank?
     - current_checkin = startup.current_checkin
