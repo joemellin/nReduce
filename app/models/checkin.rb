@@ -393,7 +393,7 @@ class Checkin < ActiveRecord::Base
       # Returns true if time given is in the time window. If no time given, defaults to now
   def self.in_time_window?(offset, time = nil)
     time ||= Time.current
-    next_window = Checkin.next_window_for(offset)
+    next_window = Checkin.next_window_for(offset, true)
     return true if time.in_time_zone > next_window.first && time.in_time_zone < next_window.last
     false
   end
