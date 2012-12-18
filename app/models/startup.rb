@@ -187,11 +187,11 @@ class Startup < ActiveRecord::Base
 
   def current_checkin_id
     # expire when next checkin due
-    next_due_starts_at = Checkin.next_checkin_due_at(self.checkin_offset) - self.checkin_offset.last
-    expires_in = next_due_starts_at - Time.current
+    next_due = Checkin.next_checkin_due_at(self.checkin_offset)
+    expires_in = next_due - self.checkin_offset.last - Time.current
     Cache.get(['current_checkin', self], expires_in, true){
       must_be_after = Checkin.prev_checkin_due_at(self.checkin_offset) - self.checkin_offset.last
-      c = checkins.order('created_at DESC').where(['created_at > ? AND created_at < ?', must_be_after, next_due_starts_at]).first
+      c = checkins.order('created_at DESC').where(['created_at > ? AND created_at < ?', must_be_after, next_due]).first
       c.id if c.present?
     }
   end
