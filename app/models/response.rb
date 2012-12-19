@@ -32,7 +32,7 @@ class Response < ActiveRecord::Base
   end
 
   def title
-    return self.extra_data['tweet_content'] if self.request_type == [:retweet] && self.extra_data['tweet_content'].present?
+    return self.extra_data['tweet_content'] if self.request_type == 'RetweetRequest' && self.extra_data['tweet_content'].present?
     self['title']
   end
 
@@ -72,8 +72,7 @@ class Response < ActiveRecord::Base
   end
 
   def expires_at
-    mins = Settings.requests.expire_in_minutes.send(self.request_type)
-    self.created_at + mins.to_i.minutes
+    (self.created_at || Time.now) + self.request.response_expires_in
   end
 
   def should_be_expired?
@@ -134,7 +133,7 @@ class Response < ActiveRecord::Base
   end
 
   def request_type
-    self.request.request_type.first
+    self.request.type
   end
 
   def started?
@@ -162,7 +161,7 @@ class Response < ActiveRecord::Base
   end
 
   def perform_request_specific_tasks
-    if self.request_type == :retweet && !self.completed?
+    if self.request_type == 'RetweetRequest' && !self.completed?
       if Rails.env.production?
         tc = self.user.twitter_client
         if tc.present? && self.request.extra_data['tweet_id'].present?
@@ -192,7 +191,7 @@ class Response < ActiveRecord::Base
 
   def questions_are_answered
     # These types of responses don't need any input from the user
-    return true if [:retweet, :hn_upvote].include?(self.request_type)
+    return true if ['RetweetRequest'].include?(self.request_type)
     # Otherwise check to see if user has answered all questions
     if self.data.present? && self.data.select{|q| q.present? }.size == self.questions.size
       true

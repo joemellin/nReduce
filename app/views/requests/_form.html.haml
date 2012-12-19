@@ -1,8 +1,8 @@
 .row
   .span5.offset4
     = semantic_form_for @request, :html => {:class => 'form-vertical'} do |f|
-      = hidden_field_tag "request[request_type]", @request.request_type.first.to_s
-      - unless @request.request_type_s == 'retweet'
+      = hidden_field_tag "request[type]", @request.type
+      - if @request.title_required?
         .control-group{error_css(@request, :title)}
           = f.label :title, :class => 'control-label'
           .controls
@@ -15,11 +15,14 @@
       - c = 0
       - @request.questions.each do |q|
         .control-group
-          = f.label :data, q, :class => 'control-label taskheader'
+          = f.label :data, q[0], :class => 'control-label taskheader'
           .controls
-            = text_field_tag "request[data][#{c}]", @request.data[c], :class => 'span5', :placeholder =>  @request.request_type_s == 'retweet' ? 'https://twitter.com/nReduce/status/274112721451102208' : ''
+            - if q[1] == 'string'
+              = text_field_tag "request[data][#{c}]", @request.data[c], :class => 'span5', :placeholder =>  q[2].present? ? q[2] : ''
+            - elsif q[1] == 'text'
+              = text_area_tag "request[data][#{c}]", @request.data[c], :class => 'span5', :placeholder =>  q[2].present? ? q[2] : ''
         - c += 1
-      - if @request.request_type_s == 'retweet'
+      - if @request.type == 'RetweetRequest'
         .tutorial_link
           Need help finding the 
           = link_to 'URL of a Tweet?', twitter_url_path, :target => '_blank'
@@ -27,14 +30,14 @@
       %table.pricing
         %tr.labels
           %td= f.label :num, 'Desired Reach', :class => 'control-label'
-          %td{:align => 'right'}= label_tag 'Rate Per 100 Reached'
+          %td{:align => 'right'}= label_tag "Rate Per #{@request.pricing_step} Reached"
           %td &nbsp;
           %td= label_tag 'Total Cost'
         %tr.select_row
           %td{:valign => 'center'}
             .control-group{error_css(@request, :num)}
               .controls
-                = f.select :num, options_for_select(1.upto(10).map{|i| ["#{i * 100} Followers",i] }, @request.num), {}, {:class => 'num'}
+                = f.select :num, options_for_select(1.upto(10).map{|i| ["#{i * @request.pricing_step} #{@request.pricing_unit}",i] }, @request.num), {}, {:class => 'num'}
                 = f.semantic_errors :num
           %td
             .right= image_tag 'headercoin.png'

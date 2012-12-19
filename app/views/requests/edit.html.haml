@@ -1,6 +1,6 @@
 .requests
   .requestheader
-    %h2 Post Your ReTweet Request
+    %h2 Post Your #{@request.type_human} Request
   %hr/
 
   = render 'requests/form'

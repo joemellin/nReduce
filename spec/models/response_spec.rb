@@ -11,7 +11,8 @@ describe Response do
     @account.balance = 10
     @account.save
     @account2 = Account.create_for_owner(@startup2)
-    @ui_ux_request = FactoryGirl.create(:ui_ux_request, :startup => @startup, :user => @user)
+    @ui_ux_request = FactoryGirl.create(:usability_test_request, :startup => @startup, :user => @user)
+    @retweet_request = FactoryGirl.build(:retweet_request, :startup => @startup, :user => @user)
 
     @response = Response.new
     @response.request = @ui_ux_request
@@ -138,10 +139,15 @@ describe Response do
         @response.should_be_expired?.should be_true
       end
 
-      # change to tweet - which is 30 minutes
-      @ui_ux_request.request_type = :retweet
-      @ui_ux_request.data = ['link']
-      @ui_ux_request.save
+      # use retweet request - which is 30 minutes
+
+      @account.balance = 1
+      @account.save
+      @retweet_request.num = 1
+      @retweet_request.data = ['test']
+      @retweet_request.save.should be_true
+      @response.request = @retweet_request
+      @response.save
       @response.reload
 
       Timecop.freeze(Time.now + 35.minutes) do
