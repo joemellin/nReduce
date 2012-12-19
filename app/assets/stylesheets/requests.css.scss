@@ -4,6 +4,79 @@
 
 .requests {
   #new_request {
-    min-height: 600px;
+      min-height: 600px;
+    }
+  .requestheader {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    text-align:center;
   }
+  .request {
+    .data {
+      margin-bottom: 30px;
+    }
+    .tutorial_link {
+      font-size: .9em;
+      color:#ccc;
+      line-height:0em;
+      padding-bottom: 40px;
+      a {
+       color:#999;
+      }
+    }
+    .tutorial_txt {
+      font-size: 1.6em;
+      color:#666666;
+      margin-top:80px;
+      line-height:2.0em;
+    }
+    .tutorial_header {
+      font-size: 2.6em;
+      color:#333;
+      margin-top:80px;
+    }
+
+    .taskheader {
+      font-size: 17px;
+      line-height: 20px;
+      color: #666;
+      padding-top:10px;
+    }
+
+    table.pricing {
+      td { padding: 8px; }
+      .labels {
+        td{ padding-bottom: 0px; }
+        label {
+          font-size: 12px;
+          line-height: 12px;
+        }
+        color: #999999;
+        line-height: 12px;
+      }
+      .line { td { padding: 0px; } }
+      .select_row { td { padding-top: 0px; } }
+      .coin {
+        color:#FF9900;
+        font-size: 50px;
+        line-height: 40px;
+        font-weight: bold;
+        padding-right:5px;
+      }
+      color: #666;
+      font-size: 1.4em;
+      line-height: 40px;
+      vertical-align: middle;
+      select.num { width: 150px; }
+      .control-group { margin-bottom: 0px; }
+      .equals { color: #999; }
+      .has_balance {
+        .yes, .no { font-size: 40px; line-height: 40px; font-weight: bold; }
+        .yes { color: green; }
+        .no { color: #ff0000; }
+        .btn { margin-left: 10px; }
+      }
+    }
+    .submit_btn { margin-top: 20px; }
   }
+}

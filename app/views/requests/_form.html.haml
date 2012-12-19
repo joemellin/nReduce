@@ -1,16 +1,18 @@
 .row
   .span5.offset4
     = semantic_form_for @request, :html => {:class => 'form-vertical'} do |f|
-      = hidden_field_tag "request[type]", @request.type
+      = f.hidden_field :type
+  
       - if @request.title_required?
         .control-group{error_css(@request, :title)}
-          = f.label :title, :class => 'control-label'
+          = f.label :title, :class => 'control-label taskheader'
           .controls
             = f.text_field :title, :class => 'span5'
             = f.semantic_errors :title
 
-      .control-group.data{error_css(@request, :data)}
-        = f.semantic_errors :data
+      - if @request.errors[:data].present?
+        .control-group.data{error_css(@request, :data)}
+          = f.semantic_errors :data
 
       - c = 0
       - @request.questions.each do |q|
@@ -29,19 +31,23 @@
 
       %table.pricing
         %tr.labels
-          %td= f.label :num, 'Desired Reach', :class => 'control-label'
-          %td{:align => 'right'}= label_tag "Rate Per #{@request.pricing_step} Reached"
+          %td= f.label :num, 'Desired Quantity', :class => 'control-label'
+          %td{:align => 'right', :width => '120'}
+            %label
+              Rate Per
+              %br/
+              #{pluralize(@request.pricing_step, @request.pricing_unit)}
           %td &nbsp;
           %td= label_tag 'Total Cost'
         %tr.select_row
           %td{:valign => 'center'}
             .control-group{error_css(@request, :num)}
               .controls
-                = f.select :num, options_for_select(1.upto(10).map{|i| ["#{i * @request.pricing_step} #{@request.pricing_unit}",i] }, @request.num), {}, {:class => 'num'}
+                = f.select :num, options_for_select(1.upto(10).map{|i| ["#{pluralize(i * @request.pricing_step, @request.pricing_unit)}",i] }, @request.num), {}, {:class => 'num'}
                 = f.semantic_errors :num
           %td
             .right= image_tag 'headercoin.png'
-            .right.coin 1
+            .right.coin #{@request.price}
             .clear
           %td.equals =
           %td

@@ -7,10 +7,10 @@ class UsabilityTestRequest < Request
   def self.defaults
     {
      :price => 5,
-     :pricing_unit => 'usability testers',
+     :pricing_unit => 'usability tester',
      :pricing_step => 1,
      :response_expires_in => 60.minutes,
-     :title_required => false,
+     :title_required => true,
      :questions => [["URL", 'string'], ["Instructions", 'text']]
     }
   end

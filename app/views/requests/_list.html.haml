@@ -2,17 +2,18 @@
 - limit ||= 10
 - c = 0
 - requests.each do |r|
-  - type_titleized = r.request_type_s.titleize
+  - type_titleized = r.type_human
+  - request_image_url = "requests/#{r.type.to_url}.png"
   - unless r.closed?
     = div_for r, :class => c >= limit ? 'hide task' : 'task' do
-      .left.pic{:title => type_titleized}= image_tag "requests/#{r.request_type_s}.png", :alt => type_titleized
+      .left.pic{:title => type_titleized}= image_tag request_image_url, :alt => type_titleized
       .left.pic= link_to image_tag(r.startup.logo_url(:small), :alt => r.startup.name), r.startup, :title => r.startup.name
       .left.pic= image_tag "ready.png"
       .left
         .coin.center
           .count= owner ? r.num : r.user_can_earn(current_user)
           = image_tag "smallcoin.png"
-      - if r.request_type == [:retweet]
+      - if r.type == 'RetweetRequest'
         .left.summary
           %span.title TWEET:
           = r.extra_data['tweet_content']
@@ -30,6 +31,18 @@
                 = f.submit 'Retweet', :class => 'btn btn-large btn-success'
             - else
               = button_to 'Retweet', capture_and_login_path(:redirect_to => new_request_response_path(r)), :method => :get, :class => 'btn btn-large btn-success'
+      - elsif r.type == 'UsabilityTestRequest'
+        .left.summary
+          %span.title= r.title
+        .right.rtbutton
+          - if r.startup_id == current_user.startup_id
+            - if r.num > 0
+              %h4.open Open
+              .cancel= link_to 'Cancel', cancel_request_path(r), :method => :post, :confirm => "Are you sure you want to cancel it?"
+            - else
+              %h4.completed Completed
+          - else
+            = button_to 'Test It!', [r, Response.new(:request_id => r.id)], :class => 'btn btn-large btn-success'
       .clear
     - c += 1
     - if c == limit
@@ -38,7 +51,7 @@
     -# don't show unless this person responded, or this is the request owner and the response hasn't been canceled, rejected or expired
     - next unless (rs.user_id == current_user.id || owner) && !rs.canceled? && !rs.rejected? && !rs.expired?
     = div_for rs, :class => c >= limit ? 'hide task' : 'task' do
-      .left.pic{:title => type_titleized}= image_tag "requests/#{r.request_type_s}.png", :alt => type_titleized
+      .left.pic{:title => type_titleized}= image_tag request_image_url, :alt => type_titleized
       .left.pic= link_to image_tag(r.startup.logo_url(:small), :alt => r.startup.name), r.startup, :title => r.startup.name
       .left.pic= link_to image_tag(rs.user.pic_url(:small), :alt => rs.user.name), rs.user, :title => rs.user.name
       .left

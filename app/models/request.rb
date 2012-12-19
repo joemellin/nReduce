@@ -10,9 +10,9 @@ class Request < ActiveRecord::Base
   before_create :transfer_balance_to_escrow
   before_create :perform_request_specific_setup_tasks
 
+  before_validation :set_price, :if => :new_record?
   validates_presence_of :type
   validates_numericality_of :num, :greater_than_or_equal_to => 0
-  validate :set_price
   validates_presence_of :startup_id
   validates_presence_of :user_id
   validates_presence_of :price
@@ -23,7 +23,7 @@ class Request < ActiveRecord::Base
   serialize :data, Array
   serialize :extra_data, Hash
 
-  attr_accessible :title, :request_type, :price, :num, :data, :startup, :startup_id, :user, :user_id
+  attr_accessible :title, :type, :num, :data, :startup, :startup_id, :user, :user_id
 
   #bitmask :request_type, :as => [:retweet, :hn_upvote, :ui_ux_feedback, :value_prop_feedback]
 
@@ -152,9 +152,7 @@ class Request < ActiveRecord::Base
   end
 
   def set_price
-    if self.type.present?
-      self.price = self.default_price if self.price.blank? || self.new_record? || self.type_changed?
-    end
+    self.price = self.default_price
     true
   end
 

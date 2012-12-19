@@ -9,3 +9,5 @@ $ ->
     tweet_url = $('#request_data_0').val()
     url += "&tweet_url=#{encodeURIComponent(tweet_url)}" if tweet_url?
     window.location = url
+
+  $('.requests textarea').autosize()
