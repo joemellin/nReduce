@@ -95,7 +95,7 @@ module ApplicationHelper
       when :relationship_approved then [obj.connected_with.is_a?(Startup) ? obj.connected_with.logo_url(:small) : obj.connected_with.pic_url(:small), "<span class='entity'>#{obj.connected_with.name}</span> is now connected to you", url_for(obj.connected_with)]
       when :new_comment_for_checkin then [obj.user.pic_url(:small), "<span class='entity'>#{obj.user.name}</span> commented on your #{obj.checkin.time_label} checkin", checkin_path(obj.checkin) + "#c#{obj.id}"]
       when :new_nudge then [obj.from.pic_url(:small), "<span class='entity'>#{obj.from.name}</span> nudged you to complete your check-in", url_for(obj.from)]
-      when :new_comment_for_post then [obj.user.pic_url(:small), "<span class='entity'>#{obj.user.name}</span> commented on your post", post_path(obj)]
+      when :new_comment_for_post then [obj.user.pic_url(:small), "<span class='entity'>#{obj.user.name}</span> commented on your post", post_path(:id => obj.root_id)]
       when :new_like then [obj.user.pic_url(:small), "<span class='entity'>#{obj.user.name}</span> likes your post", post_path(obj)]
       when :new_team_joined then [obj.logo_url(:small), "<span class='entity'>#{obj.name}</span> joined nReduce", url_for(obj)]
       when :new_awesome then [obj.user.pic_url(:small), "<span class='entity'>#{obj.user.name}</span> thinks you made some awesome progress!", url_for(obj.awsm)]
