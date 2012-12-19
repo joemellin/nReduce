@@ -63,10 +63,10 @@ class Ability
         can :see_ratings_page, User if user.startup.can_access_mentors_and_investors?
 
         can :read_post, Comment do |c|
-          c.original_post? && c.can_be_viewed_by?(user)
+          c.original_post? # Josh: just return true for now && c.can_be_viewed_by?(user)
         end
         can :repost, Comment do |c|
-          c.can_be_viewed_by?(user)
+          true # Josh: just erturn true for now so anyone can see anything c.can_be_viewed_by?(user)
         end
 
         can [:read], Request
