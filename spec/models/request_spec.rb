@@ -35,7 +35,7 @@ describe Request do
     end
 
     it "should check for filled out data" do
-      @ui_ux_request.data = ['test']
+      @ui_ux_request.data = {'test' => 'test'}
       @ui_ux_request.save.should be_false
       @ui_ux_request.errors[:data].count.should == 1
     end
@@ -43,12 +43,14 @@ describe Request do
     it "should allow a hash for data from the form" do
       data = {}
       c = 0
-      @ui_ux_request.questions.each do
-        data[c.to_s] = "Another response #{c}"
+      first_key = nil
+      @ui_ux_request.questions.each do |k,v|
+        data[k] = "Another response #{c}"
         c += 1
+        first_key ||= k
       end
       @ui_ux_request.data = data
-      @ui_ux_request.data.first.should == "Another response 0"
+      @ui_ux_request.data[first_key].should == "Another response 0"
       @ui_ux_request.valid?
       @ui_ux_request.errors[:data].count.should == 0
     end
@@ -57,7 +59,7 @@ describe Request do
       @account.balance = 2
       @account.save
 
-      @retweet_request.data = ['https://twitter.com/statuses/1231231']
+      @retweet_request.data = {'url' => 'https://twitter.com/statuses/1231231'}
       @retweet_request.num = 4
        # first test not enough balance for this
       @retweet_request.save.should be_false
@@ -72,7 +74,7 @@ describe Request do
     it "should allow users to earn more points if they have more followers" do
       @user.followers_count = 80
       @retweet_request.num = 5
-      @retweet_request.data = ['https://twitter.com/statuses/1231231']
+      @retweet_request.data = {'url' => 'https://twitter.com/statuses/1231231'}
       @retweet_request.save
 
       # shouldn't be able to earn anything if they don't have enough followers

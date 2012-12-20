@@ -17,9 +17,9 @@ describe Response do
     @response = Response.new
     @response.request = @ui_ux_request
     @response.user = @user2
-    @response_data = []
-    @response.questions.each do
-      @response_data << 'Sample Response'
+    @response_data = {}
+    @response.questions.each do |k,v|
+      @response_data[k] = 'Sample Response'
     end
   end
 
@@ -144,14 +144,17 @@ describe Response do
       @account.balance = 1
       @account.save
       @retweet_request.num = 1
-      @retweet_request.data = ['test']
+      @retweet_request.data = {'url' => 'test'}
       @retweet_request.save.should be_true
       @response.request = @retweet_request
       @response.save
       @response.reload
 
       Timecop.freeze(Time.now + 35.minutes) do
+        @retweet_request.num.should == 0
         @response.should_be_expired?.should be_true
+        @response.expire!
+        @retweet_request.reload.num.should == 1
       end
     end
 

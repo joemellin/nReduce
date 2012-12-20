@@ -1,5 +1,6 @@
 - video_id ||= 'new_video'
 - show_video_type = nil
+- begin_recording ||= false
 - unless f.object.valid?
   - if f.object.type == 'ViddlerVideo'
     - show_video_type = :viddler
@@ -34,12 +35,12 @@
       / .button
       /   %span.badge.badge-success New? 
       /   Learn how to make a great video!
-    .video_embed_cancel{:class => show_video_type.present? ? '' : 'hide'}
+    .video_embed_cancel{:class => show_video_type.present? ? 'hide' : ''}
       .button= link_to '<i class="icon-arrow-left"></i> All Video Types'.html_safe, '#', :class => 'btn', 'data-video-id' => video_id
     / .viddler_embed.video_embed{:class => show_video_type == :viddler ? '' : 'hide'}
     /   = render 'videos/viddler_recorder', :video_id => video_id
     .screenr_embed.video_embed{:class => show_video_type == :screenr ? '' : 'hide'}
-      = render 'videos/screenr_recorder', :video_id => video_id
+      = render 'videos/screenr_recorder', :video_id => video_id, :begin_recording => begin_recording
     .youtube_embed.video_embed{:class => show_video_type == :youtube ? '' : 'hide'}
       %h3 Paste Youtube Link Here:
       = f.text_field :youtube_url, :class => "span5 youtube_url", :placeholder => 'http://www.youtube.com/watch?v=088YM4pB9lM', :style => 'font-size: 1.3em; line-height: 1.3em;', 'data-video-id' => video_id

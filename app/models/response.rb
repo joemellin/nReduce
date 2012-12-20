@@ -1,24 +1,28 @@
 class Response < ActiveRecord::Base
   belongs_to :request
   belongs_to :user
+  belongs_to :video
   has_many :notifications, :as => :attachable
   has_one :account_transaction, :as => :attachable
 
-  serialize :data, Array
+  serialize :data #, Hash
 
   validates_presence_of :request_id
   validates_presence_of :user_id
   validates_presence_of :amount_paid
+  validates_presence_of :video_id, :if => :video_required?
   validate :request_is_open, :if => :new_record?
   validate :user_hasnt_already_performed_request_or_created_request, :if => :new_record?
   validate :questions_are_answered, :if => :completed?
   
-  after_initialize :set_default_status, :if => :new_record?
+  after_initialize :set_default_status_and_data, :if => :new_record?
   after_create :decrement_request_by_amount_paid
 
   before_destroy :increment_request_on_destroy
 
-  attr_accessible :data, :amount_paid, :rejected_because, :request, :request_id, :user, :user_id
+  attr_accessible :data, :amount_paid, :rejected_because, :request, :request_id, :user, :user_id, :video_attributes
+
+  accepts_nested_attributes_for :video, :reject_if => proc {|attributes| attributes.all? {|k,v| v.blank?} }, :allow_destroy => true
 
   bitmask :status, :as => [:started, :completed, :accepted, :rejected, :expired, :canceled]
 
@@ -34,16 +38,6 @@ class Response < ActiveRecord::Base
   def title
     return self.extra_data['tweet_content'] if self.request_type == 'RetweetRequest' && self.extra_data['tweet_content'].present?
     self['title']
-  end
-
-  def data=(new_data)
-    # Allows us to post from form with specific order of hash
-    if new_data.is_a?(Hash)
-      self['data'] = new_data.sort.map{|arr| arr.last}
-    else
-      self['data'] = new_data
-    end
-    self['data']
   end
 
     # Completes the task and verifies it has been completed
@@ -75,8 +69,16 @@ class Response < ActiveRecord::Base
     (self.created_at || Time.now) + self.request.response_expires_in
   end
 
+  def expires_at_minutes
+    ((self.expires_at - Time.now) / 60).round
+  end
+
   def should_be_expired?
     (self.expires_at < Time.now) && self.started?
+  end
+
+  def video_required?
+    self.accepted? && self.request.present? && self.request.video_required?
   end
 
     # Once a requesting user has reviewed it they can accept it
@@ -129,11 +131,11 @@ class Response < ActiveRecord::Base
   end
 
   def questions
-    self.request.data
+    self.request.response_questions
   end
 
   def request_type
-    self.request.type
+    self.request.blank? ? nil : self.request.type
   end
 
   def started?
@@ -193,7 +195,7 @@ class Response < ActiveRecord::Base
     # These types of responses don't need any input from the user
     return true if ['RetweetRequest'].include?(self.request_type)
     # Otherwise check to see if user has answered all questions
-    if self.data.present? && self.data.select{|q| q.present? }.size == self.questions.size
+    if self.data.present? && self.data.keys == self.questions.keys
       true
     else
       self.errors.add(:data, "questions haven't all been answered")
@@ -203,7 +205,8 @@ class Response < ActiveRecord::Base
 
   protected
 
-  def set_default_status
+  def set_default_status_and_data
+    self.data ||= {}
     self.status = :started if self.status.blank?
   end
 

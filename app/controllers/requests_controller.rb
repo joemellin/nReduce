@@ -13,10 +13,12 @@ class RequestsController < ApplicationController
   end
 
   def create
+    @request = params[:request][:type].constantize.new(params[:request]) unless params[:request][:type].blank?
     logger.info @request.inspect
     @request.user = current_user
     @request.startup = current_user.startup
     if @request.save
+      flash[:notice] = "Your help request has been posted! We'll let you know as soon as someone responds."
       redirect_to '/'
     else
       render :action => :edit

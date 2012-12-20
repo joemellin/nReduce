@@ -99,12 +99,13 @@ FactoryGirl.define do
 
   factory :retweet_request do
     num 5
-    data ['https://twitter.com/statuses/1230930']
+    data({'url' => 'https://twitter.com/statuses/1230930'})
   end
 
   factory :usability_test_request do
     num 2
-    data ['http://nreduce.com/traction_machine', 'See if you can post a request. Start a new retweet request. Enter this tweet url and post request for 1 user: http://twitter.com/statuses/1233129. Validate your request has been posted.']
+    title 'Test out the new pac-man game!'
+    data({'url' => 'http://nreduce.com/traction_machine', 'instructions' => 'See if you can post a request. Start a new retweet request. Enter this tweet url and post request for 1 user: http://twitter.com/statuses/1233129. Validate your request has been posted.'})
   end
 
   factory :rating do

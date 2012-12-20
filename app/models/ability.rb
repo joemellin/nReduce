@@ -83,12 +83,9 @@ class Ability
           r.request.startup_id != user.startup_id
         end
 
-        # Can manage response if it was created by that user
-        can :manage, Response, :user_id => user.id
-
         # Can read, accept a response if on the startup team
         can [:read, :accept], Response do |r|
-          r.request_id.present? && r.request.startup_id == user.startup_id
+          r.request_id.present? && r.completed? && r.request.startup_id == user.startup_id 
         end
 
         # Can reject a response if on startup team and response hasn't already been accepted
@@ -99,6 +96,9 @@ class Ability
         can :thank_you, Response do |r|
           r.request.startup_id == user.startup_id
         end
+
+        # Can manage response if it was created by that user
+        can :manage, Response, :user_id => user.id
       end
 
       # Can destroy if they were assigned as receiver or created it

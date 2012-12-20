@@ -447,3 +447,57 @@ hr {
   color: #999;
 }
 
+// Styling for video embed
+
+.video_form{
+  .screenr_embed {
+    padding-top: 40px;
+  }
+  .completed {
+    background-color: #fff;
+    color: green;
+    text-align: center;
+    font-size: 2em;
+    .record_again {
+      line-height: 25px;
+      font-size: 12px;
+      margin-top: 20px;
+      color: #000;
+    }
+    .check { 
+      color: green;
+      font-size: 125px;
+      font-weight: bold;
+      line-height: 125px;
+      vertical-align: middle;
+    }
+  }
+  .youtube_embed {
+    input {
+      height: 25px;
+    }
+  }
+
+  .video_embed_buttons {
+    .button {
+      padding: 20px;
+      margin-bottom: 10px;
+      background-color: #fff;
+      outline: 1px solid #ccc;
+      color: #666;
+      font-size: 1.5em;
+      line-height: 1.5em;
+      cursor: pointer;
+    }
+    .button:hover {
+      background-color: #E9F8FF;
+      outline: 1px solid #3DB7F7;
+      color: #666;
+    }
+  }
+
+  .video_embed_cancel {
+    margin-bottom: 15px;
+  }
+}
+

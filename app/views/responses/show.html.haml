@@ -1,6 +1,26 @@
 .responses
   .center
-    %h2 Help #{@request.request_type_human} #{@request.title}
+    %h2 #{@request.type_human}: #{@request.title}
   %hr/
 
-  Status: #{@response.status.first.to_s}
+  = semantic_form_for [@request, @response], :html => {:class => 'form-horizontal'} do |f|
+
+    - if @response.started?
+      Response Started - you have #{pluralize(@response.expires_at_minutes, 'minute')} to complete it.
+
+      = render "responses/#{@request.type.to_url}", :f => f
+
+      .response_modal.modal.hide
+        .modal-header
+          %h2 Final Step: Give Feedback
+        .modal-body
+          = render 'responses/fields', :f => f
+
+    - elsif @response.completed?
+      %p Did the person helping you complete the help request?
+      .left= button_to 'Yes - I Approve', accept_request_response_path(@request, @response), :class => 'btn btn-large btn-success'
+      .left{:style => 'margin-left: 20px'}= button_to 'No - Reject Response', reject_request_response_path(@request, @response), :class => 'btn btn-large btn-danger'
+      .clear
+
+    - elsif @response.accepted? || @response.rejected? || @response.expired?
+      Status: #{@response.status.first.to_s}

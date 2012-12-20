@@ -11,7 +11,11 @@
       .left.pic= image_tag "ready.png"
       .left
         .coin.center
-          .count= owner ? r.num : r.user_can_earn(current_user)
+          .count
+            - if owner
+              = r.num * r.price
+            - else
+              = r.user_can_earn(current_user)
           = image_tag "smallcoin.png"
       - if r.type == 'RetweetRequest'
         .left.summary

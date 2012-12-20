@@ -1,4 +1,5 @@
 - title ||= 'Checkin Video'
+- begin_recording ||= false
 
 %h3.message.instructions
   %i Loading screen recorder...
@@ -36,6 +37,8 @@
       recorder.setDescription('', false);
       recorder.setOnComplete(function(screencast){ recordingDone(screencast); });
       recorder.setOnCancel(function(screencast){ recordingCanceled(screencast); });
+
+      #{begin_recording ? 'startRecording();' : ''}
     });
 
     function startRecording(){
@@ -51,6 +54,8 @@
       $('##{video_id} .completed').show();
       $('##{video_id} .current_video, ##{video_id} .instructions').hide();
       $('##{video_id} .video_id').remove();
+      // show modal for responses
+      $('.response_modal').modal();
     }
 
     function recordingCanceled(screencast){

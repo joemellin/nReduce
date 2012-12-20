@@ -11,8 +11,18 @@ class UsabilityTestRequest < Request
      :pricing_step => 1,
      :response_expires_in => 60.minutes,
      :title_required => true,
-     :questions => [["URL", 'string'], ["Instructions", 'text']]
+     :video_required => true,
+     # Warning: if you change keys, old requests will not display properly
+     :questions => {
+       'url' => ["URL of what you'd like tested", 'string', 'http://www.mysite.com/new_feature'],
+       'instructions' => ["Instructions for your testers", 'text', 'What tasks do you want them to try and perform?']
+      },
+     :response_questions =>
+      {
+       'feedback' => ['Did anything confuse you? Any other feedback?', 'text']
+      }
     }
+    # Warning: do not change questions array or else it will affect all previous responses
   end
 
   protected

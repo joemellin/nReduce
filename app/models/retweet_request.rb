@@ -11,7 +11,12 @@ class RetweetRequest < Request
      :pricing_step => 100,
      :response_expires_in => 30.minutes,
      :title_required => false,
-     :questions => [["Enter the URL of the tweet you would like to have Retweeted:", 'string', 'https://twitter.com/nReduce/status/274112721451102208']]
+     :video_required => false,
+     # Warning: if you change keys, old requests will not display properly
+     :questions => {
+       'url' => ["Enter the URL of the tweet you would like to have Retweeted:", 'string', 'https://twitter.com/nReduce/status/274112721451102208']
+      },
+     :response_questions => {}
     }
   end
 
@@ -29,8 +34,8 @@ class RetweetRequest < Request
     # Get tweet id and tweet content
     if Rails.env.production?
       self.extra_data ||= {}
-      unless self.data.blank?
-        match = self.data.first.strip.match(/[0-9]+$/)
+      if self.data.present? && self.data['url'].present?
+        match = self.data['url'].strip.match(/[0-9]+$/)
         self.extra_data['tweet_id'] = match[0] if match.present?
       end
       self.extra_data['tweet_content'] = Twitter.status(self.extra_data['tweet_id']).text unless self.extra_data['tweet_id'].blank?

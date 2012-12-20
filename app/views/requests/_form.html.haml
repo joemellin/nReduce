@@ -5,7 +5,7 @@
   
       - if @request.title_required?
         .control-group{error_css(@request, :title)}
-          = f.label :title, :class => 'control-label taskheader'
+          = f.label :title, 'Title of your help request', :class => 'control-label taskheader'
           .controls
             = f.text_field :title, :class => 'span5'
             = f.semantic_errors :title
@@ -14,16 +14,14 @@
         .control-group.data{error_css(@request, :data)}
           = f.semantic_errors :data
 
-      - c = 0
-      - @request.questions.each do |q|
+      - @request.questions.each do |k,v|
         .control-group
-          = f.label :data, q[0], :class => 'control-label taskheader'
+          = f.label :data, v[0], :class => 'control-label taskheader'
           .controls
-            - if q[1] == 'string'
-              = text_field_tag "request[data][#{c}]", @request.data[c], :class => 'span5', :placeholder =>  q[2].present? ? q[2] : ''
-            - elsif q[1] == 'text'
-              = text_area_tag "request[data][#{c}]", @request.data[c], :class => 'span5', :placeholder =>  q[2].present? ? q[2] : ''
-        - c += 1
+            - if v[1] == 'string'
+              = text_field_tag "request[data][#{k}]", @request.data[k], :class => 'span5', :placeholder =>  v[2].present? ? v[2] : ''
+            - elsif v[1] == 'text'
+              = text_area_tag "request[data][#{k}]", @request.data[k], :class => 'span5', :placeholder =>  v[2].present? ? v[2] : ''
       - if @request.type == 'RetweetRequest'
         .tutorial_link
           Need help finding the 

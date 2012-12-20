@@ -6,6 +6,15 @@ class ResponsesController < ApplicationController
   load_and_authorize_resource :only => [:thank_you]
 
   def show
+    if @response.started?
+      if @response.should_be_expired?
+        @response.expire!
+        flash[:notice] = "Sorry but you took too long to respond, this request has expired."
+      elsif @response.video.blank?
+        @response.video = Screenr.new 
+        @recording_video = true
+      end
+    end
   end
 
   def new
@@ -24,10 +33,12 @@ class ResponsesController < ApplicationController
   def create
     @response.user = current_user
     @response.request = @request
-    if @response.can_be_completed? ? @response.complete! : @response.save
+    if @response.can_be_completed? && @response.complete!
+      # store response id to show success message
       session[:response_success_id] = @response.id
-      # redirect_to [@request, @response]
       redirect_to '/'
+    elsif @response.save
+      redirect_to [@request, @response]
     else
       flash.now[:alert] = @response.errors.full_messages.join('. ')
       render :action => :edit
@@ -39,6 +50,7 @@ class ResponsesController < ApplicationController
   end
 
   def update
+    @response.attributes = params[:response]
     if @response.can_be_completed? ? @response.complete! : @response.save
       redirect_to [@request, @response]
     else

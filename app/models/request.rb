@@ -20,7 +20,7 @@ class Request < ActiveRecord::Base
   validate :questions_are_answered
   validate :balance_is_available_for_request, :if => :new_record?
 
-  serialize :data, Array
+  serialize :data #, Hash
   serialize :extra_data, Hash
 
   attr_accessible :title, :type, :num, :data, :startup, :startup_id, :user, :user_id
@@ -42,8 +42,11 @@ class Request < ActiveRecord::Base
      :pricing_step => 0,
      :response_expires_in => 30.minutes,
      :title_required => true,
-     :questions => []
-     # questions are an array of arrays, each with ['What is your age?', 'field type (string, text, integer)', 'optional placeholder text']
+     :video_required => false,
+     :questions => {},
+     # questions are a hash with an array per key, ex: {'age' => ['What is your age?', 'field type (string, text, integer)', 'optional placeholder text']}
+     # keys must be strings for easier comparison with saved objects
+     :response_questions => {}
     }
   end
 
@@ -65,7 +68,7 @@ class Request < ActiveRecord::Base
   #
 
   def self.defaults_keys
-    [:price, :pricing_unit, :pricing_step, :response_expires_in, :title_required, :questions]
+    [:price, :pricing_unit, :pricing_step, :response_expires_in, :title_required, :questions, :response_questions, :video_required]
   end
 
   def default_price
@@ -96,6 +99,14 @@ class Request < ActiveRecord::Base
     self.class.defaults[:title_required]
   end
 
+  def video_required?
+    self.class.defaults[:video_required]
+  end
+
+  def response_questions
+    self.class.defaults[:response_questions]
+  end
+
   # Does the startup requesting this have enough of a balance yo pay for it?
   def startup_has_balance?
     AccountTransaction.sufficient_funds?(self.startup.account, self.total_price)
@@ -106,16 +117,6 @@ class Request < ActiveRecord::Base
     return true if amount_paid == 0
     self.num += amount_paid / self.price
     self.save
-  end
-
-  def data=(new_data)
-    # Allows us to post from form with specific order of hash
-    if new_data.is_a?(Hash)
-      self['data'] = new_data.sort.map{|arr| arr.last}
-    else
-      self['data'] = new_data
-    end
-    self['data']
   end
 
   def total_price
@@ -143,6 +144,7 @@ class Request < ActiveRecord::Base
   protected
 
   def ensure_defaults_exist
+    self.data ||= {}
     if self.class.defaults.keys != Request.defaults_keys
       self.errors.add(:type, "doesn't have all required defaults")
       false
@@ -172,7 +174,7 @@ class Request < ActiveRecord::Base
 
   def questions_are_answered
     if self.questions.present?
-      if self.data.present? && self.data.select{|q| q.present? }.size == self.questions.size
+      if self.data.present? && self.data.is_a?(Hash) && self.data.keys == self.questions.keys
         true
       else
         self.errors.add(:data, "questions haven't all been written")
