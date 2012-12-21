@@ -1,18 +1,21 @@
 .row
   .span5
-    %h4 Instructions
-    = simple_format(h(@request.data['instructions']))
-  .span5.offset2
-    .right
-      .start_video= link_to 'Start', '#', :onclick => "$('.response_video_wrapper').show(); $('.start_video').hide(); startRecording(); return false;", :class => 'btn btn-large btn-success'
-      .response_video_wrapper.hide
-        - if @response.video.present?
-          = f.fields_for :video do |v|
-            = render 'videos/form', :show_video_type => :screenr, :f => v, :title => 'Usability Test Video'
+    .instructions
+      %h3 Instructions:
+      = simple_format(h(@request.data['instructions']))
+  .span2
+    .center.start_video= link_to 'Start', '#', :onclick => "$('.response_video_wrapper').show(); $('.start_video').hide(); startRecording(); return false;", :class => 'btn btn-large btn-success'
+  .span5
+    .right.response_video_wrapper.hide
+      - if @response.video.present?
+        = f.fields_for :video do |v|
+          = render 'videos/form', :show_video_type => :screenr, :f => v, :title => 'Usability Test Video'
     .clear
-.website.center
-  = link_to_external "Open website in new window", @request.data['url'], :source => 'usability_test'
-  %hr/
+.website
+  .right.new_window= link_to_external "Open website in new window", @request.data['url'], :source => 'usability_test'
+  .left
+    %h3 Website that you're testing:
+  .clear
   %iframe.iframe{:width => '100%', :height => 600, :frameborder => 0, :src => @request.data['url']}
 
 .howto_modal.modal.hide

@@ -19,7 +19,7 @@ class UsabilityTestRequest < Request
       },
      :response_questions =>
       {
-       'feedback' => ['Did anything confuse you? Any other feedback?', 'text']
+       'feedback' => ['Did anything confuse you? Do you have any other feedback?', 'text']
       }
     }
     # Warning: do not change questions array or else it will affect all previous responses

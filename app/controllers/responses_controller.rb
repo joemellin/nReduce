@@ -9,7 +9,7 @@ class ResponsesController < ApplicationController
     if @response.started?
       if @response.should_be_expired?
         @response.expire!
-        flash[:notice] = "Sorry but you took too long to respond, this request has expired."
+        flash.now[:notice] = "Sorry but you took too long to respond, this request has expired."
       elsif @response.video.blank?
         @response.video = Screenr.new 
         @recording_video = true

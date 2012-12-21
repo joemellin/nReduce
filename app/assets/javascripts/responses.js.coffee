@@ -4,3 +4,4 @@
 
 $ ->
   $('.howto_modal').modal()
+  $('.response_modal textarea').autosize(append: "\n")

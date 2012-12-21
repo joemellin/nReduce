@@ -1,11 +1,11 @@
 - unless @response.questions_are_answered
   - @response.questions.each do |k,v|
-    .control-group
+    .control-group.center
       = f.label :data, v[0], :class => 'control-label'
       .controls
         - if v[1] == 'string'
           = text_field_tag "response[data][#{k}]", @response.data[k], :class => 'span4', :placeholder => v[2].present? ? v[2] : ''
         - elsif v[1] == 'text'
-          = text_area_tag "response[data][#{k}]", @response.data[k], :class => 'span4', :placeholder => v[2].present? ? v[2] : ''
+          = text_area_tag "response[data][#{k}]", @response.data[k], :class => 'span4', :placeholder => v[2].present? ? v[2] : '', :size => '120x4'
 
-.center{:style => 'margin-top: 30px'}= f.submit 'Finish', :class => 'btn btn-large btn-success'
+.center{:style => 'margin-top: 20px'}= f.submit 'Finish', :class => 'btn btn-large btn-success'

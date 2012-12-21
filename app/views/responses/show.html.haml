@@ -1,26 +1,51 @@
 .responses
-  .center
-    %h2 #{@request.type_human}: #{@request.title}
+  .row
+    .span3
+      .team
+        %p 
+          Requested By
+          = link_to "Team #{@request.startup.name}", @request.startup
+        .left= link_to image_tag(@request.startup.logo_url(:small)), @request.startup, :title => @request.startup.name
+        - @request.startup.team_members.shuffle.first(3).each do |tm|
+          .left= link_to image_tag(tm.pic_url(:small)), tm, :title => tm.name
+        .clear
+    .span6
+      .center.header
+        %h2 #{@request.type_human}: #{@request.title}
+    .span3
+      - if @response.started?
+        .right{:align => 'right'} #{pluralize(@response.expires_at_minutes, 'minute')} left to complete request
+        .clear
   %hr/
 
-  = semantic_form_for [@request, @response], :html => {:class => 'form-horizontal'} do |f|
-
+  = semantic_form_for [@request, @response], :html => {:class => 'form-vertical'} do |f|
     - if @response.started?
-      Response Started - you have #{pluralize(@response.expires_at_minutes, 'minute')} to complete it.
-
       = render "responses/#{@request.type.to_url}", :f => f
-
       .response_modal.modal.hide
         .modal-header
-          %h2 Final Step: Give Feedback
+          %h2.center Final Step: Give Feedback
         .modal-body
           = render 'responses/fields', :f => f
+    - else
+      .response_status.center
+        - if @response.completed?
+          - if @request.startup_id == current_user.startup_id
+            %h3 #{@response.user.name} completed your help request! To finish, do you approve their response?
+            = link_to 'Yes - I Approve', accept_request_response_path(@request, @response), :method => :post, :class => 'btn btn-large btn-success'
+            &nbsp;&nbsp;
+            = link_to 'No - Reject Response', reject_request_response_path(@request, @response), :method => :post, :class => 'btn btn-large btn-danger'
+          - else
+            %h3 Thanks for completing this help request!
+            %p #{@request.startup.name} has been notified that you are done, and will respond to you shortly.
+        - else
+          %h3 Response Status: #{@response.status.first.to_s.titleize}
 
-    - elsif @response.completed?
-      %p Did the person helping you complete the help request?
-      .left= button_to 'Yes - I Approve', accept_request_response_path(@request, @response), :class => 'btn btn-large btn-success'
-      .left{:style => 'margin-left: 20px'}= button_to 'No - Reject Response', reject_request_response_path(@request, @response), :class => 'btn btn-large btn-danger'
-      .clear
+      %hr/
+      %h3 Response from #{@response.user.name}
+      - @response.data.each do |k,v|
+        %p #{k}: #{v}
 
-    - elsif @response.accepted? || @response.rejected? || @response.expired?
-      Status: #{@response.status.first.to_s}
+      - if @response.video.present?
+        %p.bold View their screencast recording:
+        != display_video(@response.video)
+      

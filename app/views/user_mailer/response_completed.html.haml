@@ -1,8 +1,13 @@
 = render :partial => 'header'
 %h1.h1 Wooo Hooo!
 %br
-- if @response.request_type == :retweet
+- if @response.request_type == 'RetweetRequest'
   %h4.h4 #{@response.user.name} retweeted your message to #{@response.user.followers_count} followers.
+- elsif @response.request_type == 'UsabilityTestRequest'
+  %h4.h4 #{@response.user.name} did a usability test of your site and recorded a video of it.
 %br
-%h3.h3= link_to 'Say Thank You', thank_you_response_url(@response)
+- if @response.completed?
+  %h3.h3= link_to 'Review & Approve Their Response', request_response_url(@response.request, @response)
+- elsif @response.accepted?
+  %h3.h3= link_to 'Say Thank You', thank_you_response_url(@response)
 = render :partial => 'footer'

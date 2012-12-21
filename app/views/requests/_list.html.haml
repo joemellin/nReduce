@@ -63,13 +63,16 @@
           .count= rs.amount_paid
           = image_tag "smallcoin.png"
       .left.summary
-        %span.title TWEET:
-        = r.extra_data['tweet_content']
+        - if r.type == 'RetweetRequest'
+          %span.title TWEET:
+          = r.extra_data['tweet_content']
+        - else
+          %span.title= r.title
       .right.rtbutton
         - if rs.started? && rs.user_id == current_user.id
-          = link_to 'Complete', [r, rs], :class => 'btn btn-disabled btn-large'
+          = button_to 'Finish', [r, rs], :method => :get, :class => 'btn btn-disabled btn-large'
         - elsif rs.completed? && owner
-          = button_to 'Accept', accept_request_response_path(r, rs), :class => 'btn btn-success btn-large'
+          = button_to 'Review', request_response_path(r, rs), :method => :get, :class => 'btn btn-success btn-large'
         - elsif rs.accepted? && owner
           - if rs.thanked?
             %h4 Thanked

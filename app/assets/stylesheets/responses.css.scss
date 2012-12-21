@@ -10,4 +10,37 @@
       padding: 20px;
     }
   }
+  .instructions, .website {
+    h3 { margin-bottom: 0px; margin-top: 0px; }
+  }
+  .website {
+    .new_window { text-align: bottom; line-height: 40px; }
+    margin-top: 10px;
+    iframe { border: 2px solid #ccc; }
+  }
+  .header {
+    h2 { margin-top: 0px; margin-bottom: 0px; }
+  }
+  .team {
+    img { width: 50px; height: 50px; }
+    margin-bottom: 15px;
+  }
+
+  .response_status {
+    margin-bottom: 20px;
+  }
+
+  .start_video {
+    margin-top: 15px;
+    .btn { 
+      font-size: 2.2em;
+      line-height: 1em;
+    }
+  }
+
+  .video_form {
+    .screenr_embed {
+      padding-top: 0;
+    }
+  }
 }

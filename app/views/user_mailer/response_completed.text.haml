@@ -1,5 +1,10 @@
 Wooo Hooo!\n\n
-- if @response.request_type == :retweet
-  #{@response.user.name} retweeted your message to #{@response.user.followers_count} followers.\n\n
+- if @response.request_type == 'RetweetRequest'
+  #{@response.user.name} retweeted your message to #{@response.user.followers_count} followers.\n
+- elsif @response.request_type == 'UsabilityTestRequest'
+  #{@response.user.name} did a usability test of your site and recorded a video of it.\n
 \n
-Say Thank You: #{thank_you_response_url(@response)}
+- if @response.completed?
+  Review & Approve Their Response: #{request_response_url(@response.request, @response)}
+- elsif @response.accepted?
+  Say Thank You: #{thank_you_response_url(@response)}
