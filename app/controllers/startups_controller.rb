@@ -263,7 +263,8 @@ class StartupsController < ApplicationController
     @startups_by_id = Hash.by_key(Startup.where(:active => true), :id)
     if @search[:search_type] == 'location'
       origin = @search[:query].present? ? @search[:query] : [current_user.lat, current_user.lng]
-      @results = User.geocoded.geo_scope(:origin => origin).where(:startup_id => @startups_by_id.keys).group(:startup_id).order(:distance).paginate(:page => params[:page] || 1, :per_page => 10) 
+      @results = User.geocoded.where(:startup_id => @startups_by_id.keys).group(:startup_id).order(:name).paginate(:page => params[:page] || 1, :per_page => 10) 
+      # geocoder not working now: @results = User.geocoded.geo_scope(:origin => origin).where(:startup_id => @startups_by_id.keys).group(:startup_id).order(:distance).paginate(:page => params[:page] || 1, :per_page => 10) 
       startup_ids = @results.map{|s| s.startup_id }
     else
       @search_results = Startup.search do |s|
