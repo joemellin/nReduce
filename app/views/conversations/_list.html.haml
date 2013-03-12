@@ -17,7 +17,7 @@
       - user = @users_by_id[conversation.participant_ids_without(current_user.id).first]
       - pic = user.pic_url(:small)
       - name = conversation.participant_ids_without(current_user.id).map{|id| @users_by_id[id].present? ? @users_by_id[id].name : '' }.join(', ')
-    .pic.left= image_tag(pic)
+    .pic.left!= pic.blank ? '&nbsp;' : image_tag(pic)
     .left
       .names= truncate(name, :length => 26)
       .last_message= truncate(latest_message.content, :length => 32)
