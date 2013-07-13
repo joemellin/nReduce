@@ -21,11 +21,8 @@ class PagesController < ApplicationController
       redirect_to current_user.entrepreneur? ? work_room_path : board_room_path
       return
     end
-    if @ab_test_version.present?
-      render :action => "home_#{@ab_test_version}"
-    else
-      render :action => "home_b"
-    end
+
+    render :action => "home_a"
   end
 
   def community_guidelines
@@ -45,7 +42,7 @@ class PagesController < ApplicationController
     @rsvp.demo_day_id = DemoDay.first.id unless DemoDay.first.blank?
     @rsvp.accredited = false
     if user_signed_in?
-      @rsvp.email = current_user.email 
+      @rsvp.email = current_user.email
       @rsvp.user = current_user
     end
   end

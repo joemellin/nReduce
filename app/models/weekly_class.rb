@@ -24,7 +24,7 @@ class WeeklyClass < ActiveRecord::Base
       weekly_classes << wc
       curr_week = Week.previous(curr_week) # calculate previous week
     end
-    weekly_classes.each do |wc| 
+    weekly_classes.each do |wc|
       # Add weekly class id to all users
       #User.transaction do
       #  wc.users.each{|u| u.save(:validate => false) }
@@ -141,14 +141,14 @@ class WeeklyClass < ActiveRecord::Base
 
       # Choose a random point
       center = users_left.sample
-      
+
       # Sort by distance from starting point
       users_left.sort_by_distance_from(center)
-    
+
       c = Cluster.new
       c.user_ids = []
       added_users = []
-      
+
       # set this as center for now
       c.lat, c.lng, c.location = center.lat, center.lng, center.location
 
@@ -173,7 +173,7 @@ class WeeklyClass < ActiveRecord::Base
   def create_clusters
     curr_week = Checkin.week_integer_for_time(Time.now, Checkin.default_offset)
     previous_week = Week.previous(curr_week)
-    user_ids = UserAction.where(['created_at > ?', self.time_window.first - 1.week]).group(:user_id).map{|ua| ua.user_id }
+    user_ids = UserAction.where(['created_at > ?', self.time_window.first - 1.week]).group("user_id, user_actions.id").map{|ua| ua.user_id }
     self.clusters = WeeklyClass.create_clusters(User.where(:id => user_ids).geocoded.all) unless user_ids.blank?
   end
 

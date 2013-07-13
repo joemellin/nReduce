@@ -2,7 +2,7 @@
   .row{:style => 'padding-bottom: 40px'}
     .span12.background-field{:align => 'center'}
       - if @demo_day.present?
-    
+
         = image_tag 'nstar_halo.png', :style => 'width: 184px; height: 165px;'
         - if @demo_day.in_the_future?
           = render 'layouts/countdown', :time => @demo_day.starts_at
@@ -14,22 +14,24 @@
           .enter_button= link_to "Meet the Winners".html_safe, @demo_day, :class => 'btn btn-large btn-success'
       - else
         .row
-          .span5.well{:style => 'padding-left:20px'}
-            = image_tag 'jjhome.jpg'
           .span6{:style => 'text-align:left; padding-left:20px'}
-            %b{:style => 'font-size:60px; color:#25A6E9; line-height:65px; padding-top:20px'} The Free Online Startup Incubator 
+            %b{:style => 'font-size:60px; color:#25A6E9; line-height:65px; padding-top:20px'} The Free Online Startup Incubator
             %br/
-            %h2{:style => 'font-size:33px; padding-top:40px'} Where Great Startups are Born.
-            %h2 
+            %h2{:style => 'font-size:33px; padding-top:40px'} Collaborate with other great startups.
+            %h2
+
+            %br/
+            %br/
+            %br/
+          .span5.well{:style => 'padding-left:20px;text-align:center;'}
             .row{:style => 'padding-top:40px'}
-              .left{:style => 'padding-left:40px'}
-                .enter_button= link_to "Join Now".html_safe, sign_up_path, :class => 'btn btn-large btn-success', :style => 'font-size:40px; line-height: 40px'
-              .left{:style => 'padding-left:20px; padding-top: 25px'}
-                = link_to "Learn More", why_join_path, :style => 'font-size:24px; color: #999999; text-decoration: underline;'
+              %span.enter_button= link_to "Join Now".html_safe, sign_up_path, :class => 'btn btn-large btn-success', :style => 'font-size:40px; line-height: 40px'
+              &nbsp;&nbsp;
+              = link_to "Learn More", why_join_path, :style => 'font-size:24px; color: #999999; text-decoration: underline;'
               .clear
-            %br/
-            %br/
-            %br/
+              %br/
+              %br/
+
   %hr
   .row.center{:style => 'padding-top:20px; padding-bottom: 20px'}
     %h1 nReduce is a Global Community of Founders Building their Startups
@@ -81,7 +83,7 @@
           background-color:#fff;
           margin:1em 1em 0 1em;
           border:0px dotted #ddd;
-          padding:2em; 
+          padding:2em;
         /******************************************
          * END CUSTOMIZE
          */
@@ -167,7 +169,7 @@
       .row
         %h3
           = link_to 'Meet the first class of startups from the open-source Y Combinator', 'http://venturebeat.com/2012/09/05/nreduce-demo-day/#s:nreduce-1' , :target => "_blank"
-      .row{:style => 'padding-top: 10px; padding-bottom: 20px'} 
+      .row{:style => 'padding-top: 10px; padding-bottom: 20px'}
         .left{:align => 'right'}= link_to image_tag('vbsq.png'), 'http://venturebeat.com', :target => "_blank"
         .left{:style => 'padding-left: 20px'}
           %b Jolie O'Dell
@@ -203,7 +205,7 @@
       .row
         %h3
           = link_to 'Virtual Incubator to All — Is It the Pre-AngelList?', 'http://pandodaily.com/2012/07/27/virtual-incubator-to-all-nreduce-adds-mentors-and-demo-days-is-it-the-pre-angellist/' , :target => "_blank"
-      .row{:style => 'padding-top: 10px; padding-bottom: 20px'} 
+      .row{:style => 'padding-top: 10px; padding-bottom: 20px'}
         .left{:align => 'right'}= link_to image_tag('pandosq.png'), 'http://pandodaily.com', :target => "_blank"
         .left{:style => 'padding-left: 20px'}
           %b Sarah Lacy
@@ -235,7 +237,7 @@
           <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
       .left{:style => 'padding:5px'}
         :plain
-          <div class="fb-like" data-href="http://www.nreduce.com" data-send="false" data-width="500" data-show-faces="true"></div>          
+          <div class="fb-like" data-href="http://www.nreduce.com" data-send="false" data-width="500" data-show-faces="true"></div>
     .clear
   .row
     %br/
@@ -323,4 +325,3 @@
     fjs.parentNode.insertBefore(js, fjs);
   }(document, 'script', 'facebook-jssdk'));</script>
 
- 
