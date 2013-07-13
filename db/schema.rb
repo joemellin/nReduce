@@ -108,9 +108,9 @@ ActiveRecord::Schema.define(:version => 20121219210437) do
     t.text     "start_comments"
     t.integer  "comment_count",   :default => 0
     t.integer  "week"
-    t.integer  "measurement_id"
     t.integer  "before_video_id"
     t.integer  "video_id"
+    t.integer  "measurement_id"
     t.boolean  "accomplished"
     t.string   "next_week_goal"
   end
@@ -336,15 +336,14 @@ ActiveRecord::Schema.define(:version => 20121219210437) do
 
   create_table "requests", :force => true do |t|
     t.string   "title"
-    t.integer  "request_type"
     t.integer  "price"
-    t.integer  "num",          :default => 0
+    t.integer  "num",        :default => 0
     t.text     "data"
+    t.text     "extra_data"
     t.integer  "startup_id"
     t.integer  "user_id"
-    t.datetime "created_at",                  :null => false
-    t.datetime "updated_at",                  :null => false
-    t.text     "extra_data"
+    t.datetime "created_at",                :null => false
+    t.datetime "updated_at",                :null => false
     t.string   "type"
   end
 
@@ -352,19 +351,20 @@ ActiveRecord::Schema.define(:version => 20121219210437) do
 
   create_table "responses", :force => true do |t|
     t.text     "data"
+    t.text     "extra_data"
     t.integer  "amount_paid",      :default => 0
     t.integer  "status"
     t.datetime "accepted_at"
     t.datetime "expired_at"
     t.datetime "completed_at"
     t.string   "rejected_because"
+    t.boolean  "thanked",          :default => false
     t.integer  "request_id"
     t.integer  "user_id"
     t.datetime "created_at",                          :null => false
     t.datetime "updated_at",                          :null => false
-    t.text     "extra_data"
-    t.boolean  "thanked",          :default => false
     t.integer  "tip",              :default => 0
+    t.integer  "video_id"
   end
 
   add_index "responses", ["request_id"], :name => "index_responses_on_request_id"
@@ -424,13 +424,13 @@ ActiveRecord::Schema.define(:version => 20121219210437) do
     t.string   "pitch_video_url"
     t.integer  "setup"
     t.boolean  "investable",           :default => false
+    t.integer  "week"
+    t.integer  "intro_video_id"
+    t.integer  "pitch_video_id"
     t.text     "business_model"
     t.date     "founding_date"
     t.string   "market_size"
     t.string   "tokbox_session_id"
-    t.integer  "intro_video_id"
-    t.integer  "pitch_video_id"
-    t.integer  "week"
     t.string   "cached_industry_list"
     t.boolean  "mentorable",           :default => false
     t.datetime "activated_at"
@@ -518,13 +518,12 @@ ActiveRecord::Schema.define(:version => 20121219210437) do
     t.integer  "onboarded"
     t.integer  "email_on"
     t.integer  "setup"
-    t.integer  "followers_count"
     t.integer  "intro_video_id"
+    t.integer  "followers_count"
     t.integer  "weekly_class_id"
     t.string   "country"
     t.string   "cached_skill_list"
     t.string   "cached_industry_list"
-    t.boolean  "shem",                   :default => false
   end
 
   add_index "users", ["email"], :name => "index_users_on_email", :unique => true
@@ -551,10 +550,10 @@ ActiveRecord::Schema.define(:version => 20121219210437) do
     t.integer  "vimeo_id"
     t.datetime "created_at",                         :null => false
     t.datetime "updated_at",                         :null => false
-    t.integer  "startup_id"
     t.boolean  "vimeod",          :default => false
     t.string   "type"
     t.string   "title"
+    t.integer  "startup_id"
     t.string   "image"
     t.string   "external_url"
     t.integer  "ecc",             :default => 0

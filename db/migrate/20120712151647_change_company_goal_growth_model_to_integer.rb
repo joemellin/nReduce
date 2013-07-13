@@ -1,8 +1,13 @@
 class ChangeCompanyGoalGrowthModelToInteger < ActiveRecord::Migration
   def up
-    change_column :startups, :growth_model, :integer, :length => 2
-    change_column :startups, :company_goal, :integer, :length => 2
-    change_column :startups, :stage, :integer, :length => 2
+    %w(growth_model company_goal stage).each do |col|
+      connection.execute(%{
+         alter table startups
+         alter column #{col}
+         type integer using cast(#{col} as integer)
+       })
+    end
+
     add_column :startups, :pitch_video_url, :string
   end
 

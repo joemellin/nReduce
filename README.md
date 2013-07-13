@@ -12,8 +12,8 @@ Here's how to install from scratch:
     echo "rvm 1.9.3-p125-falcon@nreduce-web" >> .rvmrc
     cd ../nreduce
 
-### MySQL
-Standard MySQL install - nothing special required. Just create the database, and then copy database config and edit:
+### Postgres
+Standard Postgres install - nothing special required. Just create the database, and then copy database config and edit:
 
     cp config/database.sample.yml config/database.yml
 
@@ -47,7 +47,7 @@ Right now it's a manual script deploy. SSH to the server and run ./script/restar
 
 ### Resque
 Background job processor with multiple queues. Admins can see job status at /resque/. Workers are used mostly to send emails, as well as write queued UserAction objects to disk. To start a background worker on all queues run this:
-    
+
     RAILS_ENV=production PIDFILE=./tmp/pids/resque.pid BACKGROUND=yes QUEUE=* bundle exec rake environment resque:work
 
 ### Resque Scheduler
@@ -73,7 +73,7 @@ All sample config is in /Backup folder, which you can copy over to home folder o
     echo "gem 'mail', '~> 2.4.0'" >> Gemfile
 
 Make sure to edit config.rb to add S3 keys and SMTP config. Test backup by running:
-    
+
     bundle exec backup perform --triggers db_backup
 
 Then add that to the schedule.rb file and update whenever.

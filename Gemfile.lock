@@ -191,7 +191,6 @@ GEM
     multi_json (1.7.7)
     multi_xml (0.5.1)
     multipart-post (1.2.0)
-    mysql2 (0.3.11)
     net-scp (1.0.4)
       net-ssh (>= 1.99.1)
     net-sftp (2.0.5)
@@ -226,6 +225,7 @@ GEM
       activesupport (>= 3.0.0)
       cocaine (>= 0.0.2)
       mime-types
+    pg (0.15.1)
     polyglot (0.3.3)
     pr_geohash (1.0.0)
     progress_bar (0.4.0)
@@ -428,7 +428,6 @@ DEPENDENCIES
   json (~> 1.7.3)
   linkedin (~> 0.3.7)
   mime-types
-  mysql2
   obfuscate_id!
   omniauth (>= 1.0)
   omniauth-linkedin
@@ -436,6 +435,7 @@ DEPENDENCIES
   opentok (~> 0.0.91)
   paper_trail (~> 2.6.3)
   paperclip (~> 3.0)
+  pg
   progress_bar
   rails (= 3.2.11)
   rails_admin
