@@ -1,0 +1,27 @@
+site_url: "http://www.xxxxxx.com"
+email_host: "xxxxxxx.com"
+screenr_recorder_id: 'xxxxxxx'
+
+apis:
+  twitter:
+    consumer_key: ""
+    consumer_secret: ""
+    oauth_token: ""
+    oauth_token_secret: ""
+
+  mailchimp:
+    enabled: true
+    api_key: ""
+    everyone_list_id: ""
+    startup_list_id: ""
+    mentor_list_id: ""
+    investor_list_id: ""
+
+smtp_settings:
+  address: 'smtp.sendgrid.net'
+  port: 587
+  domain: ''
+  user_name: ''
+  password: ''
+  authentication: 'plain'
+  enable_starttls_auto: true

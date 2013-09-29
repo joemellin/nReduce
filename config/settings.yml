@@ -1,0 +1,149 @@
+demo_day:
+  hashtag: '#nReduceDemoDay'
+
+staging:
+  username: 'nreduce'
+  password: 'xxxxx'
+
+email_host: "localhost:3000"
+ssl_host: 'www.nreduce.com'
+joe_email: 'joe@nreduce.com'
+default_time_zone: "Pacific Time (US & Canada)"
+default_from_email: "nReduce <notifications@nreduce.com>"
+default_reply_to_email: "nReduce Support <support@nreduce.com>"
+
+client:
+  test: "test"
+
+requests:
+  prices:
+    retweet: [1, 100, 'Followers']
+    hn_upvote: [2, 1, 'Upvotes']
+    ui_ux_feedback: [5, 1, 'Usability Tests']
+    value_prop_feedback: [20, 1, 'Target Customers']
+  expire_in_minutes:
+    retweet: 30
+    hn_upvote: 30
+    ui_ux_feedback: 60
+    value_prop_feedback: 4320
+  questions:
+    retweet:
+      - ["Enter the URL of the tweet you would like to have Retweeted:", 'string', 'https://twitter.com/nReduce/status/274112721451102208']
+    hn_upvote:
+      - ["What is the link to the HN Post? ex: http://news.ycombinator.com/item?id=4887575", 'string']
+    ui_ux_feedback:
+      - ["URL", 'string']
+      - ["Instructions", 'text']
+    value_prop_feedback:
+      - ["What is your ideal customer for this value proposition? Be as specific as possible.", 'string']
+      - ["What is the URL that you would like to send the above customer to?", 'string']
+
+industries:
+  - "Advertising"
+  - "Analytics"
+  - "B2B"
+  - "Big Data"
+  - "Biotech"
+  - "Cleantech"
+  - "Consumer Web"
+  - "Crowdsourcing"
+  - "Digital Media"
+  - "E-Commerce"
+  - "Education"
+  - "Energy"
+  - "Enterprise Software"
+  - "Entertainment"
+  - "Facebook Applications"
+  - "Fashion"
+  - "Financial Services"
+  - "Food and Beverages"
+  - "Games"
+  - "Health"
+  - "Journalism"
+  - "Kids"
+  - "Knowledge Management"
+  - "Legal"
+  - "Location Based Services"
+  - "Manufacturing"
+  - "Marketplaces"
+  - "Medical Services"
+  - "Mobile"
+  - "Mobile Commerce"
+  - "Mobile Games"
+  - "Music"
+  - "Physical Goods"
+  - "Professional Services"
+  - "Publishing"
+  - "Real Estate"
+  - "Recruiting"
+  - "SaaS"
+  - "Search"
+  - "Security"
+  - "Sports"
+  - "SMB Focused"
+  - "Social Commerce"
+  - "Social Games"
+  - "Social Media"
+  - "Travel"
+  - "Transportation"
+  - "Ventures for Good"
+  - "Video"
+
+apis:
+  twitter:
+    consumer_key: "xxxxx"
+    consumer_secret: "xxxxx"
+    oauth_token: "xxxxx-xxxxx"
+    oauth_token_secret: "xxxxx"
+
+  mailchimp:
+    enabled: false
+    everyone_list_id: ""
+    investor_list_id: ""
+    startup_list_id: ""
+    mentor_list_id: ""
+
+  hipchat:
+    token: "xxxxx"
+
+  google:
+    key: "xxxxx"
+
+  linkedin:
+    key: 'xxxxx'
+    secret_key: 'xxxxx'
+
+  tokbox:
+    key: 'xxxxx'
+    secret: 'xxxxx'
+
+  viddler:
+    key: 'xxxxx'
+    username: 'xxxxx'
+    password: 'xxxxx'
+
+  vimeo:
+    client_id: 'xxxxx'
+    client_secret: 'xxxxx'
+    access_token: 'xxxxx'
+    access_token_secret: 'xxxxx'
+    preset_id: xxxxx
+
+  twilio:
+    sid: 'xxxxx'
+    token: 'xxxxx'
+    phone: '+xxxxx'
+
+aws:
+  s3:
+    access_key_id: 'xxxxx'
+    secret_access_key: 'xxxxx+xxxxx+xxxxx'
+    bucket: 'xxxxx.nreduce.com'
+
+paperclip_config:
+  url: "/:class/:style/:updated_at.:extension"
+  path: "/:class/:style/:updated_at.:extension"
+  hash_secret: "xxxxx"
+  styles:
+    medium: '250x250>'
+    thumb: '120x120#'
